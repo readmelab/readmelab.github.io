@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나를읽다 연구소 | 운명 보증서</title>
 
-    <!-- 카카오톡 미리보기 설정 -->
     <meta property="og:title" content="🔮 나를읽다 연구소 — 운명 분석 결과">
     <meta property="og:description" content="당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.">
     <meta property="og:image" content="https://readmelab.github.io/og-image.png">
@@ -115,8 +114,35 @@
             font-size: 36px;
             font-weight: 900;
             color: #c9a84c;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             text-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+        }
+
+        .client-name-sub {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #a09060;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        .name-divider {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+        .name-divider .line {
+            width: 30px;
+            height: 1px;
+            background: #c9a84c44;
+        }
+        .name-divider .and {
+            color: #c9a84c88;
+            font-size: 13px;
+            font-family: 'Noto Serif KR', serif;
         }
 
         .honorific {
@@ -249,6 +275,12 @@
             <div class="cert-title" id="certTitle">운 명 공 명 보 증 서</div>
 
             <div class="client-name" id="clientName"></div>
+            <div class="name-divider" id="nameDivider">
+                <div class="line"></div>
+                <div class="and">&</div>
+                <div class="line"></div>
+            </div>
+            <div class="client-name-sub" id="clientName2"></div>
             <div class="honorific" id="honorific">님의 운명 분석이 완성되었습니다</div>
 
             <div class="product-tag" id="productTag"></div>
@@ -333,6 +365,7 @@
                 };
 
                 const name = getData('이름');
+                const name2 = getData('이름2');
                 const product = getData('상품');
                 const pdfLink = getData('PDF링크');
                 const voiceLink = getData('음성링크');
@@ -344,35 +377,37 @@
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
 
-                // 상품 유형 판별 (우리를 = 궁합 / 나를 = 공명)
+                // 상품 유형 판별
                 const isCouple = product.includes('우리');
 
-                // 보증서 타이틀 변경
+                // 궁합일 때 두 번째 이름 표시
+                if (isCouple && name2) {
+                    document.getElementById('nameDivider').style.display = 'flex';
+                    document.getElementById('clientName2').style.display = 'block';
+                    document.getElementById('clientName2').textContent = name2;
+                }
+
+                // 보증서 타이틀 및 텍스트 변경
                 if (isCouple) {
                     document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
                     document.getElementById('honorific').textContent = '님의 궁합 분석이 완성되었습니다';
                     document.getElementById('message').innerHTML = '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
-                } else {
-                    document.getElementById('certTitle').textContent = '운 명 공 명 보 증 서';
-                    document.getElementById('honorific').textContent = '님의 운명 분석이 완성되었습니다';
-                    document.getElementById('message').innerHTML = '귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
-                }
-
-                // 버튼 텍스트 변경
-                if (isCouple) {
                     document.getElementById('btnPdfText').textContent = '궁합 분석 리포트 보기';
                     document.getElementById('btnVoiceText').textContent = '심층 궁합 해설 듣기';
                     document.getElementById('btnGaeunText').textContent = '둘만의 개운송';
                     document.getElementById('btnHealingText').textContent = '맞춤 힐링송';
                     document.getElementById('btnThemaText').textContent = '맞춤 테마송';
                 } else {
+                    document.getElementById('certTitle').textContent = '운 명 공 명 보 증 서';
+                    document.getElementById('honorific').textContent = '님의 운명 분석이 완성되었습니다';
+                    document.getElementById('message').innerHTML = '귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
                     document.getElementById('btnPdfText').textContent = '사주 분석 리포트 보기';
                     document.getElementById('btnVoiceText').textContent = '심층 음성 해설 듣기';
                     document.getElementById('btnGaeunText').textContent = '나만의 개운송';
                     document.getElementById('btnHealingText').textContent = '맞춤 힐링음악';
                 }
 
-                // 버튼 활성화 (링크가 있는 것만)
+                // 버튼 활성화
                 if (pdfLink) {
                     const btn = document.getElementById('btnPdf');
                     btn.href = pdfLink;
@@ -411,7 +446,6 @@
                     btn.classList.add('active');
                 }
 
-                // 로딩 숨기고 보증서 표시
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('certificate').style.display = 'block';
 
