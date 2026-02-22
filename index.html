@@ -33,7 +33,53 @@
             text-align: center;
         }
 
-        /* 상단 장식 라인 */
+        /* 로딩 화면 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+        }
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #c9a84c33;
+            border-top: 2px solid #c9a84c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading p {
+            color: #8a7a5a;
+            font-size: 14px;
+        }
+
+        /* 에러 화면 */
+        .error {
+            display: none;
+            min-height: 60vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .error h2 {
+            font-family: 'Noto Serif KR', serif;
+            color: #c9a84c;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .error p {
+            color: #8a7a5a;
+            font-size: 14px;
+        }
+
+        /* 보증서 메인 */
+        .certificate {
+            display: none;
+        }
+
         .top-ornament {
             display: flex;
             align-items: center;
@@ -51,7 +97,6 @@
             font-size: 10px;
         }
 
-        /* 브랜드 */
         .brand {
             font-family: 'Noto Serif KR', serif;
             font-size: 13px;
@@ -60,7 +105,6 @@
             margin-bottom: 8px;
         }
 
-        /* 보증서 제목 */
         .cert-title {
             font-family: 'Noto Serif KR', serif;
             font-size: 15px;
@@ -69,7 +113,6 @@
             margin-bottom: 32px;
         }
 
-        /* 이름 */
         .client-name {
             font-family: 'Noto Serif KR', serif;
             font-size: 36px;
@@ -85,14 +128,12 @@
             margin-bottom: 32px;
         }
 
-        /* 구분선 */
         .divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, #c9a84c33, #c9a84c, #c9a84c33, transparent);
             margin: 24px 0;
         }
 
-        /* 메시지 */
         .message {
             font-size: 14px;
             color: #a09880;
@@ -101,7 +142,17 @@
             font-weight: 300;
         }
 
-        /* 버튼 영역 */
+        .product-tag {
+            display: inline-block;
+            padding: 4px 16px;
+            border: 1px solid #c9a84c33;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #c9a84c;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
         .buttons {
             display: flex;
             flex-direction: column;
@@ -110,7 +161,7 @@
         }
 
         .btn {
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             gap: 10px;
@@ -126,6 +177,10 @@
             letter-spacing: 1px;
         }
 
+        .btn.active {
+            display: flex;
+        }
+
         .btn:hover {
             background: linear-gradient(135deg, #2a2a3e, #20203a);
             border-color: #c9a84c88;
@@ -133,13 +188,15 @@
             transform: translateY(-1px);
         }
 
-        .btn .icon {
-            font-size: 18px;
-        }
+        .btn .icon { font-size: 18px; }
 
         .btn-row {
-            display: flex;
+            display: none;
             gap: 12px;
+        }
+
+        .btn-row.active {
+            display: flex;
         }
 
         .btn-row .btn {
@@ -148,7 +205,10 @@
             padding: 14px 12px;
         }
 
-        /* 푸터 */
+        .btn-row .btn.active {
+            display: flex;
+        }
+
         .footer {
             margin-top: 40px;
             padding-top: 24px;
@@ -166,78 +226,201 @@
             color: #3a3530;
             margin-top: 4px;
         }
-
-        /* 상품 태그 */
-        .product-tag {
-            display: inline-block;
-            padding: 4px 16px;
-            border: 1px solid #c9a84c33;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #c9a84c;
-            margin-bottom: 24px;
-            letter-spacing: 1px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
 
-        <!-- 상단 장식 -->
-        <div class="top-ornament">
-            <div class="line"></div>
-            <div class="diamond">◆</div>
-            <div class="line"></div>
+        <!-- 로딩 화면 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>보증서를 불러오고 있습니다...</p>
         </div>
 
-        <!-- 브랜드 -->
-        <div class="brand">나를읽다</div>
-        <div class="cert-title">운 명 공 명 보 증 서</div>
-
-        <!-- 고객 이름 -->
-        <div class="client-name">오동훈</div>
-        <div class="honorific">님의 운명 분석이 완성되었습니다</div>
-
-        <!-- 상품 태그 -->
-        <div class="product-tag">온전히 읽다</div>
-
-        <div class="divider"></div>
-
-        <!-- 메시지 -->
-        <div class="message">
-            귀하의 사주 오행과 MBTI 심리 유형을<br>
-            분석하여 조율된 맞춤형 솔루션입니다
+        <!-- 에러 화면 -->
+        <div class="error" id="error">
+            <h2>보증서를 찾을 수 없습니다</h2>
+            <p>링크를 다시 확인해주세요</p>
         </div>
 
-        <!-- 다운로드 버튼들 -->
-        <div class="buttons">
-            <a href="#" class="btn">
-                <span class="icon">📜</span>
-                <span>사주 분석 리포트 보기</span>
-            </a>
-            <a href="#" class="btn">
-                <span class="icon">🎧</span>
-                <span>심층 음성 해설 듣기</span>
-            </a>
-            <div class="btn-row">
-                <a href="#" class="btn">
-                    <span class="icon">🎵</span>
-                    <span>개운송</span>
+        <!-- 보증서 메인 -->
+        <div class="certificate" id="certificate">
+            <div class="top-ornament">
+                <div class="line"></div>
+                <div class="diamond">◆</div>
+                <div class="line"></div>
+            </div>
+
+            <div class="brand">나를읽다</div>
+            <div class="cert-title">운 명 공 명 보 증 서</div>
+
+            <div class="client-name" id="clientName"></div>
+            <div class="honorific">님의 운명 분석이 완성되었습니다</div>
+
+            <div class="product-tag" id="productTag"></div>
+
+            <div class="divider"></div>
+
+            <div class="message">
+                귀하의 사주 오행과 MBTI 심리 유형을<br>
+                분석하여 조율된 맞춤형 솔루션입니다
+            </div>
+
+            <div class="buttons">
+                <a href="#" class="btn" id="btnPdf" target="_blank">
+                    <span class="icon">📜</span>
+                    <span>사주 분석 리포트 보기</span>
                 </a>
-                <a href="#" class="btn">
-                    <span class="icon">🎶</span>
-                    <span>힐링음악</span>
+                <a href="#" class="btn" id="btnVoice" target="_blank">
+                    <span class="icon">🎧</span>
+                    <span>심층 음성 해설 듣기</span>
                 </a>
+                <div class="btn-row" id="btnRow">
+                    <a href="#" class="btn" id="btnGaeun" target="_blank">
+                        <span class="icon">🎵</span>
+                        <span>개운송</span>
+                    </a>
+                    <a href="#" class="btn" id="btnHealing" target="_blank">
+                        <span class="icon">🎶</span>
+                        <span>힐링음악</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="divider"></div>
+                <div class="footer-brand">나를읽다 연구소</div>
+                <div class="footer-sub">사주 & MBTI 운명 분석</div>
             </div>
         </div>
 
-        <!-- 푸터 -->
-        <div class="footer">
-            <div class="divider"></div>
-            <div class="footer-brand">나를읽다 연구소</div>
-            <div class="footer-sub">사주 & MBTI 운명 분석</div>
-        </div>
-
     </div>
+
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSLwX3_NEYRLeNv8UmKxsL9vrTHmHwMcSWtu7uGuIUyV79m8Qhw6jLJtxOPjIEzxNt1Ks7nqYaKnlb2/pub?gid=0&single=true&output=csv';
+
+        // URL에서 코드 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('c');
+
+        if (!code) {
+            showError();
+        } else {
+            loadCertificate(code);
+        }
+
+        async function loadCertificate(code) {
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                const rows = csvText.split('\n').map(row => parseCSVRow(row));
+                
+                // 헤더 찾기
+                const header = rows[0];
+                const codeIndex = header.findIndex(h => h.trim() === '코드');
+                
+                if (codeIndex === -1) {
+                    showError();
+                    return;
+                }
+
+                // 코드로 고객 찾기
+                const customerRow = rows.find((row, i) => i > 0 && row[codeIndex] && row[codeIndex].trim() === code);
+
+                if (!customerRow) {
+                    showError();
+                    return;
+                }
+
+                // 데이터 매핑
+                const getData = (colName) => {
+                    const idx = header.findIndex(h => h.trim() === colName);
+                    return idx !== -1 ? (customerRow[idx] || '').trim() : '';
+                };
+
+                const name = getData('이름');
+                const product = getData('상품');
+                const pdfLink = getData('PDF링크');
+                const voiceLink = getData('음성링크');
+                const gaeunLink = getData('개운송링크');
+                const themaLink = getData('테마송링크');
+                const healingLink = getData('힐링음악링크');
+
+                // 화면에 표시
+                document.getElementById('clientName').textContent = name;
+                document.getElementById('productTag').textContent = product;
+
+                // 버튼 활성화 (링크가 있는 것만)
+                if (pdfLink) {
+                    const btn = document.getElementById('btnPdf');
+                    btn.href = pdfLink;
+                    btn.classList.add('active');
+                }
+                if (voiceLink) {
+                    const btn = document.getElementById('btnVoice');
+                    btn.href = voiceLink;
+                    btn.classList.add('active');
+                }
+
+                let hasGaeun = false;
+                let hasHealing = false;
+
+                if (gaeunLink) {
+                    const btn = document.getElementById('btnGaeun');
+                    btn.href = gaeunLink;
+                    btn.classList.add('active');
+                    hasGaeun = true;
+                }
+                if (themaLink) {
+                    const btn = document.getElementById('btnGaeun');
+                    btn.href = themaLink;
+                    btn.classList.add('active');
+                    hasGaeun = true;
+                }
+                if (healingLink) {
+                    const btn = document.getElementById('btnHealing');
+                    btn.href = healingLink;
+                    btn.classList.add('active');
+                    hasHealing = true;
+                }
+
+                if (hasGaeun || hasHealing) {
+                    document.getElementById('btnRow').classList.add('active');
+                }
+
+                // 로딩 숨기고 보증서 표시
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('certificate').style.display = 'block';
+
+            } catch (e) {
+                showError();
+            }
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'flex';
+        }
+
+        // CSV 파싱 (쉼표가 포함된 값 처리)
+        function parseCSVRow(row) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            return result;
+        }
+    </script>
 </body>
 </html>
