@@ -20,151 +20,126 @@
             position: relative;
         }
 
-        /* 배경 장식 - 모서리 */
         .corner {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-color: #c9a84c33;
             border-style: solid;
         }
-        .corner.tl { top: 40px; left: 40px; border-width: 2px 0 0 2px; }
-        .corner.tr { top: 40px; right: 40px; border-width: 2px 2px 0 0; }
-        .corner.bl { bottom: 40px; left: 40px; border-width: 0 0 2px 2px; }
-        .corner.br { bottom: 40px; right: 40px; border-width: 0 2px 2px 0; }
-
-        /* 내부 모서리 */
-        .corner-inner {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-color: #c9a84c1a;
-            border-style: solid;
-        }
-        .corner-inner.tl { top: 55px; left: 55px; border-width: 1px 0 0 1px; }
-        .corner-inner.tr { top: 55px; right: 55px; border-width: 1px 1px 0 0; }
-        .corner-inner.bl { bottom: 55px; left: 55px; border-width: 0 0 1px 1px; }
-        .corner-inner.br { bottom: 55px; right: 55px; border-width: 0 1px 1px 0; }
+        .corner.tl { top: 30px; left: 30px; border-width: 2px 0 0 2px; }
+        .corner.tr { top: 30px; right: 30px; border-width: 2px 2px 0 0; }
+        .corner.bl { bottom: 30px; left: 30px; border-width: 0 0 2px 2px; }
+        .corner.br { bottom: 30px; right: 30px; border-width: 0 2px 2px 0; }
 
         .container {
             text-align: center;
             z-index: 1;
         }
 
-        /* 상단 장식 */
         .ornament {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-            margin-bottom: 36px;
+            margin-bottom: 28px;
         }
         .ornament .line {
-            width: 80px;
+            width: 100px;
             height: 1px;
             background: linear-gradient(90deg, transparent, #c9a84c66, transparent);
         }
         .ornament .symbol {
             color: #c9a84c;
-            font-size: 24px;
+            font-size: 28px;
         }
 
         .brand {
             font-family: 'Noto Serif KR', serif;
-            font-size: 28px;
+            font-size: 44px;
             color: #c9a84c;
-            letter-spacing: 12px;
-            margin-bottom: 12px;
+            letter-spacing: 14px;
+            margin-bottom: 10px;
             font-weight: 700;
         }
 
         .sub-brand {
             font-family: 'Noto Sans KR', sans-serif;
-            font-size: 16px;
+            font-size: 20px;
             color: #5a5040;
-            letter-spacing: 4px;
-            margin-bottom: 48px;
+            letter-spacing: 6px;
+            margin-bottom: 40px;
         }
 
         .divider {
-            width: 200px;
+            width: 240px;
             height: 1px;
             background: linear-gradient(90deg, transparent, #c9a84c44, #c9a84c, #c9a84c44, transparent);
-            margin: 0 auto 48px;
+            margin: 0 auto 40px;
         }
 
         .main-text {
             font-family: 'Noto Serif KR', serif;
-            font-size: 38px;
+            font-size: 52px;
             color: #f5f0e8;
             font-weight: 700;
-            line-height: 1.5;
-            margin-bottom: 24px;
-            letter-spacing: 2px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
         }
 
         .sub-text {
             font-family: 'Noto Sans KR', sans-serif;
-            font-size: 18px;
+            font-size: 24px;
             color: #8a7a5a;
             font-weight: 300;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
-        /* 하단 장식 */
         .bottom-ornament {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-            margin-top: 48px;
+            margin-top: 40px;
         }
         .bottom-ornament .dot {
-            width: 4px;
-            height: 4px;
+            width: 5px;
+            height: 5px;
             background: #c9a84c44;
             border-radius: 50%;
         }
         .bottom-ornament .dot.center {
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             background: #c9a84c66;
         }
     </style>
 </head>
 <body>
-    <!-- 모서리 장식 -->
     <div class="corner tl"></div>
     <div class="corner tr"></div>
     <div class="corner bl"></div>
     <div class="corner br"></div>
-    <div class="corner-inner tl"></div>
-    <div class="corner-inner tr"></div>
-    <div class="corner-inner bl"></div>
-    <div class="corner-inner br"></div>
 
     <div class="container">
-        <!-- 상단 장식 -->
         <div class="ornament">
             <div class="line"></div>
             <div class="symbol">◆</div>
             <div class="line"></div>
         </div>
 
-        <!-- 브랜드 -->
         <div class="brand">나를읽다</div>
         <div class="sub-brand">연 구 소</div>
 
         <div class="divider"></div>
 
-        <!-- 메인 텍스트 -->
         <div class="main-text">
             당신만을 위한<br>운명 분석이 완성되었습니다
         </div>
 
         <div class="sub-text">사주 & MBTI 맞춤 운명 분석</div>
 
-        <!-- 하단 장식 -->
         <div class="bottom-ornament">
             <div class="dot"></div>
             <div class="dot"></div>
