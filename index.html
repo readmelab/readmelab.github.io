@@ -4,374 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나를읽다 연구소 | 운명 보증서</title>
-
     <meta property="og:title" content="🔮 나를읽다 연구소 — 운명 분석 결과">
     <meta property="og:description" content="당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.">
     <meta property="og:image" content="https://readmelab.github.io/og-image.png">
     <meta property="og:type" content="website">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: #0a0a14;
-            color: #f5f0e8;
-            font-family: 'Noto Sans KR', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 60vh;
-        }
-        .loading .spinner {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #c9a84c33;
-            border-top: 2px solid #c9a84c;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+        body { background-color: #0a0a14; color: #f5f0e8; font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { max-width: 480px; width: 100%; text-align: center; }
+        .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; }
+        .loading .spinner { width: 40px; height: 40px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading p {
-            color: #8a7a5a;
-            font-size: 14px;
-        }
-
-        .error {
-            display: none;
-            min-height: 60vh;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .error h2 {
-            font-family: 'Noto Serif KR', serif;
-            color: #c9a84c;
-            font-size: 20px;
-            margin-bottom: 12px;
-        }
-        .error p {
-            color: #8a7a5a;
-            font-size: 14px;
-        }
-
-        .certificate {
-            display: none;
-        }
-
-        .top-ornament {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 40px;
-            gap: 12px;
-        }
-        .top-ornament .line {
-            height: 1px;
-            width: 60px;
-            background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-        }
-        .top-ornament .diamond {
-            color: #c9a84c;
-            font-size: 10px;
-        }
-
-        .brand {
-            font-family: 'Noto Serif KR', serif;
-            font-size: 13px;
-            color: #c9a84c;
-            letter-spacing: 6px;
-            margin-bottom: 8px;
-        }
-
-        .cert-title {
-            font-family: 'Noto Serif KR', serif;
-            font-size: 15px;
-            color: #8a7a5a;
-            letter-spacing: 3px;
-            margin-bottom: 32px;
-        }
-
-        .client-name {
-            font-family: 'Noto Serif KR', serif;
-            font-size: 36px;
-            font-weight: 900;
-            color: #c9a84c;
-            margin-bottom: 4px;
-            text-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
-        }
-
-        .client-name-sub {
-            font-family: 'Noto Serif KR', serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: #a09060;
-            margin-bottom: 8px;
-            display: none;
-        }
-
-        .name-divider {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 8px 0;
-        }
-        .name-divider .line {
-            width: 30px;
-            height: 1px;
-            background: #c9a84c44;
-        }
-        .name-divider .and {
-            color: #c9a84c88;
-            font-size: 13px;
-            font-family: 'Noto Serif KR', serif;
-        }
-
-        .honorific {
-            font-size: 16px;
-            color: #a09880;
-            margin-bottom: 32px;
-        }
-
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #c9a84c33, #c9a84c, #c9a84c33, transparent);
-            margin: 24px 0;
-        }
-
-        .message {
-            font-size: 14px;
-            color: #a09880;
-            line-height: 1.8;
-            margin-bottom: 36px;
-            font-weight: 300;
-        }
-
-        .product-tag {
-            display: inline-block;
-            padding: 4px 16px;
-            border: 1px solid #c9a84c33;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #c9a84c;
-            margin-bottom: 24px;
-            letter-spacing: 1px;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .btn {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 16px 24px;
-            border: 1px solid #c9a84c44;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #1a1a2e, #16162a);
-            color: #e8dcc8;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-        }
-
-        .btn.active {
-            display: flex;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #2a2a3e, #20203a);
-            border-color: #c9a84c88;
-            box-shadow: 0 0 20px rgba(201, 168, 76, 0.15);
-            transform: translateY(-1px);
-        }
-
+        .loading p { color: #8a7a5a; font-size: 14px; }
+        .error { display: none; min-height: 60vh; flex-direction: column; align-items: center; justify-content: center; }
+        .error h2 { font-family: 'Noto Serif KR', serif; color: #c9a84c; font-size: 20px; margin-bottom: 12px; }
+        .error p { color: #8a7a5a; font-size: 14px; }
+        .certificate { display: none; }
+        .top-ornament { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; gap: 12px; }
+        .top-ornament .line { height: 1px; width: 60px; background: linear-gradient(90deg, transparent, #c9a84c, transparent); }
+        .top-ornament .diamond { color: #c9a84c; font-size: 10px; }
+        .brand { font-family: 'Noto Serif KR', serif; font-size: 13px; color: #c9a84c; letter-spacing: 6px; margin-bottom: 8px; }
+        .cert-title { font-family: 'Noto Serif KR', serif; font-size: 15px; color: #8a7a5a; letter-spacing: 3px; margin-bottom: 32px; }
+        .client-name { font-family: 'Noto Serif KR', serif; font-size: 36px; font-weight: 900; color: #c9a84c; margin-bottom: 4px; text-shadow: 0 0 20px rgba(201, 168, 76, 0.3); }
+        .client-name-sub { font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700; color: #a09060; margin-bottom: 8px; display: none; }
+        .name-divider { display: none; align-items: center; justify-content: center; gap: 10px; margin: 8px 0; }
+        .name-divider .line { width: 30px; height: 1px; background: #c9a84c44; }
+        .name-divider .and { color: #c9a84c88; font-size: 13px; font-family: 'Noto Serif KR', serif; }
+        .honorific { font-size: 16px; color: #a09880; margin-bottom: 32px; }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, #c9a84c33, #c9a84c, #c9a84c33, transparent); margin: 24px 0; }
+        .message { font-size: 14px; color: #a09880; line-height: 1.8; margin-bottom: 36px; font-weight: 300; }
+        .product-tag { display: inline-block; padding: 4px 16px; border: 1px solid #c9a84c33; border-radius: 20px; font-size: 12px; color: #c9a84c; margin-bottom: 24px; letter-spacing: 1px; }
+        .buttons { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+        .btn { display: none; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px; background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s ease; letter-spacing: 1px; }
+        .btn.active { display: flex; }
+        .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: #c9a84c88; box-shadow: 0 0 20px rgba(201, 168, 76, 0.15); transform: translateY(-1px); }
         .btn .icon { font-size: 18px; }
-
-        .btn-row {
-            display: none;
-            gap: 12px;
-        }
-
-        .btn-row.active {
-            display: flex;
-        }
-
-        .btn-row .btn {
-            flex: 1;
-            font-size: 13px;
-            padding: 14px 12px;
-        }
-
-        .btn-row .btn.active {
-            display: flex;
-        }
-
-        .footer {
-            margin-top: 40px;
-            padding-top: 24px;
-        }
-
-        .footer-brand {
-            font-family: 'Noto Serif KR', serif;
-            font-size: 12px;
-            color: #5a5040;
-            letter-spacing: 2px;
-        }
-
-        .footer-sub {
-            font-size: 11px;
-            color: #3a3530;
-            margin-top: 4px;
-        }
+        .btn-row { display: none; gap: 12px; }
+        .btn-row.active { display: flex; }
+        .btn-row .btn { flex: 1; font-size: 13px; padding: 14px 12px; }
+        .btn-row .btn.active { display: flex; }
+        .footer { margin-top: 40px; padding-top: 24px; }
+        .footer-brand { font-family: 'Noto Serif KR', serif; font-size: 12px; color: #5a5040; letter-spacing: 2px; }
+        .footer-sub { font-size: 11px; color: #3a3530; margin-top: 4px; }
     </style>
 </head>
 <body>
     <div class="container">
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>보증서를 불러오고 있습니다...</p>
-        </div>
-
-        <div class="error" id="error">
-            <h2>보증서를 찾을 수 없습니다</h2>
-            <p>링크를 다시 확인해주세요</p>
-        </div>
-
+        <div class="loading" id="loading"><div class="spinner"></div><p>보증서를 불러오고 있습니다...</p></div>
+        <div class="error" id="error"><h2>보증서를 찾을 수 없습니다</h2><p>링크를 다시 확인해주세요</p></div>
         <div class="certificate" id="certificate">
-            <div class="top-ornament">
-                <div class="line"></div>
-                <div class="diamond">◆</div>
-                <div class="line"></div>
-            </div>
-
+            <div class="top-ornament"><div class="line"></div><div class="diamond">◆</div><div class="line"></div></div>
             <div class="brand">나를읽다</div>
             <div class="cert-title" id="certTitle">운 명 공 명 보 증 서</div>
-
             <div class="client-name" id="clientName"></div>
-            <div class="name-divider" id="nameDivider">
-                <div class="line"></div>
-                <div class="and">&</div>
-                <div class="line"></div>
-            </div>
+            <div class="name-divider" id="nameDivider"><div class="line"></div><div class="and">&</div><div class="line"></div></div>
             <div class="client-name-sub" id="clientName2"></div>
             <div class="honorific" id="honorific">님의 운명 분석이 완성되었습니다</div>
-
             <div class="product-tag" id="productTag"></div>
-
             <div class="divider"></div>
-
-            <div class="message" id="message">
-                귀하의 사주 오행과 MBTI 심리 유형을<br>
-                분석하여 조율된 맞춤형 솔루션입니다
-            </div>
-
+            <div class="message" id="message">귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다</div>
             <div class="buttons">
-                <a href="#" class="btn" id="btnPdf" target="_blank">
-                    <span class="icon">📜</span>
-                    <span id="btnPdfText">사주 분석 리포트 보기</span>
-                </a>
-                <a href="#" class="btn" id="btnVoice" target="_blank">
-                    <span class="icon">🎧</span>
-                    <span id="btnVoiceText">심층 음성 해설 듣기</span>
-                </a>
+                <a href="#" class="btn" id="btnPdf" target="_blank"><span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트 보기</span></a>
+                <a href="#" class="btn" id="btnVoice" target="_blank"><span class="icon">🎧</span><span id="btnVoiceText">심층 음성 해설 듣기</span></a>
                 <div class="btn-row" id="btnRow">
-                    <a href="#" class="btn" id="btnGaeun" target="_blank">
-                        <span class="icon">🎵</span>
-                        <span id="btnGaeunText">개운송</span>
-                    </a>
-                    <a href="#" class="btn" id="btnHealing" target="_blank">
-                        <span class="icon">🎶</span>
-                        <span id="btnHealingText">힐링음악</span>
-                    </a>
+                    <a href="#" class="btn" id="btnGaeun" target="_blank"><span class="icon">🎵</span><span id="btnGaeunText">개운송</span></a>
+                    <a href="#" class="btn" id="btnHealing" target="_blank"><span class="icon">🎶</span><span id="btnHealingText">힐링음악</span></a>
                 </div>
-                <a href="#" class="btn" id="btnThema" target="_blank">
-                    <span class="icon">🎼</span>
-                    <span id="btnThemaText">테마송</span>
-                </a>
+                <a href="#" class="btn" id="btnThema" target="_blank"><span class="icon">🎼</span><span id="btnThemaText">테마송</span></a>
             </div>
-
-            <div class="footer">
-                <div class="divider"></div>
-                <div class="footer-brand">나를읽다 연구소</div>
-                <div class="footer-sub">사주 & MBTI 운명 분석</div>
-            </div>
+            <div class="footer"><div class="divider"></div><div class="footer-brand">나를읽다 연구소</div><div class="footer-sub">사주 & MBTI 운명 분석</div></div>
         </div>
-
     </div>
-
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSLwX3_NEYRLeNv8UmKxsL9vrTHmHwMcSWtu7uGuIUyV79m8Qhw6jLJtxOPjIEzxNt1Ks7nqYaKnlb2/pub?gid=0&single=true&output=csv';
-
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('c');
-
-        if (!code) {
-            showError();
-        } else {
-            loadCertificate(code);
-        }
+        if (!code) { showError(); } else { loadCertificate(code); }
 
         async function loadCertificate(code) {
             try {
                 const response = await fetch(CSV_URL);
                 const csvText = await response.text();
                 const rows = csvText.split('\n').map(row => parseCSVRow(row));
-                
                 const header = rows[0];
-                const codeIndex = header.findIndex(h => h.trim() === '보증서코드');
-                
-                if (codeIndex === -1) {
-                    showError();
-                    return;
-                }
+
+                // ★ 새 헤더에 맞춘 열 매핑
+                const codeIndex = header.findIndex(h => h.trim() === '보증코드');
+                if (codeIndex === -1) { showError(); return; }
 
                 const customerRow = rows.find((row, i) => i > 0 && row[codeIndex] && row[codeIndex].trim() === code);
-
-                if (!customerRow) {
-                    showError();
-                    return;
-                }
+                if (!customerRow) { showError(); return; }
 
                 const getData = (colName) => {
                     const idx = header.findIndex(h => h.trim() === colName);
                     return idx !== -1 ? (customerRow[idx] || '').trim() : '';
                 };
 
-                const name = getData('이름');
-                const name2 = getData('이름2');
+                // ★ 새 헤더명으로 매핑
+                const name = getData('주인공1');
+                const name2 = getData('주인공2');
                 const product = getData('상품');
-                const pdfLink = getData('PDF링크');
-                const voiceLink = getData('음성링크');
-                const gaeunLink = getData('개운송링크');
-                const themaLink = getData('테마송링크');
-                const healingLink = getData('힐링음악링크');
+                const pdfLink = getData('PDF');
+                const voiceLink = getData('음성');
+                const gaeunLink = getData('개운');
+                const themaLink = getData('테마곡');
+                const healingLink = getData('힐링');
 
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
@@ -403,47 +141,17 @@
                     document.getElementById('btnHealingText').textContent = '맞춤 힐링음악';
                 }
 
-                if (pdfLink) {
-                    const btn = document.getElementById('btnPdf');
-                    btn.href = pdfLink;
-                    btn.classList.add('active');
-                }
-                if (voiceLink) {
-                    const btn = document.getElementById('btnVoice');
-                    btn.href = voiceLink;
-                    btn.classList.add('active');
-                }
+                if (pdfLink) { document.getElementById('btnPdf').href = pdfLink; document.getElementById('btnPdf').classList.add('active'); }
+                if (voiceLink) { document.getElementById('btnVoice').href = voiceLink; document.getElementById('btnVoice').classList.add('active'); }
 
-                let hasGaeun = false;
-                let hasHealing = false;
-
-                if (gaeunLink) {
-                    const btn = document.getElementById('btnGaeun');
-                    btn.href = gaeunLink;
-                    btn.classList.add('active');
-                    hasGaeun = true;
-                }
-
-                if (healingLink) {
-                    const btn = document.getElementById('btnHealing');
-                    btn.href = healingLink;
-                    btn.classList.add('active');
-                    hasHealing = true;
-                }
-
-                if (hasGaeun || hasHealing) {
-                    document.getElementById('btnRow').classList.add('active');
-                }
-
-                if (themaLink) {
-                    const btn = document.getElementById('btnThema');
-                    btn.href = themaLink;
-                    btn.classList.add('active');
-                }
+                let hasGaeun = false, hasHealing = false;
+                if (gaeunLink) { document.getElementById('btnGaeun').href = gaeunLink; document.getElementById('btnGaeun').classList.add('active'); hasGaeun = true; }
+                if (healingLink) { document.getElementById('btnHealing').href = healingLink; document.getElementById('btnHealing').classList.add('active'); hasHealing = true; }
+                if (hasGaeun || hasHealing) { document.getElementById('btnRow').classList.add('active'); }
+                if (themaLink) { document.getElementById('btnThema').href = themaLink; document.getElementById('btnThema').classList.add('active'); }
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('certificate').style.display = 'block';
-
             } catch (e) {
                 showError();
             }
@@ -460,14 +168,9 @@
             let inQuotes = false;
             for (let i = 0; i < row.length; i++) {
                 const char = row[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current);
-                    current = '';
-                } else {
-                    current += char;
-                }
+                if (char === '"') { inQuotes = !inQuotes; }
+                else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
+                else { current += char; }
             }
             result.push(current);
             return result;
