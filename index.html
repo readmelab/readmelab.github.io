@@ -345,7 +345,7 @@
                 const rows = csvText.split('\n').map(row => parseCSVRow(row));
                 
                 const header = rows[0];
-                const codeIndex = header.findIndex(h => h.trim() === '코드');
+                const codeIndex = header.findIndex(h => h.trim() === '보증서코드');
                 
                 if (codeIndex === -1) {
                     showError();
@@ -373,21 +373,17 @@
                 const themaLink = getData('테마송링크');
                 const healingLink = getData('힐링음악링크');
 
-                // 이름 표시
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
 
-                // 상품 유형 판별
                 const isCouple = product.includes('우리');
 
-                // 궁합일 때 두 번째 이름 표시
                 if (isCouple && name2) {
                     document.getElementById('nameDivider').style.display = 'flex';
                     document.getElementById('clientName2').style.display = 'block';
                     document.getElementById('clientName2').textContent = name2;
                 }
 
-                // 보증서 타이틀 및 텍스트 변경
                 if (isCouple) {
                     document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
                     document.getElementById('honorific').textContent = '님의 궁합 분석이 완성되었습니다';
@@ -407,7 +403,6 @@
                     document.getElementById('btnHealingText').textContent = '맞춤 힐링음악';
                 }
 
-                // 버튼 활성화
                 if (pdfLink) {
                     const btn = document.getElementById('btnPdf');
                     btn.href = pdfLink;
