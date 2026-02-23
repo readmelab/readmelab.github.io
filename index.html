@@ -497,6 +497,25 @@ async function loadCertificate(code) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('error').style.display = 'flex';
         }
+    function parseCSVRow(row) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < row.length; i++) {
+        const ch = row[i];
+        if (inQuotes) {
+            if (ch === '"' && row[i + 1] === '"') { current += '"'; i++; }
+            else if (ch === '"') { inQuotes = false; }
+            else { current += ch; }
+        } else {
+            if (ch === '"') { inQuotes = true; }
+            else if (ch === ',') { result.push(current); current = ''; }
+            else { current += ch; }
+        }
+    }
+    result.push(current);
+    return result;
+}
     </script>
 </body>
 </html>
