@@ -225,8 +225,27 @@
                         // 사용자가 로딩 중에 버튼을 눌렀다면 바로 재생
                         if (pendingPlay[type]) {
                             pendingPlay[type] = false;
-                            playPause(type);
+                            var loadingEl = document.getElementById(type + 'Loading');
+                            if (loadingEl) loadingEl.style.display = 'none';
+                            // ★ placeholder에 src를 교체해서 자동재생 유지
+                            var ph = audioPlayers[type + '_placeholder'];
+                            if (ph) {
+                                ph.src = data.uri;
+                                ph.play().catch(function(){});
+                                audioPlayers[type] = ph;
+                                var playBtn = document.getElementById(type + 'PlayBtn');
+                                var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+                                playBtn.textContent = '⏸';
+                                btn.classList.add('playing');
+                                ph.addEventListener('loadedmetadata', function() {
+                                    document.getElementById(type + 'Duration').textContent = formatTime(ph.duration);
+                                });
+                                startProgress(type);
+                            } else {
+                                playPause(type);
+                            }
                         }
+
                     })
                     .catch(function(err) {
                         audioLoading[type] = false;
@@ -268,7 +287,6 @@
         function loadAndPlay(type) {
             // 이미 로딩 완료 → 바로 재생
             if (audioLoaded[type]) {
-                // ★ 사용자 터치 시점에 play() 호출해야 모바일 자동재생 허용
                 var audio = audioPlayers[type];
                 if (audio) {
                     audio.play().then(function() {
@@ -283,7 +301,12 @@
                 if (loadingEl) loadingEl.style.display = 'none';
                 return;
             }
-            // 아직 로딩 중 → 로딩 표시 + 완료되면 자동 재생 예약
+            // ★ 핵심: 사용자 터치 시점에 무음 Audio를 play()해서 브라우저 잠금 해제
+            var placeholder = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+            placeholder.play().catch(function(){});
+            // 이 placeholder를 나중에 src 교체용으로 저장
+            audioPlayers[type + '_placeholder'] = placeholder;
+
             var loadingEl = document.getElementById(type + 'Loading');
             if (loadingEl) loadingEl.style.display = 'block';
             pendingPlay[type] = true;
