@@ -183,12 +183,17 @@
             return url;
         }
 
+        /* ★ 수정된 함수: export=download&confirm=t 로 스캔 확인 페이지 우회 */
         function toStreamLink(url) {
             if (!url) return url;
-            var driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-            if (driveMatch) return 'https://docs.google.com/uc?export=open&id=' + driveMatch[1];
-            var openMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
-            if (openMatch) return 'https://docs.google.com/uc?export=open&id=' + openMatch[1];
+            var id = null;
+            var m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (m) id = m[1];
+            if (!id) {
+                m = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+                if (m) id = m[1];
+            }
+            if (id) return 'https://drive.google.com/uc?export=download&confirm=t&id=' + id;
             return url;
         }
 
