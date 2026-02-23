@@ -79,6 +79,23 @@
         const code = urlParams.get('c');
         if (!code) { showError(); } else { loadCertificate(code); }
 
+        function toDirectLink(url) {
+            if (!url) return url;
+            var docsMatch = url.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
+            if (docsMatch) {
+                return 'https://docs.google.com/document/d/' + docsMatch[1] + '/export?format=pdf';
+            }
+            var driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch) {
+                return 'https://drive.google.com/uc?export=download&id=' + driveMatch[1];
+            }
+            var openMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+            if (openMatch) {
+                return 'https://drive.google.com/uc?export=download&id=' + openMatch[1];
+            }
+            return url;
+        }
+
         async function loadCertificate(code) {
             try {
                 const response = await fetch(CSV_URL);
@@ -101,7 +118,6 @@
                 const name2 = getData('주인공2');
                 const product = getData('상품');
 
-                // URL + 파일명
                 const pdfLink     = getData('PDF');
                 const pdfName     = getData('PDF명');
                 const themeLink   = getData('테마곡');
@@ -111,11 +127,9 @@
                 const healingLink = getData('힐링');
                 const healingName = getData('힐링명');
 
-                // 이름 표시
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
 
-                // 궁합 분기
                 const isCouple = product.includes('우리');
                 if (isCouple && name2) {
                     document.getElementById('nameDivider').style.display = 'flex';
@@ -129,24 +143,23 @@
                     document.getElementById('message').innerHTML = '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
                 }
 
-                // 버튼 활성화 (파일명이 있으면 파일명으로 표시)
                 if (pdfLink) {
-                    document.getElementById('btnPdf').href = pdfLink;
+                    document.getElementById('btnPdf').href = toDirectLink(pdfLink);
                     document.getElementById('btnPdf').classList.add('active');
                     if (pdfName) document.getElementById('btnPdfText').textContent = pdfName;
                 }
                 if (themeLink) {
-                    document.getElementById('btnTheme').href = themeLink;
+                    document.getElementById('btnTheme').href = toDirectLink(themeLink);
                     document.getElementById('btnTheme').classList.add('active');
                     if (themeName) document.getElementById('btnThemeText').textContent = themeName;
                 }
                 if (voiceLink) {
-                    document.getElementById('btnVoice').href = voiceLink;
+                    document.getElementById('btnVoice').href = toDirectLink(voiceLink);
                     document.getElementById('btnVoice').classList.add('active');
                     if (voiceName) document.getElementById('btnVoiceText').textContent = voiceName;
                 }
                 if (healingLink) {
-                    document.getElementById('btnHealing').href = healingLink;
+                    document.getElementById('btnHealing').href = toDirectLink(healingLink);
                     document.getElementById('btnHealing').classList.add('active');
                     if (healingName) document.getElementById('btnHealingText').textContent = healingName;
                 }
