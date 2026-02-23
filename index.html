@@ -35,18 +35,41 @@
         .divider { height: 1px; background: linear-gradient(90deg, transparent, #c9a84c33, #c9a84c, #c9a84c33, transparent); margin: 24px 0; }
         .message { font-size: 14px; color: #a09880; line-height: 1.8; margin-bottom: 36px; font-weight: 300; }
         .product-tag { display: inline-block; padding: 4px 16px; border: 1px solid #c9a84c33; border-radius: 20px; font-size: 12px; color: #c9a84c; margin-bottom: 24px; letter-spacing: 1px; }
-        .buttons { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
-        .btn { display: none; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px; background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s ease; letter-spacing: 1px; }
+        .buttons { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
+        .btn-item { margin-bottom: 12px; }
+        .btn { display: none; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px; background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s ease; letter-spacing: 1px; cursor: pointer; width: 100%; }
         .btn.active { display: flex; }
+        .btn.playing { border-color: #c9a84c; box-shadow: 0 0 20px rgba(201, 168, 76, 0.2); }
         .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: #c9a84c88; box-shadow: 0 0 20px rgba(201, 168, 76, 0.15); transform: translateY(-1px); }
         .btn .icon { font-size: 18px; }
-        .btn-row { display: none; gap: 12px; }
-        .btn-row.active { display: flex; }
-        .btn-row .btn { flex: 1; font-size: 13px; padding: 14px 12px; }
-        .btn-row .btn.active { display: flex; }
         .footer { margin-top: 40px; padding-top: 24px; }
         .footer-brand { font-family: 'Noto Serif KR', serif; font-size: 12px; color: #5a5040; letter-spacing: 2px; }
         .footer-sub { font-size: 11px; color: #3a3530; margin-top: 4px; }
+
+        /* ── 내장 플레이어 ── */
+        .player-wrap { display: none; border: 1px solid #c9a84c33; border-top: none; border-radius: 0 0 8px 8px; background: linear-gradient(135deg, #12121f, #0e0e1a); padding: 20px 16px; margin-top: -1px; }
+        .player-wrap.open { display: block; }
+        .player-visual { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .player-icon-wrap { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #c9a84c44; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: #c9a84c11; }
+        .player-info { text-align: left; }
+        .player-subtitle { font-size: 11px; color: #8a7a5a; letter-spacing: 1px; margin-bottom: 2px; }
+        .player-title { font-size: 14px; color: #e8dcc8; font-weight: 500; }
+        .player-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .player-play-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #c9a84c66; background: transparent; color: #c9a84c; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+        .player-play-btn:hover { background: #c9a84c22; border-color: #c9a84c; }
+        .player-progress-wrap { flex: 1; }
+        .player-progress { width: 100%; height: 4px; border-radius: 2px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; background: #c9a84c22; }
+        .player-progress::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; }
+        .player-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #c9a84c; margin-top: -4px; cursor: pointer; }
+        .player-progress::-moz-range-track { height: 4px; border-radius: 2px; background: #c9a84c22; }
+        .player-progress::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: #c9a84c; cursor: pointer; border: none; }
+        .player-time { display: flex; justify-content: space-between; font-size: 10px; color: #6a6050; margin-top: 4px; }
+        .player-bottom { display: flex; justify-content: center; margin-top: 12px; }
+        .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid #c9a84c33; border-radius: 20px; background: transparent; color: #8a7a5a; font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
+        .player-download:hover { color: #c9a84c; border-color: #c9a84c66; }
+
+        /* 버튼 열려있을 때 모서리 조정 */
+        .btn.expanded { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
     </style>
 </head>
 <body>
@@ -64,11 +87,80 @@
             <div class="product-tag" id="productTag"></div>
             <div class="divider"></div>
             <div class="message" id="message">귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다</div>
-            <div class="buttons">
-                <a href="#" class="btn" id="btnPdf" target="_blank"><span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트</span></a>
-                <a href="#" class="btn" id="btnTheme" target="_blank"><span class="icon">🎵</span><span id="btnThemeText">맞춤형 음원</span></a>
-                <a href="#" class="btn" id="btnVoice" target="_blank"><span class="icon">🎧</span><span id="btnVoiceText">음성 해설</span></a>
-                <a href="#" class="btn" id="btnHealing" target="_blank"><span class="icon">🎶</span><span id="btnHealingText">힐링음악</span></a>
+            <div class="buttons" id="buttons">
+                <!-- PDF: 기존 다운로드 방식 -->
+                <div class="btn-item" id="pdfItem">
+                    <a href="#" class="btn" id="btnPdf" target="_blank"><span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트</span></a>
+                </div>
+                <!-- 테마곡: 내장 플레이어 -->
+                <div class="btn-item" id="themeItem">
+                    <div class="btn" id="btnTheme" onclick="togglePlayer('theme')"><span class="icon">🎵</span><span id="btnThemeText">맞춤형 음원</span></div>
+                    <div class="player-wrap" id="playerTheme">
+                        <div class="player-visual">
+                            <div class="player-icon-wrap" id="themeIcon">🎵</div>
+                            <div class="player-info">
+                                <div class="player-subtitle" id="themeSubtitle">당신만을 위한 음원</div>
+                                <div class="player-title" id="themeTitle">맞춤형 음원</div>
+                            </div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-play-btn" id="themePlayBtn" onclick="playPause('theme')">▶</button>
+                            <div class="player-progress-wrap">
+                                <input type="range" class="player-progress" id="themeProgress" min="0" max="100" value="0" oninput="seek('theme')">
+                                <div class="player-time"><span id="themeCurrent">0:00</span><span id="themeDuration">0:00</span></div>
+                            </div>
+                        </div>
+                        <div class="player-bottom">
+                            <a href="#" class="player-download" id="themeDownload" target="_blank">⬇ 다운로드</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- 음성: 내장 플레이어 -->
+                <div class="btn-item" id="voiceItem">
+                    <div class="btn" id="btnVoice" onclick="togglePlayer('voice')"><span class="icon">🎧</span><span id="btnVoiceText">음성 해설</span></div>
+                    <div class="player-wrap" id="playerVoice">
+                        <div class="player-visual">
+                            <div class="player-icon-wrap" id="voiceIcon">🎧</div>
+                            <div class="player-info">
+                                <div class="player-subtitle" id="voiceSubtitle">당신만을 위한 해설</div>
+                                <div class="player-title" id="voiceTitle">음성 해설</div>
+                            </div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-play-btn" id="voicePlayBtn" onclick="playPause('voice')">▶</button>
+                            <div class="player-progress-wrap">
+                                <input type="range" class="player-progress" id="voiceProgress" min="0" max="100" value="0" oninput="seek('voice')">
+                                <div class="player-time"><span id="voiceCurrent">0:00</span><span id="voiceDuration">0:00</span></div>
+                            </div>
+                        </div>
+                        <div class="player-bottom">
+                            <a href="#" class="player-download" id="voiceDownload" target="_blank">⬇ 다운로드</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- 힐링: 내장 플레이어 -->
+                <div class="btn-item" id="healingItem">
+                    <div class="btn" id="btnHealing" onclick="togglePlayer('healing')"><span class="icon">🎶</span><span id="btnHealingText">힐링음악</span></div>
+                    <div class="player-wrap" id="playerHealing">
+                        <div class="player-visual">
+                            <div class="player-icon-wrap" id="healingIcon">🎶</div>
+                            <div class="player-info">
+                                <div class="player-subtitle" id="healingSubtitle">당신만을 위한 음악</div>
+                                <div class="player-title" id="healingTitle">힐링음악</div>
+                            </div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-play-btn" id="healingPlayBtn" onclick="playPause('healing')">▶</button>
+                            <div class="player-progress-wrap">
+                                <input type="range" class="player-progress" id="healingProgress" min="0" max="100" value="0" oninput="seek('healing')">
+                                <div class="player-time"><span id="healingCurrent">0:00</span><span id="healingDuration">0:00</span></div>
+                            </div>
+                        </div>
+                        <div class="player-bottom">
+                            <a href="#" class="player-download" id="healingDownload" target="_blank">⬇ 다운로드</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="footer"><div class="divider"></div><div class="footer-brand">나를읽다 연구소</div><div class="footer-sub">사주 & MBTI 운명 분석</div></div>
         </div>
@@ -79,23 +171,142 @@
         const code = urlParams.get('c');
         if (!code) { showError(); } else { loadCertificate(code); }
 
+        /* ── Drive URL 변환 ── */
         function toDirectLink(url) {
             if (!url) return url;
             var docsMatch = url.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
-            if (docsMatch) {
-                return 'https://docs.google.com/document/d/' + docsMatch[1] + '/export?format=pdf';
-            }
+            if (docsMatch) return 'https://docs.google.com/document/d/' + docsMatch[1] + '/export?format=pdf';
             var driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-            if (driveMatch) {
-                return 'https://drive.google.com/uc?export=download&id=' + driveMatch[1];
-            }
+            if (driveMatch) return 'https://drive.google.com/uc?export=download&id=' + driveMatch[1];
             var openMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
-            if (openMatch) {
-                return 'https://drive.google.com/uc?export=download&id=' + openMatch[1];
-            }
+            if (openMatch) return 'https://drive.google.com/uc?export=download&id=' + openMatch[1];
             return url;
         }
 
+        function toStreamLink(url) {
+            if (!url) return url;
+            var driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch) return 'https://docs.google.com/uc?export=open&id=' + driveMatch[1];
+            var openMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+            if (openMatch) return 'https://docs.google.com/uc?export=open&id=' + openMatch[1];
+            return url;
+        }
+
+        /* ── 오디오 관리 ── */
+        var audioPlayers = {};
+        var playerIntervals = {};
+
+        function formatTime(sec) {
+            if (!sec || isNaN(sec)) return '0:00';
+            var m = Math.floor(sec / 60);
+            var s = Math.floor(sec % 60);
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
+
+        function togglePlayer(type) {
+            var wrap = document.getElementById('player' + type.charAt(0).toUpperCase() + type.slice(1));
+            var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+            var isOpen = wrap.classList.contains('open');
+
+            // 다른 플레이어 모두 닫기
+            ['theme', 'voice', 'healing'].forEach(function(t) {
+                var w = document.getElementById('player' + t.charAt(0).toUpperCase() + t.slice(1));
+                var b = document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (w && t !== type) {
+                    w.classList.remove('open');
+                    b.classList.remove('expanded', 'playing');
+                    if (audioPlayers[t]) { audioPlayers[t].pause(); }
+                    var pb = document.getElementById(t + 'PlayBtn');
+                    if (pb) pb.textContent = '▶';
+                }
+            });
+
+            if (isOpen) {
+                wrap.classList.remove('open');
+                btn.classList.remove('expanded', 'playing');
+                if (audioPlayers[type]) audioPlayers[type].pause();
+                var playBtn = document.getElementById(type + 'PlayBtn');
+                if (playBtn) playBtn.textContent = '▶';
+            } else {
+                wrap.classList.add('open');
+                btn.classList.add('expanded');
+                // 자동 재생
+                playPause(type);
+            }
+        }
+
+        function playPause(type) {
+            var audio = audioPlayers[type];
+            if (!audio) return;
+            var playBtn = document.getElementById(type + 'PlayBtn');
+            var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+
+            if (audio.paused) {
+                // 다른 오디오 정지
+                ['theme', 'voice', 'healing'].forEach(function(t) {
+                    if (t !== type && audioPlayers[t]) {
+                        audioPlayers[t].pause();
+                        var pb = document.getElementById(t + 'PlayBtn');
+                        var bb = document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1));
+                        if (pb) pb.textContent = '▶';
+                        if (bb) bb.classList.remove('playing');
+                    }
+                });
+                audio.play();
+                playBtn.textContent = '⏸';
+                btn.classList.add('playing');
+                startProgress(type);
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+                btn.classList.remove('playing');
+            }
+        }
+
+        function seek(type) {
+            var audio = audioPlayers[type];
+            var progress = document.getElementById(type + 'Progress');
+            if (audio && audio.duration) {
+                audio.currentTime = (progress.value / 100) * audio.duration;
+            }
+        }
+
+        function startProgress(type) {
+            if (playerIntervals[type]) clearInterval(playerIntervals[type]);
+            playerIntervals[type] = setInterval(function() {
+                var audio = audioPlayers[type];
+                if (!audio) return;
+                var progress = document.getElementById(type + 'Progress');
+                var current = document.getElementById(type + 'Current');
+                var duration = document.getElementById(type + 'Duration');
+                if (audio.duration) {
+                    var pct = (audio.currentTime / audio.duration) * 100;
+                    progress.value = pct;
+                    progress.style.background = 'linear-gradient(90deg, #c9a84c ' + pct + '%, #c9a84c22 ' + pct + '%)';
+                    current.textContent = formatTime(audio.currentTime);
+                    duration.textContent = formatTime(audio.duration);
+                }
+                if (audio.ended) {
+                    var playBtn = document.getElementById(type + 'PlayBtn');
+                    var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+                    playBtn.textContent = '▶';
+                    btn.classList.remove('playing');
+                    clearInterval(playerIntervals[type]);
+                }
+            }, 250);
+        }
+
+        function setupAudio(type, url) {
+            var streamUrl = toStreamLink(url);
+            var audio = new Audio(streamUrl);
+            audio.preload = 'metadata';
+            audio.addEventListener('loadedmetadata', function() {
+                document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
+            });
+            audioPlayers[type] = audio;
+        }
+
+        /* ── 보증서 로딩 ── */
         async function loadCertificate(code) {
             try {
                 const response = await fetch(CSV_URL);
@@ -118,6 +329,7 @@
                 const name2 = getData('주인공2');
                 const product = getData('상품');
 
+                // URL + 파일명
                 const pdfLink     = getData('PDF');
                 const pdfName     = getData('PDF명');
                 const themeLink   = getData('테마곡');
@@ -127,9 +339,11 @@
                 const healingLink = getData('힐링');
                 const healingName = getData('힐링명');
 
+                // 이름 표시
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
 
+                // 궁합 분기
                 const isCouple = product.includes('우리');
                 if (isCouple && name2) {
                     document.getElementById('nameDivider').style.display = 'flex';
@@ -143,25 +357,44 @@
                     document.getElementById('message').innerHTML = '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
                 }
 
+                // 상품별 플레이어 문구
+                var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
+
+                // PDF 버튼 (다운로드)
                 if (pdfLink) {
                     document.getElementById('btnPdf').href = toDirectLink(pdfLink);
                     document.getElementById('btnPdf').classList.add('active');
                     if (pdfName) document.getElementById('btnPdfText').textContent = pdfName;
                 }
+
+                // 테마곡 (플레이어)
                 if (themeLink) {
-                    document.getElementById('btnTheme').href = toDirectLink(themeLink);
                     document.getElementById('btnTheme').classList.add('active');
                     if (themeName) document.getElementById('btnThemeText').textContent = themeName;
+                    document.getElementById('themeTitle').textContent = themeName || '맞춤형 음원';
+                    document.getElementById('themeSubtitle').textContent = subtitleText + ' 음원';
+                    document.getElementById('themeDownload').href = toDirectLink(themeLink);
+                    setupAudio('theme', themeLink);
                 }
+
+                // 음성 (플레이어)
                 if (voiceLink) {
-                    document.getElementById('btnVoice').href = toDirectLink(voiceLink);
                     document.getElementById('btnVoice').classList.add('active');
                     if (voiceName) document.getElementById('btnVoiceText').textContent = voiceName;
+                    document.getElementById('voiceTitle').textContent = voiceName || '음성 해설';
+                    document.getElementById('voiceSubtitle').textContent = subtitleText + ' 해설';
+                    document.getElementById('voiceDownload').href = toDirectLink(voiceLink);
+                    setupAudio('voice', voiceLink);
                 }
+
+                // 힐링 (플레이어)
                 if (healingLink) {
-                    document.getElementById('btnHealing').href = toDirectLink(healingLink);
                     document.getElementById('btnHealing').classList.add('active');
                     if (healingName) document.getElementById('btnHealingText').textContent = healingName;
+                    document.getElementById('healingTitle').textContent = healingName || '힐링음악';
+                    document.getElementById('healingSubtitle').textContent = subtitleText + ' 음악';
+                    document.getElementById('healingDownload').href = toDirectLink(healingLink);
+                    setupAudio('healing', healingLink);
                 }
 
                 document.getElementById('loading').style.display = 'none';
