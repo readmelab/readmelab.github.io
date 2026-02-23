@@ -40,6 +40,7 @@
         .btn { display: none; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px; background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s ease; letter-spacing: 1px; cursor: pointer; width: 100%; }
         .btn.active { display: flex; }
         .btn.playing { border-color: #c9a84c; box-shadow: 0 0 20px rgba(201, 168, 76, 0.2); }
+        .btn.loading-audio { border-color: #c9a84c88; }
         .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: #c9a84c88; box-shadow: 0 0 20px rgba(201, 168, 76, 0.15); transform: translateY(-1px); }
         .btn .icon { font-size: 18px; }
         .footer { margin-top: 40px; padding-top: 24px; }
@@ -66,6 +67,8 @@
         .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid #c9a84c33; border-radius: 20px; background: transparent; color: #8a7a5a; font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
         .player-download:hover { color: #c9a84c; border-color: #c9a84c66; }
         .btn.expanded { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+        .player-loading { text-align: center; color: #8a7a5a; font-size: 12px; padding: 10px 0; }
+        .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -90,6 +93,7 @@
                 <div class="btn-item" id="themeItem">
                     <div class="btn" id="btnTheme" onclick="togglePlayer('theme')"><span class="icon">🎵</span><span id="btnThemeText">맞춤형 음원</span></div>
                     <div class="player-wrap" id="playerTheme">
+                        <div class="player-loading" id="themeLoading" style="display:none;"><span class="mini-spinner"></span>음원을 불러오는 중...</div>
                         <div class="player-visual">
                             <div class="player-icon-wrap" id="themeIcon">🎵</div>
                             <div class="player-info">
@@ -112,6 +116,7 @@
                 <div class="btn-item" id="voiceItem">
                     <div class="btn" id="btnVoice" onclick="togglePlayer('voice')"><span class="icon">🎧</span><span id="btnVoiceText">음성 해설</span></div>
                     <div class="player-wrap" id="playerVoice">
+                        <div class="player-loading" id="voiceLoading" style="display:none;"><span class="mini-spinner"></span>음원을 불러오는 중...</div>
                         <div class="player-visual">
                             <div class="player-icon-wrap" id="voiceIcon">🎧</div>
                             <div class="player-info">
@@ -134,6 +139,7 @@
                 <div class="btn-item" id="healingItem">
                     <div class="btn" id="btnHealing" onclick="togglePlayer('healing')"><span class="icon">🎶</span><span id="btnHealingText">힐링음악</span></div>
                     <div class="player-wrap" id="playerHealing">
+                        <div class="player-loading" id="healingLoading" style="display:none;"><span class="mini-spinner"></span>음원을 불러오는 중...</div>
                         <div class="player-visual">
                             <div class="player-icon-wrap" id="healingIcon">🎶</div>
                             <div class="player-info">
@@ -159,6 +165,7 @@
     </div>
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSLwX3_NEYRLeNv8UmKxsL9vrTHmHwMcSWtu7uGuIUyV79m8Qhw6jLJtxOPjIEzxNt1Ks7nqYaKnlb2/pub?gid=0&single=true&output=csv';
+        const PROXY_URL = 'https://script.google.com/macros/s/AKfycby39MMYoXJIekh9cw-JZpHhmp_AiYCXiYVFIKpqeIcRKreuApLn_Y1CE7Sk6FVEEowjnA/exec';
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('c');
         if (!code) { showError(); } else { loadCertificate(code); }
@@ -174,21 +181,19 @@
             return url;
         }
 
-        /* ★ 스트리밍용: export=view 로 인라인 재생 */
-        function toStreamLink(url) {
-            if (!url) return url;
-            var id = null;
+        function extractFileId(url) {
+            if (!url) return null;
             var m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-            if (m) id = m[1];
-            if (!id) {
-                m = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
-                if (m) id = m[1];
-            }
-            if (id) return 'https://drive.google.com/uc?export=view&id=' + id;
-            return url;
+            if (m) return m[1];
+            m = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+            if (m) return m[1];
+            return null;
         }
 
+        /* ── 오디오 관리 ── */
         var audioPlayers = {};
+        var audioLoaded = {};
+        var audioFileIds = {};
         var playerIntervals = {};
 
         function formatTime(sec) {
@@ -222,8 +227,40 @@
             } else {
                 wrap.classList.add('open');
                 btn.classList.add('expanded');
-                playPause(type);
+                loadAndPlay(type);
             }
+        }
+
+        function loadAndPlay(type) {
+            if (audioLoaded[type]) {
+                playPause(type);
+                return;
+            }
+            var fileId = audioFileIds[type];
+            if (!fileId) return;
+            var loadingEl = document.getElementById(type + 'Loading');
+            if (loadingEl) loadingEl.style.display = 'block';
+
+            fetch(PROXY_URL + '?id=' + fileId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    if (data.error) {
+                        console.error('Proxy error:', data.error);
+                        return;
+                    }
+                    var audio = new Audio(data.uri);
+                    audio.addEventListener('loadedmetadata', function() {
+                        document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
+                    });
+                    audioPlayers[type] = audio;
+                    audioLoaded[type] = true;
+                    playPause(type);
+                })
+                .catch(function(err) {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    console.error('Fetch error:', err);
+                });
         }
 
         function playPause(type) {
@@ -285,16 +322,7 @@
             }, 250);
         }
 
-        function setupAudio(type, url) {
-            var streamUrl = toStreamLink(url);
-            var audio = new Audio(streamUrl);
-            audio.preload = 'metadata';
-            audio.addEventListener('loadedmetadata', function() {
-                document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
-            });
-            audioPlayers[type] = audio;
-        }
-
+        /* ── 보증서 로딩 ── */
         async function loadCertificate(code) {
             try {
                 const response = await fetch(CSV_URL);
@@ -320,6 +348,7 @@
                 const voiceName   = getData('음성명');
                 const healingLink = getData('힐링');
                 const healingName = getData('힐링명');
+
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
                 const isCouple = product.includes('우리');
@@ -334,6 +363,7 @@
                     document.getElementById('message').innerHTML = '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
                 }
                 var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
+
                 if (pdfLink) {
                     document.getElementById('btnPdf').href = toDirectLink(pdfLink);
                     document.getElementById('btnPdf').classList.add('active');
@@ -345,7 +375,7 @@
                     document.getElementById('themeTitle').textContent = themeName || '맞춤형 음원';
                     document.getElementById('themeSubtitle').textContent = subtitleText + ' 음원';
                     document.getElementById('themeDownload').href = toDirectLink(themeLink);
-                    setupAudio('theme', themeLink);
+                    audioFileIds['theme'] = extractFileId(themeLink);
                 }
                 if (voiceLink) {
                     document.getElementById('btnVoice').classList.add('active');
@@ -353,7 +383,7 @@
                     document.getElementById('voiceTitle').textContent = voiceName || '음성 해설';
                     document.getElementById('voiceSubtitle').textContent = subtitleText + ' 해설';
                     document.getElementById('voiceDownload').href = toDirectLink(voiceLink);
-                    setupAudio('voice', voiceLink);
+                    audioFileIds['voice'] = extractFileId(voiceLink);
                 }
                 if (healingLink) {
                     document.getElementById('btnHealing').classList.add('active');
@@ -361,8 +391,9 @@
                     document.getElementById('healingTitle').textContent = healingName || '힐링음악';
                     document.getElementById('healingSubtitle').textContent = subtitleText + ' 음악';
                     document.getElementById('healingDownload').href = toDirectLink(healingLink);
-                    setupAudio('healing', healingLink);
+                    audioFileIds['healing'] = extractFileId(healingLink);
                 }
+
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('certificate').style.display = 'block';
             } catch (e) {
