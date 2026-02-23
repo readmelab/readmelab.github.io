@@ -192,66 +192,14 @@
         /* ── 오디오 관리 ── */
         var audioPlayers = {};
         var audioLoaded = {};
-        var audioLoading = {};
         var audioFileIds = {};
         var playerIntervals = {};
-        var pendingPlay = {};
 
         function formatTime(sec) {
             if (!sec || isNaN(sec)) return '0:00';
             var m = Math.floor(sec / 60);
             var s = Math.floor(sec % 60);
             return m + ':' + (s < 10 ? '0' : '') + s;
-        }
-
-        /* ★ 페이지 로딩 시 모든 음원을 백그라운드에서 미리 불러옴 */
-        function preloadAllAudio() {
-            ['theme', 'voice', 'healing'].forEach(function(type) {
-                var fileId = audioFileIds[type];
-                if (!fileId) return;
-                audioLoading[type] = true;
-                fetch(PROXY_URL + '?id=' + fileId)
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        audioLoading[type] = false;
-                        if (data.error) { console.error('Preload error:', data.error); return; }
-                        var audio = new Audio(data.uri);
-                        audio.preload = 'auto';
-                        audio.addEventListener('loadedmetadata', function() {
-                            document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
-                        });
-                        audioPlayers[type] = audio;
-                        audioLoaded[type] = true;
-                        // 사용자가 로딩 중에 버튼을 눌렀다면 바로 재생
-                        if (pendingPlay[type]) {
-                            pendingPlay[type] = false;
-                            var loadingEl = document.getElementById(type + 'Loading');
-                            if (loadingEl) loadingEl.style.display = 'none';
-                            // ★ placeholder에 src를 교체해서 자동재생 유지
-                            var ph = audioPlayers[type + '_placeholder'];
-                            if (ph) {
-                                ph.src = data.uri;
-                                ph.play().catch(function(){});
-                                audioPlayers[type] = ph;
-                                var playBtn = document.getElementById(type + 'PlayBtn');
-                                var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
-                                playBtn.textContent = '⏸';
-                                btn.classList.add('playing');
-                                ph.addEventListener('loadedmetadata', function() {
-                                    document.getElementById(type + 'Duration').textContent = formatTime(ph.duration);
-                                });
-                                startProgress(type);
-                            } else {
-                                playPause(type);
-                            }
-                        }
-
-                    })
-                    .catch(function(err) {
-                        audioLoading[type] = false;
-                        console.error('Preload fetch error:', err);
-                    });
-            });
         }
 
         function togglePlayer(type) {
@@ -267,7 +215,6 @@
                     if (audioPlayers[t]) { audioPlayers[t].pause(); }
                     var pb = document.getElementById(t + 'PlayBtn');
                     if (pb) pb.textContent = '▶';
-                    pendingPlay[t] = false;
                 }
             });
             if (isOpen) {
@@ -276,7 +223,6 @@
                 if (audioPlayers[type]) audioPlayers[type].pause();
                 var playBtn = document.getElementById(type + 'PlayBtn');
                 if (playBtn) playBtn.textContent = '▶';
-                pendingPlay[type] = false;
             } else {
                 wrap.classList.add('open');
                 btn.classList.add('expanded');
@@ -285,31 +231,44 @@
         }
 
         function loadAndPlay(type) {
-            // 이미 로딩 완료 → 바로 재생
             if (audioLoaded[type]) {
-                var audio = audioPlayers[type];
-                if (audio) {
-                    audio.play().then(function() {
-                        var playBtn = document.getElementById(type + 'PlayBtn');
-                        var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
-                        playBtn.textContent = '⏸';
-                        btn.classList.add('playing');
-                        startProgress(type);
-                    }).catch(function(){});
-                }
-                var loadingEl = document.getElementById(type + 'Loading');
-                if (loadingEl) loadingEl.style.display = 'none';
+                playPause(type);
                 return;
             }
-            // ★ 핵심: 사용자 터치 시점에 무음 Audio를 play()해서 브라우저 잠금 해제
-            var placeholder = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
-            placeholder.play().catch(function(){});
-            // 이 placeholder를 나중에 src 교체용으로 저장
-            audioPlayers[type + '_placeholder'] = placeholder;
+            var fileId = audioFileIds[type];
+            if (!fileId) return;
+
+            // ★ 사용자 터치 시점에 Audio 생성 + play()로 브라우저 잠금 해제
+            var audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+            audio.play().catch(function(){});
+            audioPlayers[type] = audio;
 
             var loadingEl = document.getElementById(type + 'Loading');
             if (loadingEl) loadingEl.style.display = 'block';
-            pendingPlay[type] = true;
+
+            fetch(PROXY_URL + '?id=' + fileId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    if (data.error) { console.error('Proxy error:', data.error); return; }
+                    // 같은 Audio 객체의 src만 교체 → 자동재생 잠금 우회
+                    audio.src = data.uri;
+                    audio.addEventListener('loadedmetadata', function() {
+                        document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
+                    });
+                    audio.play().catch(function(){});
+                    audioLoaded[type] = true;
+
+                    var playBtn = document.getElementById(type + 'PlayBtn');
+                    var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+                    playBtn.textContent = '⏸';
+                    btn.classList.add('playing');
+                    startProgress(type);
+                })
+                .catch(function(err) {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    console.error('Fetch error:', err);
+                });
         }
 
         function playPause(type) {
@@ -317,8 +276,6 @@
             if (!audio) return;
             var playBtn = document.getElementById(type + 'PlayBtn');
             var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
-            var loadingEl = document.getElementById(type + 'Loading');
-            if (loadingEl) loadingEl.style.display = 'none';
             if (audio.paused) {
                 ['theme', 'voice', 'healing'].forEach(function(t) {
                     if (t !== type && audioPlayers[t]) {
@@ -447,10 +404,6 @@
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('certificate').style.display = 'block';
-
-                // ★ 보증서 표시 직후 모든 음원을 백그라운드에서 미리 로딩
-                preloadAllAudio();
-
             } catch (e) {
                 showError();
             }
