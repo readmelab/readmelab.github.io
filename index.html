@@ -232,12 +232,20 @@
         }
 
         function loadAndPlay(type) {
+            // 이미 로딩된 경우 바로 재생
             if (audioLoaded[type]) {
                 playPause(type);
                 return;
             }
             var fileId = audioFileIds[type];
             if (!fileId) return;
+
+            // ★ 핵심: 사용자 터치 시점에 Audio를 만들고 play() 호출
+            // 무음 data URI로 재생해서 브라우저의 자동재생 잠금을 해제
+            var audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+            audio.play().catch(function(){});
+            audioPlayers[type] = audio;
+
             var loadingEl = document.getElementById(type + 'Loading');
             if (loadingEl) loadingEl.style.display = 'block';
 
@@ -249,19 +257,26 @@
                         console.error('Proxy error:', data.error);
                         return;
                     }
-                    var audio = new Audio(data.uri);
+                    // 같은 Audio 객체의 src만 교체 → 자동재생 잠금 우회
+                    audio.src = data.uri;
                     audio.addEventListener('loadedmetadata', function() {
                         document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
                     });
-                    audioPlayers[type] = audio;
+                    audio.play().catch(function(){});
                     audioLoaded[type] = true;
-                    playPause(type);
+
+                    var playBtn = document.getElementById(type + 'PlayBtn');
+                    var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+                    playBtn.textContent = '⏸';
+                    btn.classList.add('playing');
+                    startProgress(type);
                 })
                 .catch(function(err) {
                     if (loadingEl) loadingEl.style.display = 'none';
                     console.error('Fetch error:', err);
                 });
         }
+
 
         function playPause(type) {
             var audio = audioPlayers[type];
