@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나를읽다 연구소 | 운명 보증서</title>
-    <meta property="og:title" content="🔮 나를읽다 연구소 — 운명 분석 결과">
+    <meta property="og:title" content="나를읽다 연구소 — 운명 분석 결과">
     <meta property="og:description" content="당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.">
     <meta property="og:image" content="https://readmelab.github.io/og-image.png">
     <meta property="og:type" content="website">
@@ -65,13 +65,10 @@
             <div class="divider"></div>
             <div class="message" id="message">귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다</div>
             <div class="buttons">
-                <a href="#" class="btn" id="btnPdf" target="_blank"><span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트 보기</span></a>
-                <a href="#" class="btn" id="btnVoice" target="_blank"><span class="icon">🎧</span><span id="btnVoiceText">심층 음성 해설 듣기</span></a>
-                <div class="btn-row" id="btnRow">
-                    <a href="#" class="btn" id="btnGaeun" target="_blank"><span class="icon">🎵</span><span id="btnGaeunText">개운송</span></a>
-                    <a href="#" class="btn" id="btnHealing" target="_blank"><span class="icon">🎶</span><span id="btnHealingText">힐링음악</span></a>
-                </div>
-                <a href="#" class="btn" id="btnThema" target="_blank"><span class="icon">🎼</span><span id="btnThemaText">테마송</span></a>
+                <a href="#" class="btn" id="btnPdf" target="_blank"><span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트</span></a>
+                <a href="#" class="btn" id="btnTheme" target="_blank"><span class="icon">🎵</span><span id="btnThemeText">맞춤형 음원</span></a>
+                <a href="#" class="btn" id="btnVoice" target="_blank"><span class="icon">🎧</span><span id="btnVoiceText">음성 해설</span></a>
+                <a href="#" class="btn" id="btnHealing" target="_blank"><span class="icon">🎶</span><span id="btnHealingText">힐링음악</span></a>
             </div>
             <div class="footer"><div class="divider"></div><div class="footer-brand">나를읽다 연구소</div><div class="footer-sub">사주 & MBTI 운명 분석</div></div>
         </div>
@@ -89,7 +86,6 @@
                 const rows = csvText.split('\n').map(row => parseCSVRow(row));
                 const header = rows[0];
 
-                // ★ 새 헤더에 맞춘 열 매핑
                 const codeIndex = header.findIndex(h => h.trim() === '보증코드');
                 if (codeIndex === -1) { showError(); return; }
 
@@ -101,21 +97,26 @@
                     return idx !== -1 ? (customerRow[idx] || '').trim() : '';
                 };
 
-                // ★ 새 헤더명으로 매핑
                 const name = getData('주인공1');
                 const name2 = getData('주인공2');
                 const product = getData('상품');
-                const pdfLink = getData('PDF');
-                const voiceLink = getData('음성');
-                const gaeunLink = getData('개운');
-                const themaLink = getData('테마곡');
-                const healingLink = getData('힐링');
 
+                // URL + 파일명
+                const pdfLink     = getData('PDF');
+                const pdfName     = getData('PDF명');
+                const themeLink   = getData('테마곡');
+                const themeName   = getData('테마곡명');
+                const voiceLink   = getData('음성');
+                const voiceName   = getData('음성명');
+                const healingLink = getData('힐링');
+                const healingName = getData('힐링명');
+
+                // 이름 표시
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
 
+                // 궁합 분기
                 const isCouple = product.includes('우리');
-
                 if (isCouple && name2) {
                     document.getElementById('nameDivider').style.display = 'flex';
                     document.getElementById('clientName2').style.display = 'block';
@@ -126,29 +127,29 @@
                     document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
                     document.getElementById('honorific').textContent = '님의 궁합 분석이 완성되었습니다';
                     document.getElementById('message').innerHTML = '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
-                    document.getElementById('btnPdfText').textContent = '궁합 분석 리포트 보기';
-                    document.getElementById('btnVoiceText').textContent = '심층 궁합 해설 듣기';
-                    document.getElementById('btnGaeunText').textContent = '둘만의 개운송';
-                    document.getElementById('btnHealingText').textContent = '맞춤 힐링송';
-                    document.getElementById('btnThemaText').textContent = '맞춤 테마송';
-                } else {
-                    document.getElementById('certTitle').textContent = '운 명 공 명 보 증 서';
-                    document.getElementById('honorific').textContent = '님의 운명 분석이 완성되었습니다';
-                    document.getElementById('message').innerHTML = '귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
-                    document.getElementById('btnPdfText').textContent = '사주 분석 리포트 보기';
-                    document.getElementById('btnVoiceText').textContent = '심층 음성 해설 듣기';
-                    document.getElementById('btnGaeunText').textContent = '나만의 개운송';
-                    document.getElementById('btnHealingText').textContent = '맞춤 힐링음악';
                 }
 
-                if (pdfLink) { document.getElementById('btnPdf').href = pdfLink; document.getElementById('btnPdf').classList.add('active'); }
-                if (voiceLink) { document.getElementById('btnVoice').href = voiceLink; document.getElementById('btnVoice').classList.add('active'); }
-
-                let hasGaeun = false, hasHealing = false;
-                if (gaeunLink) { document.getElementById('btnGaeun').href = gaeunLink; document.getElementById('btnGaeun').classList.add('active'); hasGaeun = true; }
-                if (healingLink) { document.getElementById('btnHealing').href = healingLink; document.getElementById('btnHealing').classList.add('active'); hasHealing = true; }
-                if (hasGaeun || hasHealing) { document.getElementById('btnRow').classList.add('active'); }
-                if (themaLink) { document.getElementById('btnThema').href = themaLink; document.getElementById('btnThema').classList.add('active'); }
+                // 버튼 활성화 (파일명이 있으면 파일명으로 표시)
+                if (pdfLink) {
+                    document.getElementById('btnPdf').href = pdfLink;
+                    document.getElementById('btnPdf').classList.add('active');
+                    if (pdfName) document.getElementById('btnPdfText').textContent = pdfName;
+                }
+                if (themeLink) {
+                    document.getElementById('btnTheme').href = themeLink;
+                    document.getElementById('btnTheme').classList.add('active');
+                    if (themeName) document.getElementById('btnThemeText').textContent = themeName;
+                }
+                if (voiceLink) {
+                    document.getElementById('btnVoice').href = voiceLink;
+                    document.getElementById('btnVoice').classList.add('active');
+                    if (voiceName) document.getElementById('btnVoiceText').textContent = voiceName;
+                }
+                if (healingLink) {
+                    document.getElementById('btnHealing').href = healingLink;
+                    document.getElementById('btnHealing').classList.add('active');
+                    if (healingName) document.getElementById('btnHealingText').textContent = healingName;
+                }
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('certificate').style.display = 'block';
