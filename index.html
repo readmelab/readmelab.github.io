@@ -68,6 +68,11 @@
         .btn.expanded { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
         .player-loading { text-align: center; color: #8a7a5a; font-size: 12px; padding: 10px 0; }
         .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
+
+        /* ── PDF 뷰어 스타일 ── */
+        .pdf-viewer-container { width: 100%; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+        .pdf-frame { width: 100%; height: 70vh; border: none; border-radius: 4px; background: #1a1a2e; }
+        .pdf-controls { display: flex; justify-content: center; gap: 12px; }
     </style>
 </head>
 <body>
@@ -86,9 +91,26 @@
             <div class="divider"></div>
             <div class="message" id="message">귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다</div>
             <div class="buttons" id="buttons">
+
+                <!-- ★ PDF 뷰어 (인앱 미리보기 + 다운로드/새탭) -->
                 <div class="btn-item" id="pdfItem">
-                    <a href="#" class="btn" id="btnPdf" target="_blank"><span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트</span></a>
+                    <div class="btn" id="btnPdf" onclick="togglePdfViewer()">
+                        <span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트</span>
+                    </div>
+                    <div class="player-wrap" id="pdfViewerWrap">
+                        <div class="player-loading" id="pdfLoading" style="display:none;">
+                            <span class="mini-spinner"></span>리포트를 불러오는 중...
+                        </div>
+                        <div class="pdf-viewer-container" id="pdfContainer" style="display:none;">
+                            <iframe id="pdfFrame" class="pdf-frame" src="" allow="autoplay"></iframe>
+                        </div>
+                        <div class="pdf-controls">
+                            <a href="#" class="player-download" id="pdfDownload" target="_blank">⬇ 다운로드</a>
+                            <a href="#" class="player-download" id="pdfNewTab" target="_blank">↗ 새 탭에서 보기</a>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="btn-item" id="themeItem">
                     <div class="btn" id="btnTheme" onclick="togglePlayer('theme')"><span class="icon">🎵</span><span id="btnThemeText">맞춤형 음원</span></div>
                     <div class="player-wrap" id="playerTheme">
@@ -189,6 +211,76 @@
             return null;
         }
 
+        /* ── PDF 뷰어 ── */
+        var pdfViewerOpen = false;
+        var pdfLoaded = false;
+        var pdfEmbedUrl = '';
+
+        function buildPdfUrls(rawUrl) {
+            if (!rawUrl) return { embed: '', download: '', view: '' };
+            var docsMatch = rawUrl.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
+            if (docsMatch) {
+                var docId = docsMatch[1];
+                return {
+                    embed: 'https://drive.google.com/file/d/' + docId + '/preview',
+                    download: 'https://docs.google.com/document/d/' + docId + '/export?format=pdf',
+                    view: 'https://docs.google.com/document/d/' + docId + '/edit'
+                };
+            }
+            var driveMatch = rawUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (!driveMatch) {
+                var openMatch = rawUrl.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+                if (openMatch) driveMatch = [null, openMatch[1]];
+            }
+            if (driveMatch) {
+                var fileId = driveMatch[1];
+                return {
+                    embed: 'https://drive.google.com/file/d/' + fileId + '/preview',
+                    download: 'https://drive.google.com/uc?export=download&id=' + fileId,
+                    view: 'https://drive.google.com/file/d/' + fileId + '/view'
+                };
+            }
+            return { embed: rawUrl, download: rawUrl, view: rawUrl };
+        }
+
+        function togglePdfViewer() {
+            var wrap = document.getElementById('pdfViewerWrap');
+            var btn = document.getElementById('btnPdf');
+            var isOpen = wrap.classList.contains('open');
+
+            // 다른 플레이어 닫기
+            ['theme', 'voice', 'healing'].forEach(function(t) {
+                var w = document.getElementById('player' + t.charAt(0).toUpperCase() + t.slice(1));
+                var b = document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (w) { w.classList.remove('open'); }
+                if (b) { b.classList.remove('expanded', 'playing'); }
+                if (audioPlayers[t]) { audioPlayers[t].pause(); }
+                var pb = document.getElementById(t + 'PlayBtn');
+                if (pb) pb.textContent = '▶';
+            });
+
+            if (isOpen) {
+                wrap.classList.remove('open');
+                btn.classList.remove('expanded');
+            } else {
+                wrap.classList.add('open');
+                btn.classList.add('expanded');
+                if (!pdfLoaded && pdfEmbedUrl) {
+                    var loadingEl = document.getElementById('pdfLoading');
+                    var container = document.getElementById('pdfContainer');
+                    loadingEl.style.display = 'block';
+                    container.style.display = 'none';
+                    var frame = document.getElementById('pdfFrame');
+                    frame.onload = function() {
+                        loadingEl.style.display = 'none';
+                        container.style.display = 'block';
+                        pdfLoaded = true;
+                    };
+                    frame.src = pdfEmbedUrl;
+                }
+            }
+        }
+
         /* ── 오디오 관리 ── */
         var audioPlayers = {};
         var audioLoaded = {};
@@ -206,6 +298,13 @@
             var wrap = document.getElementById('player' + type.charAt(0).toUpperCase() + type.slice(1));
             var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
             var isOpen = wrap.classList.contains('open');
+
+            // PDF 뷰어 닫기
+            var pdfWrap = document.getElementById('pdfViewerWrap');
+            var pdfBtn = document.getElementById('btnPdf');
+            if (pdfWrap) { pdfWrap.classList.remove('open'); }
+            if (pdfBtn) { pdfBtn.classList.remove('expanded'); }
+
             ['theme', 'voice', 'healing'].forEach(function(t) {
                 var w = document.getElementById('player' + t.charAt(0).toUpperCase() + t.slice(1));
                 var b = document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1));
@@ -238,7 +337,6 @@
             var fileId = audioFileIds[type];
             if (!fileId) return;
 
-            // ★ 사용자 터치 시점에 Audio 생성 + play()로 브라우저 잠금 해제
             var audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
             audio.play().catch(function(){});
             audioPlayers[type] = audio;
@@ -251,7 +349,6 @@
                 .then(function(data) {
                     if (loadingEl) loadingEl.style.display = 'none';
                     if (data.error) { console.error('Proxy error:', data.error); return; }
-                    // 같은 Audio 객체의 src만 교체 → 자동재생 잠금 우회
                     audio.src = data.uri;
                     audio.addEventListener('loadedmetadata', function() {
                         document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
@@ -372,11 +469,16 @@
                 }
                 var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
 
+                /* ★ PDF — 인앱 뷰어 방식 */
                 if (pdfLink) {
-                    document.getElementById('btnPdf').href = toDirectLink(pdfLink);
+                    var pdfUrls = buildPdfUrls(pdfLink);
+                    pdfEmbedUrl = pdfUrls.embed;
                     document.getElementById('btnPdf').classList.add('active');
+                    document.getElementById('pdfDownload').href = pdfUrls.download;
+                    document.getElementById('pdfNewTab').href = pdfUrls.view;
                     if (pdfName) document.getElementById('btnPdfText').textContent = pdfName;
                 }
+
                 if (themeLink) {
                     document.getElementById('btnTheme').classList.add('active');
                     if (themeName) document.getElementById('btnThemeText').textContent = themeName;
