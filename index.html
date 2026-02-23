@@ -69,100 +69,19 @@
         .player-loading { text-align: center; color: #8a7a5a; font-size: 12px; padding: 10px 0; }
         .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
 
-        /* ── PDF 전체화면 뷰어 오버레이 ── */
-        .pdf-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 9999;
-            background: #0a0a14;
-            flex-direction: column;
-        }
+        .pdf-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; background: #0a0a14; flex-direction: column; }
         .pdf-overlay.open { display: flex; }
-        .pdf-overlay-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #0f0f1a;
-            border-bottom: 1px solid #c9a84c33;
-            flex-shrink: 0;
-        }
-        .pdf-overlay-title {
-            font-size: 14px;
-            color: #c9a84c;
-            font-weight: 500;
-            letter-spacing: 1px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex: 1;
-            margin-right: 12px;
-        }
-        .pdf-overlay-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .pdf-overlay-btn {
-            padding: 6px 14px;
-            border: 1px solid #c9a84c44;
-            border-radius: 20px;
-            background: transparent;
-            color: #8a7a5a;
-            font-size: 12px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
+        .pdf-overlay-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #0f0f1a; border-bottom: 1px solid #c9a84c33; flex-shrink: 0; }
+        .pdf-overlay-title { font-size: 14px; color: #c9a84c; font-weight: 500; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 12px; }
+        .pdf-overlay-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .pdf-overlay-btn { padding: 6px 14px; border: 1px solid #c9a84c44; border-radius: 20px; background: transparent; color: #8a7a5a; font-size: 12px; cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; font-family: 'Noto Sans KR', sans-serif; }
         .pdf-overlay-btn:hover { color: #c9a84c; border-color: #c9a84c66; }
-        .pdf-overlay-close {
-            width: 36px;
-            height: 36px;
-            border: 1px solid #c9a84c44;
-            border-radius: 50%;
-            background: transparent;
-            color: #c9a84c;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
+        .pdf-overlay-close { width: 36px; height: 36px; border: 1px solid #c9a84c44; border-radius: 50%; background: transparent; color: #c9a84c; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
         .pdf-overlay-close:hover { background: #c9a84c22; border-color: #c9a84c; }
-        .pdf-overlay-body {
-            flex: 1;
-            overflow: hidden;
-        }
-        .pdf-overlay-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #1a1a2e;
-        }
-        .pdf-overlay-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #8a7a5a;
-            font-size: 14px;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .pdf-overlay-loading .spinner {
-            width: 32px; height: 32px;
-            border: 2px solid #c9a84c33;
-            border-top: 2px solid #c9a84c;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        .pdf-overlay-body { flex: 1; overflow: hidden; }
+        .pdf-overlay-frame { width: 100%; height: 100%; border: none; background: #1a1a2e; }
+        .pdf-overlay-loading { display: flex; align-items: center; justify-content: center; height: 100%; color: #8a7a5a; font-size: 14px; flex-direction: column; gap: 16px; }
+        .pdf-overlay-loading .spinner { width: 32px; height: 32px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; }
     </style>
 </head>
 <body>
@@ -181,14 +100,11 @@
             <div class="divider"></div>
             <div class="message" id="message">귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다</div>
             <div class="buttons" id="buttons">
-
-                <!-- PDF 버튼 (클릭하면 전체화면 뷰어 열림) -->
                 <div class="btn-item" id="pdfItem">
                     <div class="btn" id="btnPdf" onclick="openPdfViewer()">
                         <span class="icon">📜</span><span id="btnPdfText">사주 분석 리포트</span>
                     </div>
                 </div>
-
                 <div class="btn-item" id="themeItem">
                     <div class="btn" id="btnTheme" onclick="togglePlayer('theme')"><span class="icon">🎵</span><span id="btnThemeText">맞춤형 음원</span></div>
                     <div class="player-wrap" id="playerTheme">
@@ -263,7 +179,6 @@
         </div>
     </div>
 
-    <!-- ★ PDF 전체화면 오버레이 (body 바로 안, container 밖) -->
     <div class="pdf-overlay" id="pdfOverlay">
         <div class="pdf-overlay-header">
             <div class="pdf-overlay-title" id="pdfOverlayTitle">📜 사주 분석 리포트</div>
@@ -282,7 +197,6 @@
     </div>
 
     <script>
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSLwX3_NEYRLeNv8UmKxsL9vrTHmHwMcSWtu7uGuIUyV79m8Qhw6jLJtxOPjIEzxNt1Ks7nqYaKnlb2/pub?gid=0&single=true&output=csv';
         const PROXY_URL = 'https://script.google.com/macros/s/AKfycby39MMYoXJIekh9cw-JZpHhmp_AiYCXiYVFIKpqeIcRKreuApLn_Y1CE7Sk6FVEEowjnA/exec';
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('c');
@@ -310,15 +224,12 @@
             return null;
         }
 
-        /* ── PDF 전체화면 뷰어 ── */
         var pdfViewerData = { embedUrl: '', downloadUrl: '', title: '' };
 
         function buildPdfUrls(rawUrl) {
             if (!rawUrl) return { embed: '', download: '' };
             var fileId = extractFileId(rawUrl);
             if (!fileId) return { embed: rawUrl, download: rawUrl };
-
-            // Google Docs 문서인 경우
             var isDoc = rawUrl.indexOf('docs.google.com/document') !== -1;
             if (isDoc) {
                 return {
@@ -326,7 +237,6 @@
                     download: 'https://docs.google.com/document/d/' + fileId + '/export?format=pdf'
                 };
             }
-            // Google Drive 파일인 경우
             return {
                 embed: 'https://drive.google.com/file/d/' + fileId + '/preview',
                 download: 'https://drive.google.com/uc?export=download&id=' + fileId
@@ -335,15 +245,11 @@
 
         function openPdfViewer() {
             if (!pdfViewerData.embedUrl) return;
-
             var overlay = document.getElementById('pdfOverlay');
             var frame   = document.getElementById('pdfOverlayFrame');
             var loading = document.getElementById('pdfOverlayLoading');
-
             document.getElementById('pdfOverlayTitle').textContent = '📜 ' + pdfViewerData.title;
             document.getElementById('pdfOverlayDownload').href = pdfViewerData.downloadUrl;
-
-            // 음원 재생 중이면 정지
             ['theme', 'voice', 'healing'].forEach(function(t) {
                 if (audioPlayers[t]) audioPlayers[t].pause();
                 var pb = document.getElementById(t + 'PlayBtn');
@@ -351,12 +257,10 @@
                 if (pb) pb.textContent = '▶';
                 if (bb) bb.classList.remove('playing');
             });
-
             loading.style.display = 'flex';
             frame.style.display = 'none';
             overlay.classList.add('open');
             document.body.style.overflow = 'hidden';
-
             frame.onload = function() {
                 loading.style.display = 'none';
                 frame.style.display = 'block';
@@ -372,7 +276,6 @@
             frame.src = '';
         }
 
-        /* ── 오디오 관리 ── */
         var audioPlayers = {};
         var audioLoaded = {};
         var audioFileIds = {};
@@ -414,20 +317,14 @@
         }
 
         function loadAndPlay(type) {
-            if (audioLoaded[type]) {
-                playPause(type);
-                return;
-            }
+            if (audioLoaded[type]) { playPause(type); return; }
             var fileId = audioFileIds[type];
             if (!fileId) return;
-
             var audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
             audio.play().catch(function(){});
             audioPlayers[type] = audio;
-
             var loadingEl = document.getElementById(type + 'Loading');
             if (loadingEl) loadingEl.style.display = 'block';
-
             fetch(PROXY_URL + '?id=' + fileId)
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
@@ -439,7 +336,6 @@
                     });
                     audio.play().catch(function(){});
                     audioLoaded[type] = true;
-
                     var playBtn = document.getElementById(type + 'PlayBtn');
                     var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
                     playBtn.textContent = '⏸';
@@ -511,32 +407,24 @@
             }, 250);
         }
 
-        /* ── 보증서 로딩 ── */
         async function loadCertificate(code) {
             try {
-                const response = await fetch(CSV_URL);
-                const csvText = await response.text();
-                const rows = csvText.split('\n').map(row => parseCSVRow(row));
-                const header = rows[0];
-                const codeIndex = header.findIndex(h => h.trim() === '보증코드');
-                if (codeIndex === -1) { showError(); return; }
-                const customerRow = rows.find((row, i) => i > 0 && row[codeIndex] && row[codeIndex].trim() === code);
-                if (!customerRow) { showError(); return; }
-                const getData = (colName) => {
-                    const idx = header.findIndex(h => h.trim() === colName);
-                    return idx !== -1 ? (customerRow[idx] || '').trim() : '';
-                };
-                const name = getData('주인공1');
-                const name2 = getData('주인공2');
-                const product = getData('상품');
-                const pdfLink     = getData('PDF');
-                const pdfName     = getData('PDF명');
-                const themeLink   = getData('테마곡');
-                const themeName   = getData('테마곡명');
-                const voiceLink   = getData('음성');
-                const voiceName   = getData('음성명');
-                const healingLink = getData('힐링');
-                const healingName = getData('힐링명');
+                const response = await fetch(PROXY_URL + '?type=cert&c=' + encodeURIComponent(code));
+                const data = await response.json();
+
+                if (data.error) { showError(); return; }
+
+                const name     = data.name || '';
+                const name2    = data.name2 || '';
+                const product  = data.product || '';
+                const pdfLink     = data.pdf || '';
+                const pdfName     = data.pdfName || '';
+                const themeLink   = data.theme || '';
+                const themeName   = data.themeName || '';
+                const voiceLink   = data.voice || '';
+                const voiceName   = data.voiceName || '';
+                const healingLink = data.healing || '';
+                const healingName = data.healingName || '';
 
                 document.getElementById('clientName').textContent = name;
                 document.getElementById('productTag').textContent = product;
@@ -553,7 +441,6 @@
                 }
                 var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
 
-                /* ★ PDF — 전체화면 뷰어 방식 */
                 if (pdfLink) {
                     var pdfUrls = buildPdfUrls(pdfLink);
                     pdfViewerData.embedUrl = pdfUrls.embed;
@@ -598,20 +485,6 @@
         function showError() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('error').style.display = 'flex';
-        }
-
-        function parseCSVRow(row) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            for (let i = 0; i < row.length; i++) {
-                const char = row[i];
-                if (char === '"') { inQuotes = !inQuotes; }
-                else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
-                else { current += char; }
-            }
-            result.push(current);
-            return result;
         }
     </script>
 </body>
