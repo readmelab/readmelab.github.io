@@ -342,7 +342,7 @@
                 var nameText = certData.name;
                 if (isCouple && certData.name2) nameText += ' & ' + certData.name2;
                 document.getElementById('introTitle').textContent = nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
-if (certData.soreLine) { document.getElementById('introSore').textContent = '"' + certData.soreLine + '"'; }
+                if (certData.soreLine) { document.getElementById('introSore').textContent = '"' + certData.soreLine + '"'; }
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('intro').style.display = 'flex';
 
