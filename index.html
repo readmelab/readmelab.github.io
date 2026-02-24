@@ -239,7 +239,6 @@
     </div>
 
     <script>
-        var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSLwX3_NEYRLeNv8UmKxsL9vrTHmHwMcSWtu7uGuIUyV79m8Qhw6jLJtxOPjIEzxNt1Ks7nqYaKnlb2/pub?gid=0&single=true&output=csv';
         var PROXY_URL = 'https://script.google.com/macros/s/AKfycbwmOwIYOV-dTqynZDAAYnJwWW9wOZubnpTducblAZOuPNUT36-q3r6LORlmZiqAyS0g/exec';
 
         var urlParams = new URLSearchParams(window.location.search);
@@ -279,24 +278,6 @@
             return m + ':' + (s < 10 ? '0' : '') + s;
         }
 
-        function parseCSVRow(row) {
-            var result = [], current = '', inQuotes = false;
-            for (var i = 0; i < row.length; i++) {
-                var ch = row[i];
-                if (inQuotes) {
-                    if (ch === '"' && row[i + 1] === '"') { current += '"'; i++; }
-                    else if (ch === '"') { inQuotes = false; }
-                    else { current += ch; }
-                } else {
-                    if (ch === '"') { inQuotes = true; }
-                    else if (ch === ',') { result.push(current); current = ''; }
-                    else { current += ch; }
-                }
-            }
-            result.push(current);
-            return result;
-        }
-
         /* ── 상태 ── */
         var pdfViewerData = { embedUrl: '', downloadUrl: '', title: '' };
         var audioPlayers = {};
@@ -307,35 +288,30 @@
         var bgmPreloaded = false;
         var certData = {};
 
-        /* ── 데이터 로드 ── */
+        /* ── 데이터 로드 (API 방식 — CSV 직접 접근 제거) ── */
         async function loadCertificate(code) {
             try {
-                var response = await fetch(CSV_URL);
-                var csvText = await response.text();
-                var rows = csvText.split('\n');
-                var found = null;
-                for (var i = 1; i < rows.length; i++) {
-                    var cols = parseCSVRow(rows[i]);
-                    if (cols[19] && cols[19].trim() === code) { found = cols; break; }
-                }
-                if (!found) { showError(); return; }
+                var response = await fetch(PROXY_URL + '?type=cert&c=' + encodeURIComponent(code));
+                var d = await response.json();
+
+                if (d.error) { showError(); return; }
 
                 certData = {
-                    name: found[1] || found[3] || '',
-                    name2: found[2] || '',
-                    product: found[4] || '',
-                    pdfLink: found[10] || '',
-                    pdfName: found[11] || '',
-                    themeLink: found[12] || '',
-                    themeName: found[13] || '',
-                    voiceLink: found[14] || '',
-                    voiceName: found[15] || '',
-                    healingLink: found[16] || '',
-                    healingName: found[17] || '',
-                    soreLine: (found[28] || '').trim(),
-                    themeDesc: (found[29] || '').trim(),
-                    voiceDesc: (found[30] || '').trim(),
-                    healingDesc: (found[31] || '').trim()
+                    name:        d.name || '',
+                    name2:       d.name2 || '',
+                    product:     d.product || '',
+                    pdfLink:     d.pdfLink || '',
+                    pdfName:     d.pdfName || '',
+                    themeLink:   d.themeLink || '',
+                    themeName:   d.themeName || '',
+                    voiceLink:   d.voiceLink || '',
+                    voiceName:   d.voiceName || '',
+                    healingLink: d.healingLink || '',
+                    healingName: d.healingName || '',
+                    soreLine:    (d.soreLine || '').trim(),
+                    themeDesc:   (d.themeDesc || '').trim(),
+                    voiceDesc:   (d.voiceDesc || '').trim(),
+                    healingDesc: (d.healingDesc || '').trim()
                 };
 
                 var isCouple = certData.product.indexOf('우리') !== -1;
@@ -346,7 +322,6 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('intro').style.display = 'flex';
 
-                /* 배경음악용 테마곡 미리 로딩 */
                 if (certData.themeLink) {
                     var themeFileId = extractFileId(certData.themeLink);
                     if (themeFileId) {
@@ -443,24 +418,20 @@
                 if (d.healingDesc) { document.getElementById('healingDesc').textContent = d.healingDesc; document.getElementById('healingDesc').style.display = 'block'; }
             }
 
-            /* 전환 */
             intro.classList.add('fade-out');
             setTimeout(function() {
                 intro.style.display = 'none';
                 cert.style.display = 'block';
                 cert.classList.add('fade-in');
-                /* BGM 자동 재생 */
                 if (bgmPreloaded && audioPlayers['theme']) {
                     startBgm();
                 } else if (audioFileIds['theme']) {
-                    /* 아직 로딩 안 됐으면 기다렸다 재생 */
                     var waitBgm = setInterval(function() {
                         if (bgmPreloaded && audioPlayers['theme']) {
                             clearInterval(waitBgm);
                             startBgm();
                         }
                     }, 500);
-                    /* 최대 15초 대기 */
                     setTimeout(function() { clearInterval(waitBgm); }, 15000);
                 }
             }, 1000);
@@ -555,7 +526,6 @@
             var loadingEl = document.getElementById(type + 'Loading');
             if (loadingEl) loadingEl.style.display = 'block';
 
-            /* 다른 음원 정지 */
             ['theme', 'voice', 'healing'].forEach(function(t) {
                 if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                     audioPlayers[t].pause();
