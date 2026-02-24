@@ -291,7 +291,7 @@
         /* ── 데이터 로드 (API 방식 — CSV 직접 접근 제거) ── */
         async function loadCertificate(code) {
             try {
-                var response = await fetch(PROXY_URL + '?type=cert&c=' + encodeURIComponent(code));
+                var response = await fetch(PROXY_URL + '?cert=' + encodeURIComponent(code));
                 var d = await response.json();
 
                 if (d.error) { showError(); return; }
