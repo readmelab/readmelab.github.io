@@ -220,7 +220,7 @@
     <!-- 배경음악 바 -->
     <div class="bgm-bar" id="bgmBar">
         <button class="bgm-bar-btn" id="bgmBtn" onclick="toggleBgm()">⏸</button>
-        <div class="bgm-bar-info"><div class="bgm-bar-title" id="bgmTitle">♪ 맞춤형 음원</div><div class="bgm-bar-sub">배경음악 재생 중</div></div>
+        <div class="bgm-bar-info"><div class="bgm-bar-title" id="bgmTitle">♪ 맞춤형 음원</div><div class="bgm-bar-sub" id="bgmSub">배경음악 재생 중</div></div>
     </div>
 
     <!-- PDF 오버레이 -->
@@ -266,9 +266,15 @@
             var fileId = extractFileId(rawUrl);
             if (!fileId) return { embed: rawUrl, download: rawUrl };
             if (rawUrl.indexOf('docs.google.com/document') !== -1) {
-                return { embed: 'https://docs.google.com/document/d/' + fileId + '/preview', download: 'https://docs.google.com/document/d/' + fileId + '/export?format=pdf' };
+                return {
+                    embed: 'https://docs.google.com/document/d/' + fileId + '/preview',
+                    download: 'https://docs.google.com/document/d/' + fileId + '/export?format=pdf'
+                };
             }
-            return { embed: 'https://drive.google.com/file/d/' + fileId + '/preview', download: 'https://drive.google.com/uc?export=download&id=' + fileId };
+            return {
+                embed: 'https://drive.google.com/file/d/' + fileId + '/preview',
+                download: 'https://drive.google.com/uc?export=download&id=' + fileId
+            };
         }
 
         function formatTime(sec) {
@@ -288,7 +294,7 @@
         var bgmPreloaded = false;
         var certData = {};
 
-        /* ── 데이터 로드 (API 방식 — CSV 직접 접근 제거) ── */
+        /* ── 데이터 로드 (API 방식) ── */
         async function loadCertificate(code) {
             try {
                 var response = await fetch(PROXY_URL + '?cert=' + encodeURIComponent(code));
@@ -317,11 +323,16 @@
                 var isCouple = certData.product.indexOf('우리') !== -1;
                 var nameText = certData.name;
                 if (isCouple && certData.name2) nameText += ' & ' + certData.name2;
-                document.getElementById('introTitle').textContent = nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
-                if (certData.soreLine) { document.getElementById('introSore').innerHTML = '"' + certData.soreLine.replace(/\//g, '<br>') + '"'; }
+                document.getElementById('introTitle').textContent =
+                    nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
+                if (certData.soreLine) {
+                    document.getElementById('introSore').innerHTML =
+                        '"' + certData.soreLine.replace(/\//g, '<br>') + '"';
+                }
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('intro').style.display = 'flex';
 
+                /* BGM 프리로드 */
                 if (certData.themeLink) {
                     var themeFileId = extractFileId(certData.themeLink);
                     if (themeFileId) {
@@ -330,6 +341,7 @@
                     }
                 }
             } catch (e) {
+                console.error('loadCertificate error:', e);
                 showError();
             }
         }
@@ -339,10 +351,11 @@
             fetch(PROXY_URL + '?id=' + fileId)
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
-                    if (data.error) return;
+                    if (data.error) { console.error('BGM preload error:', data.error); return; }
                     var audio = new Audio();
                     audio.src = data.uri;
                     audio.volume = 0;
+                    audio.preload = 'auto';
                     audioPlayers['theme'] = audio;
                     audioLoaded['theme'] = true;
                     bgmPreloaded = true;
@@ -356,17 +369,38 @@
                         bgmType = null;
                     });
                 })
-                .catch(function() {});
+                .catch(function(err) { console.error('BGM preload fetch error:', err); });
         }
 
-        /* ── 진입 연출 ── */
+        /* ═══════════════════════════════════════════════════
+         *  진입 연출 — BGM autoplay 수정 (v5.3)
+         *
+         *  핵심: 버튼 클릭 이벤트 핸들러 안에서 즉시 audio.play()를
+         *  호출해야 브라우저 autoplay 정책을 통과합니다.
+         *  setTimeout 안에서 호출하면 "사용자 제스처 컨텍스트"가
+         *  만료되어 차단됩니다.
+         * ═══════════════════════════════════════════════════ */
         function enterCertificate() {
             var intro = document.getElementById('intro');
-            var cert = document.getElementById('certificate');
-            var d = certData;
-            var isCouple = d.product.indexOf('우리') !== -1;
+            var cert  = document.getElementById('certificate');
+            var d     = certData;
+            var isCouple    = d.product.indexOf('우리') !== -1;
             var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
 
+            /* ★ 클릭 직후 즉시 BGM play 시도 (사용자 제스처 컨텍스트) */
+            var bgmAttempted = false;
+            if (bgmPreloaded && audioPlayers['theme']) {
+                tryStartBgm();
+                bgmAttempted = true;
+            } else if (audioPlayers['theme']) {
+                /* 프리로드 진행 중 — 일단 play()로 오디오 "언락" */
+                audioPlayers['theme'].play().then(function() {
+                    audioPlayers['theme'].pause();
+                    audioPlayers['theme'].currentTime = 0;
+                }).catch(function() {});
+            }
+
+            /* 보증서 데이터 세팅 */
             document.getElementById('clientName').textContent = d.name;
             document.getElementById('productTag').textContent = d.product;
             if (isCouple && d.name2) {
@@ -377,72 +411,90 @@
             if (isCouple) {
                 document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
                 document.getElementById('honorific').textContent = '님의 궁합 분석이 완성되었습니다';
-                document.getElementById('message').innerHTML = '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
+                document.getElementById('message').innerHTML =
+                    '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
             }
             if (d.soreLine) {
-                document.getElementById('message').innerHTML = '<span class="sore-line">"' + d.soreLine.replace(/\//g, '<br>') + '"</span>';
+                document.getElementById('message').innerHTML =
+                    '<span class="sore-line">"' + d.soreLine.replace(/\//g, '<br>') + '"</span>';
             }
             if (d.pdfLink) {
                 var pdfUrls = buildPdfUrls(d.pdfLink);
-                pdfViewerData.embedUrl = pdfUrls.embed;
+                pdfViewerData.embedUrl    = pdfUrls.embed;
                 pdfViewerData.downloadUrl = pdfUrls.download;
-                pdfViewerData.title = d.pdfName || '사주 분석 리포트';
+                pdfViewerData.title       = d.pdfName || '사주 분석 리포트';
                 document.getElementById('btnPdf').classList.add('active');
                 if (d.pdfName) document.getElementById('btnPdfText').textContent = d.pdfName;
             }
             if (d.themeLink) {
                 document.getElementById('btnTheme').classList.add('active');
                 if (d.themeName) document.getElementById('btnThemeText').textContent = d.themeName;
-                document.getElementById('themeTitle').textContent = d.themeName || '맞춤형 음원';
+                document.getElementById('themeTitle').textContent    = d.themeName || '맞춤형 음원';
                 document.getElementById('themeSubtitle').textContent = subtitleText + ' 음원';
-                document.getElementById('themeDownload').href = toViewLink(d.themeLink);
+                document.getElementById('themeDownload').href        = toViewLink(d.themeLink);
                 audioFileIds['theme'] = extractFileId(d.themeLink);
-                if (d.themeDesc) { document.getElementById('themeDesc').textContent = d.themeDesc; document.getElementById('themeDesc').style.display = 'block'; }
+                if (d.themeDesc) {
+                    document.getElementById('themeDesc').textContent   = d.themeDesc;
+                    document.getElementById('themeDesc').style.display = 'block';
+                }
             }
             if (d.voiceLink) {
                 document.getElementById('btnVoice').classList.add('active');
                 if (d.voiceName) document.getElementById('btnVoiceText').textContent = d.voiceName;
-                document.getElementById('voiceTitle').textContent = d.voiceName || '음성 해설';
+                document.getElementById('voiceTitle').textContent    = d.voiceName || '음성 해설';
                 document.getElementById('voiceSubtitle').textContent = subtitleText + ' 해설';
-                document.getElementById('voiceDownload').href = toViewLink(d.voiceLink);
+                document.getElementById('voiceDownload').href        = toViewLink(d.voiceLink);
                 audioFileIds['voice'] = extractFileId(d.voiceLink);
-                if (d.voiceDesc) { document.getElementById('voiceDesc').textContent = d.voiceDesc; document.getElementById('voiceDesc').style.display = 'block'; }
+                if (d.voiceDesc) {
+                    document.getElementById('voiceDesc').textContent   = d.voiceDesc;
+                    document.getElementById('voiceDesc').style.display = 'block';
+                }
             }
             if (d.healingLink) {
                 document.getElementById('btnHealing').classList.add('active');
                 if (d.healingName) document.getElementById('btnHealingText').textContent = d.healingName;
-                document.getElementById('healingTitle').textContent = d.healingName || '힐링음악';
+                document.getElementById('healingTitle').textContent    = d.healingName || '힐링음악';
                 document.getElementById('healingSubtitle').textContent = subtitleText + ' 음악';
-                document.getElementById('healingDownload').href = toViewLink(d.healingLink);
+                document.getElementById('healingDownload').href        = toViewLink(d.healingLink);
                 audioFileIds['healing'] = extractFileId(d.healingLink);
-                if (d.healingDesc) { document.getElementById('healingDesc').textContent = d.healingDesc; document.getElementById('healingDesc').style.display = 'block'; }
+                if (d.healingDesc) {
+                    document.getElementById('healingDesc').textContent   = d.healingDesc;
+                    document.getElementById('healingDesc').style.display = 'block';
+                }
             }
 
+            /* 화면 전환 */
             intro.classList.add('fade-out');
             setTimeout(function() {
                 intro.style.display = 'none';
-                cert.style.display = 'block';
+                cert.style.display  = 'block';
                 cert.classList.add('fade-in');
-                if (bgmPreloaded && audioPlayers['theme']) {
-                    startBgm();
-                } else if (audioFileIds['theme']) {
-                    var waitBgm = setInterval(function() {
-                        if (bgmPreloaded && audioPlayers['theme']) {
-                            clearInterval(waitBgm);
-                            startBgm();
-                        }
-                    }, 500);
-                    setTimeout(function() { clearInterval(waitBgm); }, 15000);
+
+                /* 프리로드 완료 전에 클릭한 경우: 완료될 때까지 대기 후 재생 */
+                if (!bgmAttempted && audioFileIds['theme']) {
+                    if (bgmPreloaded && audioPlayers['theme']) {
+                        tryStartBgm();
+                    } else {
+                        var waitBgm = setInterval(function() {
+                            if (bgmPreloaded && audioPlayers['theme']) {
+                                clearInterval(waitBgm);
+                                tryStartBgm();
+                            }
+                        }, 500);
+                        setTimeout(function() { clearInterval(waitBgm); }, 15000);
+                    }
                 }
             }, 1000);
         }
 
-        /* ── BGM 재생 ── */
-        function startBgm() {
+        /* ── BGM 재생 시도 (성공/차단 모두 처리) ── */
+        function tryStartBgm() {
             var audio = audioPlayers['theme'];
             if (!audio) return;
             bgmType = 'theme';
+
             audio.play().then(function() {
+                /* 재생 성공 → 페이드인 */
                 var vol = 0;
                 var fadeIn = setInterval(function() {
                     vol += 0.05;
@@ -451,21 +503,38 @@
                 }, 100);
                 document.getElementById('bgmBar').classList.add('active');
                 document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-                document.getElementById('bgmBtn').textContent = '⏸';
+                document.getElementById('bgmBtn').textContent   = '⏸';
+                document.getElementById('bgmSub').textContent    = '배경음악 재생 중';
                 document.getElementById('themePlayBtn').textContent = '⏸';
                 document.getElementById('btnTheme').classList.add('playing');
                 startProgress('theme');
-            }).catch(function() {});
+            }).catch(function(err) {
+                /* autoplay 차단 → BGM 바에 안내 표시 */
+                console.warn('BGM autoplay blocked:', err);
+                document.getElementById('bgmBar').classList.add('active');
+                document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
+                document.getElementById('bgmBtn').textContent   = '▶';
+                document.getElementById('bgmSub').textContent    = '터치하여 재생';
+            });
         }
 
+        /* ── BGM 토글 ── */
         function toggleBgm() {
+            /* autoplay 차단 후 바를 눌렀을 때 */
+            if (!bgmType && audioPlayers['theme'] && audioLoaded['theme']) {
+                bgmType = 'theme';
+            }
             if (!bgmType || !audioPlayers[bgmType]) return;
+
             var audio = audioPlayers[bgmType];
             if (audio.paused) {
-                audio.play();
+                audio.volume = 1;
+                audio.play().catch(function() {});
                 document.getElementById('bgmBtn').textContent = '⏸';
+                document.getElementById('bgmSub').textContent  = '배경음악 재생 중';
                 document.getElementById(bgmType + 'PlayBtn').textContent = '⏸';
                 document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.add('playing');
+                startProgress(bgmType);
             } else {
                 audio.pause();
                 document.getElementById('bgmBtn').textContent = '▶';
@@ -474,16 +543,16 @@
             }
         }
 
-        /* ── PDF ── */
+        /* ── PDF 뷰어 ── */
         function openPdfViewer() {
             if (!pdfViewerData.embedUrl) return;
             var overlay = document.getElementById('pdfOverlay');
-            var frame = document.getElementById('pdfOverlayFrame');
+            var frame   = document.getElementById('pdfOverlayFrame');
             var loading = document.getElementById('pdfOverlayLoading');
             document.getElementById('pdfOverlayTitle').textContent = '📜 ' + pdfViewerData.title;
-            document.getElementById('pdfOverlayDownload').href = pdfViewerData.downloadUrl;
+            document.getElementById('pdfOverlayDownload').href     = pdfViewerData.downloadUrl;
             loading.style.display = 'flex';
-            frame.style.display = 'none';
+            frame.style.display   = 'none';
             overlay.classList.add('open');
             document.body.style.overflow = 'hidden';
             frame.onload = function() { loading.style.display = 'none'; frame.style.display = 'block'; };
@@ -496,15 +565,15 @@
             document.getElementById('pdfOverlayFrame').src = '';
         }
 
-        /* ── 플레이어 ── */
+        /* ── 플레이어 토글 ── */
         function togglePlayer(type) {
             var wrap = document.getElementById('player' + type.charAt(0).toUpperCase() + type.slice(1));
-            var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+            var btn  = document.getElementById('btn'    + type.charAt(0).toUpperCase() + type.slice(1));
             var isOpen = wrap.classList.contains('open');
             ['theme', 'voice', 'healing'].forEach(function(t) {
                 if (t !== type) {
                     var w = document.getElementById('player' + t.charAt(0).toUpperCase() + t.slice(1));
-                    var b = document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1));
+                    var b = document.getElementById('btn'    + t.charAt(0).toUpperCase() + t.slice(1));
                     if (w) w.classList.remove('open');
                     if (b) b.classList.remove('expanded');
                 }
@@ -518,6 +587,7 @@
             }
         }
 
+        /* ── 로드 후 재생 ── */
         function loadAndPlay(type) {
             if (audioLoaded[type]) { playPause(type); return; }
             var fileId = audioFileIds[type];
@@ -526,6 +596,7 @@
             var loadingEl = document.getElementById(type + 'Loading');
             if (loadingEl) loadingEl.style.display = 'block';
 
+            /* 다른 트랙 정지 */
             ['theme', 'voice', 'healing'].forEach(function(t) {
                 if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                     audioPlayers[t].pause();
@@ -542,7 +613,7 @@
                     var audio = new Audio();
                     audio.src = data.uri;
                     audioPlayers[type] = audio;
-                    audioLoaded[type] = true;
+                    audioLoaded[type]  = true;
                     audio.addEventListener('loadedmetadata', function() {
                         document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
                     });
@@ -555,7 +626,7 @@
                         }
                         if (playerIntervals[type]) clearInterval(playerIntervals[type]);
                     });
-                    audio.play().catch(function(){});
+                    audio.play().catch(function(err) { console.warn('play error:', err); });
                     document.getElementById(type + 'PlayBtn').textContent = '⏸';
                     document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('playing');
                     startProgress(type);
@@ -564,7 +635,8 @@
                         bgmType = 'theme';
                         document.getElementById('bgmBar').classList.add('active');
                         document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-                        document.getElementById('bgmBtn').textContent = '⏸';
+                        document.getElementById('bgmBtn').textContent   = '⏸';
+                        document.getElementById('bgmSub').textContent    = '배경음악 재생 중';
                     }
                 })
                 .catch(function(err) {
@@ -573,12 +645,16 @@
                 });
         }
 
+        /* ── 재생/정지 ── */
         function playPause(type) {
             var audio = audioPlayers[type];
             if (!audio || !audioLoaded[type]) { loadAndPlay(type); return; }
+
             var playBtn = document.getElementById(type + 'PlayBtn');
-            var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+            var btn     = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+
             if (audio.paused) {
+                /* 다른 트랙 정지 */
                 ['theme', 'voice', 'healing'].forEach(function(t) {
                     if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                         audioPlayers[t].pause();
@@ -586,7 +662,7 @@
                         document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('playing');
                     }
                 });
-                audio.play().catch(function(){});
+                audio.play().catch(function(err) { console.warn('play error:', err); });
                 playBtn.textContent = '⏸';
                 btn.classList.add('playing');
                 startProgress(type);
@@ -594,6 +670,7 @@
                     bgmType = 'theme';
                     document.getElementById('bgmBar').classList.add('active');
                     document.getElementById('bgmBtn').textContent = '⏸';
+                    document.getElementById('bgmSub').textContent  = '배경음악 재생 중';
                 }
             } else {
                 audio.pause();
@@ -605,27 +682,30 @@
             }
         }
 
+        /* ── 시크 ── */
         function seek(type) {
-            var audio = audioPlayers[type];
+            var audio    = audioPlayers[type];
             var progress = document.getElementById(type + 'Progress');
             if (audio && audio.duration) {
                 audio.currentTime = (progress.value / 100) * audio.duration;
             }
         }
 
+        /* ── 프로그레스 바 업데이트 ── */
         function startProgress(type) {
             if (playerIntervals[type]) clearInterval(playerIntervals[type]);
             playerIntervals[type] = setInterval(function() {
-                var audio = audioPlayers[type];
+                var audio    = audioPlayers[type];
                 if (!audio) return;
                 var progress = document.getElementById(type + 'Progress');
-                var current = document.getElementById(type + 'Current');
+                var current  = document.getElementById(type + 'Current');
                 var duration = document.getElementById(type + 'Duration');
                 if (audio.duration) {
                     var pct = (audio.currentTime / audio.duration) * 100;
                     progress.value = pct;
-                    progress.style.background = 'linear-gradient(90deg, #c9a84c ' + pct + '%, #c9a84c22 ' + pct + '%)';
-                    current.textContent = formatTime(audio.currentTime);
+                    progress.style.background =
+                        'linear-gradient(90deg, #c9a84c ' + pct + '%, #c9a84c22 ' + pct + '%)';
+                    current.textContent  = formatTime(audio.currentTime);
                     duration.textContent = formatTime(audio.duration);
                 }
                 if (audio.ended) {
@@ -636,9 +716,10 @@
             }, 250);
         }
 
+        /* ── 에러 표시 ── */
         function showError() {
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('error').style.display = 'flex';
+            document.getElementById('error').style.display   = 'flex';
         }
     </script>
 </body>
