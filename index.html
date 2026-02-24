@@ -122,17 +122,15 @@
         .pdf-overlay-frame { width: 100%; height: 100%; border: none; background: #1a1a2e; }
         .pdf-overlay-loading { display: flex; align-items: center; justify-content: center; height: 100%; color: #8a7a5a; font-size: 14px; flex-direction: column; gap: 16px; }
         .pdf-overlay-loading .spinner { width: 32px; height: 32px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; }
+        /* ── 공유 섹션 ── */
         .share-section { margin-top: 32px; margin-bottom: 16px; }
-        .share-title { font-size: 12px; color: #6a6050; letter-spacing: 2px; margin-bottom: 16px; }
-        .share-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-        .share-action-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 20px; border-radius: 8px; border: 1px solid #c9a84c33; background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; letter-spacing: 0.5px; width: 100%; }
-        .share-action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.15); }
-        .share-brag { border-color: #FEE50044; }
-        .share-brag:hover { border-color: #FEE500; background: linear-gradient(135deg, #2a2a1e, #20201a); }
-        .share-gift { border-color: #c9a84c44; }
-        .share-gift:hover { border-color: #c9a84c; background: linear-gradient(135deg, #2a2a3e, #20203a); }
-        .share-sub-links { display: flex; justify-content: center; gap: 24px; margin-top: 4px; }
-        .share-sub-link { font-size: 12px; color: #6a6050; cursor: pointer; transition: color 0.2s; }
+        .share-title { font-size: 11px; color: #5a5040; letter-spacing: 2px; margin-bottom: 12px; }
+        .share-actions { display: flex; gap: 8px; margin-bottom: 10px; }
+        .share-action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 0; border-radius: 6px; border: 1px solid #c9a84c22; background: transparent; color: #8a7a5a; font-size: 12px; font-weight: 400; cursor: pointer; transition: all 0.3s ease; letter-spacing: 0.5px; }
+        .share-action-btn:hover { color: #c9a84c; border-color: #c9a84c44; }
+        .share-action-btn span.s-icon { font-size: 14px; }
+        .share-sub-links { display: flex; justify-content: center; gap: 20px; }
+        .share-sub-link { font-size: 11px; color: #4a4535; cursor: pointer; transition: color 0.2s; }
         .share-sub-link:hover { color: #c9a84c; }
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: linear-gradient(135deg, #2a2a3e, #1a1a2e); border: 1px solid #c9a84c66; color: #c9a84c; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 10000; opacity: 0; transition: all 0.3s ease; pointer-events: none; white-space: nowrap; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -210,16 +208,16 @@
             <div class="share-section">
                 <div class="share-title">이 분석, 마음에 드셨나요?</div>
                 <div class="share-actions">
-                    <button class="share-action-btn share-brag" onclick="shareKakao()">
-                        <span>💬</span> 카카오톡으로 자랑하기
+                    <button class="share-action-btn" onclick="shareKakao()">
+                        <span class="s-icon">💬</span> 자랑하기
                     </button>
-                    <button class="share-action-btn share-gift" onclick="window.open('https://smartstore.naver.com/readmelab/products/13142603279','_blank')">
-                        <span>🎁</span> 소중한 사람에게 선물하기
+                    <button class="share-action-btn" onclick="window.open('https://smartstore.naver.com/readmelab/products/13142603279','_blank')">
+                        <span class="s-icon">🎁</span> 선물하기
                     </button>
                 </div>
                 <div class="share-sub-links">
-                    <span class="share-sub-link" onclick="shareLink()">🔗 링크 복사</span>
-                    <span id="shareNativeBtn" class="share-sub-link" onclick="shareNative()" style="display:none;">📤 더보기</span>
+                    <span class="share-sub-link" onclick="shareLink()">링크 복사</span>
+                    <span id="shareNativeBtn" class="share-sub-link" onclick="shareNative()" style="display:none;">더보기</span>
                 </div>
             </div>
             <div class="footer"><div class="divider"></div><div class="footer-brand">나를읽다 연구소</div><div class="footer-sub">사주 & MBTI 운명 분석</div></div>
@@ -248,18 +246,14 @@
     <script>
         var PROXY_URL = 'https://script.google.com/macros/s/AKfycbwmOwIYOV-dTqynZDAAYnJwWW9wOZubnpTducblAZOuPNUT36-q3r6LORlmZiqAyS0g/exec';
         var KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
+        var STORE_URL = 'https://smartstore.naver.com/readmelab/products/13142603279';
 
         var urlParams = new URLSearchParams(window.location.search);
         var code = urlParams.get('c');
         if (!code) { showError(); } else { loadCertificate(code); }
 
-        if (window.Kakao && !Kakao.isInitialized()) {
-            Kakao.init(KAKAO_KEY);
-        }
-
-        if (navigator.share) {
-            document.getElementById('shareNativeBtn').style.display = 'inline';
-        }
+        if (window.Kakao && !Kakao.isInitialized()) { Kakao.init(KAKAO_KEY); }
+        if (navigator.share) { document.getElementById('shareNativeBtn').style.display = 'inline'; }
 
         /* ── 유틸 ── */
         function extractFileId(url) {
@@ -269,11 +263,6 @@
             m = url.match(/id=([a-zA-Z0-9_-]+)/);
             if (m) return m[1];
             return null;
-        }
-        function toViewLink(url) {
-            var id = extractFileId(url);
-            if (!id) return url;
-            return 'https://drive.google.com/file/d/' + id + '/view';
         }
         function buildPdfUrls(rawUrl) {
             if (!rawUrl) return { embed: '', download: '' };
@@ -286,15 +275,12 @@
         }
         function formatTime(sec) {
             if (!sec || isNaN(sec)) return '0:00';
-            var m = Math.floor(sec / 60);
-            var s = Math.floor(sec % 60);
+            var m = Math.floor(sec / 60); var s = Math.floor(sec % 60);
             return m + ':' + (s < 10 ? '0' : '') + s;
         }
         function showToast(msg) {
-            var toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(function() { toast.classList.remove('show'); }, 2500);
+            var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 2500);
         }
         function showError() {
             document.getElementById('loading').style.display = 'none';
@@ -310,6 +296,7 @@
         var bgmType = null;
         var bgmPreloaded = false;
         var certData = {};
+        var pendingBgmPlay = false;
 
         /* ── 데이터 로드 ── */
         async function loadCertificate(code) {
@@ -371,8 +358,34 @@
                             bgmType = null;
                         }
                     });
+                    /* 버튼 클릭 후 로딩 완료 시 자동재생 */
+                    if (pendingBgmPlay) {
+                        pendingBgmPlay = false;
+                        startBgm();
+                    }
                 })
                 .catch(function(err) { console.error('BGM preload fetch error:', err); });
+        }
+
+        /* ── BGM 재생 시작 ── */
+        function startBgm() {
+            var audio = audioPlayers['theme'];
+            if (!audio) return;
+            audio.volume = 0.5;
+            audio.currentTime = 0;
+            audio.play().then(function() {
+                bgmType = 'theme';
+                document.getElementById('bgmBar').classList.add('active');
+                document.getElementById('bgmBtn').textContent = '⏸';
+                document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
+                document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+            }).catch(function(e) {
+                console.log('BGM autoplay blocked:', e);
+                document.getElementById('bgmBar').classList.add('active');
+                document.getElementById('bgmBtn').textContent = '▶';
+                document.getElementById('bgmSub').textContent = '터치하여 재생';
+                bgmType = 'theme';
+            });
         }
 
         /* ── 진입 연출 ── */
@@ -383,28 +396,11 @@
             var isCouple = d.product.indexOf('우리') !== -1;
             var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
 
-            /* ★ BGM 자동재생 */
+            /* ★ BGM 자동재생 - 로딩 완료 여부에 따라 분기 */
             if (bgmPreloaded && audioPlayers['theme']) {
-                var bgmAudio = audioPlayers['theme'];
-                bgmAudio.volume = 0.5;
-                bgmAudio.currentTime = 0;
-                bgmAudio.play().then(function() {
-                    bgmType = 'theme';
-                    document.getElementById('bgmBar').classList.add('active');
-                    document.getElementById('bgmBtn').textContent = '⏸';
-                    document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-                    document.getElementById('bgmSub').textContent = '배경음악 재생 중';
-                }).catch(function(e) {
-                    console.log('BGM autoplay blocked:', e);
-                    document.getElementById('bgmBar').classList.add('active');
-                    document.getElementById('bgmBtn').textContent = '▶';
-                    document.getElementById('bgmSub').textContent = '터치하여 재생';
-                });
-            } else if (audioPlayers['theme']) {
-                audioPlayers['theme'].play().then(function() {
-                    audioPlayers['theme'].pause();
-                    audioPlayers['theme'].currentTime = 0;
-                }).catch(function() {});
+                startBgm();
+            } else {
+                pendingBgmPlay = true;
             }
 
             document.getElementById('clientName').textContent = d.name;
@@ -416,14 +412,12 @@
                 document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
                 document.getElementById('honorific').textContent = '님의 궁합 분석이 완성되었습니다';
             }
-
             if (d.pdfLink) {
                 var pdfUrls = buildPdfUrls(d.pdfLink);
                 pdfViewerData = { embedUrl: pdfUrls.embed, downloadUrl: pdfUrls.download, title: d.pdfName || '사주 분석 리포트' };
                 document.getElementById('btnPdf').classList.add('active');
                 if (d.pdfName) document.getElementById('btnPdfText').textContent = d.pdfName;
             }
-
             ['theme','voice','healing'].forEach(function(type) {
                 var link = d[type + 'Link'];
                 var name = d[type + 'Name'];
@@ -435,65 +429,37 @@
                         document.getElementById(type + 'Title').textContent = name;
                     }
                     document.getElementById(type + 'Subtitle').textContent = subtitleText + (type === 'theme' ? ' 음원' : type === 'voice' ? ' 해설' : ' 음악');
-                    if (desc) {
-                        document.getElementById(type + 'Desc').textContent = desc;
-                        document.getElementById(type + 'Desc').style.display = 'block';
-                    }
+                    if (desc) { document.getElementById(type + 'Desc').textContent = desc; document.getElementById(type + 'Desc').style.display = 'block'; }
                     var fid = extractFileId(link);
-                    if (fid) {
-                        audioFileIds[type] = fid;
-                        document.getElementById(type + 'Download').href = 'https://drive.google.com/uc?export=download&id=' + fid;
-                    }
+                    if (fid) { audioFileIds[type] = fid; document.getElementById(type + 'Download').href = 'https://drive.google.com/uc?export=download&id=' + fid; }
                 }
             });
-
             intro.classList.add('fade-out');
-            setTimeout(function() {
-                intro.style.display = 'none';
-                cert.style.display = 'block';
-                cert.classList.add('fade-in');
-            }, 800);
+            setTimeout(function() { intro.style.display = 'none'; cert.style.display = 'block'; cert.classList.add('fade-in'); }, 800);
         }
 
         /* ── PDF 뷰어 ── */
         function openPdfViewer() {
             if (!pdfViewerData.embedUrl) return;
-            var overlay = document.getElementById('pdfOverlay');
             document.getElementById('pdfOverlayTitle').textContent = '📜 ' + pdfViewerData.title;
             document.getElementById('pdfOverlayDownload').href = pdfViewerData.downloadUrl;
             document.getElementById('pdfOverlayLoading').style.display = 'flex';
             document.getElementById('pdfOverlayFrame').style.display = 'none';
-            overlay.classList.add('open');
+            document.getElementById('pdfOverlay').classList.add('open');
             var frame = document.getElementById('pdfOverlayFrame');
-            frame.onload = function() {
-                document.getElementById('pdfOverlayLoading').style.display = 'none';
-                frame.style.display = 'block';
-            };
+            frame.onload = function() { document.getElementById('pdfOverlayLoading').style.display = 'none'; frame.style.display = 'block'; };
             frame.src = pdfViewerData.embedUrl;
         }
-        function closePdfViewer() {
-            var overlay = document.getElementById('pdfOverlay');
-            overlay.classList.remove('open');
-            document.getElementById('pdfOverlayFrame').src = '';
-        }
+        function closePdfViewer() { document.getElementById('pdfOverlay').classList.remove('open'); document.getElementById('pdfOverlayFrame').src = ''; }
 
         /* ── 오디오 플레이어 ── */
         function togglePlayer(type) {
             var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
             var wrap = document.getElementById('player' + type.charAt(0).toUpperCase() + type.slice(1));
             var isOpen = wrap.classList.contains('open');
-            if (isOpen) {
-                wrap.classList.remove('open');
-                btn.classList.remove('expanded');
-            } else {
-                wrap.classList.add('open');
-                btn.classList.add('expanded');
-                if (!audioLoaded[type] && audioFileIds[type]) {
-                    loadAudio(type, audioFileIds[type]);
-                }
-            }
+            if (isOpen) { wrap.classList.remove('open'); btn.classList.remove('expanded'); }
+            else { wrap.classList.add('open'); btn.classList.add('expanded'); if (!audioLoaded[type] && audioFileIds[type]) loadAudio(type, audioFileIds[type]); }
         }
-
         function loadAudio(type, fileId) {
             var loading = document.getElementById(type + 'Loading');
             loading.style.display = 'block';
@@ -501,156 +467,102 @@
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     if (data.error) { loading.textContent = '음원을 불러올 수 없습니다'; return; }
-                    var audio = new Audio();
-                    audio.src = data.uri;
-                    audio.volume = 0.5;
-                    audio.preload = 'auto';
-                    audioPlayers[type] = audio;
-                    audioLoaded[type] = true;
-                    audio.addEventListener('loadedmetadata', function() {
-                        document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
-                        loading.style.display = 'none';
-                    });
+                    var audio = new Audio(); audio.src = data.uri; audio.volume = 0.5; audio.preload = 'auto';
+                    audioPlayers[type] = audio; audioLoaded[type] = true;
+                    audio.addEventListener('loadedmetadata', function() { document.getElementById(type + 'Duration').textContent = formatTime(audio.duration); loading.style.display = 'none'; });
                     audio.addEventListener('ended', function() {
                         document.getElementById(type + 'PlayBtn').textContent = '▶';
                         document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.remove('playing');
                         clearInterval(playerIntervals[type]);
-                        if (type === 'theme' && bgmType === 'theme') {
-                            audio.currentTime = 0;
-                            audio.play().catch(function() {});
-                        } else if (bgmType === type) {
-                            document.getElementById('bgmBar').classList.remove('active');
-                            bgmType = null;
-                        }
+                        if (type === 'theme' && bgmType === 'theme') { audio.currentTime = 0; audio.play().catch(function() {}); }
+                        else if (bgmType === type) { document.getElementById('bgmBar').classList.remove('active'); bgmType = null; }
                     });
                     setTimeout(function() { if (loading.style.display !== 'none') loading.style.display = 'none'; }, 5000);
                 })
                 .catch(function(err) { console.error('Audio load error:', err); document.getElementById(type + 'Loading').textContent = '음원을 불러올 수 없습니다'; });
         }
-
         function playPause(type) {
-            var audio = audioPlayers[type];
-            if (!audio) return;
+            var audio = audioPlayers[type]; if (!audio) return;
             if (audio.paused) {
                 Object.keys(audioPlayers).forEach(function(k) {
                     if (k !== type && audioPlayers[k] && !audioPlayers[k].paused) {
-                        audioPlayers[k].pause();
-                        document.getElementById(k + 'PlayBtn').textContent = '▶';
-                        document.getElementById('btn' + k.charAt(0).toUpperCase() + k.slice(1)).classList.remove('playing');
-                        clearInterval(playerIntervals[k]);
+                        audioPlayers[k].pause(); document.getElementById(k + 'PlayBtn').textContent = '▶';
+                        document.getElementById('btn' + k.charAt(0).toUpperCase() + k.slice(1)).classList.remove('playing'); clearInterval(playerIntervals[k]);
                     }
                 });
                 audio.play().then(function() {
                     document.getElementById(type + 'PlayBtn').textContent = '⏸';
                     document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('playing');
                     bgmType = type;
-                    document.getElementById('bgmBar').classList.add('active');
-                    document.getElementById('bgmBtn').textContent = '⏸';
+                    document.getElementById('bgmBar').classList.add('active'); document.getElementById('bgmBtn').textContent = '⏸';
                     document.getElementById('bgmTitle').textContent = '♪ ' + (document.getElementById(type + 'Title').textContent || '재생 중');
                     document.getElementById('bgmSub').textContent = '배경음악 재생 중';
                     playerIntervals[type] = setInterval(function() { updateProgress(type); }, 250);
                 }).catch(function(e) { console.error('Play error:', e); });
             } else {
-                audio.pause();
-                document.getElementById(type + 'PlayBtn').textContent = '▶';
+                audio.pause(); document.getElementById(type + 'PlayBtn').textContent = '▶';
                 document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.remove('playing');
-                document.getElementById('bgmBtn').textContent = '▶';
-                document.getElementById('bgmSub').textContent = '일시정지';
+                document.getElementById('bgmBtn').textContent = '▶'; document.getElementById('bgmSub').textContent = '일시정지';
                 clearInterval(playerIntervals[type]);
             }
         }
-
         function updateProgress(type) {
-            var audio = audioPlayers[type];
-            if (!audio || !audio.duration) return;
-            var pct = (audio.currentTime / audio.duration) * 100;
-            document.getElementById(type + 'Progress').value = pct;
+            var audio = audioPlayers[type]; if (!audio || !audio.duration) return;
+            document.getElementById(type + 'Progress').value = (audio.currentTime / audio.duration) * 100;
             document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
         }
-
         function seek(type) {
-            var audio = audioPlayers[type];
-            if (!audio || !audio.duration) return;
-            var val = document.getElementById(type + 'Progress').value;
-            audio.currentTime = (val / 100) * audio.duration;
+            var audio = audioPlayers[type]; if (!audio || !audio.duration) return;
+            audio.currentTime = (document.getElementById(type + 'Progress').value / 100) * audio.duration;
         }
 
-        /* ── BGM 바 컨트롤 ── */
+        /* ── BGM 바 ── */
         function toggleBgm() {
             if (!bgmType || !audioPlayers[bgmType]) return;
             var audio = audioPlayers[bgmType];
             if (audio.paused) {
                 audio.play().then(function() {
-                    document.getElementById('bgmBtn').textContent = '⏸';
-                    document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+                    document.getElementById('bgmBtn').textContent = '⏸'; document.getElementById('bgmSub').textContent = '배경음악 재생 중';
                     document.getElementById(bgmType + 'PlayBtn').textContent = '⏸';
                     document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.add('playing');
                 }).catch(function() {});
             } else {
-                audio.pause();
-                document.getElementById('bgmBtn').textContent = '▶';
-                document.getElementById('bgmSub').textContent = '일시정지';
+                audio.pause(); document.getElementById('bgmBtn').textContent = '▶'; document.getElementById('bgmSub').textContent = '일시정지';
                 document.getElementById(bgmType + 'PlayBtn').textContent = '▶';
                 document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.remove('playing');
             }
         }
 
-        /* ── 공유 기능 ── */
+        /* ── 공유 ── */
         function shareKakao() {
             if (!window.Kakao) { showToast('카카오 SDK를 불러올 수 없습니다'); return; }
-            if (!Kakao.isInitialized()) {
-                try { Kakao.init(KAKAO_KEY); } catch(e) { showToast('카카오 초기화 실패'); return; }
-            }
+            if (!Kakao.isInitialized()) { try { Kakao.init(KAKAO_KEY); } catch(e) { showToast('카카오 초기화 실패'); return; } }
             var shareUrl = window.location.href;
-            var nameText = certData.name || '당신';
             var soreText = certData.soreLine ? '"' + certData.soreLine.replace(/\//g, ' ') + '"' : '';
-            var desc = soreText || (nameText + '님의 운명 분석이 완성되었습니다');
+            var desc = soreText || ((certData.name || '당신') + '님의 운명 분석이 완성되었습니다');
             try {
                 Kakao.Share.sendDefault({
                     objectType: 'feed',
-                    content: {
-                        title: '나를읽다 연구소 — 운명 보증서',
-                        description: desc,
-                        imageUrl: 'https://readmelab.github.io/og-image.png',
-                        link: { mobileWebUrl: shareUrl, webUrl: shareUrl }
-                    },
+                    content: { title: '나를읽다 연구소 — 운명 보증서', description: desc, imageUrl: 'https://readmelab.github.io/og-image.png', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } },
                     buttons: [{ title: '보증서 확인하기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }]
                 });
             } catch(e) { console.error('Kakao share error:', e); showToast('카카오톡 공유에 실패했습니다'); }
         }
-
         function shareLink() {
             var url = window.location.href;
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function() {
-                    showToast('링크가 복사되었습니다');
-                }).catch(function() {
-                    fallbackCopy(url);
-                });
-            } else {
-                fallbackCopy(url);
-            }
+                navigator.clipboard.writeText(url).then(function() { showToast('링크가 복사되었습니다'); }).catch(function() { fallbackCopy(url); });
+            } else { fallbackCopy(url); }
         }
-
         function fallbackCopy(text) {
-            var ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
+            var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+            document.body.appendChild(ta); ta.select();
             try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); } catch(e) { showToast('복사에 실패했습니다'); }
             document.body.removeChild(ta);
         }
-
         function shareNative() {
             if (navigator.share) {
-                var nameText = certData.name || '당신';
-                navigator.share({
-                    title: '나를읽다 연구소 — 운명 보증서',
-                    text: nameText + '님의 운명 분석 결과를 확인해보세요',
-                    url: window.location.href
-                }).catch(function() {});
+                navigator.share({ title: '나를읽다 연구소 — 운명 보증서', text: (certData.name || '당신') + '님의 운명 분석 결과를 확인해보세요', url: window.location.href }).catch(function() {});
             }
         }
     </script>
