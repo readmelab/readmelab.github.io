@@ -8,14 +8,13 @@
     <meta property="og:description" content="당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.">
     <meta property="og:image" content="https://readmelab.github.io/og-image.png">
     <meta property="og:type" content="website">
-    <!-- ★ NEW: Kakao SDK -->
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtSmLQ4KwPaoqAfyA/DfmEc1VDxu4kyatih8vCpeYf4q" crossorigin="anonymous"></script>
+    <!-- ★ FIX: Kakao SDK 2.7.9 (integrity 제거로 로딩 차단 방지) -->
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.9/kakao.min.js" crossorigin="anonymous"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #0a0a14; color: #f5f0e8; font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; overflow-x: hidden; }
         .container { max-width: 480px; width: 100%; text-align: center; }
-
         .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; }
         .loading .spinner { width: 40px; height: 40px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -23,7 +22,6 @@
         .error { display: none; min-height: 60vh; flex-direction: column; align-items: center; justify-content: center; }
         .error h2 { font-family: 'Noto Serif KR', serif; color: #c9a84c; font-size: 20px; margin-bottom: 12px; }
         .error p { color: #8a7a5a; font-size: 14px; }
-
         .intro { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; position: relative; }
         .intro-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; }
         .intro-glow { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 40%, transparent 70%); border-radius: 50%; animation: glowPulse 3s ease-in-out infinite; }
@@ -39,7 +37,6 @@
         .particle:nth-child(7) { left: 50%; top: 15%; animation-delay: 0.8s; }
         .particle:nth-child(8) { left: 30%; top: 45%; animation-delay: 1.8s; }
         @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(1); } 30% { opacity: 0.8; } 70% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40px) scale(0.5); } }
-
         .intro-content { position: relative; z-index: 1; }
         .intro-line { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #c9a84c, transparent); margin: 0 auto 24px; opacity: 0; animation: introFadeIn 1s ease forwards 0.2s; }
         .intro-brand { font-family: 'Noto Serif KR', serif; font-size: 13px; color: #c9a84c; letter-spacing: 6px; margin-bottom: 20px; opacity: 0; animation: introFadeIn 1s ease forwards 0.4s; }
@@ -53,13 +50,11 @@
         .intro-btn:hover::before { width: 300px; height: 300px; }
         .intro-line-bottom { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, #c9a84c33, transparent); margin: 40px auto 0; opacity: 0; animation: introFadeIn 1s ease forwards 1.4s; }
         @keyframes introFadeIn { to { opacity: 1; } }
-
         .intro.fade-out { animation: fadeOut 1s ease forwards; }
         @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
         .certificate { display: none; opacity: 0; }
         .certificate.fade-in { animation: certFadeIn 1.5s ease forwards; }
         @keyframes certFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
         .top-ornament { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; gap: 12px; }
         .top-ornament .line { height: 1px; width: 60px; background: linear-gradient(90deg, transparent, #c9a84c, transparent); }
         .top-ornament .diamond { color: #c9a84c; font-size: 10px; }
@@ -75,7 +70,6 @@
         .message { font-size: 14px; color: #a09880; line-height: 1.8; margin-bottom: 36px; font-weight: 300; }
         .sore-line { font-family: 'Noto Serif KR', serif; font-size: 20px; color: #c9a84c; font-weight: 700; line-height: 2.2; letter-spacing: 1px; text-shadow: 0 0 30px rgba(201,168,76,0.2); }
         .product-tag { display: inline-block; padding: 4px 16px; border: 1px solid #c9a84c33; border-radius: 20px; font-size: 12px; color: #c9a84c; margin-bottom: 24px; letter-spacing: 1px; }
-
         .buttons { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
         .btn-item { margin-bottom: 12px; }
         .btn { display: none; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px; background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s ease; letter-spacing: 1px; cursor: pointer; width: 100%; }
@@ -84,7 +78,6 @@
         .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: #c9a84c88; box-shadow: 0 0 20px rgba(201,168,76,0.15); transform: translateY(-1px); }
         .btn .icon { font-size: 18px; }
         .btn.expanded { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
-
         .player-wrap { display: none; border: 1px solid #c9a84c33; border-top: none; border-radius: 0 0 8px 8px; background: linear-gradient(135deg, #12121f, #0e0e1a); padding: 20px 16px; margin-top: -1px; }
         .player-wrap.open { display: block; }
         .player-visual { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
@@ -108,18 +101,15 @@
         .player-download:hover { color: #c9a84c; border-color: #c9a84c66; }
         .player-loading { text-align: center; color: #8a7a5a; font-size: 12px; padding: 10px 0; display: none; }
         .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
-
         .bgm-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, #12121f, #0e0e1a); border-top: 1px solid #c9a84c33; padding: 10px 16px; z-index: 9998; }
         .bgm-bar.active { display: flex; align-items: center; gap: 12px; }
         .bgm-bar-info { flex: 1; min-width: 0; }
         .bgm-bar-title { font-size: 12px; color: #c9a84c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .bgm-bar-sub { font-size: 10px; color: #6a6050; margin-top: 2px; }
         .bgm-bar-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #c9a84c66; background: transparent; color: #c9a84c; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-
         .footer { margin-top: 40px; padding-top: 24px; padding-bottom: 60px; }
         .footer-brand { font-family: 'Noto Serif KR', serif; font-size: 12px; color: #5a5040; letter-spacing: 2px; }
         .footer-sub { font-size: 11px; color: #3a3530; margin-top: 4px; }
-
         .pdf-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; background: #0a0a14; flex-direction: column; }
         .pdf-overlay.open { display: flex; }
         .pdf-overlay-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #0f0f1a; border-bottom: 1px solid #c9a84c33; flex-shrink: 0; }
@@ -133,8 +123,6 @@
         .pdf-overlay-frame { width: 100%; height: 100%; border: none; background: #1a1a2e; }
         .pdf-overlay-loading { display: flex; align-items: center; justify-content: center; height: 100%; color: #8a7a5a; font-size: 14px; flex-direction: column; gap: 16px; }
         .pdf-overlay-loading .spinner { width: 32px; height: 32px; border: 2px solid #c9a84c33; border-top: 2px solid #c9a84c; border-radius: 50%; animation: spin 1s linear infinite; }
-
-        /* ★ NEW: 공유 버튼 영역 */
         .share-section { margin-top: 32px; margin-bottom: 16px; }
         .share-title { font-size: 12px; color: #6a6050; letter-spacing: 2px; margin-bottom: 16px; }
         .share-buttons { display: flex; justify-content: center; gap: 16px; }
@@ -144,12 +132,8 @@
         .share-btn-kakao { border-color: #FEE50044; }
         .share-btn-kakao:hover { border-color: #FEE500; background: #FEE50011; }
         .share-btn-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #6a6050; white-space: nowrap; }
-
-        /* ★ NEW: 토스트 알림 */
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: linear-gradient(135deg, #2a2a3e, #1a1a2e); border: 1px solid #c9a84c66; color: #c9a84c; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 10000; opacity: 0; transition: all 0.3s ease; pointer-events: none; white-space: nowrap; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        /* ★ NEW: 공유 카드 캔버스 (숨김) */
         #shareCardCanvas { display: none; }
     </style>
 </head>
@@ -157,7 +141,6 @@
     <div class="container">
         <div class="loading" id="loading"><div class="spinner"></div><p>보증서를 불러오고 있습니다...</p></div>
         <div class="error" id="error"><h2>보증서를 찾을 수 없습니다</h2><p>링크를 다시 확인해주세요</p></div>
-
         <div class="intro" id="intro">
             <div class="intro-bg">
                 <div class="intro-glow"></div>
@@ -176,7 +159,6 @@
                 <div class="intro-line-bottom"></div>
             </div>
         </div>
-
         <div class="certificate" id="certificate">
             <div class="top-ornament"><div class="line"></div><div class="diamond">◆</div><div class="line"></div></div>
             <div class="brand">나를읽다</div>
@@ -223,8 +205,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- ★ NEW: 공유 버튼 -->
             <div class="share-section">
                 <div class="share-title">공유하기</div>
                 <div class="share-buttons">
@@ -242,18 +222,13 @@
                     </button>
                 </div>
             </div>
-
             <div class="footer"><div class="divider"></div><div class="footer-brand">나를읽다 연구소</div><div class="footer-sub">사주 & MBTI 운명 분석</div></div>
         </div>
     </div>
-
-    <!-- 배경음악 바 -->
     <div class="bgm-bar" id="bgmBar">
         <button class="bgm-bar-btn" id="bgmBtn" onclick="toggleBgm()">⏸</button>
         <div class="bgm-bar-info"><div class="bgm-bar-title" id="bgmTitle">♪ 맞춤형 음원</div><div class="bgm-bar-sub" id="bgmSub">배경음악 재생 중</div></div>
     </div>
-
-    <!-- PDF 오버레이 -->
     <div class="pdf-overlay" id="pdfOverlay">
         <div class="pdf-overlay-header">
             <div class="pdf-overlay-title" id="pdfOverlayTitle">📜 사주 분석 리포트</div>
@@ -267,27 +242,23 @@
             <iframe class="pdf-overlay-frame" id="pdfOverlayFrame" src="" style="display:none;"></iframe>
         </div>
     </div>
-
-    <!-- ★ NEW: 토스트 -->
     <div class="toast" id="toast"></div>
-
-    <!-- ★ NEW: 공유 카드용 캔버스 -->
     <canvas id="shareCardCanvas" width="600" height="400"></canvas>
 
     <script>
         var PROXY_URL = 'https://script.google.com/macros/s/AKfycbwmOwIYOV-dTqynZDAAYnJwWW9wOZubnpTducblAZOuPNUT36-q3r6LORlmZiqAyS0g/exec';
-        var KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815'; /* ★ NEW */
+        var KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
 
         var urlParams = new URLSearchParams(window.location.search);
         var code = urlParams.get('c');
         if (!code) { showError(); } else { loadCertificate(code); }
 
-        /* ★ NEW: Kakao SDK 초기화 */
+        /* Kakao SDK 초기화 */
         if (window.Kakao && !Kakao.isInitialized()) {
             Kakao.init(KAKAO_KEY);
         }
 
-        /* ★ NEW: Web Share API 지원 시 "더보기" 버튼 표시 */
+        /* Web Share API 지원 시 "더보기" 버튼 표시 */
         if (navigator.share) {
             document.getElementById('shareNativeBtn').style.display = 'flex';
         }
@@ -301,37 +272,26 @@
             if (m) return m[1];
             return null;
         }
-
         function toViewLink(url) {
             var id = extractFileId(url);
             if (!id) return url;
             return 'https://drive.google.com/file/d/' + id + '/view';
         }
-
         function buildPdfUrls(rawUrl) {
             if (!rawUrl) return { embed: '', download: '' };
             var fileId = extractFileId(rawUrl);
             if (!fileId) return { embed: rawUrl, download: rawUrl };
             if (rawUrl.indexOf('docs.google.com/document') !== -1) {
-                return {
-                    embed: 'https://docs.google.com/document/d/' + fileId + '/preview',
-                    download: 'https://docs.google.com/document/d/' + fileId + '/export?format=pdf'
-                };
+                return { embed: 'https://docs.google.com/document/d/' + fileId + '/preview', download: 'https://docs.google.com/document/d/' + fileId + '/export?format=pdf' };
             }
-            return {
-                embed: 'https://drive.google.com/file/d/' + fileId + '/preview',
-                download: 'https://drive.google.com/uc?export=download&id=' + fileId
-            };
+            return { embed: 'https://drive.google.com/file/d/' + fileId + '/preview', download: 'https://drive.google.com/uc?export=download&id=' + fileId };
         }
-
         function formatTime(sec) {
             if (!sec || isNaN(sec)) return '0:00';
             var m = Math.floor(sec / 60);
             var s = Math.floor(sec % 60);
             return m + ':' + (s < 10 ? '0' : '') + s;
         }
-
-        /* ★ NEW: 토스트 표시 */
         function showToast(msg) {
             var toast = document.getElementById('toast');
             toast.textContent = msg;
@@ -349,13 +309,12 @@
         var bgmPreloaded = false;
         var certData = {};
 
-        /* ── 데이터 로드 (API 방식) ── */
+        /* ── 데이터 로드 ── */
         async function loadCertificate(code) {
             try {
                 var response = await fetch(PROXY_URL + '?cert=' + encodeURIComponent(code));
                 var d = await response.json();
                 if (d.error) { showError(); return; }
-
                 certData = {
                     name: d.name || '', name2: d.name2 || '', product: d.product || '',
                     pdfLink: d.pdfLink || '', pdfName: d.pdfName || '',
@@ -367,30 +326,20 @@
                     voiceDesc: (d.voiceDesc || '').trim(),
                     healingDesc: (d.healingDesc || '').trim()
                 };
-
                 var isCouple = certData.product.indexOf('우리') !== -1;
                 var nameText = certData.name;
                 if (isCouple && certData.name2) nameText += ' & ' + certData.name2;
-                document.getElementById('introTitle').textContent =
-                    nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
+                document.getElementById('introTitle').textContent = nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
                 if (certData.soreLine) {
-                    document.getElementById('introSore').innerHTML =
-                        '"' + certData.soreLine.replace(/\//g, '<br>') + '"';
+                    document.getElementById('introSore').innerHTML = '"' + certData.soreLine.replace(/\//g, '<br>') + '"';
                 }
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('intro').style.display = 'flex';
-
                 if (certData.themeLink) {
                     var themeFileId = extractFileId(certData.themeLink);
-                    if (themeFileId) {
-                        audioFileIds['theme'] = themeFileId;
-                        preloadBgm(themeFileId);
-                    }
+                    if (themeFileId) { audioFileIds['theme'] = themeFileId; preloadBgm(themeFileId); }
                 }
-            } catch (e) {
-                console.error('loadCertificate error:', e);
-                showError();
-            }
+            } catch (e) { console.error('loadCertificate error:', e); showError(); }
         }
 
         /* ── BGM 미리 로딩 ── */
@@ -419,18 +368,16 @@
                 .catch(function(err) { console.error('BGM preload fetch error:', err); });
         }
 
-        /* ── 진입 연출 (v5.3 BGM autoplay 수정) ── */
+        /* ── 진입 연출 ── */
         function enterCertificate() {
             var intro = document.getElementById('intro');
-            var cert  = document.getElementById('certificate');
-            var d     = certData;
-            var isCouple     = d.product.indexOf('우리') !== -1;
+            var cert = document.getElementById('certificate');
+            var d = certData;
+            var isCouple = d.product.indexOf('우리') !== -1;
             var subtitleText = isCouple ? '두 분을 위한' : '당신만을 위한';
 
-            var bgmAttempted = false;
             if (bgmPreloaded && audioPlayers['theme']) {
                 tryStartBgm();
-                bgmAttempted = true;
             } else if (audioPlayers['theme']) {
                 audioPlayers['theme'].play().then(function() {
                     audioPlayers['theme'].pause();
@@ -444,334 +391,297 @@
                 document.getElementById('nameDivider').style.display = 'flex';
                 document.getElementById('clientName2').style.display = 'block';
                 document.getElementById('clientName2').textContent = d.name2;
-            }
-            if (isCouple) {
                 document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
                 document.getElementById('honorific').textContent = '님의 궁합 분석이 완성되었습니다';
-                document.getElementById('message').innerHTML =
-                    '두 분의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다';
             }
-            if (d.soreLine) {
-                document.getElementById('message').innerHTML =
-                    '<span class="sore-line">"' + d.soreLine.replace(/\//g, '<br>') + '"</span>';
-            }
+
             if (d.pdfLink) {
                 var pdfUrls = buildPdfUrls(d.pdfLink);
-                pdfViewerData.embedUrl    = pdfUrls.embed;
-                pdfViewerData.downloadUrl = pdfUrls.download;
-                pdfViewerData.title       = d.pdfName || '사주 분석 리포트';
+                pdfViewerData = { embedUrl: pdfUrls.embed, downloadUrl: pdfUrls.download, title: d.pdfName || '사주 분석 리포트' };
                 document.getElementById('btnPdf').classList.add('active');
                 if (d.pdfName) document.getElementById('btnPdfText').textContent = d.pdfName;
             }
-            if (d.themeLink) {
-                document.getElementById('btnTheme').classList.add('active');
-                if (d.themeName) document.getElementById('btnThemeText').textContent = d.themeName;
-                document.getElementById('themeTitle').textContent    = d.themeName || '맞춤형 음원';
-                document.getElementById('themeSubtitle').textContent = subtitleText + ' 음원';
-                document.getElementById('themeDownload').href        = toViewLink(d.themeLink);
-                audioFileIds['theme'] = extractFileId(d.themeLink);
-                if (d.themeDesc) {
-                    document.getElementById('themeDesc').textContent   = d.themeDesc;
-                    document.getElementById('themeDesc').style.display = 'block';
+
+            ['theme','voice','healing'].forEach(function(type) {
+                var link = d[type + 'Link'];
+                var name = d[type + 'Name'];
+                var desc = d[type + 'Desc'];
+                if (link) {
+                    document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+                    if (name) {
+                        document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1) + 'Text').textContent = name;
+                        document.getElementById(type + 'Title').textContent = name;
+                    }
+                    document.getElementById(type + 'Subtitle').textContent = subtitleText + (type === 'theme' ? ' 음원' : type === 'voice' ? ' 해설' : ' 음악');
+                    if (desc) {
+                        document.getElementById(type + 'Desc').textContent = desc;
+                        document.getElementById(type + 'Desc').style.display = 'block';
+                    }
+                    var fid = extractFileId(link);
+                    if (fid) {
+                        audioFileIds[type] = fid;
+                        document.getElementById(type + 'Download').href = 'https://drive.google.com/uc?export=download&id=' + fid;
+                    }
                 }
-            }
-            if (d.voiceLink) {
-                document.getElementById('btnVoice').classList.add('active');
-                if (d.voiceName) document.getElementById('btnVoiceText').textContent = d.voiceName;
-                document.getElementById('voiceTitle').textContent    = d.voiceName || '음성 해설';
-                document.getElementById('voiceSubtitle').textContent = subtitleText + ' 해설';
-                document.getElementById('voiceDownload').href        = toViewLink(d.voiceLink);
-                audioFileIds['voice'] = extractFileId(d.voiceLink);
-                if (d.voiceDesc) {
-                    document.getElementById('voiceDesc').textContent   = d.voiceDesc;
-                    document.getElementById('voiceDesc').style.display = 'block';
-                }
-            }
-            if (d.healingLink) {
-                document.getElementById('btnHealing').classList.add('active');
-                if (d.healingName) document.getElementById('btnHealingText').textContent = d.healingName;
-                document.getElementById('healingTitle').textContent    = d.healingName || '힐링음악';
-                document.getElementById('healingSubtitle').textContent = subtitleText + ' 음악';
-                document.getElementById('healingDownload').href        = toViewLink(d.healingLink);
-                audioFileIds['healing'] = extractFileId(d.healingLink);
-                if (d.healingDesc) {
-                    document.getElementById('healingDesc').textContent   = d.healingDesc;
-                    document.getElementById('healingDesc').style.display = 'block';
-                }
+            });
+
+            if (d.soreLine) {
+                var soreDiv = document.createElement('div');
+                soreDiv.className = 'sore-line';
+                soreDiv.innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"';
+                var msgEl = document.getElementById('message');
+                msgEl.parentNode.insertBefore(soreDiv, msgEl);
+                msgEl.style.marginTop = '24px';
             }
 
             intro.classList.add('fade-out');
             setTimeout(function() {
                 intro.style.display = 'none';
-                cert.style.display  = 'block';
+                cert.style.display = 'block';
                 cert.classList.add('fade-in');
-                if (!bgmAttempted && audioFileIds['theme']) {
-                    if (bgmPreloaded && audioPlayers['theme']) {
-                        tryStartBgm();
-                    } else {
-                        var waitBgm = setInterval(function() {
-                            if (bgmPreloaded && audioPlayers['theme']) {
-                                clearInterval(waitBgm);
-                                tryStartBgm();
-                            }
-                        }, 500);
-                        setTimeout(function() { clearInterval(waitBgm); }, 15000);
-                    }
-                }
             }, 1000);
         }
 
+        /* ── BGM 시작 ── */
         function tryStartBgm() {
             var audio = audioPlayers['theme'];
             if (!audio) return;
-            bgmType = 'theme';
+            audio.volume = 0;
             audio.play().then(function() {
+                bgmType = 'theme';
                 var vol = 0;
                 var fadeIn = setInterval(function() {
                     vol += 0.05;
-                    if (vol >= 1) { vol = 1; clearInterval(fadeIn); }
+                    if (vol >= 0.3) { vol = 0.3; clearInterval(fadeIn); }
                     audio.volume = vol;
                 }, 100);
                 document.getElementById('bgmBar').classList.add('active');
+                document.getElementById('bgmBtn').textContent = '⏸';
                 document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-                document.getElementById('bgmBtn').textContent   = '⏸';
-                document.getElementById('bgmSub').textContent    = '배경음악 재생 중';
+                document.getElementById('bgmSub').textContent = '배경음악 재생 중';
                 document.getElementById('themePlayBtn').textContent = '⏸';
                 document.getElementById('btnTheme').classList.add('playing');
-                startProgress('theme');
-            }).catch(function(err) {
-                console.warn('BGM autoplay blocked:', err);
+                startProgressUpdate('theme');
+            }).catch(function() {
+                console.warn('BGM autoplay blocked');
                 document.getElementById('bgmBar').classList.add('active');
+                document.getElementById('bgmBtn').textContent = '▶';
                 document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-                document.getElementById('bgmBtn').textContent   = '▶';
-                document.getElementById('bgmSub').textContent    = '터치하여 재생';
+                document.getElementById('bgmSub').textContent = '터치하여 재생';
             });
         }
 
+        /* ── BGM 토글 ── */
         function toggleBgm() {
-            if (!bgmType && audioPlayers['theme'] && audioLoaded['theme']) {
-                bgmType = 'theme';
+            if (bgmType && audioPlayers[bgmType]) {
+                var a = audioPlayers[bgmType];
+                if (a.paused) {
+                    a.play().then(function() {
+                        document.getElementById('bgmBtn').textContent = '⏸';
+                        document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+                        document.getElementById(bgmType + 'PlayBtn').textContent = '⏸';
+                        document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.add('playing');
+                        startProgressUpdate(bgmType);
+                    }).catch(function() {});
+                } else {
+                    a.pause();
+                    document.getElementById('bgmBtn').textContent = '▶';
+                    document.getElementById('bgmSub').textContent = '일시정지';
+                    document.getElementById(bgmType + 'PlayBtn').textContent = '▶';
+                    document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.remove('playing');
+                    stopProgressUpdate(bgmType);
+                }
+            } else if (audioPlayers['theme']) {
+                var audio = audioPlayers['theme'];
+                audio.volume = 0.3;
+                audio.play().then(function() {
+                    bgmType = 'theme';
+                    document.getElementById('bgmBtn').textContent = '⏸';
+                    document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+                    document.getElementById('themePlayBtn').textContent = '⏸';
+                    document.getElementById('btnTheme').classList.add('playing');
+                    startProgressUpdate('theme');
+                }).catch(function() {});
             }
-            if (!bgmType || !audioPlayers[bgmType]) return;
-            var audio = audioPlayers[bgmType];
-            if (audio.paused) {
-                audio.volume = 1;
-                audio.play().catch(function() {});
-                document.getElementById('bgmBtn').textContent = '⏸';
-                document.getElementById('bgmSub').textContent  = '배경음악 재생 중';
-                document.getElementById(bgmType + 'PlayBtn').textContent = '⏸';
-                document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.add('playing');
-                startProgress(bgmType);
-            } else {
-                audio.pause();
-                document.getElementById('bgmBtn').textContent = '▶';
-                document.getElementById(bgmType + 'PlayBtn').textContent = '▶';
-                document.getElementById('btn' + bgmType.charAt(0).toUpperCase() + bgmType.slice(1)).classList.remove('playing');
-            }
         }
 
-        /* ── PDF 뷰어 ── */
-        function openPdfViewer() {
-            if (!pdfViewerData.embedUrl) return;
-            var overlay = document.getElementById('pdfOverlay');
-            var frame   = document.getElementById('pdfOverlayFrame');
-            var loading = document.getElementById('pdfOverlayLoading');
-            document.getElementById('pdfOverlayTitle').textContent = '📜 ' + pdfViewerData.title;
-            document.getElementById('pdfOverlayDownload').href     = pdfViewerData.downloadUrl;
-            loading.style.display = 'flex';
-            frame.style.display   = 'none';
-            overlay.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            frame.onload = function() { loading.style.display = 'none'; frame.style.display = 'block'; };
-            frame.src = pdfViewerData.embedUrl;
-        }
-
-        function closePdfViewer() {
-            document.getElementById('pdfOverlay').classList.remove('open');
-            document.body.style.overflow = '';
-            document.getElementById('pdfOverlayFrame').src = '';
-        }
-
-        /* ── 플레이어 ── */
+        /* ── 플레이어 토글 ── */
         function togglePlayer(type) {
             var wrap = document.getElementById('player' + type.charAt(0).toUpperCase() + type.slice(1));
-            var btn  = document.getElementById('btn'    + type.charAt(0).toUpperCase() + type.slice(1));
-            var isOpen = wrap.classList.contains('open');
-            ['theme', 'voice', 'healing'].forEach(function(t) {
-                if (t !== type) {
-                    var w = document.getElementById('player' + t.charAt(0).toUpperCase() + t.slice(1));
-                    var b = document.getElementById('btn'    + t.charAt(0).toUpperCase() + t.slice(1));
-                    if (w) w.classList.remove('open');
-                    if (b) b.classList.remove('expanded');
+            var btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+            if (wrap.classList.contains('open')) {
+                wrap.classList.remove('open');
+                btn.classList.remove('expanded');
+            } else {
+                wrap.classList.add('open');
+                btn.classList.add('expanded');
+                if (!audioLoaded[type] && audioFileIds[type]) {
+                    loadAudio(type, audioFileIds[type]);
                 }
-            });
-            if (isOpen) { wrap.classList.remove('open'); btn.classList.remove('expanded'); }
-            else { wrap.classList.add('open'); btn.classList.add('expanded'); }
+            }
         }
 
-        function loadAndPlay(type) {
-            if (audioLoaded[type]) { playPause(type); return; }
-            var fileId = audioFileIds[type];
-            if (!fileId) return;
+        /* ── 오디오 로드 ── */
+        function loadAudio(type, fileId) {
             var loadingEl = document.getElementById(type + 'Loading');
-            if (loadingEl) loadingEl.style.display = 'block';
-            ['theme', 'voice', 'healing'].forEach(function(t) {
-                if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
-                    audioPlayers[t].pause();
-                    document.getElementById(t + 'PlayBtn').textContent = '▶';
-                    document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('playing');
-                }
-            });
+            loadingEl.style.display = 'block';
+            if (type === 'theme' && audioPlayers['theme'] && audioLoaded['theme']) {
+                loadingEl.style.display = 'none';
+                return;
+            }
             fetch(PROXY_URL + '?id=' + fileId)
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
-                    if (loadingEl) loadingEl.style.display = 'none';
-                    if (data.error) { console.error('Proxy error:', data.error); return; }
+                    loadingEl.style.display = 'none';
+                    if (data.error) { console.error('Audio load error:', data.error); return; }
                     var audio = new Audio();
                     audio.src = data.uri;
+                    audio.preload = 'auto';
                     audioPlayers[type] = audio;
-                    audioLoaded[type]  = true;
+                    audioLoaded[type] = true;
                     audio.addEventListener('loadedmetadata', function() {
                         document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
                     });
                     audio.addEventListener('ended', function() {
                         document.getElementById(type + 'PlayBtn').textContent = '▶';
                         document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.remove('playing');
-                        if (bgmType === type) { document.getElementById('bgmBar').classList.remove('active'); bgmType = null; }
-                        if (playerIntervals[type]) clearInterval(playerIntervals[type]);
+                        stopProgressUpdate(type);
+                        if (bgmType === type) {
+                            document.getElementById('bgmBar').classList.remove('active');
+                            bgmType = null;
+                        }
                     });
-                    audio.play().catch(function(err) { console.warn('play error:', err); });
-                    document.getElementById(type + 'PlayBtn').textContent = '⏸';
-                    document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('playing');
-                    startProgress(type);
-                    if (type === 'theme') {
-                        bgmType = 'theme';
-                        document.getElementById('bgmBar').classList.add('active');
-                        document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-                        document.getElementById('bgmBtn').textContent   = '⏸';
-                        document.getElementById('bgmSub').textContent    = '배경음악 재생 중';
-                    }
                 })
-                .catch(function(err) { if (loadingEl) loadingEl.style.display = 'none'; console.error('Fetch error:', err); });
+                .catch(function(err) { loadingEl.style.display = 'none'; console.error('Audio fetch error:', err); });
         }
 
+        /* ── 재생/일시정지 ── */
         function playPause(type) {
+            if (!audioPlayers[type]) {
+                if (audioFileIds[type]) loadAudio(type, audioFileIds[type]);
+                return;
+            }
             var audio = audioPlayers[type];
-            if (!audio || !audioLoaded[type]) { loadAndPlay(type); return; }
-            var playBtn = document.getElementById(type + 'PlayBtn');
-            var btn     = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
             if (audio.paused) {
-                ['theme', 'voice', 'healing'].forEach(function(t) {
+                ['theme','voice','healing'].forEach(function(t) {
                     if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                         audioPlayers[t].pause();
                         document.getElementById(t + 'PlayBtn').textContent = '▶';
                         document.getElementById('btn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('playing');
+                        stopProgressUpdate(t);
                     }
                 });
-                audio.play().catch(function(err) { console.warn('play error:', err); });
-                playBtn.textContent = '⏸'; btn.classList.add('playing');
-                startProgress(type);
-                if (type === 'theme') {
-                    bgmType = 'theme';
+                audio.volume = 0.8;
+                audio.play().then(function() {
+                    document.getElementById(type + 'PlayBtn').textContent = '⏸';
+                    document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('playing');
+                    bgmType = type;
                     document.getElementById('bgmBar').classList.add('active');
                     document.getElementById('bgmBtn').textContent = '⏸';
-                    document.getElementById('bgmSub').textContent  = '배경음악 재생 중';
-                }
+                    document.getElementById('bgmTitle').textContent = '♪ ' + (certData[type + 'Name'] || '재생 중');
+                    document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+                    startProgressUpdate(type);
+                }).catch(function() {});
             } else {
-                audio.pause(); playBtn.textContent = '▶'; btn.classList.remove('playing');
-                if (bgmType === type) { document.getElementById('bgmBtn').textContent = '▶'; }
+                audio.pause();
+                document.getElementById(type + 'PlayBtn').textContent = '▶';
+                document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.remove('playing');
+                document.getElementById('bgmBtn').textContent = '▶';
+                document.getElementById('bgmSub').textContent = '일시정지';
+                stopProgressUpdate(type);
             }
         }
 
-        function seek(type) {
-            var audio = audioPlayers[type];
-            var progress = document.getElementById(type + 'Progress');
-            if (audio && audio.duration) { audio.currentTime = (progress.value / 100) * audio.duration; }
-        }
-
-        function startProgress(type) {
-            if (playerIntervals[type]) clearInterval(playerIntervals[type]);
+        /* ── 프로그레스 ── */
+        function startProgressUpdate(type) {
+            stopProgressUpdate(type);
             playerIntervals[type] = setInterval(function() {
                 var audio = audioPlayers[type];
-                if (!audio) return;
-                var progress = document.getElementById(type + 'Progress');
-                var current  = document.getElementById(type + 'Current');
-                var duration = document.getElementById(type + 'Duration');
-                if (audio.duration) {
-                    var pct = (audio.currentTime / audio.duration) * 100;
-                    progress.value = pct;
-                    progress.style.background = 'linear-gradient(90deg, #c9a84c ' + pct + '%, #c9a84c22 ' + pct + '%)';
-                    current.textContent  = formatTime(audio.currentTime);
-                    duration.textContent = formatTime(audio.duration);
-                }
-                if (audio.ended) {
-                    document.getElementById(type + 'PlayBtn').textContent = '▶';
-                    document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.remove('playing');
-                    clearInterval(playerIntervals[type]);
-                }
+                if (!audio || audio.paused) return;
+                var pct = (audio.currentTime / audio.duration) * 100;
+                document.getElementById(type + 'Progress').value = pct || 0;
+                document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
             }, 250);
         }
+        function stopProgressUpdate(type) {
+            if (playerIntervals[type]) { clearInterval(playerIntervals[type]); playerIntervals[type] = null; }
+        }
+        function seek(type) {
+            if (!audioPlayers[type]) return;
+            var val = document.getElementById(type + 'Progress').value;
+            audioPlayers[type].currentTime = (val / 100) * audioPlayers[type].duration;
+        }
 
+        /* ── PDF 뷰어 ── */
+        function openPdfViewer() {
+            if (!pdfViewerData.embedUrl) return;
+            document.getElementById('pdfOverlayTitle').textContent = '📜 ' + pdfViewerData.title;
+            document.getElementById('pdfOverlayDownload').href = pdfViewerData.downloadUrl;
+            document.getElementById('pdfOverlayLoading').style.display = 'flex';
+            document.getElementById('pdfOverlayFrame').style.display = 'none';
+            document.getElementById('pdfOverlay').classList.add('open');
+            var frame = document.getElementById('pdfOverlayFrame');
+            frame.onload = function() {
+                document.getElementById('pdfOverlayLoading').style.display = 'none';
+                frame.style.display = 'block';
+            };
+            frame.src = pdfViewerData.embedUrl;
+        }
+        function closePdfViewer() {
+            document.getElementById('pdfOverlay').classList.remove('open');
+            document.getElementById('pdfOverlayFrame').src = '';
+        }
+
+        /* ── 에러 ── */
         function showError() {
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('error').style.display   = 'flex';
+            document.getElementById('error').style.display = 'flex';
         }
 
-        /* ═══════════════════════════════════════
-         *  ★ NEW: 공유 기능
-         * ═══════════════════════════════════════ */
-
-        function getShareUrl() {
-            return window.location.href;
-        }
-
-        function getShareTitle() {
-            var name = certData.name || '';
-            var isCouple = certData.product && certData.product.indexOf('우리') !== -1;
-            if (isCouple && certData.name2) name += ' & ' + certData.name2;
-            return name + '님의 운명 분석 결과';
-        }
-
-        function getShareDesc() {
-            if (certData.soreLine) return certData.soreLine.replace(/\//g, ' ');
-            return '사주 & MBTI 맞춤 운명 분석이 완성되었습니다.';
-        }
-
-        /* ── 카카오톡 공유 ── */
+        /* ★ FIX: 카카오톡 공유 */
         function shareKakao() {
-            if (!window.Kakao || !Kakao.isInitialized()) {
-                showToast('카카오 SDK를 불러오는 중입니다');
+            if (!window.Kakao) {
+                showToast('카카오 SDK를 불러올 수 없습니다');
                 return;
             }
-            Kakao.Share.sendDefault({
-                objectType: 'feed',
-                content: {
-                    title: '나를읽다 연구소',
-                    description: getShareDesc(),
-                    imageUrl: 'https://readmelab.github.io/og-image.png',
-                    link: {
-                        mobileWebUrl: getShareUrl(),
-                        webUrl: getShareUrl()
-                    }
-                },
-                buttons: [
-                    {
+            if (!Kakao.isInitialized()) {
+                try { Kakao.init(KAKAO_KEY); } catch(e) {
+                    console.error('Kakao init error:', e);
+                    showToast('카카오 초기화에 실패했습니다');
+                    return;
+                }
+            }
+            var shareUrl = window.location.href;
+            var nameText = certData.name || '당신';
+            var desc = certData.product
+                ? (nameText + '님의 ' + certData.product + ' 분석이 완성되었습니다')
+                : (nameText + '님의 운명 분석이 완성되었습니다');
+            try {
+                Kakao.Share.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                        title: '나를읽다 연구소 — 운명 보증서',
+                        description: desc,
+                        imageUrl: 'https://readmelab.github.io/og-image.png',
+                        link: { mobileWebUrl: shareUrl, webUrl: shareUrl }
+                    },
+                    buttons: [{
                         title: '보증서 확인하기',
-                        link: {
-                            mobileWebUrl: getShareUrl(),
-                            webUrl: getShareUrl()
-                        }
-                    }
-                ]
-            });
+                        link: { mobileWebUrl: shareUrl, webUrl: shareUrl }
+                    }]
+                });
+            } catch(e) {
+                console.error('Kakao share error:', e);
+                showToast('카카오톡 공유에 실패했습니다');
+            }
         }
 
-        /* ── 링크 복사 ── */
+        /* 링크 복사 */
         function shareLink() {
-            var url = getShareUrl();
+            var url = window.location.href;
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).then(function() {
-                    showToast('링크가 복사되었습니다 ✓');
+                    showToast('링크가 복사되었습니다');
                 }).catch(function() {
                     fallbackCopy(url);
                 });
@@ -779,7 +689,6 @@
                 fallbackCopy(url);
             }
         }
-
         function fallbackCopy(text) {
             var ta = document.createElement('textarea');
             ta.value = text;
@@ -787,24 +696,19 @@
             ta.style.left = '-9999px';
             document.body.appendChild(ta);
             ta.select();
-            try {
-                document.execCommand('copy');
-                showToast('링크가 복사되었습니다 ✓');
-            } catch(e) {
-                showToast('복사에 실패했습니다');
-            }
+            try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); } catch(e) { showToast('복사에 실패했습니다'); }
             document.body.removeChild(ta);
         }
 
-        /* ── 네이티브 공유 (모바일) ── */
+        /* 네이티브 공유 */
         function shareNative() {
-            if (navigator.share) {
-                navigator.share({
-                    title: getShareTitle(),
-                    text: getShareDesc(),
-                    url: getShareUrl()
-                }).catch(function() {});
-            }
+            if (!navigator.share) return;
+            var nameText = certData.name || '당신';
+            navigator.share({
+                title: '나를읽다 연구소 — 운명 보증서',
+                text: nameText + '님의 운명 분석이 완성되었습니다',
+                url: window.location.href
+            }).catch(function() {});
         }
     </script>
 </body>
