@@ -348,6 +348,9 @@
             background: linear-gradient(135deg, #1a1a2e, #16162a);
             color: var(--gold); border-bottom: 2px solid var(--gold);
         }
+        #bgmProgress::-webkit-progress-bar { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        #bgmProgress::-webkit-progress-value { background: var(--gold); border-radius: 2px; }
+        #bgmProgress::-moz-progress-bar { background: var(--gold); border-radius: 2px; }
     </style>
 </head>
 <body>
@@ -605,9 +608,10 @@
 
     <!-- ── BGM 바 ── -->
     <div class="bgm-bar" id="bgmBar">
-        <button class="bgm-bar-btn" id="bgmBtn" onclick="toggleBgm()">⏸</button>
+        <button class="bgm-bar-btn" id="bgmBtn">⏸</button>
         <div class="bgm-bar-info">
             <div class="bgm-bar-title" id="bgmTitle">♪ 맞춤형 음원</div>
+            <progress id="bgmProgress" value="0" max="100" style="width:100%;height:4px;margin:4px 0 2px;appearance:none;-webkit-appearance:none;border:none;background:rgba(255,255,255,0.1);display:block;"></progress>
             <div class="bgm-bar-sub" id="bgmSub">배경음악 재생 중</div>
         </div>
     </div>
@@ -1209,17 +1213,8 @@
     }
 
     function toggleBgm() {
-        var audio = audioPlayers['theme'];
-        if (!audio) return;
-        if (audio.paused) {
-            audio.play().catch(function(){});
-            document.getElementById('bgmBtn').textContent = '⏸';
-            document.getElementById('bgmSub').textContent = '배경음악 재생 중';
-        } else {
-            audio.pause();
-            document.getElementById('bgmBtn').textContent = '▶';
-            document.getElementById('bgmSub').textContent = '일시정지';
-        }
+        if (!bgmType || !audioPlayers[bgmType]) return;
+        playPause(bgmType);
     }
 
     /* ── 플레이어 토글 & 재생 ── */
@@ -1285,6 +1280,14 @@
                     document.getElementById(type + 'PlayBtn').textContent = '▶';
                     document.getElementById('btn' + capitalize(type)).classList.remove('playing');
                     clearInterval(playerIntervals[type]);
+
+                    // BGM 바 리셋
+                    if (bgmType === type) {
+                        document.getElementById('bgmBtn').textContent = '▶';
+                        document.getElementById('bgmSub').textContent = '재생 완료';
+                        var bgmProgress = document.getElementById('bgmProgress');
+                        if (bgmProgress) bgmProgress.value = 0;
+                    }
                 });
 
                 // 다운로드 링크
@@ -1301,6 +1304,8 @@
             });
     }
 
+
+        
     function playPause(type) {
         var audio = audioPlayers[type];
         if (!audio) { loadAudio(type); return; }
@@ -1345,17 +1350,26 @@
         }
     }
 
-    function startProgressUpdate(type) {
-        clearInterval(playerIntervals[type]);
-        playerIntervals[type] = setInterval(function() {
-            var audio = audioPlayers[type];
-            if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
-            var pct = (audio.currentTime / audio.duration) * 100;
-            document.getElementById(type + 'Progress').value = pct;
-            document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
-        }, 300);
-    }
+function startProgressUpdate(type) {
+    clearInterval(playerIntervals[type]);
+    playerIntervals[type] = setInterval(function() {
+        var audio = audioPlayers[type];
+        if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
+        var pct = (audio.currentTime / audio.duration) * 100;
+        document.getElementById(type + 'Progress').value = pct;
+        document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
 
+        // BGM 바 진행률 동기화
+        if (bgmType === type) {
+            var bgmProgress = document.getElementById('bgmProgress');
+            if (bgmProgress) bgmProgress.value = pct;
+            var bgmTime = document.getElementById('bgmTime');
+            if (bgmTime) bgmTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+        }
+    }, 300);
+}
+
+        
     /* ══════════════════════════════════════
        7. 공유
        ══════════════════════════════════════ */
