@@ -1328,6 +1328,17 @@
             });
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+        var bgmBtn = document.getElementById('bgmBtn');
+        if (bgmBtn) {
+            bgmBtn.addEventListener('click', function() {
+                if (!bgmType || !audioPlayers[bgmType]) return;
+                playPause(bgmType);
+            });
+        }
+    });
+
+
 
         
     function playPause(type) {
