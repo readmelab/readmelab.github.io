@@ -296,7 +296,7 @@
         .player-progress::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
         .player-time { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 4px; }
         /* ── 변경: player-desc 확장 ── */
-        .player-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.9; margin-top: 16px; padding: 16px; border-left: 2px solid var(--gold-dim); background: rgba(201,168,76,0.03); border-radius: 0 8px 8px 0; display: none; word-break: keep-all; white-space: pre-line; }
+        .player-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.9; margin-top: 16px; padding: 16px; border-left: 2px solid var(--gold-dim); background: rgba(201,168,76,0.03); word-wrap: break-word; word-break: keep-all; white-space: pre-wrap; overflow-wrap: break-word; }
         .player-bottom { display: flex; justify-content: center; margin-top: 12px; }
         .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; background: transparent; color: var(--text-muted); font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
         .player-download:hover { color: var(--gold); border-color: var(--gold-mid); }
