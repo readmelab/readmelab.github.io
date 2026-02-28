@@ -677,7 +677,7 @@
 
             // 2차: GAS doGet 폴백
             if (!data) {
-                var gasRes = await fetch(GAS_URL + '?c=' + encodeURIComponent(certCode));
+                var gasRes = await fetch(GAS_URL + '?code=' + encodeURIComponent(certCode));
                 data = await gasRes.json();
                 console.log('✅ GAS API 로드 성공');
             }
