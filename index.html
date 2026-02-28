@@ -295,7 +295,8 @@
         .player-progress::-moz-range-track { height: 4px; border-radius: 2px; background: #c9a84c22; }
         .player-progress::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
         .player-time { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 4px; }
-        .player-desc { font-size: 12px; color: var(--text-muted); font-style: italic; line-height: 1.6; margin-top: 8px; padding: 8px 12px; border-left: 2px solid var(--gold-dim); display: none; }
+        /* ── 변경: player-desc 확장 ── */
+        .player-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.9; margin-top: 16px; padding: 16px; border-left: 2px solid var(--gold-dim); background: rgba(201,168,76,0.03); border-radius: 0 8px 8px 0; display: none; word-break: keep-all; white-space: pre-line; }
         .player-bottom { display: flex; justify-content: center; margin-top: 12px; }
         .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; background: transparent; color: var(--text-muted); font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
         .player-download:hover { color: var(--gold); border-color: var(--gold-mid); }
@@ -416,11 +417,7 @@
                 분석하여 조율된 맞춤형 솔루션입니다
             </div>
 
-            <!-- ── 보증서/리포트 전환 탭 ── -->
-            <div class="view-toggle" id="viewToggle">
-                <button class="view-toggle-btn selected" id="tabCert" onclick="switchView('cert')">보증서</button>
-                <button class="view-toggle-btn" id="tabReport" onclick="switchView('report')">리포트 읽기</button>
-            </div>
+            <!-- ── 변경: 보증서/리포트 전환 탭 삭제됨 ── -->
 
             <!-- ── 보증서 뷰: 아이템 버튼들 ── -->
             <div id="certView">
@@ -700,8 +697,8 @@
         }
     }
 
+    /* ── 변경: parseCertData — audio.*.description 키 추가 ── */
     function parseCertData(d) {
-        // GAS doGet 형식 호환
         var cert = d.certificate || d;
         certData = {
             name: cert.name || d.name || '',
@@ -709,7 +706,6 @@
             product: cert.product || d.product || '',
             productCode: cert.productCode || d.productCode || '',
             soreLine: (cert.soreLine || d.soreLine || '').trim(),
-            // 오디오 — GAS 형식 또는 정적 JSON 형식
             themeLink: cert.themeLink || d.themeLink || '',
             themeName: cert.themeName || d.themeName || '',
             themeDesc: (cert.themeDesc || d.themeDesc || '').trim(),
@@ -721,22 +717,31 @@
             healingDesc: (cert.healingDesc || d.healingDesc || '').trim()
         };
 
-        // audio 객체가 있는 경우 (정적 JSON)
+        // audio 객체가 있는 경우 (GAS API 형식)
         if (d.audio) {
             if (d.audio.theme) {
                 certData.themeLink = certData.themeLink || d.audio.theme.url || '';
                 certData.themeName = certData.themeName || d.audio.theme.name || '';
-                certData.themeDesc = certData.themeDesc || d.audio.theme.desc || '';
+                certData.themeDesc = certData.themeDesc || d.audio.theme.description || d.audio.theme.desc || '';
+                if (!certData.themeLink && d.audio.theme.fileId) {
+                    certData.themeLink = 'https://drive.google.com/file/d/' + d.audio.theme.fileId + '/view';
+                }
             }
             if (d.audio.voice) {
                 certData.voiceLink = certData.voiceLink || d.audio.voice.url || '';
                 certData.voiceName = certData.voiceName || d.audio.voice.name || '';
-                certData.voiceDesc = certData.voiceDesc || d.audio.voice.desc || '';
+                certData.voiceDesc = certData.voiceDesc || d.audio.voice.description || d.audio.voice.desc || '';
+                if (!certData.voiceLink && d.audio.voice.fileId) {
+                    certData.voiceLink = 'https://drive.google.com/file/d/' + d.audio.voice.fileId + '/view';
+                }
             }
             if (d.audio.healing) {
                 certData.healingLink = certData.healingLink || d.audio.healing.url || '';
                 certData.healingName = certData.healingName || d.audio.healing.name || '';
-                certData.healingDesc = certData.healingDesc || d.audio.healing.desc || '';
+                certData.healingDesc = certData.healingDesc || d.audio.healing.description || d.audio.healing.desc || '';
+                if (!certData.healingLink && d.audio.healing.fileId) {
+                    certData.healingLink = 'https://drive.google.com/file/d/' + d.audio.healing.fileId + '/view';
+                }
             }
         }
     }
@@ -791,6 +796,7 @@
         document.getElementById('error').style.display = 'flex';
     }
 
+    /* ── 변경: enterCertificate — 탭 관련 제거, 리포트 버튼명 변경 ── */
     function enterCertificate() {
         var intro = document.getElementById('intro');
         var cert = document.getElementById('certificate');
@@ -815,12 +821,13 @@
             document.getElementById('honorific').textContent = d.name + '님의 운명 분석이 완성되었습니다';
         }
 
-        // 리포트 버튼 활성화
+        // 리포트 버튼 (탭 없이)
         if (reportData) {
+            var reportName = (reportData.meta && reportData.meta.name) || d.name || '';
             document.getElementById('btnReport').classList.add('active');
-            document.getElementById('viewToggle').classList.add('active');
+            document.getElementById('btnReportText').textContent = reportName + '_사주리포트';
             document.getElementById('fontControls').classList.add('visible');
-            renderReport(); // 미리 렌더링
+            renderReport();
         }
 
         // 오디오 버튼 활성화
@@ -869,26 +876,20 @@
     /* ══════════════════════════════════════
        3. 뷰 전환
        ══════════════════════════════════════ */
+    /* ── 변경: switchView — 탭 참조 제거 ── */
     function switchView(view) {
         currentView = view;
         var certView = document.getElementById('certView');
         var reportView = document.getElementById('reportView');
-        var tabCert = document.getElementById('tabCert');
-        var tabReport = document.getElementById('tabReport');
 
         if (view === 'report' && reportData) {
             certView.style.display = 'none';
             reportView.classList.add('active');
-            tabCert.classList.remove('selected');
-            tabReport.classList.add('selected');
-            // 스크롤 관찰자 활성화
             setTimeout(observeChapters, 100);
-            window.scrollTo({ top: document.getElementById('viewToggle').offsetTop - 20, behavior: 'smooth' });
+            window.scrollTo({ top: document.getElementById('certificate').offsetTop, behavior: 'smooth' });
         } else {
             certView.style.display = 'block';
             reportView.classList.remove('active');
-            tabCert.classList.add('selected');
-            tabReport.classList.remove('selected');
         }
     }
 
@@ -1185,11 +1186,13 @@
             .catch(function(err) { console.error('BGM preload fetch error:', err); });
     }
 
+    /* ── 변경: startBgm — audio.loop = true 추가 ── */
     function startBgm() {
         var audio = audioPlayers['theme'];
         if (!audio) return;
         audio.volume = 0.5;
         audio.currentTime = 0;
+        audio.loop = true;
         audio.play().then(function() {
             bgmType = 'theme';
             document.getElementById('bgmBar').classList.add('active');
