@@ -1199,14 +1199,21 @@
         audio.play().then(function() {
             bgmType = 'theme';
             audioLoaded['theme'] = true;
+
+            // BGM 바 업데이트
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
             document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
             document.getElementById('bgmSub').textContent = '배경음악 재생 중';
 
-            // 테마곡 섹션 플레이어도 동기화
+            // 테마곡 패널 자동 열기
+            var wrap = document.getElementById('playerTheme');
+            if (wrap) wrap.classList.add('open');
+            var btn = document.getElementById('btnTheme');
+            if (btn) btn.classList.add('playing');
+
+            // 테마곡 섹션 플레이어 동기화
             document.getElementById('themePlayBtn').textContent = '⏸';
-            document.getElementById('btnTheme').classList.add('playing');
             startProgressUpdate('theme');
 
             // duration 표시
@@ -1225,6 +1232,7 @@
             bgmType = 'theme';
         });
     }
+
 
 
     function toggleBgm() {
