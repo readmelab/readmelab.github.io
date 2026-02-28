@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나를읽다 연구소 | 운명 보증서</title>
+    <meta property="og:title" content="나를읽다 연구소 — 운명 분석 결과">
+    <meta property="og:description" content="당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.">
+    <meta property="og:image" content="https://readmelab.github.io/og-image.png">
+    <meta property="og:type" content="website">
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.9/kakao.min.js" crossorigin="anonymous"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+        /* ══════════════════════════════════════
+           0. CSS 변수 & 리셋
+           ══════════════════════════════════════ */
+        :root {
+            --bg-deep: #0a0a14;
+            --bg-card: #12121f;
+            --bg-card-alt: #0e0e1a;
+            --gold: #c9a84c;
+            --gold-dim: #c9a84c33;
+            --gold-mid: #c9a84c66;
+            --gold-bright: #e8c44c;
+            --text-primary: #f5f0e8;
+            --text-secondary: #a09880;
+            --text-muted: #8a7a5a;
+            --text-dim: #6a6050;
+            --text-faint: #5a5040;
+            --text-ghost: #3a3530;
+            --font-size-base: 15px;
+            --font-scale: 1;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: calc(var(--font-size-base) * var(--font-scale));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+        .container { max-width: 480px; width: 100%; text-align: center; }
+
+        /* ══════════════════════════════════════
+           1. 폰트 크기 조절
+           ══════════════════════════════════════ */
+        .font-controls {
+            position: fixed; top: 16px; right: 16px; z-index: 9999;
+            display: flex; gap: 6px; opacity: 0; transition: opacity 0.5s;
+        }
+        .font-controls.visible { opacity: 1; }
+        .font-btn {
+            width: 34px; height: 34px; border-radius: 50%;
+            border: 1px solid var(--gold-dim); background: var(--bg-card);
+            color: var(--gold); font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .font-btn:hover { border-color: var(--gold); background: #c9a84c11; }
+        .font-btn:active { transform: scale(0.92); }
+
+        /* ══════════════════════════════════════
+           2. 로딩 & 에러
+           ══════════════════════════════════════ */
+        .loading {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 60vh;
+        }
+        .loading .spinner {
+            width: 40px; height: 40px; border: 2px solid var(--gold-dim);
+            border-top: 2px solid var(--gold); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading p { color: var(--text-muted); font-size: 14px; }
+        .error {
+            display: none; min-height: 60vh; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        .error h2 { font-family: 'Noto Serif KR', serif; color: var(--gold); font-size: 20px; margin-bottom: 12px; }
+        .error p { color: var(--text-muted); font-size: 14px; }
+
+        /* ══════════════════════════════════════
+           3. 인트로 화면
+           ══════════════════════════════════════ */
+        .intro { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; position: relative; }
+        .intro-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; }
+        .intro-glow {
+            position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 40%, transparent 70%);
+            border-radius: 50%; animation: glowPulse 3s ease-in-out infinite;
+        }
+        @keyframes glowPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%,-50%) scale(1.3); opacity: 1; } }
+        .intro-particles { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        .particle { position: absolute; width: 2px; height: 2px; background: var(--gold); border-radius: 50%; opacity: 0; animation: particleFloat 4s ease-in-out infinite; }
+        .particle:nth-child(1) { left: 20%; top: 30%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 70%; top: 20%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { left: 40%; top: 60%; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 80%; top: 50%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { left: 15%; top: 70%; animation-delay: 2s; }
+        .particle:nth-child(6) { left: 60%; top: 80%; animation-delay: 2.5s; }
+        .particle:nth-child(7) { left: 50%; top: 15%; animation-delay: 0.8s; }
+        .particle:nth-child(8) { left: 30%; top: 45%; animation-delay: 1.8s; }
+        @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(1); } 30% { opacity: 0.8; } 70% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40px) scale(0.5); } }
+        .intro-content { position: relative; z-index: 1; }
+        .intro-line { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto 24px; opacity: 0; animation: introFadeIn 1s ease forwards 0.2s; }
+        .intro-brand { font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--gold); letter-spacing: 6px; margin-bottom: 20px; opacity: 0; animation: introFadeIn 1s ease forwards 0.4s; }
+        .intro-symbol { font-size: 20px; color: var(--gold); margin-bottom: 24px; opacity: 0; animation: introSymbol 2s ease forwards 0.6s; text-shadow: 0 0 40px rgba(201,168,76,0.6), 0 0 80px rgba(201,168,76,0.3); }
+        @keyframes introSymbol { 0% { opacity: 0; transform: scale(0.5) rotate(0deg); } 50% { opacity: 1; transform: scale(1.2) rotate(180deg); } 100% { opacity: 1; transform: scale(1) rotate(360deg); } }
+        .intro-title { font-family: 'Noto Serif KR', serif; font-size: 14px; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 40px; opacity: 0; animation: introFadeIn 1s ease forwards 0.9s; line-height: 1.8; }
+        .intro-sore { font-family: 'Noto Serif KR', serif; font-size: 22px; color: var(--gold-bright); font-style: italic; letter-spacing: 2px; margin-bottom: 32px; opacity: 0; animation: introFadeIn 1.2s ease forwards 1.1s; text-shadow: 0 0 30px rgba(232,196,76,0.4), 0 0 60px rgba(232,196,76,0.15); line-height: 1.8; }
+        .intro-btn { display: inline-block; padding: 16px 48px; border: 1px solid #c9a84c44; border-radius: 4px; background: transparent; color: var(--gold); font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 3px; cursor: pointer; transition: all 0.4s ease; opacity: 0; animation: introFadeIn 1s ease forwards 1.2s; position: relative; overflow: hidden; }
+        .intro-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(201,168,76,0.1); border-radius: 50%; transform: translate(-50%,-50%); transition: all 0.6s ease; }
+        .intro-btn:hover { border-color: var(--gold); box-shadow: 0 0 30px rgba(201,168,76,0.2), inset 0 0 30px rgba(201,168,76,0.05); }
+        .intro-btn:hover::before { width: 300px; height: 300px; }
+        .intro-line-bottom { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 40px auto 0; opacity: 0; animation: introFadeIn 1s ease forwards 1.4s; }
+        @keyframes introFadeIn { to { opacity: 1; } }
+        .intro.fade-out { animation: fadeOut 1s ease forwards; }
+        @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
+
+        /* ══════════════════════════════════════
+           4. 보증서 섹션
+           ══════════════════════════════════════ */
+        .certificate { display: none; opacity: 0; }
+        .certificate.fade-in { animation: certFadeIn 1.5s ease forwards; }
+        @keyframes certFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .top-ornament { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; gap: 12px; }
+        .top-ornament .line { height: 1px; width: 60px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+        .top-ornament .diamond { color: var(--gold); font-size: 10px; }
+        .brand { font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--gold); letter-spacing: 6px; margin-bottom: 8px; }
+        .cert-title { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text-muted); letter-spacing: 3px; margin-bottom: 32px; }
+        .client-name { font-family: 'Noto Serif KR', serif; font-size: 36px; font-weight: 900; color: var(--gold); margin-bottom: 4px; text-shadow: 0 0 20px rgba(201,168,76,0.3); }
+        .client-name-sub { font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700; color: #a09060; margin-bottom: 8px; display: none; }
+        .name-divider { display: none; align-items: center; justify-content: center; gap: 10px; margin: 8px 0; }
+        .name-divider .line { width: 30px; height: 1px; background: var(--gold-dim); }
+        .name-divider .and { color: #c9a84c88; font-size: 13px; font-family: 'Noto Serif KR', serif; }
+        .honorific { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent); margin: 24px 0; }
+        .message { font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 36px; font-weight: 300; }
+        .sore-line { font-family: 'Noto Serif KR', serif; font-size: 20px; color: var(--gold); font-weight: 700; line-height: 2.2; letter-spacing: 1px; text-shadow: 0 0 30px rgba(201,168,76,0.2); }
+        .product-tag { display: inline-block; padding: 4px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; font-size: 12px; color: var(--gold); margin-bottom: 24px; letter-spacing: 1px; }
+
+        /* ══════════════════════════════════════
+           5. 리포트 섹션 (신규)
+           ══════════════════════════════════════ */
+        .report-section { display: none; margin-top: 32px; text-align: left; }
+        .report-section.active { display: block; }
+
+        /* 오행 차트 */
+        .oheng-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+        }
+        .oheng-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+        .oheng-chart { display: flex; justify-content: center; margin-bottom: 20px; }
+        .oheng-legend {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+        }
+        .oheng-legend-item {
+            display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary);
+        }
+        .oheng-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .oheng-dominant {
+            text-align: center; margin-top: 16px; font-size: 13px;
+            color: var(--text-muted); font-style: italic;
+        }
+
+        /* 챕터 카드 */
+        .chapter-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 20px;
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .chapter-card.visible { opacity: 1; transform: translateY(0); }
+        .chapter-number {
+            font-family: 'Noto Serif KR', serif; font-size: 11px;
+            color: var(--gold-mid); letter-spacing: 3px; margin-bottom: 8px;
+        }
+        .chapter-title {
+            font-family: 'Noto Serif KR', serif; font-size: 18px;
+            color: var(--gold); font-weight: 700; margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .chapter-body {
+            font-size: calc(var(--font-size-base) * var(--font-scale));
+            color: var(--text-primary); line-height: 2.0;
+            word-break: keep-all;
+        }
+        .chapter-body p { margin-bottom: 16px; }
+        .chapter-body strong { color: var(--gold); font-weight: 500; }
+        .chapter-emotion {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gold-dim);
+        }
+        .chapter-emotion-label { font-size: 11px; color: var(--text-dim); }
+        .chapter-emotion-bar {
+            flex: 1; height: 3px; background: var(--gold-dim); border-radius: 2px;
+            overflow: hidden;
+        }
+        .chapter-emotion-fill {
+            height: 100%; border-radius: 2px;
+            background: linear-gradient(90deg, #4a7c6f, var(--gold), #c75050);
+            transition: width 0.6s ease;
+        }
+
+        /* 감정 곡선 */
+        .emotion-curve-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+        }
+        .emotion-curve-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+
+        /* 실행 플랜 카드 */
+        .action-plan-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+        }
+        .action-plan-title {
+            font-family: 'Noto Serif KR', serif; font-size: 16px;
+            color: var(--gold); font-weight: 700; margin-bottom: 16px; text-align: center;
+        }
+        .action-plan-item {
+            padding: 12px 0; border-bottom: 1px solid #c9a84c11;
+        }
+        .action-plan-item:last-child { border-bottom: none; }
+        .action-plan-day {
+            font-size: 11px; color: var(--gold-mid); letter-spacing: 2px; margin-bottom: 4px;
+        }
+        .action-plan-text { font-size: 14px; color: var(--text-primary); line-height: 1.6; }
+
+        /* PDF 저장 버튼 */
+        .print-btn-wrap { text-align: center; margin: 32px 0; }
+        .print-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border: 1px solid var(--gold-dim); border-radius: 8px;
+            background: transparent; color: var(--gold); font-size: 14px;
+            font-family: 'Noto Sans KR', sans-serif; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .print-btn:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(201,168,76,0.15); }
+        @media print {
+            .font-controls, .bgm-bar, .share-section, .print-btn-wrap,
+            .buttons, .toast { display: none !important; }
+            body { background: white; color: #222; }
+            .chapter-card { break-inside: avoid; border-color: #ddd; opacity: 1; transform: none; }
+            .oheng-card, .emotion-curve-card, .action-plan-card { break-inside: avoid; border-color: #ddd; }
+        }
+
+        /* ══════════════════════════════════════
+           6. 버튼 & 플레이어 (기존 유지)
+           ══════════════════════════════════════ */
+        .buttons { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
+        .btn-item { margin-bottom: 12px; }
+        .btn {
+            display: none; align-items: center; justify-content: center; gap: 10px;
+            padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px;
+            background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8;
+            text-decoration: none; font-size: 15px; font-weight: 500;
+            transition: all 0.3s ease; letter-spacing: 1px; cursor: pointer; width: 100%;
+        }
+        .btn.active { display: flex; }
+        .btn.playing { border-color: var(--gold); box-shadow: 0 0 20px rgba(201,168,76,0.2); }
+        .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: #c9a84c88; box-shadow: 0 0 20px rgba(201,168,76,0.15); transform: translateY(-1px); }
+        .btn .icon { font-size: 18px; }
+        .btn.expanded { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+        .player-wrap { display: none; border: 1px solid var(--gold-dim); border-top: none; border-radius: 0 0 8px 8px; background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt)); padding: 20px 16px; margin-top: -1px; }
+        .player-wrap.open { display: block; }
+        .player-visual { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .player-icon-wrap { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: #c9a84c11; }
+        .player-info { text-align: left; }
+        .player-subtitle { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 2px; }
+        .player-title { font-size: 14px; color: #e8dcc8; font-weight: 500; }
+        .player-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .player-play-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--gold-mid); background: transparent; color: var(--gold); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+        .player-play-btn:hover { background: #c9a84c22; border-color: var(--gold); }
+        .player-progress-wrap { flex: 1; }
+        .player-progress { width: 100%; height: 4px; border-radius: 2px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; background: #c9a84c22; }
+        .player-progress::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; }
+        .player-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); margin-top: -4px; cursor: pointer; }
+        .player-progress::-moz-range-track { height: 4px; border-radius: 2px; background: #c9a84c22; }
+        .player-progress::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
+        .player-time { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+        .player-desc { font-size: 12px; color: var(--text-muted); font-style: italic; line-height: 1.6; margin-top: 8px; padding: 8px 12px; border-left: 2px solid var(--gold-dim); display: none; }
+        .player-bottom { display: flex; justify-content: center; margin-top: 12px; }
+        .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; background: transparent; color: var(--text-muted); font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
+        .player-download:hover { color: var(--gold); border-color: var(--gold-mid); }
+        .player-loading { text-align: center; color: var(--text-muted); font-size: 12px; padding: 10px 0; display: none; }
+        .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--gold-dim); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
+
+        /* ══════════════════════════════════════
+           7. BGM 바 & PDF 오버레이 (기존 유지)
+           ══════════════════════════════════════ */
+        .bgm-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt)); border-top: 1px solid var(--gold-dim); padding: 10px 16px; z-index: 9998; }
+        .bgm-bar.active { display: flex; align-items: center; gap: 12px; }
+        .bgm-bar-info { flex: 1; min-width: 0; }
+        .bgm-bar-title { font-size: 12px; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bgm-bar-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+        .bgm-bar-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gold-mid); background: transparent; color: var(--gold); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        /* ══════════════════════════════════════
+           8. 공유 & 푸터 & 토스트
+           ══════════════════════════════════════ */
+        .share-section { margin-top: 32px; margin-bottom: 16px; }
+        .share-title { font-size: 11px; color: var(--text-faint); letter-spacing: 2px; margin-bottom: 12px; text-align: center; }
+        .share-actions { display: flex; gap: 8px; margin-bottom: 10px; }
+        .share-action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 0; border-radius: 6px; border: 1px solid #c9a84c22; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 400; cursor: pointer; transition: all 0.3s ease; letter-spacing: 0.5px; }
+        .share-action-btn:hover { color: var(--gold); border-color: #c9a84c44; }
+        .share-action-btn span.s-icon { font-size: 14px; }
+        .share-sub-links { display: flex; justify-content: center; gap: 20px; }
+        .share-sub-link { font-size: 11px; color: #4a4535; cursor: pointer; transition: color 0.2s; }
+        .share-sub-link:hover { color: var(--gold); }
+        .footer { margin-top: 40px; padding-top: 24px; padding-bottom: 60px; text-align: center; }
+        .footer-brand { font-family: 'Noto Serif KR', serif; font-size: 12px; color: var(--text-faint); letter-spacing: 2px; }
+        .footer-sub { font-size: 11px; color: var(--text-ghost); margin-top: 4px; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: linear-gradient(135deg, #2a2a3e, #1a1a2e); border: 1px solid var(--gold-mid); color: var(--gold); padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 10000; opacity: 0; transition: all 0.3s ease; pointer-events: none; white-space: nowrap; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ══════════════════════════════════════
+           9. 리포트 전환 탭
+           ══════════════════════════════════════ */
+        .view-toggle {
+            display: none; margin: 24px 0; border: 1px solid var(--gold-dim);
+            border-radius: 8px; overflow: hidden;
+        }
+        .view-toggle.active { display: flex; }
+        .view-toggle-btn {
+            flex: 1; padding: 12px 0; border: none; background: transparent;
+            color: var(--text-muted); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+        }
+        .view-toggle-btn.selected {
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            color: var(--gold); border-bottom: 2px solid var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ── 폰트 크기 조절 ── -->
+        <div class="font-controls" id="fontControls">
+            <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+        </div>
+
+        <!-- ── 로딩 ── -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>보증서를 불러오고 있습니다...</p>
+        </div>
+
+        <!-- ── 에러 ── -->
+        <div class="error" id="error">
+            <h2>보증서를 찾을 수 없습니다</h2>
+            <p>링크를 다시 확인해주세요</p>
+        </div>
+
+        <!-- ── 인트로 ── -->
+        <div class="intro" id="intro">
+            <div class="intro-bg">
+                <div class="intro-glow"></div>
+                <div class="intro-particles">
+                    <div class="particle"></div><div class="particle"></div>
+                    <div class="particle"></div><div class="particle"></div>
+                    <div class="particle"></div><div class="particle"></div>
+                    <div class="particle"></div><div class="particle"></div>
+                </div>
+            </div>
+            <div class="intro-content">
+                <div class="intro-line"></div>
+                <div class="intro-brand">나를읽다</div>
+                <div class="intro-symbol">◆</div>
+                <div class="intro-title" id="introTitle">운명 분석이 완성되었습니다</div>
+                <div class="intro-sore" id="introSore"></div>
+                <button class="intro-btn" id="introBtn" onclick="enterCertificate()">보증서 확인하기</button>
+                <div class="intro-line-bottom"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             메인 콘텐츠 (보증서 + 리포트)
+             ══════════════════════════════════════ -->
+        <div class="certificate" id="certificate">
+
+            <!-- 보증서 상단 -->
+            <div class="top-ornament">
+                <div class="line"></div><div class="diamond">◆</div><div class="line"></div>
+            </div>
+            <div class="brand">나를읽다</div>
+            <div class="cert-title" id="certTitle">운 명 공 명 보 증 서</div>
+            <div class="client-name" id="clientName"></div>
+            <div class="name-divider" id="nameDivider">
+                <div class="line"></div><div class="and">&</div><div class="line"></div>
+            </div>
+            <div class="client-name-sub" id="clientName2"></div>
+            <div class="honorific" id="honorific">님의 운명 분석이 완성되었습니다</div>
+            <div class="product-tag" id="productTag"></div>
+            <div class="divider"></div>
+            <div class="message" id="message">
+                귀하의 사주 오행과 MBTI 심리 유형을<br>
+                분석하여 조율된 맞춤형 솔루션입니다
+            </div>
+
+            <!-- ── 보증서/리포트 전환 탭 ── -->
+            <div class="view-toggle" id="viewToggle">
+                <button class="view-toggle-btn selected" id="tabCert" onclick="switchView('cert')">보증서</button>
+                <button class="view-toggle-btn" id="tabReport" onclick="switchView('report')">리포트 읽기</button>
+            </div>
+
+            <!-- ── 보증서 뷰: 아이템 버튼들 ── -->
+            <div id="certView">
+                <div class="buttons" id="buttons">
+                    <!-- 리포트 PDF → 인라인 리포트 버튼으로 교체 -->
+                    <div class="btn-item">
+                        <div class="btn" id="btnReport" onclick="switchView('report')">
+                            <span class="icon">📜</span>
+                            <span id="btnReportText">사주 분석 리포트 읽기</span>
+                        </div>
+                    </div>
+                    <div class="btn-item">
+                        <div class="btn" id="btnTheme" onclick="togglePlayer('theme')">
+                            <span class="icon">🎵</span>
+                            <span id="btnThemeText">맞춤형 음원</span>
+                        </div>
+                        <div class="player-wrap" id="playerTheme">
+                            <div class="player-loading" id="themeLoading">
+                                <span class="mini-spinner"></span>음원을 불러오는 중...
+                            </div>
+                            <div class="player-visual">
+                                <div class="player-icon-wrap">🎵</div>
+                                <div class="player-info">
+                                    <div class="player-subtitle" id="themeSubtitle">당신만을 위한 음원</div>
+                                    <div class="player-title" id="themeTitle">맞춤형 음원</div>
+                                </div>
+                            </div>
+                            <div class="player-controls">
+                                <button class="player-play-btn" id="themePlayBtn" onclick="playPause('theme')">▶</button>
+                                <div class="player-progress-wrap">
+                                    <input type="range" class="player-progress" id="themeProgress" min="0" max="100" value="0" oninput="seek('theme')">
+                                    <div class="player-time">
+                                        <span id="themeCurrent">0:00</span>
+                                        <span id="themeDuration">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="player-desc" id="themeDesc"></div>
+                            <div class="player-bottom">
+                                <a href="#" class="player-download" id="themeDownload" target="_blank">⬇ 다운로드</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-item">
+                        <div class="btn" id="btnVoice" onclick="togglePlayer('voice')">
+                            <span class="icon">🎧</span>
+                            <span id="btnVoiceText">음성 해설</span>
+                        </div>
+                        <div class="player-wrap" id="playerVoice">
+                            <div class="player-loading" id="voiceLoading">
+                                <span class="mini-spinner"></span>음원을 불러오는 중...
+                            </div>
+                            <div class="player-visual">
+                                <div class="player-icon-wrap">🎧</div>
+                                <div class="player-info">
+                                    <div class="player-subtitle" id="voiceSubtitle">당신만을 위한 해설</div>
+                                    <div class="player-title" id="voiceTitle">음성 해설</div>
+                                </div>
+                            </div>
+                            <div class="player-controls">
+                                <button class="player-play-btn" id="voicePlayBtn" onclick="playPause('voice')">▶</button>
+                                <div class="player-progress-wrap">
+                                    <input type="range" class="player-progress" id="voiceProgress" min="0" max="100" value="0" oninput="seek('voice')">
+                                    <div class="player-time">
+                                        <span id="voiceCurrent">0:00</span>
+                                        <span id="voiceDuration">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="player-desc" id="voiceDesc"></div>
+                            <div class="player-bottom">
+                                <a href="#" class="player-download" id="voiceDownload" target="_blank">⬇ 다운로드</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-item">
+                        <div class="btn" id="btnHealing" onclick="togglePlayer('healing')">
+                            <span class="icon">🎶</span>
+                            <span id="btnHealingText">힐링음악</span>
+                        </div>
+                        <div class="player-wrap" id="playerHealing">
+                            <div class="player-loading" id="healingLoading">
+                                <span class="mini-spinner"></span>음원을 불러오는 중...
+                            </div>
+                            <div class="player-visual">
+                                <div class="player-icon-wrap">🎶</div>
+                                <div class="player-info">
+                                    <div class="player-subtitle" id="healingSubtitle">당신만을 위한 음악</div>
+                                    <div class="player-title" id="healingTitle">힐링음악</div>
+                                </div>
+                            </div>
+                            <div class="player-controls">
+                                <button class="player-play-btn" id="healingPlayBtn" onclick="playPause('healing')">▶</button>
+                                <div class="player-progress-wrap">
+                                    <input type="range" class="player-progress" id="healingProgress" min="0" max="100" value="0" oninput="seek('healing')">
+                                    <div class="player-time">
+                                        <span id="healingCurrent">0:00</span>
+                                        <span id="healingDuration">0:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="player-desc" id="healingDesc"></div>
+                            <div class="player-bottom">
+                                <a href="#" class="player-download" id="healingDownload" target="_blank">⬇ 다운로드</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /certView -->
+
+            <!-- ══════════════════════════════════════
+                 리포트 뷰 (동적 렌더링)
+                 ══════════════════════════════════════ -->
+            <div class="report-section" id="reportView">
+
+                <!-- 소름한줄 배너 -->
+                <div class="chapter-card visible" id="reportOneLiner" style="text-align:center; display:none;">
+                    <div class="sore-line" id="reportSoreLine"></div>
+                </div>
+
+                <!-- 오행 차트 -->
+                <div class="oheng-card" id="ohengCard" style="display:none;">
+                    <div class="oheng-title">오 행 분 포</div>
+                    <div class="oheng-chart" id="ohengChart"></div>
+                    <div class="oheng-legend" id="ohengLegend"></div>
+                    <div class="oheng-dominant" id="ohengDominant"></div>
+                </div>
+
+                <!-- 챕터 컨테이너 (JS로 동적 생성) -->
+                <div id="chaptersContainer"></div>
+
+                <!-- 감정 곡선 -->
+                <div class="emotion-curve-card" id="emotionCurveCard" style="display:none;">
+                    <div class="emotion-curve-title">감 정 곡 선</div>
+                    <svg id="emotionCurveSvg" viewBox="0 0 440 160" width="100%" style="overflow:visible;"></svg>
+                </div>
+
+                <!-- 7일 실행 플랜 -->
+                <div class="action-plan-card" id="actionPlanCard" style="display:none;">
+                    <div class="action-plan-title">7일 실행 플랜</div>
+                    <div id="actionPlanList"></div>
+                </div>
+
+                <!-- PDF 저장 -->
+                <div class="print-btn-wrap">
+                    <button class="print-btn" onclick="window.print()">
+                        <span>🖨</span> PDF로 저장
+                    </button>
+                </div>
+
+                <!-- 보증서로 돌아가기 -->
+                <div style="text-align:center; margin-bottom: 24px;">
+                    <button class="view-toggle-btn" onclick="switchView('cert')" style="border:1px solid var(--gold-dim); border-radius:8px; padding:12px 32px;">
+                        ◆ 보증서로 돌아가기
+                    </button>
+                </div>
+            </div><!-- /reportView -->
+
+            <!-- ── 공유 ── -->
+            <div class="share-section">
+                <div class="share-title">이 분석, 마음에 드셨나요?</div>
+                <div class="share-actions">
+                    <button class="share-action-btn" onclick="shareKakao()">
+                        <span class="s-icon">💬</span> 자랑하기
+                    </button>
+                    <button class="share-action-btn" onclick="window.open('https://smartstore.naver.com/readmelab/products/13142603279','_blank')">
+                        <span class="s-icon">🎁</span> 선물하기
+                    </button>
+                </div>
+                <div class="share-sub-links">
+                    <span class="share-sub-link" onclick="shareLink()">링크 복사</span>
+                    <span id="shareNativeBtn" class="share-sub-link" onclick="shareNative()" style="display:none;">더보기</span>
+                </div>
+            </div>
+
+            <!-- ── 푸터 ── -->
+            <div class="footer">
+                <div class="divider"></div>
+                <div class="footer-brand">나를읽다 연구소</div>
+                <div class="footer-sub">사주 & MBTI 운명 분석</div>
+            </div>
+
+        </div><!-- /certificate -->
+    </div><!-- /container -->
+
+    <!-- ── BGM 바 ── -->
+    <div class="bgm-bar" id="bgmBar">
+        <button class="bgm-bar-btn" id="bgmBtn" onclick="toggleBgm()">⏸</button>
+        <div class="bgm-bar-info">
+            <div class="bgm-bar-title" id="bgmTitle">♪ 맞춤형 음원</div>
+            <div class="bgm-bar-sub" id="bgmSub">배경음악 재생 중</div>
+        </div>
+    </div>
+
+    <!-- ── 토스트 ── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ── 공유 카드 캔버스 (숨김) ── -->
+    <canvas id="shareCardCanvas" width="600" height="400" style="display:none;"></canvas>
+    <script>
+    /* ══════════════════════════════════════
+       0. 상수 & 상태
+       ══════════════════════════════════════ */
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbz4NqoWM6RZ96zh-iYp9DC-DLgsliAtqjumH6fB9BVFbYatE3E6LeLbgLyTS4r1JgbJ5A/exec';
+    var DATA_BASE = ''; // Cloudflare Pages URL — 비워두면 GAS만 사용
+    var KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
+    var STORE_URL = 'https://smartstore.naver.com/readmelab/products/13142603279';
+
+    var OHENG_COLORS = {
+        '목': '#4CAF50', '화': '#F44336', '토': '#FFC107', '금': '#9E9E9E', '수': '#2196F3'
+    };
+    var OHENG_LABELS = { '목': '木 목', '화': '火 화', '토': '土 토', '금': '金 금', '수': '水 수' };
+
+    // 상태
+    var certData = {};
+    var reportData = null;
+    var audioPlayers = {};
+    var audioLoaded = {};
+    var audioFileIds = {};
+    var playerIntervals = {};
+    var bgmType = null;
+    var bgmPreloaded = false;
+    var pendingBgmPlay = false;
+    var fontStep = 1; // 0=small, 1=normal, 2=large
+    var fontScales = [0.88, 1, 1.15];
+    var currentView = 'cert';
+
+    // URL 파라미터
+    var urlParams = new URLSearchParams(window.location.search);
+    var code = urlParams.get('c');
+    if (!code) { showError(); } else { loadData(code); }
+
+    // 카카오 초기화
+    if (window.Kakao && !Kakao.isInitialized()) { Kakao.init(KAKAO_KEY); }
+    if (navigator.share) { document.getElementById('shareNativeBtn').style.display = 'inline'; }
+
+    /* ══════════════════════════════════════
+       1. 데이터 로딩 (Cloudflare → GAS 폴백)
+       ══════════════════════════════════════ */
+    async function loadData(certCode) {
+        try {
+            var data = null;
+
+            // 1차: 정적 JSON (Cloudflare Pages)
+            if (DATA_BASE) {
+                try {
+                    var staticRes = await fetch(DATA_BASE + '/data/' + certCode + '.json');
+                    if (staticRes.ok) {
+                        data = await staticRes.json();
+                        console.log('✅ 정적 JSON 로드 성공');
+                    }
+                } catch (e) { console.log('정적 JSON 실패, GAS 폴백'); }
+            }
+
+            // 2차: GAS doGet 폴백
+            if (!data) {
+                var gasRes = await fetch(GAS_URL + '?c=' + encodeURIComponent(certCode));
+                data = await gasRes.json();
+                console.log('✅ GAS API 로드 성공');
+            }
+
+            if (!data || data.error || data.valid === false) {
+                showError();
+                return;
+            }
+
+            // 데이터 파싱
+            parseCertData(data);
+            parseReportData(data);
+
+            // 인트로 표시
+            showIntro();
+
+        } catch (e) {
+            console.error('loadData error:', e);
+            showError();
+        }
+    }
+
+    function parseCertData(d) {
+        // GAS doGet 형식 호환
+        var cert = d.certificate || d;
+        certData = {
+            name: cert.name || d.name || '',
+            name2: cert.name2 || d.name2 || '',
+            product: cert.product || d.product || '',
+            productCode: cert.productCode || d.productCode || '',
+            soreLine: (cert.soreLine || d.soreLine || '').trim(),
+            // 오디오 — GAS 형식 또는 정적 JSON 형식
+            themeLink: cert.themeLink || d.themeLink || '',
+            themeName: cert.themeName || d.themeName || '',
+            themeDesc: (cert.themeDesc || d.themeDesc || '').trim(),
+            voiceLink: cert.voiceLink || d.voiceLink || '',
+            voiceName: cert.voiceName || d.voiceName || '',
+            voiceDesc: (cert.voiceDesc || d.voiceDesc || '').trim(),
+            healingLink: cert.healingLink || d.healingLink || '',
+            healingName: cert.healingName || d.healingName || '',
+            healingDesc: (cert.healingDesc || d.healingDesc || '').trim()
+        };
+
+        // audio 객체가 있는 경우 (정적 JSON)
+        if (d.audio) {
+            if (d.audio.theme) {
+                certData.themeLink = certData.themeLink || d.audio.theme.url || '';
+                certData.themeName = certData.themeName || d.audio.theme.name || '';
+                certData.themeDesc = certData.themeDesc || d.audio.theme.desc || '';
+            }
+            if (d.audio.voice) {
+                certData.voiceLink = certData.voiceLink || d.audio.voice.url || '';
+                certData.voiceName = certData.voiceName || d.audio.voice.name || '';
+                certData.voiceDesc = certData.voiceDesc || d.audio.voice.desc || '';
+            }
+            if (d.audio.healing) {
+                certData.healingLink = certData.healingLink || d.audio.healing.url || '';
+                certData.healingName = certData.healingName || d.audio.healing.name || '';
+                certData.healingDesc = certData.healingDesc || d.audio.healing.desc || '';
+            }
+        }
+    }
+
+    function parseReportData(d) {
+        // 정적 JSON: d.report 객체
+        if (d.report) {
+            reportData = d.report;
+            return;
+        }
+        // GAS doGet: d.webReportData (문자열이면 파싱)
+        if (d.webReportData) {
+            if (typeof d.webReportData === 'string') {
+                try { reportData = JSON.parse(d.webReportData); } catch(e) { reportData = null; }
+            } else {
+                reportData = d.webReportData;
+            }
+            return;
+        }
+        // 리포트 없음 — 보증서만 표시
+        reportData = null;
+    }
+
+    /* ══════════════════════════════════════
+       2. 인트로 & 진입
+       ══════════════════════════════════════ */
+    function showIntro() {
+        var d = certData;
+        var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
+        var nameText = d.name;
+        if (isCouple && d.name2) nameText += ' & ' + d.name2;
+
+        document.getElementById('introTitle').textContent =
+            nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
+
+        if (d.soreLine) {
+            document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"';
+        }
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('intro').style.display = 'flex';
+
+        // BGM 미리로딩
+        if (d.themeLink) {
+            var fid = extractFileId(d.themeLink);
+            if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
+        }
+    }
+
+    function showError() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'flex';
+    }
+
+    function enterCertificate() {
+        var intro = document.getElementById('intro');
+        var cert = document.getElementById('certificate');
+        var d = certData;
+        var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
+
+        // BGM 시작
+        if (bgmPreloaded && audioPlayers['theme']) { startBgm(); }
+        else { pendingBgmPlay = true; }
+
+        // 보증서 채우기
+        document.getElementById('clientName').textContent = d.name;
+        document.getElementById('productTag').textContent = d.product || d.productCode || '';
+
+        if (isCouple && d.name2) {
+            document.getElementById('nameDivider').style.display = 'flex';
+            document.getElementById('clientName2').style.display = 'block';
+            document.getElementById('clientName2').textContent = d.name2;
+            document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
+            document.getElementById('honorific').textContent = '두 분의 궁합 분석이 완성되었습니다';
+        } else {
+            document.getElementById('honorific').textContent = d.name + '님의 운명 분석이 완성되었습니다';
+        }
+
+        // 리포트 버튼 활성화
+        if (reportData) {
+            document.getElementById('btnReport').classList.add('active');
+            document.getElementById('viewToggle').classList.add('active');
+            document.getElementById('fontControls').classList.add('visible');
+            renderReport(); // 미리 렌더링
+        }
+
+        // 오디오 버튼 활성화
+        activateAudioButtons();
+
+        // 전환 애니메이션
+        intro.classList.add('fade-out');
+        setTimeout(function() {
+            intro.style.display = 'none';
+            cert.style.display = 'block';
+            setTimeout(function() { cert.classList.add('fade-in'); }, 50);
+        }, 800);
+    }
+
+    function activateAudioButtons() {
+        var d = certData;
+        if (d.themeLink) {
+            document.getElementById('btnTheme').classList.add('active');
+            document.getElementById('btnThemeText').textContent = d.themeName || '맞춤형 음원';
+            if (d.themeDesc) {
+                document.getElementById('themeDesc').textContent = d.themeDesc;
+                document.getElementById('themeDesc').style.display = 'block';
+            }
+            document.getElementById('themeTitle').textContent = d.themeName || '맞춤형 음원';
+        }
+        if (d.voiceLink) {
+            document.getElementById('btnVoice').classList.add('active');
+            document.getElementById('btnVoiceText').textContent = d.voiceName || '음성 해설';
+            if (d.voiceDesc) {
+                document.getElementById('voiceDesc').textContent = d.voiceDesc;
+                document.getElementById('voiceDesc').style.display = 'block';
+            }
+            document.getElementById('voiceTitle').textContent = d.voiceName || '음성 해설';
+        }
+        if (d.healingLink) {
+            document.getElementById('btnHealing').classList.add('active');
+            document.getElementById('btnHealingText').textContent = d.healingName || '힐링음악';
+            if (d.healingDesc) {
+                document.getElementById('healingDesc').textContent = d.healingDesc;
+                document.getElementById('healingDesc').style.display = 'block';
+            }
+            document.getElementById('healingTitle').textContent = d.healingName || '힐링음악';
+        }
+    }
+
+    /* ══════════════════════════════════════
+       3. 뷰 전환
+       ══════════════════════════════════════ */
+    function switchView(view) {
+        currentView = view;
+        var certView = document.getElementById('certView');
+        var reportView = document.getElementById('reportView');
+        var tabCert = document.getElementById('tabCert');
+        var tabReport = document.getElementById('tabReport');
+
+        if (view === 'report' && reportData) {
+            certView.style.display = 'none';
+            reportView.classList.add('active');
+            tabCert.classList.remove('selected');
+            tabReport.classList.add('selected');
+            // 스크롤 관찰자 활성화
+            setTimeout(observeChapters, 100);
+            window.scrollTo({ top: document.getElementById('viewToggle').offsetTop - 20, behavior: 'smooth' });
+        } else {
+            certView.style.display = 'block';
+            reportView.classList.remove('active');
+            tabCert.classList.add('selected');
+            tabReport.classList.remove('selected');
+        }
+    }
+
+    /* ══════════════════════════════════════
+       4. 리포트 렌더링
+       ══════════════════════════════════════ */
+    function renderReport() {
+        if (!reportData) return;
+
+        // 소름한줄
+        var oneLiner = reportData.oneLiner || reportData.soremOneLiner || certData.soreLine || '';
+        if (oneLiner) {
+            document.getElementById('reportSoreLine').innerHTML = '"' + oneLiner.replace(/\//g, '<br>') + '"';
+            document.getElementById('reportOneLiner').style.display = 'block';
+        }
+
+        // 오행 차트
+        if (reportData.oheng) { renderOhengChart(reportData.oheng); }
+
+        // 챕터
+        var chapters = reportData.chapters || [];
+        if (chapters.length > 0) { renderChapters(chapters); }
+
+        // 감정 곡선
+        if (reportData.emotionCurve || chapters.some(function(c){ return c.emotion !== undefined; })) {
+            renderEmotionCurve(chapters);
+        }
+
+        // 7일 실행 플랜
+        if (reportData.actionPlan) { renderActionPlan(reportData.actionPlan); }
+    }
+
+    /* ── 4-1. 오행 도넛 차트 (SVG) ── */
+    function renderOhengChart(oheng) {
+        var card = document.getElementById('ohengCard');
+        card.style.display = 'block';
+
+        var data = [];
+        var total = 0;
+        ['목','화','토','금','수'].forEach(function(key) {
+            var val = oheng[key] || oheng.distribution && oheng.distribution[key] || 0;
+            if (typeof val === 'string') val = parseFloat(val) || 0;
+            data.push({ key: key, value: val });
+            total += val;
+        });
+        if (total === 0) { card.style.display = 'none'; return; }
+
+        // SVG 도넛
+        var size = 160, cx = 80, cy = 80, r = 55, stroke = 22;
+        var circumference = 2 * Math.PI * r;
+        var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" width="160" height="160">';
+
+        var offset = 0;
+        data.forEach(function(d) {
+            var pct = d.value / total;
+            var dash = pct * circumference;
+            var gap = circumference - dash;
+            svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" ' +
+                'stroke="'+OHENG_COLORS[d.key]+'" stroke-width="'+stroke+'" ' +
+                'stroke-dasharray="'+dash+' '+gap+'" ' +
+                'stroke-dashoffset="'+(-offset)+'" ' +
+                'transform="rotate(-90 '+cx+' '+cy+')" ' +
+                'style="transition: stroke-dashoffset 0.6s ease;"/>';
+            offset += dash;
+        });
+
+        // 중앙 텍스트
+        var dominant = oheng.dominant || data.reduce(function(a,b){ return a.value > b.value ? a : b; }).key;
+        svg += '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" fill="'+OHENG_COLORS[dominant]+'" font-size="22" font-weight="700" font-family="Noto Serif KR,serif">' +
+            dominant + '</text>';
+        svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="#8a7a5a" font-size="10">주도 오행</text>';
+        svg += '</svg>';
+
+        document.getElementById('ohengChart').innerHTML = svg;
+
+        // 범례
+        var legend = '';
+        data.forEach(function(d) {
+            var pct = Math.round(d.value / total * 100);
+            legend += '<div class="oheng-legend-item">' +
+                '<div class="oheng-dot" style="background:'+OHENG_COLORS[d.key]+'"></div>' +
+                '<span>' + OHENG_LABELS[d.key] + ' ' + pct + '%</span></div>';
+        });
+        document.getElementById('ohengLegend').innerHTML = legend;
+
+        // 요약
+        var weakest = oheng.weakest || data.reduce(function(a,b){ return a.value < b.value ? a : b; }).key;
+        document.getElementById('ohengDominant').textContent =
+            '주도: ' + OHENG_LABELS[dominant] + '  |  보완 필요: ' + OHENG_LABELS[weakest];
+    }
+
+    /* ── 4-2. 챕터 렌더링 ── */
+    function renderChapters(chapters) {
+        var container = document.getElementById('chaptersContainer');
+        container.innerHTML = '';
+
+        chapters.forEach(function(ch, idx) {
+            var card = document.createElement('div');
+            card.className = 'chapter-card';
+            card.setAttribute('data-chapter', idx);
+
+            var title = ch.title || ('Chapter ' + (idx + 1));
+            var body = ch.content || ch.body || ch.text || '';
+
+            // 본문 → 단락 분리
+            var paragraphs = body.split(/\n\n+/).map(function(p) {
+                return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
+            }).join('');
+
+            var html = '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>' +
+                '<div class="chapter-title">' + escapeHtml(title) + '</div>' +
+                '<div class="chapter-body">' + paragraphs + '</div>';
+
+            // 감정 바
+            if (ch.emotion !== undefined) {
+                var emo = Math.max(0, Math.min(100, Number(ch.emotion) || 50));
+                html += '<div class="chapter-emotion">' +
+                    '<div class="chapter-emotion-label">감정</div>' +
+                    '<div class="chapter-emotion-bar"><div class="chapter-emotion-fill" style="width:'+emo+'%"></div></div>' +
+                    '</div>';
+            }
+
+            card.innerHTML = html;
+            container.appendChild(card);
+        });
+    }
+
+    /* ── 4-3. Intersection Observer (스크롤 페이드인) ── */
+    function observeChapters() {
+        var cards = document.querySelectorAll('.chapter-card:not(.visible)');
+        if (!cards.length) return;
+
+        if (!('IntersectionObserver' in window)) {
+            cards.forEach(function(c) { c.classList.add('visible'); });
+            return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        cards.forEach(function(c) { observer.observe(c); });
+    }
+
+    /* ── 4-4. 감정 곡선 SVG ── */
+    function renderEmotionCurve(chapters) {
+        var emotions = [];
+        chapters.forEach(function(ch, i) {
+            emotions.push({
+                label: 'Ch.' + (i + 1),
+                value: ch.emotion !== undefined ? Number(ch.emotion) : 50
+            });
+        });
+        if (emotions.length < 2) return;
+
+        var card = document.getElementById('emotionCurveCard');
+        card.style.display = 'block';
+
+        var svg = document.getElementById('emotionCurveSvg');
+        var W = 440, H = 140, padX = 30, padY = 20;
+        var plotW = W - padX * 2, plotH = H - padY * 2;
+
+        var n = emotions.length;
+        var points = emotions.map(function(e, i) {
+            var x = padX + (i / (n - 1)) * plotW;
+            var y = padY + plotH - (e.value / 100) * plotH;
+            return { x: x, y: y, label: e.label, value: e.value };
+        });
+
+        // 스무스 경로
+        var pathD = 'M ' + points[0].x + ' ' + points[0].y;
+        for (var i = 1; i < points.length; i++) {
+            var prev = points[i - 1];
+            var curr = points[i];
+            var cpx1 = prev.x + (curr.x - prev.x) * 0.4;
+            var cpx2 = prev.x + (curr.x - prev.x) * 0.6;
+            pathD += ' C ' + cpx1 + ' ' + prev.y + ' ' + cpx2 + ' ' + curr.y + ' ' + curr.x + ' ' + curr.y;
+        }
+
+        // 그라디언트
+        var areaD = pathD + ' L ' + points[n-1].x + ' ' + (padY + plotH) + ' L ' + points[0].x + ' ' + (padY + plotH) + ' Z';
+
+        var svgContent = '' +
+            '<defs>' +
+            '  <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">' +
+            '    <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/>' +
+            '    <stop offset="100%" stop-color="#c9a84c" stop-opacity="0.02"/>' +
+            '  </linearGradient>' +
+            '</defs>' +
+            '<line x1="'+padX+'" y1="'+(padY+plotH)+'" x2="'+(padX+plotW)+'" y2="'+(padY+plotH)+'" stroke="#c9a84c33" stroke-width="1"/>' +
+            '<path d="'+areaD+'" fill="url(#curveGrad)"/>' +
+            '<path d="'+pathD+'" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>';
+
+        points.forEach(function(p) {
+            svgContent += '<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#0a0a14" stroke="#c9a84c" stroke-width="2"/>';
+            svgContent += '<text x="'+p.x+'" y="'+(padY + plotH + 14)+'" text-anchor="middle" fill="#8a7a5a" font-size="9">' + p.label + '</text>';
+        });
+
+        svg.innerHTML = svgContent;
+    }
+
+    /* ── 4-5. 7일 실행 플랜 ── */
+    function renderActionPlan(plan) {
+        if (!plan || !plan.length) return;
+        var card = document.getElementById('actionPlanCard');
+        card.style.display = 'block';
+
+        var html = '';
+        plan.forEach(function(item) {
+            var day = item.day || item.label || '';
+            var text = item.action || item.text || item.content || '';
+            html += '<div class="action-plan-item">' +
+                '<div class="action-plan-day">' + escapeHtml(day) + '</div>' +
+                '<div class="action-plan-text">' + escapeHtml(text) + '</div>' +
+                '</div>';
+        });
+        document.getElementById('actionPlanList').innerHTML = html;
+    }
+
+    /* ══════════════════════════════════════
+       5. 폰트 크기 조절
+       ══════════════════════════════════════ */
+    function changeFontSize(dir) {
+        fontStep = Math.max(0, Math.min(2, fontStep + dir));
+        document.documentElement.style.setProperty('--font-scale', fontScales[fontStep]);
+    }
+
+    /* ══════════════════════════════════════
+       6. 오디오 시스템 (기존 유지 + 리팩토링)
+       ══════════════════════════════════════ */
+    function extractFileId(url) {
+        if (!url) return null;
+        var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (m) return m[1];
+        m = url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (m) return m[1];
+        if (/^[a-zA-Z0-9_-]{20,}$/.test(url)) return url;
+        return null;
+    }
+
+    function formatTime(sec) {
+        if (!sec || isNaN(sec)) return '0:00';
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function() { t.classList.remove('show'); }, 2500);
+    }
+
+    /* ── BGM 프리로드 ── */
+    function preloadBgm(fileId) {
+        fetch(GAS_URL + '?audio=' + fileId)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.error || !data.audioBase64) { console.error('BGM preload error'); return; }
+                var audio = new Audio();
+                audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                audio.volume = 0.5;
+                audio.preload = 'auto';
+                audioPlayers['theme'] = audio;
+                audioLoaded['theme'] = true;
+                bgmPreloaded = true;
+
+                audio.addEventListener('loadedmetadata', function() {
+                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
+                });
+                audio.addEventListener('ended', function() {
+                    if (bgmType === 'theme') {
+                        audio.currentTime = 0;
+                        audio.play().catch(function(){});
+                    } else {
+                        document.getElementById('bgmBar').classList.remove('active');
+                        document.getElementById('themePlayBtn').textContent = '▶';
+                        document.getElementById('btnTheme').classList.remove('playing');
+                        bgmType = null;
+                    }
+                });
+
+                if (pendingBgmPlay) {
+                    pendingBgmPlay = false;
+                    startBgm();
+                }
+            })
+            .catch(function(err) { console.error('BGM preload fetch error:', err); });
+    }
+
+    function startBgm() {
+        var audio = audioPlayers['theme'];
+        if (!audio) return;
+        audio.volume = 0.5;
+        audio.currentTime = 0;
+        audio.play().then(function() {
+            bgmType = 'theme';
+            document.getElementById('bgmBar').classList.add('active');
+            document.getElementById('bgmBtn').textContent = '⏸';
+            document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
+            document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+        }).catch(function(e) {
+            console.log('BGM autoplay blocked:', e);
+            document.getElementById('bgmBar').classList.add('active');
+            document.getElementById('bgmBtn').textContent = '▶';
+            document.getElementById('bgmSub').textContent = '터치하여 재생';
+            bgmType = 'theme';
+        });
+    }
+
+    function toggleBgm() {
+        var audio = audioPlayers['theme'];
+        if (!audio) return;
+        if (audio.paused) {
+            audio.play().catch(function(){});
+            document.getElementById('bgmBtn').textContent = '⏸';
+            document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+        } else {
+            audio.pause();
+            document.getElementById('bgmBtn').textContent = '▶';
+            document.getElementById('bgmSub').textContent = '일시정지';
+        }
+    }
+
+    /* ── 플레이어 토글 & 재생 ── */
+    function togglePlayer(type) {
+        var wrap = document.getElementById('player' + capitalize(type));
+        var btn = document.getElementById('btn' + capitalize(type));
+        var isOpen = wrap.classList.contains('open');
+
+        // 다른 플레이어 닫기
+        ['theme','voice','healing'].forEach(function(t) {
+            if (t !== type) {
+                document.getElementById('player' + capitalize(t)).classList.remove('open');
+                document.getElementById('btn' + capitalize(t)).classList.remove('expanded');
+            }
+        });
+
+        if (isOpen) {
+            wrap.classList.remove('open');
+            btn.classList.remove('expanded');
+        } else {
+            wrap.classList.add('open');
+            btn.classList.add('expanded');
+            if (!audioLoaded[type]) { loadAudio(type); }
+        }
+    }
+
+    function loadAudio(type) {
+        var linkMap = { theme: certData.themeLink, voice: certData.voiceLink, healing: certData.healingLink };
+        var rawUrl = linkMap[type];
+        if (!rawUrl) return;
+
+        var fileId = extractFileId(rawUrl);
+        if (!fileId) return;
+
+        audioFileIds[type] = fileId;
+        var loadingEl = document.getElementById(type + 'Loading');
+        if (loadingEl) loadingEl.style.display = 'block';
+
+        // BGM으로 이미 로드된 테마곡 재사용
+        if (type === 'theme' && audioLoaded['theme'] && audioPlayers['theme']) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            return;
+        }
+
+        fetch(GAS_URL + '?audio=' + fileId)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (data.error || !data.audioBase64) {
+                    showToast('음원을 불러올 수 없습니다');
+                    return;
+                }
+                var audio = new Audio();
+                audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                audio.preload = 'auto';
+                audioPlayers[type] = audio;
+                audioLoaded[type] = true;
+
+                audio.addEventListener('loadedmetadata', function() {
+                    document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
+                });
+                audio.addEventListener('ended', function() {
+                    document.getElementById(type + 'PlayBtn').textContent = '▶';
+                    document.getElementById('btn' + capitalize(type)).classList.remove('playing');
+                    clearInterval(playerIntervals[type]);
+                });
+
+                // 다운로드 링크
+                var dlLink = document.getElementById(type + 'Download');
+                if (dlLink) {
+                    dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                    dlLink.download = (data.fileName || type + '_audio') + '.mp3';
+                }
+            })
+            .catch(function(err) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                showToast('음원 로딩 실패');
+                console.error('loadAudio error:', err);
+            });
+    }
+
+    function playPause(type) {
+        var audio = audioPlayers[type];
+        if (!audio) { loadAudio(type); return; }
+
+        if (audio.paused) {
+            // 다른 오디오 정지
+            ['theme','voice','healing'].forEach(function(t) {
+                if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
+                    audioPlayers[t].pause();
+                    document.getElementById(t + 'PlayBtn').textContent = '▶';
+                    document.getElementById('btn' + capitalize(t)).classList.remove('playing');
+                    clearInterval(playerIntervals[t]);
+                }
+            });
+            audio.play().catch(function(){});
+            document.getElementById(type + 'PlayBtn').textContent = '⏸';
+            document.getElementById('btn' + capitalize(type)).classList.add('playing');
+            startProgressUpdate(type);
+
+            // BGM 바 업데이트
+            bgmType = type;
+            document.getElementById('bgmBar').classList.add('active');
+            document.getElementById('bgmBtn').textContent = '⏸';
+            var names = { theme: certData.themeName, voice: certData.voiceName, healing: certData.healingName };
+            document.getElementById('bgmTitle').textContent = '♪ ' + (names[type] || type);
+            document.getElementById('bgmSub').textContent = '재생 중';
+        } else {
+            audio.pause();
+            document.getElementById(type + 'PlayBtn').textContent = '▶';
+            document.getElementById('btn' + capitalize(type)).classList.remove('playing');
+            clearInterval(playerIntervals[type]);
+            document.getElementById('bgmBtn').textContent = '▶';
+            document.getElementById('bgmSub').textContent = '일시정지';
+        }
+    }
+
+    function seek(type) {
+        var audio = audioPlayers[type];
+        var slider = document.getElementById(type + 'Progress');
+        if (audio && audio.duration) {
+            audio.currentTime = (slider.value / 100) * audio.duration;
+        }
+    }
+
+    function startProgressUpdate(type) {
+        clearInterval(playerIntervals[type]);
+        playerIntervals[type] = setInterval(function() {
+            var audio = audioPlayers[type];
+            if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
+            var pct = (audio.currentTime / audio.duration) * 100;
+            document.getElementById(type + 'Progress').value = pct;
+            document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
+        }, 300);
+    }
+
+    /* ══════════════════════════════════════
+       7. 공유
+       ══════════════════════════════════════ */
+    function shareKakao() {
+        if (!window.Kakao || !Kakao.isInitialized()) {
+            showToast('카카오 공유를 불러오는 중...');
+            return;
+        }
+        var pageUrl = window.location.href;
+        var desc = certData.soreLine || '당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.';
+
+        Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+                title: '나를읽다 연구소 — ' + (certData.name || '') + '님의 운명 분석',
+                description: desc.substring(0, 100),
+                imageUrl: 'https://readmelab.github.io/og-image.png',
+                link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
+            },
+            buttons: [{
+                title: '내 운명 보기',
+                link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
+            }]
+        });
+    }
+
+    function shareLink() {
+        var url = window.location.href;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+                showToast('링크가 복사되었습니다');
+            }).catch(function() { fallbackCopy(url); });
+        } else {
+            fallbackCopy(url);
+        }
+    }
+
+    function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); }
+        catch(e) { showToast('복사에 실패했습니다'); }
+        document.body.removeChild(ta);
+    }
+
+    function shareNative() {
+        if (!navigator.share) return;
+        navigator.share({
+            title: '나를읽다 연구소 — 운명 분석 결과',
+            text: certData.soreLine || '당신만을 위한 운명 분석',
+            url: window.location.href
+        }).catch(function(){});
+    }
+
+    /* ══════════════════════════════════════
+       8. 유틸
+       ══════════════════════════════════════ */
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    </script>
+</body>
+</html>
