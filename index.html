@@ -14,61 +14,30 @@
 
         /* ══════════════════════════════════════
            0. CSS 변수 & 리셋
-           — 모든 색상·투명도·폰트를 변수로 관리
-           — 구글시트 디자인설정에서 원격 변경 가능
            ══════════════════════════════════════ */
         :root {
-            --bg-deep: #0A0A0A;
-            --bg-card: #111111;
-            --bg-card-alt: #0e0e0e;
-
-            /* 메인 골드 계열 — RGB 분리로 투명도 자유 적용 */
+            --bg-deep: #0a0a14;
+            --bg-card: #12121f;
+            --bg-card-alt: #0e0e1a;
             --gold: #c9a84c;
-            --gold-rgb: 201,168,76;
-            --gold-dim: rgba(var(--gold-rgb), 0.2);
-            --gold-mid: rgba(var(--gold-rgb), 0.4);
+            --gold-dim: #c9a84c33;
+            --gold-mid: #c9a84c66;
             --gold-bright: #e8c44c;
-            --gold-bright-rgb: 232,196,76;
-
-            /* 투명도 프리셋 — 하드코딩 제거용 */
-            --gold-005: rgba(var(--gold-rgb), 0.05);
-            --gold-007: rgba(var(--gold-rgb), 0.07);
-            --gold-01: rgba(var(--gold-rgb), 0.1);
-            --gold-015: rgba(var(--gold-rgb), 0.15);
-            --gold-02: rgba(var(--gold-rgb), 0.2);
-            --gold-03: rgba(var(--gold-rgb), 0.3);
-            --gold-04: rgba(var(--gold-rgb), 0.4);
-            --gold-shadow: rgba(var(--gold-rgb), 0.2);
-            --gold-shadow-strong: rgba(var(--gold-rgb), 0.3);
-            --gold-glow: rgba(var(--gold-rgb), 0.15);
-            --gold-bg-subtle: rgba(var(--gold-rgb), 0.03);
-
-            /* 텍스트 */
             --text-primary: #f5f0e8;
             --text-secondary: #a09880;
             --text-muted: #8a7a5a;
             --text-dim: #6a6050;
             --text-faint: #5a5040;
             --text-ghost: #3a3530;
-
-            /* 폰트 — CSS 변수로 관리, 시트에서 변경 가능 */
-            --font-main: 'Noto Sans KR', sans-serif;
-            --font-serif: 'Noto Serif KR', serif;
             --font-size-base: 15px;
             --font-scale: 1;
-            --line-height: 2.0;
-
-            /* 오행 개인화 — JS가 dominant에 따라 변경 */
-            --element-accent: var(--gold);
-            --element-glow: var(--gold-glow);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             background-color: var(--bg-deep);
             color: var(--text-primary);
-            font-family: var(--font-main);
+            font-family: 'Noto Sans KR', sans-serif;
             font-size: calc(var(--font-size-base) * var(--font-scale));
             min-height: 100vh;
             display: flex;
@@ -80,46 +49,25 @@
         .container { max-width: 480px; width: 100%; text-align: center; }
 
         /* ══════════════════════════════════════
-           1. 스크롤 진행률 바
+           1. 폰트 크기 조절
            ══════════════════════════════════════ */
-        .scroll-progress {
-            position: fixed; top: 0; left: 0; height: 2px; z-index: 99999;
-            background: linear-gradient(90deg, var(--element-accent), var(--gold-bright));
-            width: 0%; transition: width 0.1s linear;
-        }
-
-        /* ══════════════════════════════════════
-           2. 설정 패널
-           ══════════════════════════════════════ */
-        .settings-btn {
+        .font-controls {
             position: fixed; top: 16px; right: 16px; z-index: 9999;
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 1px solid var(--gold-dim); background: var(--bg-card);
-            color: var(--gold); font-size: 16px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.5s;
+            display: flex; gap: 6px; opacity: 0; transition: opacity 0.5s;
         }
-        .settings-btn.visible { opacity: 1; }
-        .settings-panel {
-            position: fixed; top: 60px; right: 16px; z-index: 9998;
-            background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 16px; width: 200px;
-            display: none; flex-direction: column; gap: 12px;
-        }
-        .settings-panel.open { display: flex; }
-        .settings-row { display: flex; align-items: center; justify-content: space-between; }
-        .settings-label { font-size: 12px; color: var(--text-secondary); }
-        .settings-btns { display: flex; gap: 4px; }
+        .font-controls.visible { opacity: 1; }
         .font-btn {
-            width: 30px; height: 30px; border-radius: 6px;
-            border: 1px solid var(--gold-dim); background: transparent;
-            color: var(--gold); font-size: 12px; font-weight: 700;
+            width: 34px; height: 34px; border-radius: 50%;
+            border: 1px solid var(--gold-dim); background: var(--bg-card);
+            color: var(--gold); font-size: 13px; font-weight: 700;
             cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .font-btn:hover { border-color: var(--gold); background: var(--gold-007); }
+        .font-btn:hover { border-color: var(--gold); background: #c9a84c11; }
+        .font-btn:active { transform: scale(0.92); }
 
         /* ══════════════════════════════════════
-           3. 로딩 & 에러
+           2. 로딩 & 에러
            ══════════════════════════════════════ */
         .loading {
             display: flex; flex-direction: column; align-items: center;
@@ -136,62 +84,50 @@
             display: none; min-height: 60vh; flex-direction: column;
             align-items: center; justify-content: center;
         }
-        .error h2 { font-family: var(--font-serif); color: var(--gold); font-size: 20px; margin-bottom: 12px; }
+        .error h2 { font-family: 'Noto Serif KR', serif; color: var(--gold); font-size: 20px; margin-bottom: 12px; }
         .error p { color: var(--text-muted); font-size: 14px; }
 
         /* ══════════════════════════════════════
-           4. 봉인 해제 인트로
+           3. 인트로 화면
            ══════════════════════════════════════ */
-        .seal-intro {
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; min-height: 100vh; position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0; z-index: 10000;
-            background: var(--bg-deep);
+        .intro { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; position: relative; }
+        .intro-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; }
+        .intro-glow {
+            position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 40%, transparent 70%);
+            border-radius: 50%; animation: glowPulse 3s ease-in-out infinite;
         }
-        .seal-intro.active { display: flex; }
-        .seal-name {
-            font-family: var(--font-serif); font-size: 32px;
-            color: var(--gold-bright); font-weight: 900; letter-spacing: 8px;
-            opacity: 0; transform: translateY(20px);
-            text-shadow: 0 0 40px rgba(var(--gold-bright-rgb), 0.4);
-        }
-        .seal-name.show { animation: sealReveal 1.2s ease forwards; }
-        @keyframes sealReveal {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .seal-pillars {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 8px; margin-top: 32px; opacity: 0;
-        }
-        .seal-pillars.show { animation: sealReveal 1.5s ease forwards; }
-        .seal-pillar-char {
-            font-family: var(--font-serif); font-size: 28px;
-            color: var(--text-primary); letter-spacing: 4px; opacity: 0;
-        }
-        .seal-pillar-char.show { animation: pillarFade 0.8s ease forwards; }
-        @keyframes pillarFade {
-            0% { opacity: 0; filter: blur(8px); }
-            100% { opacity: 1; filter: blur(0); }
-        }
-        .seal-trigger {
-            font-family: var(--font-serif); font-size: 22px;
-            color: var(--gold-bright); font-weight: 700; letter-spacing: 2px;
-            margin-top: 48px; opacity: 0; line-height: 1.8;
-            text-shadow: 0 0 30px rgba(var(--gold-bright-rgb), 0.4);
-            max-width: 360px; text-align: center;
-        }
-        .seal-trigger.show { animation: sealReveal 1.5s ease forwards; }
-        .seal-meta { margin-top: 24px; opacity: 0; text-align: center; }
-        .seal-meta.show { animation: sealReveal 1s ease forwards; }
-        .seal-meta-line { font-size: 12px; color: var(--text-dim); letter-spacing: 1px; }
-        .seal-scroll-hint { position: absolute; bottom: 40px; opacity: 0; }
-        .seal-scroll-hint.show { animation: scrollBounce 2s ease-in-out infinite, sealReveal 1s ease forwards; }
-        .seal-scroll-hint span { display: block; color: var(--gold); font-size: 24px; }
-        @keyframes scrollBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+        @keyframes glowPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%,-50%) scale(1.3); opacity: 1; } }
+        .intro-particles { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        .particle { position: absolute; width: 2px; height: 2px; background: var(--gold); border-radius: 50%; opacity: 0; animation: particleFloat 4s ease-in-out infinite; }
+        .particle:nth-child(1) { left: 20%; top: 30%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 70%; top: 20%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { left: 40%; top: 60%; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 80%; top: 50%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { left: 15%; top: 70%; animation-delay: 2s; }
+        .particle:nth-child(6) { left: 60%; top: 80%; animation-delay: 2.5s; }
+        .particle:nth-child(7) { left: 50%; top: 15%; animation-delay: 0.8s; }
+        .particle:nth-child(8) { left: 30%; top: 45%; animation-delay: 1.8s; }
+        @keyframes particleFloat { 0% { opacity: 0; transform: translateY(0) scale(1); } 30% { opacity: 0.8; } 70% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-40px) scale(0.5); } }
+        .intro-content { position: relative; z-index: 1; }
+        .intro-line { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto 24px; opacity: 0; animation: introFadeIn 1s ease forwards 0.2s; }
+        .intro-brand { font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--gold); letter-spacing: 6px; margin-bottom: 20px; opacity: 0; animation: introFadeIn 1s ease forwards 0.4s; }
+        .intro-symbol { font-size: 20px; color: var(--gold); margin-bottom: 24px; opacity: 0; animation: introSymbol 2s ease forwards 0.6s; text-shadow: 0 0 40px rgba(201,168,76,0.6), 0 0 80px rgba(201,168,76,0.3); }
+        @keyframes introSymbol { 0% { opacity: 0; transform: scale(0.5) rotate(0deg); } 50% { opacity: 1; transform: scale(1.2) rotate(180deg); } 100% { opacity: 1; transform: scale(1) rotate(360deg); } }
+        .intro-title { font-family: 'Noto Serif KR', serif; font-size: 14px; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 40px; opacity: 0; animation: introFadeIn 1s ease forwards 0.9s; line-height: 1.8; }
+        .intro-sore { font-family: 'Noto Serif KR', serif; font-size: 22px; color: var(--gold-bright); font-style: italic; letter-spacing: 2px; margin-bottom: 32px; opacity: 0; animation: introFadeIn 1.2s ease forwards 1.1s; text-shadow: 0 0 30px rgba(232,196,76,0.4), 0 0 60px rgba(232,196,76,0.15); line-height: 1.8; }
+        .intro-btn { display: inline-block; padding: 16px 48px; border: 1px solid #c9a84c44; border-radius: 4px; background: transparent; color: var(--gold); font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 3px; cursor: pointer; transition: all 0.4s ease; opacity: 0; animation: introFadeIn 1s ease forwards 1.2s; position: relative; overflow: hidden; }
+        .intro-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(201,168,76,0.1); border-radius: 50%; transform: translate(-50%,-50%); transition: all 0.6s ease; }
+        .intro-btn:hover { border-color: var(--gold); box-shadow: 0 0 30px rgba(201,168,76,0.2), inset 0 0 30px rgba(201,168,76,0.05); }
+        .intro-btn:hover::before { width: 300px; height: 300px; }
+        .intro-line-bottom { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 40px auto 0; opacity: 0; animation: introFadeIn 1s ease forwards 1.4s; }
+        @keyframes introFadeIn { to { opacity: 1; } }
+        .intro.fade-out { animation: fadeOut 1s ease forwards; }
+        @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
 
         /* ══════════════════════════════════════
-           5. 보증서 섹션
+           4. 보증서 섹션
            ══════════════════════════════════════ */
         .certificate { display: none; opacity: 0; }
         .certificate.fade-in { animation: certFadeIn 1.5s ease forwards; }
@@ -199,231 +135,168 @@
         .top-ornament { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; gap: 12px; }
         .top-ornament .line { height: 1px; width: 60px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
         .top-ornament .diamond { color: var(--gold); font-size: 10px; }
-        .brand { font-family: var(--font-serif); font-size: 13px; color: var(--gold); letter-spacing: 6px; margin-bottom: 8px; }
-        .cert-title { font-family: var(--font-serif); font-size: 15px; color: var(--text-muted); letter-spacing: 3px; margin-bottom: 32px; }
-        .client-name { font-family: var(--font-serif); font-size: 36px; font-weight: 900; color: var(--gold); margin-bottom: 4px; text-shadow: 0 0 20px var(--gold-shadow-strong); }
-        .client-name-sub { font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: #a09060; margin-bottom: 8px; display: none; }
+        .brand { font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--gold); letter-spacing: 6px; margin-bottom: 8px; }
+        .cert-title { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text-muted); letter-spacing: 3px; margin-bottom: 32px; }
+        .client-name { font-family: 'Noto Serif KR', serif; font-size: 36px; font-weight: 900; color: var(--gold); margin-bottom: 4px; text-shadow: 0 0 20px rgba(201,168,76,0.3); }
+        .client-name-sub { font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700; color: #a09060; margin-bottom: 8px; display: none; }
         .name-divider { display: none; align-items: center; justify-content: center; gap: 10px; margin: 8px 0; }
         .name-divider .line { width: 30px; height: 1px; background: var(--gold-dim); }
-        .name-divider .and { color: var(--gold-mid); font-size: 13px; font-family: var(--font-serif); }
+        .name-divider .and { color: #c9a84c88; font-size: 13px; font-family: 'Noto Serif KR', serif; }
         .honorific { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
         .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent); margin: 24px 0; }
         .message { font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 36px; font-weight: 300; }
-        .sore-line { font-family: var(--font-serif); font-size: 20px; color: var(--gold); font-weight: 700; line-height: 2.2; letter-spacing: 1px; text-shadow: 0 0 30px var(--gold-shadow); }
+        .sore-line { font-family: 'Noto Serif KR', serif; font-size: 20px; color: var(--gold); font-weight: 700; line-height: 2.2; letter-spacing: 1px; text-shadow: 0 0 30px rgba(201,168,76,0.2); }
         .product-tag { display: inline-block; padding: 4px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; font-size: 12px; color: var(--gold); margin-bottom: 24px; letter-spacing: 1px; }
 
         /* ══════════════════════════════════════
-           6. 리포트 섹션
+           5. 리포트 섹션 (신규)
            ══════════════════════════════════════ */
         .report-section { display: none; margin-top: 32px; text-align: left; }
         .report-section.active { display: block; }
-        .dashboard { margin-bottom: 32px; }
 
-        /* 오행 도넛 */
+        /* 오행 차트 */
         .oheng-card {
             background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 28px 20px; margin-bottom: 20px;
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
         }
-        .oheng-title { font-family: var(--font-serif); font-size: 14px; color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
+        .oheng-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
         .oheng-chart { display: flex; justify-content: center; margin-bottom: 20px; }
-        .oheng-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-        .oheng-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .oheng-legend {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+        }
+        .oheng-legend-item {
+            display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary);
+        }
         .oheng-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .oheng-dominant { text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-muted); font-style: italic; }
+        .oheng-dominant {
+            text-align: center; margin-top: 16px; font-size: 13px;
+            color: var(--text-muted); font-style: italic;
+        }
 
-        /* 사주 네 기둥 카드 */
-        .pillars-card {
-            background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 24px 16px; margin-bottom: 20px;
-        }
-        .pillars-title { font-family: var(--font-serif); font-size: 14px; color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
-        .pillars-row { display: flex; justify-content: center; gap: 12px; }
-        .pillar-item { width: 72px; text-align: center; cursor: pointer; perspective: 600px; }
-        .pillar-inner { position: relative; transition: transform 0.6s; transform-style: preserve-3d; }
-        .pillar-item.flipped .pillar-inner { transform: rotateY(180deg); }
-        .pillar-front { position: relative; backface-visibility: hidden; border-radius: 10px; border: 1px solid var(--gold-dim); }
-        .pillar-back {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            backface-visibility: hidden; transform: rotateY(180deg);
-            background: var(--bg-card-alt); border-radius: 10px; border: 1px solid var(--gold-dim);
-            padding: 8px 4px; display: flex; align-items: center; justify-content: center;
-        }
-        .pillar-back-text { font-size: 10px; color: var(--text-secondary); line-height: 1.5; text-align: center; word-break: keep-all; }
-        .pillar-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 6px; }
-        .pillar-gan { font-family: var(--font-serif); font-size: 24px; font-weight: 700; padding: 10px 0; border-radius: 10px 10px 0 0; }
-        .pillar-ji { font-family: var(--font-serif); font-size: 24px; font-weight: 700; padding: 10px 0; border-radius: 0 0 10px 10px; }
-
-        /* 감정 레이더 */
-        .emotion-radar-card {
-            background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 28px 20px; margin-bottom: 20px;
-        }
-        .emotion-radar-title { font-family: var(--font-serif); font-size: 14px; color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
-        .emotion-radar-insight { text-align: center; font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 16px; line-height: 1.6; }
-
-        /* 월별 운세 */
-        .monthly-card {
-            background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 24px 16px; margin-bottom: 20px;
-        }
-        .monthly-title { font-family: var(--font-serif); font-size: 14px; color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px; }
-        .monthly-scroll {
-            display: flex; gap: 10px; overflow-x: auto;
-            scroll-snap-type: x mandatory; padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .monthly-scroll::-webkit-scrollbar { height: 3px; }
-        .monthly-scroll::-webkit-scrollbar-track { background: transparent; }
-        .monthly-scroll::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
-        .monthly-item { flex: 0 0 64px; scroll-snap-align: start; text-align: center; cursor: pointer; }
-        .monthly-bar-wrap { height: 80px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px; }
-        .monthly-bar { width: 28px; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.8s ease; height: 4px; }
-        .monthly-bar.animated { /* JS가 실제 높이 적용 */ }
-        .monthly-label { font-size: 10px; color: var(--text-dim); }
-        .monthly-score { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
-        .monthly-item.current .monthly-label { color: var(--gold); font-weight: 700; }
-        .monthly-item.current .monthly-bar { box-shadow: 0 0 12px var(--element-glow); }
-        .monthly-item.peak .monthly-score::after { content: ' ★'; color: var(--gold); }
-        .monthly-item.low .monthly-score::after { content: ' ⚠'; }
-        .monthly-detail {
-            display: none; margin-top: 12px; padding: 12px;
-            background: var(--bg-card-alt); border-radius: 8px; border: 1px solid var(--gold-dim);
-        }
-        .monthly-detail.open { display: block; }
-        .monthly-detail-keyword { font-size: 13px; color: var(--gold); margin-bottom: 4px; }
-        .monthly-detail-action { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
-
-        /* 챕터 네비게이션 */
-        .chapter-nav {
-            display: flex; gap: 10px; overflow-x: auto;
-            scroll-snap-type: x mandatory; padding: 8px 0 16px; margin-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .chapter-nav::-webkit-scrollbar { height: 3px; }
-        .chapter-nav::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
-        .chapter-nav-item {
-            flex: 0 0 100px; scroll-snap-align: start;
-            background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 10px; padding: 12px 8px; text-align: center;
-            cursor: pointer; transition: all 0.3s;
-        }
-        .chapter-nav-item:hover, .chapter-nav-item.active { border-color: var(--gold); background: var(--gold-005); }
-        .chapter-nav-icon { font-size: 20px; margin-bottom: 4px; }
-        .chapter-nav-label { font-size: 10px; color: var(--text-muted); line-height: 1.3; word-break: keep-all; }
-
-        /* 챕터 카드 (아코디언) */
+        /* 챕터 카드 */
         .chapter-card {
             background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; margin-bottom: 16px; overflow: hidden;
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 20px;
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
         .chapter-card.visible { opacity: 1; transform: translateY(0); }
-        .chapter-header {
-            display: flex; align-items: center; gap: 12px;
-            padding: 20px; cursor: pointer; transition: background 0.3s;
+        .chapter-number {
+            font-family: 'Noto Serif KR', serif; font-size: 11px;
+            color: var(--gold-mid); letter-spacing: 3px; margin-bottom: 8px;
         }
-        .chapter-header:hover { background: var(--gold-005); }
-        .chapter-header-icon { font-size: 20px; flex-shrink: 0; }
-        .chapter-header-text { flex: 1; }
-        .chapter-number { font-family: var(--font-serif); font-size: 10px; color: var(--gold-mid); letter-spacing: 3px; }
-        .chapter-title { font-family: var(--font-serif); font-size: 16px; color: var(--gold); font-weight: 700; line-height: 1.4; margin-top: 2px; }
-        .chapter-toggle { font-size: 14px; color: var(--gold-mid); transition: transform 0.3s; flex-shrink: 0; }
-        .chapter-card.open .chapter-toggle { transform: rotate(180deg); }
-        .chapter-body-wrap { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
-        .chapter-card.open .chapter-body-wrap { max-height: 8000px; }
+        .chapter-title {
+            font-family: 'Noto Serif KR', serif; font-size: 18px;
+            color: var(--gold); font-weight: 700; margin-bottom: 16px;
+            line-height: 1.5;
+        }
         .chapter-body {
-            padding: 0 20px 20px;
             font-size: calc(var(--font-size-base) * var(--font-scale));
-            color: var(--text-primary); line-height: var(--line-height); word-break: keep-all;
+            color: var(--text-primary); line-height: 2.0;
+            word-break: keep-all;
         }
         .chapter-body p { margin-bottom: 16px; }
         .chapter-body strong { color: var(--gold); font-weight: 500; }
-
-        /* highlight_quote */
-        .highlight-quote {
-            margin: 24px -20px; padding: 32px 24px;
-            background: linear-gradient(180deg, var(--gold-005) 0%, transparent 100%);
-            border-left: 3px solid var(--element-accent); text-align: center;
+        .chapter-emotion {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gold-dim);
         }
-        .highlight-quote-text {
-            font-family: var(--font-serif); font-size: 18px;
-            color: var(--gold-bright); font-weight: 700; line-height: 1.8; letter-spacing: 1px;
+        .chapter-emotion-label { font-size: 11px; color: var(--text-dim); }
+        .chapter-emotion-bar {
+            flex: 1; height: 3px; background: var(--gold-dim); border-radius: 2px;
+            overflow: hidden;
+        }
+        .chapter-emotion-fill {
+            height: 100%; border-radius: 2px;
+            background: linear-gradient(90deg, #4a7c6f, var(--gold), #c75050);
+            transition: width 0.6s ease;
         }
 
-        /* 실행 플랜 */
+        /* 감정 곡선 */
+        .emotion-curve-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+        }
+        .emotion-curve-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+
+        /* 실행 플랜 카드 */
         .action-plan-card {
             background: var(--bg-card); border: 1px solid var(--gold-dim);
             border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
         }
-        .action-plan-title { font-family: var(--font-serif); font-size: 16px; color: var(--gold); font-weight: 700; margin-bottom: 16px; text-align: center; }
-        .action-plan-item { padding: 12px 0; border-bottom: 1px solid var(--gold-005); }
+        .action-plan-title {
+            font-family: 'Noto Serif KR', serif; font-size: 16px;
+            color: var(--gold); font-weight: 700; margin-bottom: 16px; text-align: center;
+        }
+        .action-plan-item {
+            padding: 12px 0; border-bottom: 1px solid #c9a84c11;
+        }
         .action-plan-item:last-child { border-bottom: none; }
-        .action-plan-label { font-size: 11px; color: var(--gold-mid); letter-spacing: 2px; margin-bottom: 4px; }
+        .action-plan-day {
+            font-size: 11px; color: var(--gold-mid); letter-spacing: 2px; margin-bottom: 4px;
+        }
         .action-plan-text { font-size: 14px; color: var(--text-primary); line-height: 1.6; }
-        .action-plan-evidence { font-size: 11px; color: var(--text-dim); margin-top: 4px; font-style: italic; }
 
-        /* 클로징 */
-        .closing-card { text-align: center; padding: 40px 20px; margin-bottom: 28px; }
-        .closing-text { font-family: var(--font-serif); font-size: 16px; color: var(--text-secondary); line-height: 2.0; font-style: italic; }
-
-        /* 보증서 인장 */
-        .seal-stamp { text-align: center; padding: 32px 0; margin-bottom: 20px; }
-        .seal-stamp-circle {
-            width: 120px; height: 120px; border-radius: 50%;
-            border: 2px solid var(--gold); margin: 0 auto 16px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* PDF 저장 버튼 */
+        .print-btn-wrap { text-align: center; margin: 32px 0; }
+        .print-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border: 1px solid var(--gold-dim); border-radius: 8px;
+            background: transparent; color: var(--gold); font-size: 14px;
+            font-family: 'Noto Sans KR', sans-serif; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.3s;
         }
-        .seal-stamp-brand { font-family: var(--font-serif); font-size: 10px; color: var(--gold); letter-spacing: 3px; }
-        .seal-stamp-year { font-family: var(--font-serif); font-size: 18px; color: var(--gold-bright); font-weight: 700; }
-        .seal-stamp-code { font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
-        .seal-stamp-date { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
-
-        /* 맨위로 버튼 */
-        .scroll-top-btn {
-            position: fixed; bottom: 80px; right: 20px; z-index: 9997;
-            width: 40px; height: 40px; border-radius: 50%;
-            border: 1px solid var(--gold-dim); background: var(--bg-card);
-            color: var(--gold); font-size: 16px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transform: translateY(10px);
-            transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+        .print-btn:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(201,168,76,0.15); }
+        @media print {
+            .font-controls, .bgm-bar, .share-section, .print-btn-wrap,
+            .buttons, .toast { display: none !important; }
+            body { background: white; color: #222; }
+            .chapter-card { break-inside: avoid; border-color: #ddd; opacity: 1; transform: none; }
+            .oheng-card, .emotion-curve-card, .action-plan-card { break-inside: avoid; border-color: #ddd; }
         }
-        .scroll-top-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
         /* ══════════════════════════════════════
-           7. 오디오 버튼 & 플레이어
+           6. 버튼 & 플레이어 (기존 유지)
            ══════════════════════════════════════ */
         .buttons { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
         .btn-item { margin-bottom: 12px; }
         .btn {
             display: none; align-items: center; justify-content: center; gap: 10px;
-            padding: 16px 24px; border: 1px solid var(--gold-02); border-radius: 8px;
+            padding: 16px 24px; border: 1px solid #c9a84c44; border-radius: 8px;
             background: linear-gradient(135deg, #1a1a2e, #16162a); color: #e8dcc8;
             text-decoration: none; font-size: 15px; font-weight: 500;
             transition: all 0.3s ease; letter-spacing: 1px; cursor: pointer; width: 100%;
         }
         .btn.active { display: flex; }
-        .btn.playing { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-shadow); }
-        .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: var(--gold-mid); box-shadow: 0 0 20px var(--gold-glow); }
+        .btn.playing { border-color: var(--gold); box-shadow: 0 0 20px rgba(201,168,76,0.2); }
+        .btn:hover { background: linear-gradient(135deg, #2a2a3e, #20203a); border-color: #c9a84c88; box-shadow: 0 0 20px rgba(201,168,76,0.15); transform: translateY(-1px); }
         .btn .icon { font-size: 18px; }
         .btn.expanded { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
         .player-wrap { display: none; border: 1px solid var(--gold-dim); border-top: none; border-radius: 0 0 8px 8px; background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt)); padding: 20px 16px; margin-top: -1px; }
         .player-wrap.open { display: block; }
         .player-visual { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-        .player-icon-wrap { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: var(--gold-007); }
+        .player-icon-wrap { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: #c9a84c11; }
         .player-info { text-align: left; }
         .player-subtitle { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 2px; }
         .player-title { font-size: 14px; color: #e8dcc8; font-weight: 500; }
         .player-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
         .player-play-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--gold-mid); background: transparent; color: var(--gold); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-        .player-play-btn:hover { background: var(--gold-01); border-color: var(--gold); }
+        .player-play-btn:hover { background: #c9a84c22; border-color: var(--gold); }
         .player-progress-wrap { flex: 1; }
-        .player-progress { width: 100%; height: 4px; border-radius: 2px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; background: var(--gold-01); }
+        .player-progress { width: 100%; height: 4px; border-radius: 2px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; background: #c9a84c22; }
         .player-progress::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; }
         .player-progress::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); margin-top: -4px; cursor: pointer; }
+        .player-progress::-moz-range-track { height: 4px; border-radius: 2px; background: #c9a84c22; }
+        .player-progress::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
         .player-time { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 4px; }
-        .player-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.9; margin-top: 16px; padding: 16px; border-left: 2px solid var(--gold-dim); background: var(--gold-bg-subtle); word-wrap: break-word; word-break: keep-all; white-space: pre-wrap; }
+        /* ── 변경: player-desc 확장 ── */
+        .player-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.9; margin-top: 16px; padding: 16px; border-left: 2px solid var(--gold-dim); background: rgba(201,168,76,0.03); word-wrap: break-word; word-break: keep-all; white-space: pre-wrap; overflow-wrap: break-word; }
         .player-bottom { display: flex; justify-content: center; margin-top: 12px; }
         .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; background: transparent; color: var(--text-muted); font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
         .player-download:hover { color: var(--gold); border-color: var(--gold-mid); }
@@ -431,7 +304,7 @@
         .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--gold-dim); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
 
         /* ══════════════════════════════════════
-           8. BGM 바
+           7. BGM 바 & PDF 오버레이 (기존 유지)
            ══════════════════════════════════════ */
         .bgm-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt)); border-top: 1px solid var(--gold-dim); padding: 10px 16px; z-index: 9998; }
         .bgm-bar.active { display: flex; align-items: center; gap: 12px; }
@@ -439,72 +312,69 @@
         .bgm-bar-title { font-size: 12px; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .bgm-bar-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
         .bgm-bar-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gold-mid); background: transparent; color: var(--gold); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        #bgmProgress::-webkit-progress-bar { background: rgba(255,255,255,0.1); border-radius: 2px; }
-        #bgmProgress::-webkit-progress-value { background: var(--gold); border-radius: 2px; }
 
         /* ══════════════════════════════════════
-           9. 공유 & 푸터 & 토스트
+           8. 공유 & 푸터 & 토스트
            ══════════════════════════════════════ */
         .share-section { margin-top: 32px; margin-bottom: 16px; }
         .share-title { font-size: 11px; color: var(--text-faint); letter-spacing: 2px; margin-bottom: 12px; text-align: center; }
         .share-actions { display: flex; gap: 8px; margin-bottom: 10px; }
-        .share-action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 0; border-radius: 6px; border: 1px solid var(--gold-01); background: transparent; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; }
-        .share-action-btn:hover { color: var(--gold); border-color: var(--gold-02); }
+        .share-action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 0; border-radius: 6px; border: 1px solid #c9a84c22; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 400; cursor: pointer; transition: all 0.3s ease; letter-spacing: 0.5px; }
+        .share-action-btn:hover { color: var(--gold); border-color: #c9a84c44; }
         .share-action-btn span.s-icon { font-size: 14px; }
         .share-sub-links { display: flex; justify-content: center; gap: 20px; }
-        .share-sub-link { font-size: 11px; color: var(--text-faint); cursor: pointer; transition: color 0.2s; }
+        .share-sub-link { font-size: 11px; color: #4a4535; cursor: pointer; transition: color 0.2s; }
         .share-sub-link:hover { color: var(--gold); }
         .footer { margin-top: 40px; padding-top: 24px; padding-bottom: 60px; text-align: center; }
-        .footer-brand { font-family: var(--font-serif); font-size: 12px; color: var(--text-faint); letter-spacing: 2px; }
+        .footer-brand { font-family: 'Noto Serif KR', serif; font-size: 12px; color: var(--text-faint); letter-spacing: 2px; }
         .footer-sub { font-size: 11px; color: var(--text-ghost); margin-top: 4px; }
         .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: linear-gradient(135deg, #2a2a3e, #1a1a2e); border: 1px solid var(--gold-mid); color: var(--gold); padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 10000; opacity: 0; transition: all 0.3s ease; pointer-events: none; white-space: nowrap; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         /* ══════════════════════════════════════
-           10. 프린트
+           9. 리포트 전환 탭
            ══════════════════════════════════════ */
-        .print-btn-wrap { text-align: center; margin: 32px 0; }
-        .print-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border: 1px solid var(--gold-dim); border-radius: 8px; background: transparent; color: var(--gold); font-size: 14px; font-family: var(--font-main); letter-spacing: 1px; cursor: pointer; transition: all 0.3s; }
-        .print-btn:hover { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
-        @media print {
-            .settings-btn, .settings-panel, .bgm-bar, .share-section,
-            .print-btn-wrap, .buttons, .toast, .scroll-top-btn,
-            .scroll-progress, .chapter-nav, .seal-intro { display: none !important; }
-            body { background: white; color: #222; }
-            .chapter-card { break-inside: avoid; border-color: #ddd; opacity: 1; transform: none; }
-            .chapter-card .chapter-body-wrap { max-height: none !important; }
+        .view-toggle {
+            display: none; margin: 24px 0; border: 1px solid var(--gold-dim);
+            border-radius: 8px; overflow: hidden;
         }
+        .view-toggle.active { display: flex; }
+        .view-toggle-btn {
+            flex: 1; padding: 12px 0; border: none; background: transparent;
+            color: var(--text-muted); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+        }
+        .view-toggle-btn.selected {
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            color: var(--gold); border-bottom: 2px solid var(--gold);
+        }
+        #bgmProgress::-webkit-progress-bar { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        #bgmProgress::-webkit-progress-value { background: var(--gold); border-radius: 2px; }
+        #bgmProgress::-moz-progress-bar { background: var(--gold); border-radius: 2px; }
+
+/* ══════════════════════════════════════
+   10. 서버 HTML 컨테이너
+   ══════════════════════════════════════ */
+.chapter-html-block {
+    width: 100%;
+    overflow-x: hidden;
+}
+.chapter-html-block > div {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+  
     </style>
 </head>
 <body>
-    <!-- 스크롤 진행률 바 -->
-    <div class="scroll-progress" id="scrollProgress"></div>
-
-    <!-- 맨위로 버튼 -->
-    <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-
-    <!-- 설정 버튼 -->
-    <button class="settings-btn" id="settingsBtn" onclick="toggleSettings()">⚙</button>
-    <div class="settings-panel" id="settingsPanel">
-        <div class="settings-row">
-            <span class="settings-label">글자 크기</span>
-            <div class="settings-btns">
-                <button class="font-btn" onclick="changeFontSize(0)">소</button>
-                <button class="font-btn" onclick="changeFontSize(1)">중</button>
-                <button class="font-btn" onclick="changeFontSize(2)">대</button>
-            </div>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">줄간격</span>
-            <div class="settings-btns">
-                <button class="font-btn" onclick="changeLineHeight(1.6)">좁</button>
-                <button class="font-btn" onclick="changeLineHeight(2.0)">중</button>
-                <button class="font-btn" onclick="changeLineHeight(2.4)">넓</button>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
+
+        <!-- ── 폰트 크기 조절 ── -->
+        <div class="font-controls" id="fontControls">
+            <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+            <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+        </div>
 
         <!-- ── 로딩 ── -->
         <div class="loading" id="loading">
@@ -518,33 +388,34 @@
             <p>링크를 다시 확인해주세요</p>
         </div>
 
-        <!-- ══════════════════════════════════════
-             봉인 해제 인트로
-             ══════════════════════════════════════ -->
-        <div class="seal-intro" id="sealIntro">
-            <div class="seal-name" id="sealName"></div>
-            <div class="seal-pillars" id="sealPillars">
-                <div class="seal-pillar-char" id="sealChar0"></div>
-                <div class="seal-pillar-char" id="sealChar1"></div>
-                <div class="seal-pillar-char" id="sealChar2"></div>
-                <div class="seal-pillar-char" id="sealChar3"></div>
+        <!-- ── 인트로 ── -->
+        <div class="intro" id="intro">
+            <div class="intro-bg">
+                <div class="intro-glow"></div>
+                <div class="intro-particles">
+                    <div class="particle"></div><div class="particle"></div>
+                    <div class="particle"></div><div class="particle"></div>
+                    <div class="particle"></div><div class="particle"></div>
+                    <div class="particle"></div><div class="particle"></div>
+                </div>
             </div>
-            <div class="seal-trigger" id="sealTrigger"></div>
-            <div class="seal-meta" id="sealMeta">
-                <div class="seal-meta-line" id="sealMetaName"></div>
-                <div class="seal-meta-line" id="sealMetaBirth"></div>
-                <div class="seal-meta-line" id="sealMetaCode"></div>
-            </div>
-            <div class="seal-scroll-hint" id="sealScrollHint">
-                <span>▽</span>
+            <div class="intro-content">
+                <div class="intro-line"></div>
+                <div class="intro-brand">나를읽다</div>
+                <div class="intro-symbol">◆</div>
+                <div class="intro-title" id="introTitle">운명 분석이 완성되었습니다</div>
+                <div class="intro-sore" id="introSore"></div>
+                <button class="intro-btn" id="introBtn" onclick="enterCertificate()">보증서 확인하기</button>
+                <div class="intro-line-bottom"></div>
             </div>
         </div>
 
         <!-- ══════════════════════════════════════
-             메인 콘텐츠
+             메인 콘텐츠 (보증서 + 리포트)
              ══════════════════════════════════════ -->
         <div class="certificate" id="certificate">
 
+            <!-- 보증서 상단 -->
             <div class="top-ornament">
                 <div class="line"></div><div class="diamond">◆</div><div class="line"></div>
             </div>
@@ -563,9 +434,12 @@
                 분석하여 조율된 맞춤형 솔루션입니다
             </div>
 
-            <!-- 보증서 뷰 -->
+            <!-- ── 변경: 보증서/리포트 전환 탭 삭제됨 ── -->
+
+            <!-- ── 보증서 뷰: 아이템 버튼들 ── -->
             <div id="certView">
                 <div class="buttons" id="buttons">
+                    <!-- 리포트 PDF → 인라인 리포트 버튼으로 교체 -->
                     <div class="btn-item">
                         <div class="btn" id="btnReport" onclick="switchView('report')">
                             <span class="icon">📜</span>
@@ -578,7 +452,9 @@
                             <span id="btnThemeText">맞춤형 음원</span>
                         </div>
                         <div class="player-wrap" id="playerTheme">
-                            <div class="player-loading" id="themeLoading"><span class="mini-spinner"></span>음원을 불러오는 중...</div>
+                            <div class="player-loading" id="themeLoading">
+                                <span class="mini-spinner"></span>음원을 불러오는 중...
+                            </div>
                             <div class="player-visual">
                                 <div class="player-icon-wrap">🎵</div>
                                 <div class="player-info">
@@ -590,11 +466,16 @@
                                 <button class="player-play-btn" id="themePlayBtn" onclick="playPause('theme')">▶</button>
                                 <div class="player-progress-wrap">
                                     <input type="range" class="player-progress" id="themeProgress" min="0" max="100" value="0" oninput="seek('theme')">
-                                    <div class="player-time"><span id="themeCurrent">0:00</span><span id="themeDuration">0:00</span></div>
+                                    <div class="player-time">
+                                        <span id="themeCurrent">0:00</span>
+                                        <span id="themeDuration">0:00</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="player-desc" id="themeDesc"></div>
-                            <div class="player-bottom"><a href="#" class="player-download" id="themeDownload" target="_blank">⬇ 다운로드</a></div>
+                            <div class="player-bottom">
+                                <a href="#" class="player-download" id="themeDownload" target="_blank">⬇ 다운로드</a>
+                            </div>
                         </div>
                     </div>
                     <div class="btn-item">
@@ -603,7 +484,9 @@
                             <span id="btnVoiceText">음성 해설</span>
                         </div>
                         <div class="player-wrap" id="playerVoice">
-                            <div class="player-loading" id="voiceLoading"><span class="mini-spinner"></span>음원을 불러오는 중...</div>
+                            <div class="player-loading" id="voiceLoading">
+                                <span class="mini-spinner"></span>음원을 불러오는 중...
+                            </div>
                             <div class="player-visual">
                                 <div class="player-icon-wrap">🎧</div>
                                 <div class="player-info">
@@ -615,11 +498,16 @@
                                 <button class="player-play-btn" id="voicePlayBtn" onclick="playPause('voice')">▶</button>
                                 <div class="player-progress-wrap">
                                     <input type="range" class="player-progress" id="voiceProgress" min="0" max="100" value="0" oninput="seek('voice')">
-                                    <div class="player-time"><span id="voiceCurrent">0:00</span><span id="voiceDuration">0:00</span></div>
+                                    <div class="player-time">
+                                        <span id="voiceCurrent">0:00</span>
+                                        <span id="voiceDuration">0:00</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="player-desc" id="voiceDesc"></div>
-                            <div class="player-bottom"><a href="#" class="player-download" id="voiceDownload" target="_blank">⬇ 다운로드</a></div>
+                            <div class="player-bottom">
+                                <a href="#" class="player-download" id="voiceDownload" target="_blank">⬇ 다운로드</a>
+                            </div>
                         </div>
                     </div>
                     <div class="btn-item">
@@ -628,7 +516,9 @@
                             <span id="btnHealingText">힐링음악</span>
                         </div>
                         <div class="player-wrap" id="playerHealing">
-                            <div class="player-loading" id="healingLoading"><span class="mini-spinner"></span>음원을 불러오는 중...</div>
+                            <div class="player-loading" id="healingLoading">
+                                <span class="mini-spinner"></span>음원을 불러오는 중...
+                            </div>
                             <div class="player-visual">
                                 <div class="player-icon-wrap">🎶</div>
                                 <div class="player-info">
@@ -640,92 +530,79 @@
                                 <button class="player-play-btn" id="healingPlayBtn" onclick="playPause('healing')">▶</button>
                                 <div class="player-progress-wrap">
                                     <input type="range" class="player-progress" id="healingProgress" min="0" max="100" value="0" oninput="seek('healing')">
-                                    <div class="player-time"><span id="healingCurrent">0:00</span><span id="healingDuration">0:00</span></div>
+                                    <div class="player-time">
+                                        <span id="healingCurrent">0:00</span>
+                                        <span id="healingDuration">0:00</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="player-desc" id="healingDesc"></div>
-                            <div class="player-bottom"><a href="#" class="player-download" id="healingDownload" target="_blank">⬇ 다운로드</a></div>
+                            <div class="player-bottom">
+                                <a href="#" class="player-download" id="healingDownload" target="_blank">⬇ 다운로드</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div><!-- /certView -->
 
-            <!-- 리포트 뷰 -->
+            <!-- ══════════════════════════════════════
+                 리포트 뷰 (동적 렌더링)
+                 ══════════════════════════════════════ -->
             <div class="report-section" id="reportView">
 
-                <div id="reportOneLiner" style="text-align:center; display:none; margin-bottom:28px;">
+                <!-- 소름한줄 배너 -->
+                <div class="chapter-card visible" id="reportOneLiner" style="text-align:center; display:none;">
                     <div class="sore-line" id="reportSoreLine"></div>
                 </div>
 
-                <div class="dashboard" id="dashboard">
-                    <div class="oheng-card" id="ohengCard" style="display:none;">
-                        <div class="oheng-title">오 행 분 포</div>
-                        <div class="oheng-chart" id="ohengChart"></div>
-                        <div class="oheng-legend" id="ohengLegend"></div>
-                        <div class="oheng-dominant" id="ohengDominant"></div>
-                    </div>
-
-                    <div class="pillars-card" id="pillarsCard" style="display:none;">
-                        <div class="pillars-title">사 주 원 국</div>
-                        <div class="pillars-row" id="pillarsRow"></div>
-                    </div>
-
-                    <div class="emotion-radar-card" id="emotionRadarCard" style="display:none;">
-                        <div class="emotion-radar-title">감 정 지 형</div>
-                        <div style="display:flex; justify-content:center;">
-                            <svg id="emotionRadarSvg" viewBox="0 0 260 260" width="240" height="240"></svg>
-                        </div>
-                        <div class="emotion-radar-insight" id="emotionRadarInsight"></div>
-                    </div>
-
-                    <div class="monthly-card" id="monthlyCard" style="display:none;">
-                        <div class="monthly-title">월 별 운 세</div>
-                        <div class="monthly-scroll" id="monthlyScroll"></div>
-                        <div class="monthly-detail" id="monthlyDetail">
-                            <div class="monthly-detail-keyword" id="monthlyDetailKeyword"></div>
-                            <div class="monthly-detail-action" id="monthlyDetailAction"></div>
-                        </div>
-                    </div>
+                <!-- 오행 차트 -->
+                <div class="oheng-card" id="ohengCard" style="display:none;">
+                    <div class="oheng-title">오 행 분 포</div>
+                    <div class="oheng-chart" id="ohengChart"></div>
+                    <div class="oheng-legend" id="ohengLegend"></div>
+                    <div class="oheng-dominant" id="ohengDominant"></div>
                 </div>
 
-                <div class="chapter-nav" id="chapterNav"></div>
+                <!-- 챕터 컨테이너 (JS로 동적 생성) -->
                 <div id="chaptersContainer"></div>
 
+                <!-- 감정 곡선 -->
+                <div class="emotion-curve-card" id="emotionCurveCard" style="display:none;">
+                    <div class="emotion-curve-title">감 정 곡 선</div>
+                    <svg id="emotionCurveSvg" viewBox="0 0 440 160" width="100%" style="overflow:visible;"></svg>
+                </div>
+
+                <!-- 7일 실행 플랜 -->
                 <div class="action-plan-card" id="actionPlanCard" style="display:none;">
-                    <div class="action-plan-title">실 행 플 랜</div>
+                    <div class="action-plan-title">7일 실행 플랜</div>
                     <div id="actionPlanList"></div>
                 </div>
 
-                <div class="closing-card" id="closingCard" style="display:none;">
-                    <div class="closing-text" id="closingText"></div>
-                </div>
-
-                <div class="seal-stamp" id="sealStamp">
-                    <div class="seal-stamp-circle">
-                        <div class="seal-stamp-brand">나를읽다</div>
-                        <div class="seal-stamp-year" id="stampYear">2026</div>
-                        <div class="seal-stamp-code" id="stampCode"></div>
-                    </div>
-                    <div class="seal-stamp-date" id="stampDate"></div>
-                </div>
-
+                <!-- PDF 저장 -->
                 <div class="print-btn-wrap">
-                    <button class="print-btn" onclick="window.print()"><span>🖨</span> PDF로 저장</button>
+                    <button class="print-btn" onclick="window.print()">
+                        <span>🖨</span> PDF로 저장
+                    </button>
                 </div>
 
+                <!-- 보증서로 돌아가기 -->
                 <div style="text-align:center; margin-bottom: 24px;">
-                    <button class="share-action-btn" onclick="switchView('cert')" style="border:1px solid var(--gold-dim); border-radius:8px; padding:12px 32px; width:auto; display:inline-flex;">
+                    <button class="view-toggle-btn" onclick="switchView('cert')" style="border:1px solid var(--gold-dim); border-radius:8px; padding:12px 32px;">
                         ◆ 보증서로 돌아가기
                     </button>
                 </div>
-            </div>
+            </div><!-- /reportView -->
 
-            <!-- 공유 -->
+            <!-- ── 공유 ── -->
             <div class="share-section">
                 <div class="share-title">이 분석, 마음에 드셨나요?</div>
                 <div class="share-actions">
-                    <button class="share-action-btn" onclick="shareKakao()"><span class="s-icon">💬</span> 자랑하기</button>
-                    <button class="share-action-btn" onclick="window.open('https://smartstore.naver.com/readmelab/products/13142603279','_blank')"><span class="s-icon">🎁</span> 선물하기</button>
+                    <button class="share-action-btn" onclick="shareKakao()">
+                        <span class="s-icon">💬</span> 자랑하기
+                    </button>
+                    <button class="share-action-btn" onclick="window.open('https://smartstore.naver.com/readmelab/products/13142603279','_blank')">
+                        <span class="s-icon">🎁</span> 선물하기
+                    </button>
                 </div>
                 <div class="share-sub-links">
                     <span class="share-sub-link" onclick="shareLink()">링크 복사</span>
@@ -733,17 +610,17 @@
                 </div>
             </div>
 
-            <!-- 푸터 -->
+            <!-- ── 푸터 ── -->
             <div class="footer">
                 <div class="divider"></div>
                 <div class="footer-brand">나를읽다 연구소</div>
                 <div class="footer-sub">사주 & MBTI 운명 분석</div>
             </div>
 
-        </div>
-    </div>
+        </div><!-- /certificate -->
+    </div><!-- /container -->
 
-    <!-- BGM 바 -->
+    <!-- ── BGM 바 ── -->
     <div class="bgm-bar" id="bgmBar">
         <button class="bgm-bar-btn" id="bgmBtn">⏸</button>
         <div class="bgm-bar-info">
@@ -753,39 +630,26 @@
         </div>
     </div>
 
-    <!-- 토스트 -->
+    <!-- ── 토스트 ── -->
     <div class="toast" id="toast"></div>
+
+    <!-- ── 공유 카드 캔버스 (숨김) ── -->
+    <canvas id="shareCardCanvas" width="600" height="400" style="display:none;"></canvas>
     <script>
     /* ══════════════════════════════════════
        0. 상수 & 상태
        ══════════════════════════════════════ */
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
-    var DATA_BASE = '';
+    var DATA_BASE = ''; // Cloudflare Pages URL — 비워두면 GAS만 사용
     var KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
+    var STORE_URL = 'https://smartstore.naver.com/readmelab/products/13142603279';
 
-    var OHENG_COLORS_BRIGHT = {
-        '목': '#4CAF50', '화': '#F44336', '토': '#FFC107', '금': '#E0E0E0', '수': '#2196F3'
+    var OHENG_COLORS = {
+        '목': '#4CAF50', '화': '#F44336', '토': '#FFC107', '금': '#9E9E9E', '수': '#2196F3'
     };
     var OHENG_LABELS = { '목': '木 목', '화': '火 화', '토': '土 토', '금': '金 금', '수': '水 수' };
-    var ELEMENT_ACCENT_MAP = {
-        '목': { accent: '#4CAF50', glow: 'rgba(76,175,80,0.12)', rgb: '76,175,80' },
-        '화': { accent: '#F44336', glow: 'rgba(244,67,54,0.12)', rgb: '244,67,54' },
-        '토': { accent: '#FFC107', glow: 'rgba(255,193,7,0.12)', rgb: '255,193,7' },
-        '금': { accent: '#C0C0C0', glow: 'rgba(192,192,192,0.12)', rgb: '192,192,192' },
-        '수': { accent: '#2196F3', glow: 'rgba(33,150,243,0.12)', rgb: '33,150,243' }
-    };
-    var CHAPTER_ICONS = ['🪞','🔥','⚡','💫','💎','🔮','📅','✉️'];
-    var MOOD_BG = {
-        introspective: 'linear-gradient(180deg, #0a0a1a 0%, var(--bg-card) 100%)',
-        warm: 'linear-gradient(180deg, #1a1008 0%, var(--bg-card) 100%)',
-        tense: 'linear-gradient(180deg, #1a0a0a 0%, var(--bg-card) 100%)',
-        hopeful: 'linear-gradient(180deg, #1a1a08 0%, var(--bg-card) 100%)',
-        determined: 'linear-gradient(180deg, #0a1a1a 0%, var(--bg-card) 100%)',
-        revelatory: 'linear-gradient(180deg, #1a0a1a 0%, var(--bg-card) 100%)',
-        energetic: 'linear-gradient(180deg, #1a1a0a 0%, var(--bg-card) 100%)',
-        poetic: 'linear-gradient(180deg, #000000 0%, var(--bg-card) 100%)'
-    };
 
+    // 상태
     var certData = {};
     var reportData = null;
     var audioPlayers = {};
@@ -795,91 +659,70 @@
     var bgmType = null;
     var bgmPreloaded = false;
     var pendingBgmPlay = false;
+    var fontStep = 1; // 0=small, 1=normal, 2=large
     var fontScales = [0.88, 1, 1.15];
     var currentView = 'cert';
 
+    // URL 파라미터
     var urlParams = new URLSearchParams(window.location.search);
     var code = urlParams.get('c');
     if (!code) { showError(); } else { loadData(code); }
 
+    // 카카오 초기화
     if (window.Kakao && !Kakao.isInitialized()) { Kakao.init(KAKAO_KEY); }
     if (navigator.share) { document.getElementById('shareNativeBtn').style.display = 'inline'; }
 
     /* ══════════════════════════════════════
-       1. 스크롤 이벤트
-       ══════════════════════════════════════ */
-    window.addEventListener('scroll', function() {
-        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        document.getElementById('scrollProgress').style.width = pct + '%';
-
-        var topBtn = document.getElementById('scrollTopBtn');
-        if (scrollTop > 400) { topBtn.classList.add('visible'); }
-        else { topBtn.classList.remove('visible'); }
-    });
-
-    /* ══════════════════════════════════════
-       2. 설정 패널 (외부 클릭 닫기 포함)
-       ══════════════════════════════════════ */
-    function toggleSettings() {
-        document.getElementById('settingsPanel').classList.toggle('open');
-    }
-
-    // 외부 클릭 시 설정 패널 닫기
-    document.addEventListener('click', function(e) {
-        var panel = document.getElementById('settingsPanel');
-        var btn = document.getElementById('settingsBtn');
-        if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn) {
-            panel.classList.remove('open');
-        }
-    });
-
-    function changeFontSize(step) {
-        document.documentElement.style.setProperty('--font-scale', fontScales[step]);
-    }
-
-    // 줄간격 — CSS 변수로 제어 (렌더링 전에도 적용됨)
-    function changeLineHeight(val) {
-        document.documentElement.style.setProperty('--line-height', val);
-    }
-
-    /* ══════════════════════════════════════
-       3. 데이터 로딩
+       1. 데이터 로딩 (Cloudflare → GAS 폴백)
        ══════════════════════════════════════ */
     async function loadData(certCode) {
         try {
             var data = null;
+
+            // 1차: 정적 JSON (Cloudflare Pages)
             if (DATA_BASE) {
                 try {
                     var staticRes = await fetch(DATA_BASE + '/data/' + certCode + '.json');
-                    if (staticRes.ok) { data = await staticRes.json(); }
-                } catch (e) {}
+                    if (staticRes.ok) {
+                        data = await staticRes.json();
+                        console.log('✅ 정적 JSON 로드 성공');
+                    }
+                } catch (e) { console.log('정적 JSON 실패, GAS 폴백'); }
             }
+
+            // 2차: GAS doGet 폴백
             if (!data) {
                 var gasRes = await fetch(GAS_URL + '?code=' + encodeURIComponent(certCode));
                 data = await gasRes.json();
+                console.log('✅ GAS API 로드 성공');
             }
-            if (!data || data.error || data.valid === false) { showError(); return; }
 
+            if (!data || data.error || data.valid === false) {
+                showError();
+                return;
+            }
+
+            // 데이터 파싱
             parseCertData(data);
             parseReportData(data);
-            startSealIntro();
+
+            // 인트로 표시
+            showIntro();
+
         } catch (e) {
             console.error('loadData error:', e);
             showError();
         }
     }
 
+    /* ── 변경: parseCertData — audio.*.description 키 추가 ── */
     function parseCertData(d) {
         var cert = d.certificate || d;
         certData = {
             name: cert.name || d.name || '',
             name2: cert.name2 || d.name2 || '',
-            birthDate: cert.birthDate || d.birthDate || '',
             product: cert.product || d.product || '',
             productCode: cert.productCode || d.productCode || '',
-            adminCode: cert.adminCode || d.adminCode || code || '',
             soreLine: (cert.soreLine || d.soreLine || '').trim(),
             themeLink: cert.themeLink || d.themeLink || '',
             themeName: cert.themeName || d.themeName || '',
@@ -891,131 +734,81 @@
             healingName: cert.healingName || d.healingName || '',
             healingDesc: (cert.healingDesc || d.healingDesc || '').trim()
         };
+
+        // audio 객체가 있는 경우 (GAS API 형식)
         if (d.audio) {
-            ['theme','voice','healing'].forEach(function(t) {
-                var a = d.audio[t];
-                if (!a) return;
-                certData[t + 'Link'] = certData[t + 'Link'] || a.url || '';
-                certData[t + 'Name'] = certData[t + 'Name'] || a.name || '';
-                certData[t + 'Desc'] = certData[t + 'Desc'] || a.description || a.desc || '';
-                if (!certData[t + 'Link'] && a.fileId) {
-                    certData[t + 'Link'] = 'https://drive.google.com/file/d/' + a.fileId + '/view';
+            if (d.audio.theme) {
+                certData.themeLink = certData.themeLink || d.audio.theme.url || '';
+                certData.themeName = certData.themeName || d.audio.theme.name || '';
+                certData.themeDesc = certData.themeDesc || d.audio.theme.description || d.audio.theme.desc || '';
+                if (!certData.themeLink && d.audio.theme.fileId) {
+                    certData.themeLink = 'https://drive.google.com/file/d/' + d.audio.theme.fileId + '/view';
                 }
-            });
+            }
+            if (d.audio.voice) {
+                certData.voiceLink = certData.voiceLink || d.audio.voice.url || '';
+                certData.voiceName = certData.voiceName || d.audio.voice.name || '';
+                certData.voiceDesc = certData.voiceDesc || d.audio.voice.description || d.audio.voice.desc || '';
+                if (!certData.voiceLink && d.audio.voice.fileId) {
+                    certData.voiceLink = 'https://drive.google.com/file/d/' + d.audio.voice.fileId + '/view';
+                }
+            }
+            if (d.audio.healing) {
+                certData.healingLink = certData.healingLink || d.audio.healing.url || '';
+                certData.healingName = certData.healingName || d.audio.healing.name || '';
+                certData.healingDesc = certData.healingDesc || d.audio.healing.description || d.audio.healing.desc || '';
+                if (!certData.healingLink && d.audio.healing.fileId) {
+                    certData.healingLink = 'https://drive.google.com/file/d/' + d.audio.healing.fileId + '/view';
+                }
+            }
         }
     }
 
     function parseReportData(d) {
-        if (d.report) { reportData = d.report; applyDesignFromSheet(d.design || null); return; }
-        if (d.webReportData) {
-            if (typeof d.webReportData === 'string') {
-                try { reportData = JSON.parse(d.webReportData); } catch(e) { reportData = null; }
-            } else { reportData = d.webReportData; }
+        // 정적 JSON: d.report 객체
+        if (d.report) {
+            reportData = d.report;
             applyDesignFromSheet(d.design || null);
             return;
         }
+        // GAS doGet: d.webReportData (문자열이면 파싱)
+        if (d.webReportData) {
+            if (typeof d.webReportData === 'string') {
+                try { reportData = JSON.parse(d.webReportData); } catch(e) { reportData = null; }
+            } else {
+                reportData = d.webReportData;
+                applyDesignFromSheet(d.design || null);
+            }
+            return;
+        }
+        // 리포트 없음 — 보증서만 표시
         reportData = null;
     }
 
     /* ══════════════════════════════════════
-       4. 봉인 해제 인트로
+       2. 인트로 & 진입
        ══════════════════════════════════════ */
-    function startSealIntro() {
+    function showIntro() {
+        var d = certData;
+        var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
+        var nameText = d.name;
+        if (isCouple && d.name2) nameText += ' & ' + d.name2;
+
+        document.getElementById('introTitle').textContent =
+            nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
+
+        if (d.soreLine) {
+            document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"';
+        }
+
         document.getElementById('loading').style.display = 'none';
-        var sealIntro = document.getElementById('sealIntro');
-        sealIntro.classList.add('active');
+        document.getElementById('intro').style.display = 'flex';
 
-        var name = certData.name || '';
-        var soreLine = certData.soreLine || '';
-        var pillarChars = extractPillarChars();
-
-        setTimeout(function() {
-            document.getElementById('sealName').textContent = name;
-            document.getElementById('sealName').classList.add('show');
-        }, 500);
-
-        setTimeout(function() {
-            document.getElementById('sealPillars').classList.add('show');
-        }, 1500);
-
-        pillarChars.forEach(function(ch, i) {
-            setTimeout(function() {
-                var el = document.getElementById('sealChar' + i);
-                el.textContent = ch;
-                el.classList.add('show');
-            }, 1800 + i * 400);
-        });
-
-        setTimeout(function() {
-            if (soreLine) {
-                document.getElementById('sealTrigger').innerHTML = '"' + soreLine.replace(/\//g, '<br>') + '"';
-                document.getElementById('sealTrigger').classList.add('show');
-            }
-        }, 3500);
-
-        setTimeout(function() {
-            document.getElementById('sealMetaName').textContent = name;
-            document.getElementById('sealMetaBirth').textContent = certData.birthDate || '';
-            document.getElementById('sealMetaCode').textContent = certData.adminCode || '';
-            document.getElementById('sealMeta').classList.add('show');
-        }, 4500);
-
-        setTimeout(function() {
-            document.getElementById('sealScrollHint').classList.add('show');
-            enableSealDismiss();
-        }, 5500);
-
-        if (certData.themeLink) {
-            var fid = extractFileId(certData.themeLink);
+        // BGM 미리로딩
+        if (d.themeLink) {
+            var fid = extractFileId(d.themeLink);
             if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
         }
-    }
-
-    function extractPillarChars() {
-        var chars = [];
-        if (reportData) {
-            var pillars = null;
-            if (reportData.dashboard && reportData.dashboard.pillars_visual) {
-                pillars = reportData.dashboard.pillars_visual;
-            } else if (reportData.sajuSummary && reportData.sajuSummary.fourPillars) {
-                pillars = reportData.sajuSummary.fourPillars;
-            }
-            if (pillars) {
-                var order = ['year','month','day','hour'];
-                var orderKr = ['연주','월주','일주','시주'];
-                for (var i = 0; i < order.length; i++) {
-                    var p = pillars[order[i]] || pillars[orderKr[i]];
-                    if (p) {
-                        var gan = p.gan || p.천간 || p.stem || '';
-                        var ji = p.ji || p.지지 || p.branch || '';
-                        chars.push(gan + ji);
-                    }
-                }
-            }
-        }
-        while (chars.length < 4) { chars.push('◆'); }
-        return chars;
-    }
-
-    function enableSealDismiss() {
-        var sealIntro = document.getElementById('sealIntro');
-        var dismissed = false;
-        function dismiss() {
-            if (dismissed) return;
-            dismissed = true;
-            sealIntro.style.transition = 'opacity 0.8s ease';
-            sealIntro.style.opacity = '0';
-            setTimeout(function() {
-                sealIntro.classList.remove('active');
-                sealIntro.style.display = 'none';
-                enterCertificate();
-            }, 800);
-        }
-        sealIntro.addEventListener('click', dismiss);
-        window.addEventListener('wheel', function handler() { dismiss(); window.removeEventListener('wheel', handler); });
-        var touchStartY = 0;
-        sealIntro.addEventListener('touchstart', function(e) { touchStartY = e.touches[0].clientY; });
-        sealIntro.addEventListener('touchmove', function(e) { if (touchStartY - e.touches[0].clientY > 30) dismiss(); });
     }
 
     function showError() {
@@ -1023,17 +816,18 @@
         document.getElementById('error').style.display = 'flex';
     }
 
-    /* ══════════════════════════════════════
-       5. 보증서 진입
-       ══════════════════════════════════════ */
+    /* ── 변경: enterCertificate — 탭 관련 제거, 리포트 버튼명 변경 ── */
     function enterCertificate() {
+        var intro = document.getElementById('intro');
         var cert = document.getElementById('certificate');
         var d = certData;
         var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
 
+        // BGM 시작
         if (bgmPreloaded && audioPlayers['theme']) { startBgm(); }
         else { pendingBgmPlay = true; }
 
+        // 보증서 채우기
         document.getElementById('clientName').textContent = d.name;
         document.getElementById('productTag').textContent = d.product || d.productCode || '';
 
@@ -1047,73 +841,71 @@
             document.getElementById('honorific').textContent = d.name + '님의 운명 분석이 완성되었습니다';
         }
 
-        applyElementAccent();
-
+        // 리포트 버튼 (탭 없이)
         if (reportData) {
             var reportName = (reportData.meta && reportData.meta.name) || d.name || '';
             document.getElementById('btnReport').classList.add('active');
             document.getElementById('btnReportText').textContent = reportName + '_사주리포트';
-            document.getElementById('settingsBtn').classList.add('visible');
+            document.getElementById('fontControls').classList.add('visible');
             renderReport();
         }
 
+        // 오디오 버튼 활성화
         activateAudioButtons();
 
-        document.getElementById('stampYear').textContent = new Date().getFullYear();
-        document.getElementById('stampCode').textContent = d.adminCode || '';
-        document.getElementById('stampDate').textContent = '당신의 사주를 읽은 날: ' + new Date().toLocaleDateString('ko-KR');
-
-        cert.style.display = 'block';
-        setTimeout(function() { cert.classList.add('fade-in'); }, 50);
-    }
-
-    function applyElementAccent() {
-        if (!reportData) return;
-        var dominant = null;
-        if (reportData.oheng && reportData.oheng.dominant) dominant = reportData.oheng.dominant;
-        else if (reportData.dashboard && reportData.dashboard.oheng) dominant = reportData.dashboard.oheng.dominant;
-        if (dominant && ELEMENT_ACCENT_MAP[dominant]) {
-            var root = document.documentElement;
-            var el = ELEMENT_ACCENT_MAP[dominant];
-            root.style.setProperty('--element-accent', el.accent);
-            root.style.setProperty('--element-glow', el.glow);
-        }
+        // 전환 애니메이션
+        intro.classList.add('fade-out');
+        setTimeout(function() {
+            intro.style.display = 'none';
+            cert.style.display = 'block';
+            setTimeout(function() { cert.classList.add('fade-in'); }, 50);
+        }, 800);
     }
 
     function activateAudioButtons() {
         var d = certData;
-        ['theme','voice','healing'].forEach(function(type) {
-            var link = d[type + 'Link'];
-            var name = d[type + 'Name'];
-            var desc = d[type + 'Desc'];
-            var icons = { theme: '맞춤형 음원', voice: '음성 해설', healing: '힐링음악' };
-            if (link) {
-                document.getElementById('btn' + capitalize(type)).classList.add('active');
-                document.getElementById('btn' + capitalize(type) + 'Text').textContent = name || icons[type];
-                if (desc) {
-                    var descEl = document.getElementById(type + 'Desc');
-                    descEl.textContent = desc;
-                    descEl.style.display = 'block';
-                }
-                document.getElementById(type + 'Title').textContent = name || icons[type];
+        if (d.themeLink) {
+            document.getElementById('btnTheme').classList.add('active');
+            document.getElementById('btnThemeText').textContent = d.themeName || '맞춤형 음원';
+            if (d.themeDesc) {
+                document.getElementById('themeDesc').textContent = d.themeDesc;
+                document.getElementById('themeDesc').style.display = 'block';
             }
-        });
+            document.getElementById('themeTitle').textContent = d.themeName || '맞춤형 음원';
+        }
+        if (d.voiceLink) {
+            document.getElementById('btnVoice').classList.add('active');
+            document.getElementById('btnVoiceText').textContent = d.voiceName || '음성 해설';
+            if (d.voiceDesc) {
+                document.getElementById('voiceDesc').textContent = d.voiceDesc;
+                document.getElementById('voiceDesc').style.display = 'block';
+            }
+            document.getElementById('voiceTitle').textContent = d.voiceName || '음성 해설';
+        }
+        if (d.healingLink) {
+            document.getElementById('btnHealing').classList.add('active');
+            document.getElementById('btnHealingText').textContent = d.healingName || '힐링음악';
+            if (d.healingDesc) {
+                document.getElementById('healingDesc').textContent = d.healingDesc;
+                document.getElementById('healingDesc').style.display = 'block';
+            }
+            document.getElementById('healingTitle').textContent = d.healingName || '힐링음악';
+        }
     }
 
     /* ══════════════════════════════════════
-       6. 뷰 전환
+       3. 뷰 전환
        ══════════════════════════════════════ */
+    /* ── 변경: switchView — 탭 참조 제거 ── */
     function switchView(view) {
         currentView = view;
         var certView = document.getElementById('certView');
         var reportView = document.getElementById('reportView');
+
         if (view === 'report' && reportData) {
             certView.style.display = 'none';
             reportView.classList.add('active');
-            setTimeout(function() {
-                observeChapters();
-                animateMonthlyBars();
-            }, 100);
+            setTimeout(observeChapters, 100);
             window.scrollTo({ top: document.getElementById('certificate').offsetTop, behavior: 'smooth' });
         } else {
             certView.style.display = 'block';
@@ -1122,418 +914,253 @@
     }
 
     /* ══════════════════════════════════════
-       7. 리포트 렌더링
+       4. 리포트 렌더링
        ══════════════════════════════════════ */
     function renderReport() {
         if (!reportData) return;
 
+        // 소름한줄
         var oneLiner = reportData.oneLiner || reportData.soremOneLiner || certData.soreLine || '';
         if (oneLiner) {
             document.getElementById('reportSoreLine').innerHTML = '"' + oneLiner.replace(/\//g, '<br>') + '"';
             document.getElementById('reportOneLiner').style.display = 'block';
         }
 
-        var dash = reportData.dashboard || {};
-        renderOhengChart(reportData.oheng || dash.oheng);
-        renderPillarsCard(dash.pillars_visual || (reportData.sajuSummary && reportData.sajuSummary.fourPillars));
-        renderEmotionRadar(reportData.emotionCurve || dash.emotion_curve);
-        renderMonthlyFortune(dash.monthly_fortune);
+        // 오행 차트
+        if (reportData.oheng) { renderOhengChart(reportData.oheng); }
 
+        // 챕터
         var chapters = reportData.chapters || [];
-        if (chapters.length > 0) {
-            renderChapterNav(chapters);
-            renderChapters(chapters);
+        if (chapters.length > 0) { renderChapters(chapters); }
+
+        // 감정 곡선
+        if (reportData.emotionCurve || chapters.some(function(c){ return c.emotion !== undefined; })) {
+            renderEmotionCurve(chapters);
         }
 
-        renderActionPlan(reportData.actionPlan);
-
-        if (reportData.closingLine) {
-            document.getElementById('closingText').textContent = reportData.closingLine;
-            document.getElementById('closingCard').style.display = 'block';
-        }
+        // 7일 실행 플랜
+        if (reportData.actionPlan) { renderActionPlan(reportData.actionPlan); }
     }
 
-    /* ── 7-1. 오행 도넛 ── */
+    /* ── 4-1. 오행 도넛 차트 (SVG) ── */
     function renderOhengChart(oheng) {
-        if (!oheng) return;
         var card = document.getElementById('ohengCard');
         card.style.display = 'block';
 
         var data = [];
         var total = 0;
-        ['목','화','토','금','수'].forEach(function(key) {
-            var val = 0;
-            if (typeof oheng[key] === 'number') val = oheng[key];
-            else if (oheng[key] !== undefined && oheng[key] !== null) val = parseFloat(oheng[key]) || 0;
-            else if (oheng.distribution && oheng.distribution[key]) {
-                var d = oheng.distribution[key];
-                val = (typeof d === 'object') ? (Number(d.percentage) || Number(d.count) || 0) : (parseFloat(d) || 0);
-            } else if (oheng.wood !== undefined) {
-                var v3map = {'목':'wood','화':'fire','토':'earth','금':'metal','수':'water'};
-                val = parseFloat(oheng[v3map[key]]) || 0;
-            }
-            data.push({ key: key, value: val });
-            total += val;
-        });
+['목','화','토','금','수'].forEach(function(key) {
+    var val = 0;
+    if (typeof oheng[key] === 'number') {
+        val = oheng[key];
+    } else if (oheng[key] !== undefined && oheng[key] !== null) {
+        val = parseFloat(oheng[key]) || 0;
+    } else if (oheng.distribution && oheng.distribution[key]) {
+        var d = oheng.distribution[key];
+        val = (typeof d === 'object') ? (Number(d.percentage) || Number(d.count) || 0) : (parseFloat(d) || 0);
+    }
+    data.push({ key: key, value: val });
+    total += val;
+});
         if (total === 0) { card.style.display = 'none'; return; }
 
+        // SVG 도넛
         var size = 160, cx = 80, cy = 80, r = 55, stroke = 22;
-        var circ = 2 * Math.PI * r;
+        var circumference = 2 * Math.PI * r;
+        var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" width="160" height="160">';
 
-        // 초기: 모든 원이 0 길이 → 애니메이션으로 확장
-        var svg = '<svg viewBox="0 0 '+size+' '+size+'" width="160" height="160">';
-        var cumOffset = 0;
-        data.forEach(function(d, idx) {
+        var offset = 0;
+        data.forEach(function(d) {
             var pct = d.value / total;
-            var dash = pct * circ;
-            // 초기 상태: stroke-dasharray="0 circ" → JS로 변경
-            svg += '<circle class="oheng-ring" data-dash="'+dash+'" data-offset="'+(-cumOffset)+'" ' +
-                'cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" ' +
-                'stroke="'+OHENG_COLORS_BRIGHT[d.key]+'" stroke-width="'+stroke+'" ' +
-                'stroke-dasharray="0 '+circ+'" stroke-dashoffset="0" ' +
+            var dash = pct * circumference;
+            var gap = circumference - dash;
+            svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" ' +
+                'stroke="'+OHENG_COLORS[d.key]+'" stroke-width="'+stroke+'" ' +
+                'stroke-dasharray="'+dash+' '+gap+'" ' +
+                'stroke-dashoffset="'+(-offset)+'" ' +
                 'transform="rotate(-90 '+cx+' '+cy+')" ' +
-                'style="transition: stroke-dasharray 1s ease '+( idx * 0.15 )+'s;"/>';
-            cumOffset += dash;
+                'style="transition: stroke-dashoffset 0.6s ease;"/>';
+            offset += dash;
         });
-        var dominant = oheng.dominant || data.reduce(function(a,b){return a.value>b.value?a:b;}).key;
-        svg += '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" fill="'+OHENG_COLORS_BRIGHT[dominant]+'" font-size="22" font-weight="700" font-family="var(--font-serif)">'+dominant+'</text>';
-        svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="var(--text-muted)" font-size="10">주도 오행</text></svg>';
+
+        // 중앙 텍스트
+        var dominant = oheng.dominant || data.reduce(function(a,b){ return a.value > b.value ? a : b; }).key;
+        svg += '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" fill="'+OHENG_COLORS[dominant]+'" font-size="22" font-weight="700" font-family="Noto Serif KR,serif">' +
+            dominant + '</text>';
+        svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="#8a7a5a" font-size="10">주도 오행</text>';
+        svg += '</svg>';
+
         document.getElementById('ohengChart').innerHTML = svg;
 
-        // 애니메이션 트리거
-        requestAnimationFrame(function() {
-            var rings = document.querySelectorAll('.oheng-ring');
-            rings.forEach(function(ring) {
-                var dash = ring.getAttribute('data-dash');
-                var offset = ring.getAttribute('data-offset');
-                ring.setAttribute('stroke-dasharray', dash + ' ' + circ);
-                ring.setAttribute('stroke-dashoffset', offset);
-            });
-        });
-
+        // 범례
         var legend = '';
         data.forEach(function(d) {
             var pct = Math.round(d.value / total * 100);
-            legend += '<div class="oheng-legend-item"><div class="oheng-dot" style="background:'+OHENG_COLORS_BRIGHT[d.key]+'"></div><span>'+OHENG_LABELS[d.key]+' '+pct+'%</span></div>';
+            legend += '<div class="oheng-legend-item">' +
+                '<div class="oheng-dot" style="background:'+OHENG_COLORS[d.key]+'"></div>' +
+                '<span>' + OHENG_LABELS[d.key] + ' ' + pct + '%</span></div>';
         });
         document.getElementById('ohengLegend').innerHTML = legend;
 
-        var weakest = oheng.weakest || data.reduce(function(a,b){return a.value<b.value?a:b;}).key;
-        document.getElementById('ohengDominant').textContent = '주도: '+OHENG_LABELS[dominant]+' | 보완 필요: '+OHENG_LABELS[weakest];
+        // 요약
+        var weakest = oheng.weakest || data.reduce(function(a,b){ return a.value < b.value ? a : b; }).key;
+        document.getElementById('ohengDominant').textContent =
+            '주도: ' + OHENG_LABELS[dominant] + '  |  보완 필요: ' + OHENG_LABELS[weakest];
     }
 
-    /* ── 7-2. 사주 네 기둥 ── */
-    function renderPillarsCard(pillars) {
-        if (!pillars) return;
-        document.getElementById('pillarsCard').style.display = 'block';
-        var row = document.getElementById('pillarsRow');
-        row.innerHTML = '';
+    /* ── 4-2. 챕터 렌더링 ── */
+function renderChapters(chapters) {
+    var container = document.getElementById('chaptersContainer');
+    container.innerHTML = '';
 
-        var order = [
-            {key:'year', kr:'연주', label:'年柱'},
-            {key:'month', kr:'월주', label:'月柱'},
-            {key:'day', kr:'일주', label:'日柱'},
-            {key:'hour', kr:'시주', label:'時柱'}
-        ];
+    chapters.forEach(function(ch, idx) {
+        var title = ch.title || ('Chapter ' + (idx + 1));
+        var body = ch.content || ch.body || ch.text || '';
+        var isHtml = /<[a-z]/i.test(body.substring(0, 10));
 
-        order.forEach(function(o) {
-            var p = pillars[o.key] || pillars[o.kr];
-            if (!p) return;
-            var gan = p.gan || p.천간 || p.stem || '?';
-            var ji = p.ji || p.지지 || p.branch || '?';
-            var ganOheng = p.ganOheng || p.stemElement || '';
-            var jiOheng = p.jiOheng || p.branchElement || '';
-            var meaning = p.meaning || p.의미 || '';
-
-            var ganColor = OHENG_COLORS_BRIGHT[ganOheng] || OHENG_COLORS_BRIGHT[ohengFromChar(gan)] || 'var(--gold)';
-            var jiColor = OHENG_COLORS_BRIGHT[jiOheng] || OHENG_COLORS_BRIGHT[ohengFromChar(ji)] || 'var(--gold)';
-
-            var item = document.createElement('div');
-            item.className = 'pillar-item';
-            item.onclick = function() { this.classList.toggle('flipped'); };
-            item.innerHTML =
-                '<div class="pillar-inner">' +
-                    '<div class="pillar-front">' +
-                        '<div class="pillar-label">' + o.label + '</div>' +
-                        '<div class="pillar-gan" style="background:'+ganColor+'22; color:'+ganColor+'">' + gan + '</div>' +
-                        '<div class="pillar-ji" style="background:'+jiColor+'22; color:'+jiColor+'">' + ji + '</div>' +
-                    '</div>' +
-                    '<div class="pillar-back">' +
-                        '<div class="pillar-back-text">' + escapeHtml(meaning || o.label) + '</div>' +
-                    '</div>' +
-                '</div>';
-            row.appendChild(item);
-        });
-    }
-
-    function ohengFromChar(ch) {
-        var map = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수',
-                   '寅':'목','卯':'목','巳':'화','午':'화','辰':'토','戌':'토','丑':'토','未':'토','申':'금','酉':'금','亥':'수','子':'수'};
-        return map[ch] || '';
-    }
-
-    /* ── 7-3. 감정 레이더 ── */
-    function renderEmotionRadar(emotionCurve) {
-        if (!emotionCurve) return;
-        var axes = [];
-        var labels = { hope: '희망', anxiety: '불안', resolve: '결심', peace: '평화', passion: '열정' };
-        var keys = ['hope','anxiety','resolve','peace','passion'];
-        keys.forEach(function(k) {
-            if (emotionCurve[k] !== undefined) {
-                axes.push({ key: k, label: labels[k] || k, value: Number(emotionCurve[k]) || 0 });
-            }
-        });
-        if (axes.length < 3) return;
-
-        document.getElementById('emotionRadarCard').style.display = 'block';
-        var n = axes.length, cx = 130, cy = 130, R = 90;
-        var svg = '';
-
-        [0.25, 0.5, 0.75, 1].forEach(function(scale) {
-            var pts = [];
-            for (var i = 0; i < n; i++) {
-                var angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-                pts.push((cx + R * scale * Math.cos(angle)).toFixed(1) + ',' + (cy + R * scale * Math.sin(angle)).toFixed(1));
-            }
-            svg += '<polygon points="'+pts.join(' ')+'" fill="none" stroke="var(--gold-01)" stroke-width="1"/>';
-        });
-
-        for (var i = 0; i < n; i++) {
-            var angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-            var ex = cx + R * Math.cos(angle);
-            var ey = cy + R * Math.sin(angle);
-            svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="var(--gold-01)" stroke-width="1"/>';
-            var lx = cx + (R + 20) * Math.cos(angle);
-            var ly = cy + (R + 20) * Math.sin(angle);
-            svg += '<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="middle" dominant-baseline="middle" fill="var(--text-muted)" font-size="11">' + axes[i].label + '</text>';
-            svg += '<text x="'+lx.toFixed(1)+'" y="'+(ly+13).toFixed(1)+'" text-anchor="middle" fill="var(--element-accent)" font-size="10" font-weight="700">' + axes[i].value + '</text>';
-        }
-
-        var dataPts = [];
-        for (var i = 0; i < n; i++) {
-            var angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-            var v = axes[i].value / 100;
-            dataPts.push((cx + R * v * Math.cos(angle)).toFixed(1) + ',' + (cy + R * v * Math.sin(angle)).toFixed(1));
-        }
-        svg += '<polygon points="'+dataPts.join(' ')+'" fill="var(--gold-015)" stroke="var(--gold)" stroke-width="2"/>';
-
-        for (var i = 0; i < n; i++) {
-            var angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-            var v = axes[i].value / 100;
-            var px = cx + R * v * Math.cos(angle);
-            var py = cy + R * v * Math.sin(angle);
-            svg += '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" fill="var(--bg-deep)" stroke="var(--gold)" stroke-width="2"/>';
-        }
-
-        document.getElementById('emotionRadarSvg').innerHTML = svg;
-
-        if (emotionCurve.emotion_insight || emotionCurve.insight) {
-            document.getElementById('emotionRadarInsight').textContent = emotionCurve.emotion_insight || emotionCurve.insight;
-        }
-    }
-
-    /* ── 7-4. 월별 운세 (바 애니메이션 포함) ── */
-    function renderMonthlyFortune(monthly) {
-        if (!monthly || !monthly.length) return;
-        document.getElementById('monthlyCard').style.display = 'block';
-        var scroll = document.getElementById('monthlyScroll');
-        scroll.innerHTML = '';
-
-        var now = new Date();
-        var currentMonth = now.getMonth() + 1;
-        var peak = monthly.reduce(function(a,b){ return (a.score||0) > (b.score||0) ? a : b; });
-        var low = monthly.reduce(function(a,b){ return (a.score||0) < (b.score||0) ? a : b; });
-
-        monthly.forEach(function(m, i) {
-            var score = Number(m.score) || 50;
-            var month = m.month || (i + 1);
-            var isCurrent = (Number(month) === currentMonth);
-            var isPeak = (m === peak);
-            var isLow = (m === low);
-
-            var targetH = Math.max(8, (score / 100) * 72);
-            var barColor = score >= 70 ? 'var(--element-accent)' : score >= 40 ? 'var(--gold-dim)' : '#5a2020';
-
-            var cls = 'monthly-item' + (isCurrent ? ' current' : '') + (isPeak ? ' peak' : '') + (isLow ? ' low' : '');
-            var item = document.createElement('div');
-            item.className = cls;
-            item.onclick = (function(idx, mData) {
-                return function() { toggleMonthlyDetail(idx, mData); };
-            })(i, m);
-            // 바는 초기 height: 4px, data-target에 최종 높이 저장
-            item.innerHTML =
-                '<div class="monthly-bar-wrap"><div class="monthly-bar" data-target="'+targetH+'" style="height:4px; background:'+barColor+';"></div></div>' +
-                '<div class="monthly-label">' + month + '월</div>' +
-                '<div class="monthly-score">' + score + '</div>';
-            scroll.appendChild(item);
-        });
-
-        setTimeout(function() {
-            var cur = scroll.querySelector('.current');
-            if (cur) cur.scrollIntoView({ inline: 'center', behavior: 'smooth' });
-        }, 200);
-    }
-
-    // 월별 바 애니메이션 — 리포트 뷰 전환 시 호출
-    function animateMonthlyBars() {
-        var bars = document.querySelectorAll('.monthly-bar[data-target]');
-        bars.forEach(function(bar, i) {
-            setTimeout(function() {
-                bar.style.height = bar.getAttribute('data-target') + 'px';
-            }, i * 60);
-        });
-    }
-
-    function toggleMonthlyDetail(idx, m) {
-        var detail = document.getElementById('monthlyDetail');
-        if (detail.classList.contains('open') && detail.getAttribute('data-idx') === String(idx)) {
-            detail.classList.remove('open'); return;
-        }
-        document.getElementById('monthlyDetailKeyword').textContent = m.keyword || m.label || (idx+1) + '월';
-        document.getElementById('monthlyDetailAction').textContent = m.action || m.description || m.text || '';
-        detail.setAttribute('data-idx', idx);
-        detail.classList.add('open');
-    }
-
-    /* ── 7-5. 챕터 네비게이션 ── */
-    function renderChapterNav(chapters) {
-        var nav = document.getElementById('chapterNav');
-        nav.innerHTML = '';
-        chapters.forEach(function(ch, idx) {
-            var icon = ch.icon || CHAPTER_ICONS[idx] || '📖';
-            var summary = ch.summary || ch.title || 'Ch.' + (idx + 1);
-            var item = document.createElement('div');
-            item.className = 'chapter-nav-item';
-            item.onclick = (function(i) {
-                return function() {
-                    var target = document.querySelector('[data-chapter="'+i+'"]');
-                    if (target) {
-                        if (!target.classList.contains('open')) target.classList.add('open');
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                    nav.querySelectorAll('.chapter-nav-item').forEach(function(n){ n.classList.remove('active'); });
-                    this.classList.add('active');
-                };
-            })(idx);
-            item.innerHTML = '<div class="chapter-nav-icon">' + icon + '</div><div class="chapter-nav-label">' + escapeHtml(summary.substring(0, 12)) + '</div>';
-            nav.appendChild(item);
-        });
-    }
-
-    /* ── 7-6. 챕터 렌더링 (아코디언) ── */
-    function renderChapters(chapters) {
-        var container = document.getElementById('chaptersContainer');
-        container.innerHTML = '';
-
-        chapters.forEach(function(ch, idx) {
-            var title = ch.title || ('Chapter ' + (idx + 1));
-            var body = ch.content || ch.body || ch.text || '';
-            var mood = ch.mood || '';
-            var icon = ch.icon || CHAPTER_ICONS[idx] || '📖';
-            var highlightQuote = ch.highlight_quote || ch.highlightQuote || '';
-            var bridge = ch.bridge || '';
-            var isHtml = /<[a-z]/i.test(body.substring(0, 10));
-
+        if (isHtml) {
+            // 서버가 보낸 HTML을 그대로 렌더링 (확장성: 어떤 상품이든 HTML이면 바로 출력)
+            var wrapper = document.createElement('div');
+            wrapper.className = 'chapter-html-block visible';
+            wrapper.style.marginBottom = '20px';
+            wrapper.innerHTML = body;
+            container.appendChild(wrapper);
+        } else {
+            // 텍스트 기반 챕터 (향후 궁합 등 텍스트형 리포트 대응)
             var card = document.createElement('div');
-            card.className = 'chapter-card';
+            card.className = 'chapter-card visible';
             card.setAttribute('data-chapter', idx);
-            if (mood && MOOD_BG[mood]) card.style.background = MOOD_BG[mood];
 
-            var header = document.createElement('div');
-            header.className = 'chapter-header';
-            header.onclick = function() { card.classList.toggle('open'); };
-            header.innerHTML =
-                '<div class="chapter-header-icon">' + icon + '</div>' +
-                '<div class="chapter-header-text">' +
-                    '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>' +
-                    '<div class="chapter-title">' + escapeHtml(title) + '</div>' +
-                '</div>' +
-                '<div class="chapter-toggle">▼</div>';
-            card.appendChild(header);
+            var paragraphs = body.split(/\n\n+/).map(function(p) {
+                return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
+            }).join('');
 
-            var bodyWrap = document.createElement('div');
-            bodyWrap.className = 'chapter-body-wrap';
-            var bodyDiv = document.createElement('div');
-            bodyDiv.className = 'chapter-body';
+            var html = '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>' +
+                '<div class="chapter-title">' + escapeHtml(title) + '</div>' +
+                '<div class="chapter-body">' + paragraphs + '</div>';
 
-            if (isHtml) {
-                bodyDiv.innerHTML = body;
-            } else {
-                bodyDiv.innerHTML = body.split(/\n\n+/).map(function(p) {
-                    return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
-                }).join('');
+            if (ch.emotion !== undefined) {
+                var emo = Math.max(0, Math.min(100, Number(ch.emotion) || 50));
+                html += '<div class="chapter-emotion">' +
+                    '<div class="chapter-emotion-label">감정</div>' +
+                    '<div class="chapter-emotion-bar"><div class="chapter-emotion-fill" style="width:' + emo + '%"></div></div>' +
+                    '</div>';
             }
 
-            if (highlightQuote) {
-                var hq = document.createElement('div');
-                hq.className = 'highlight-quote';
-                hq.innerHTML = '<div class="highlight-quote-text">"' + escapeHtml(highlightQuote) + '"</div>';
-                bodyDiv.appendChild(hq);
-            }
-
-            if (bridge) {
-                var br = document.createElement('p');
-                br.style.cssText = 'font-style:italic; color:var(--text-muted); margin-top:16px; font-size:13px;';
-                br.textContent = bridge;
-                bodyDiv.appendChild(br);
-            }
-
-            bodyWrap.appendChild(bodyDiv);
-            card.appendChild(bodyWrap);
+            card.innerHTML = html;
             container.appendChild(card);
+        }
+    });
+}
 
-            if (idx === 0) card.classList.add('open');
-        });
-    }
 
-    /* ── 7-7. Intersection Observer ── */
+    /* ── 4-3. Intersection Observer (스크롤 페이드인) ── */
     function observeChapters() {
         var cards = document.querySelectorAll('.chapter-card:not(.visible)');
         if (!cards.length) return;
+
         if (!('IntersectionObserver' in window)) {
-            cards.forEach(function(c) { c.classList.add('visible'); }); return;
+            cards.forEach(function(c) { c.classList.add('visible'); });
+            return;
         }
+
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
-                if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.15 });
+
         cards.forEach(function(c) { observer.observe(c); });
     }
 
-    /* ── 7-8. 실행 플랜 ── */
-    function renderActionPlan(plan) {
-        if (!plan) return;
-        document.getElementById('actionPlanCard').style.display = 'block';
-        var list = document.getElementById('actionPlanList');
-        list.innerHTML = '';
+    /* ── 4-4. 감정 곡선 SVG ── */
+    function renderEmotionCurve(chapters) {
+        var emotions = [];
+        chapters.forEach(function(ch, i) {
+            emotions.push({
+                label: 'Ch.' + (i + 1),
+                value: ch.emotion !== undefined ? Number(ch.emotion) : 50
+            });
+        });
+        if (emotions.length < 2) return;
 
-        if (Array.isArray(plan)) {
-            plan.forEach(function(item) {
-                list.innerHTML += '<div class="action-plan-item">' +
-                    '<div class="action-plan-label">' + escapeHtml(item.day || item.label || '') + '</div>' +
-                    '<div class="action-plan-text">' + escapeHtml(item.action || item.text || '') + '</div>' +
-                    (item.evidence ? '<div class="action-plan-evidence">' + escapeHtml(item.evidence) + '</div>' : '') +
-                    '</div>';
-            });
-        } else {
-            ['immediate','weekly','monthly'].forEach(function(period) {
-                var p = plan[period];
-                if (!p) return;
-                var labelMap = { immediate: '즉시 실행', weekly: '이번 주', monthly: '이번 달' };
-                var text = p.action || p.text || (typeof p === 'string' ? p : '');
-                var evidence = p.evidence || p.saju_evidence || '';
-                list.innerHTML += '<div class="action-plan-item">' +
-                    '<div class="action-plan-label">' + labelMap[period] + '</div>' +
-                    '<div class="action-plan-text">' + escapeHtml(text) + '</div>' +
-                    (evidence ? '<div class="action-plan-evidence">' + escapeHtml(evidence) + '</div>' : '') +
-                    '</div>';
-            });
+        var card = document.getElementById('emotionCurveCard');
+        card.style.display = 'block';
+
+        var svg = document.getElementById('emotionCurveSvg');
+        var W = 440, H = 140, padX = 30, padY = 20;
+        var plotW = W - padX * 2, plotH = H - padY * 2;
+
+        var n = emotions.length;
+        var points = emotions.map(function(e, i) {
+            var x = padX + (i / (n - 1)) * plotW;
+            var y = padY + plotH - (e.value / 100) * plotH;
+            return { x: x, y: y, label: e.label, value: e.value };
+        });
+
+        // 스무스 경로
+        var pathD = 'M ' + points[0].x + ' ' + points[0].y;
+        for (var i = 1; i < points.length; i++) {
+            var prev = points[i - 1];
+            var curr = points[i];
+            var cpx1 = prev.x + (curr.x - prev.x) * 0.4;
+            var cpx2 = prev.x + (curr.x - prev.x) * 0.6;
+            pathD += ' C ' + cpx1 + ' ' + prev.y + ' ' + cpx2 + ' ' + curr.y + ' ' + curr.x + ' ' + curr.y;
         }
+
+        // 그라디언트
+        var areaD = pathD + ' L ' + points[n-1].x + ' ' + (padY + plotH) + ' L ' + points[0].x + ' ' + (padY + plotH) + ' Z';
+
+        var svgContent = '' +
+            '<defs>' +
+            '  <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">' +
+            '    <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/>' +
+            '    <stop offset="100%" stop-color="#c9a84c" stop-opacity="0.02"/>' +
+            '  </linearGradient>' +
+            '</defs>' +
+            '<line x1="'+padX+'" y1="'+(padY+plotH)+'" x2="'+(padX+plotW)+'" y2="'+(padY+plotH)+'" stroke="#c9a84c33" stroke-width="1"/>' +
+            '<path d="'+areaD+'" fill="url(#curveGrad)"/>' +
+            '<path d="'+pathD+'" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>';
+
+        points.forEach(function(p) {
+            svgContent += '<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#0a0a14" stroke="#c9a84c" stroke-width="2"/>';
+            svgContent += '<text x="'+p.x+'" y="'+(padY + plotH + 14)+'" text-anchor="middle" fill="#8a7a5a" font-size="9">' + p.label + '</text>';
+        });
+
+        svg.innerHTML = svgContent;
+    }
+
+    /* ── 4-5. 7일 실행 플랜 ── */
+    function renderActionPlan(plan) {
+        if (!plan || !plan.length) return;
+        var card = document.getElementById('actionPlanCard');
+        card.style.display = 'block';
+
+        var html = '';
+        plan.forEach(function(item) {
+            var day = item.day || item.label || '';
+            var text = item.action || item.text || item.content || '';
+            html += '<div class="action-plan-item">' +
+                '<div class="action-plan-day">' + escapeHtml(day) + '</div>' +
+                '<div class="action-plan-text">' + escapeHtml(text) + '</div>' +
+                '</div>';
+        });
+        document.getElementById('actionPlanList').innerHTML = html;
     }
 
     /* ══════════════════════════════════════
-       8. 오디오 시스템
+       5. 폰트 크기 조절
+       ══════════════════════════════════════ */
+    function changeFontSize(dir) {
+        fontStep = Math.max(0, Math.min(2, fontStep + dir));
+        document.documentElement.style.setProperty('--font-scale', fontScales[fontStep]);
+    }
+
+    /* ══════════════════════════════════════
+       6. 오디오 시스템 (기존 유지 + 리팩토링)
        ══════════════════════════════════════ */
     function extractFileId(url) {
         if (!url) return null;
@@ -1544,106 +1171,210 @@
         if (/^[a-zA-Z0-9_-]{20,}$/.test(url)) return url;
         return null;
     }
+
     function formatTime(sec) {
         if (!sec || isNaN(sec)) return '0:00';
-        var m = Math.floor(sec / 60); var s = Math.floor(sec % 60);
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
         return m + ':' + (s < 10 ? '0' : '') + s;
     }
 
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function() { t.classList.remove('show'); }, 2500);
+    }
+
+    /* ── BGM 프리로드 ── */
     function preloadBgm(fileId) {
         fetch(GAS_URL + '?audio=' + fileId)
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.error || !data.audioBase64) return;
+                if (data.error || !data.audioBase64) { console.error('BGM preload error'); return; }
                 var audio = new Audio();
                 audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
-                audio.volume = 0.5; audio.preload = 'auto';
-                audioPlayers['theme'] = audio; audioLoaded['theme'] = true; bgmPreloaded = true;
-                audio.addEventListener('loadedmetadata', function() { document.getElementById('themeDuration').textContent = formatTime(audio.duration); });
-                audio.addEventListener('ended', function() {
-                    if (bgmType === 'theme') { audio.currentTime = 0; audio.play().catch(function(){}); }
-                    else { document.getElementById('bgmBar').classList.remove('active'); bgmType = null; }
+                audio.volume = 0.5;
+                audio.preload = 'auto';
+                audioPlayers['theme'] = audio;
+                audioLoaded['theme'] = true;
+                bgmPreloaded = true;
+
+                audio.addEventListener('loadedmetadata', function() {
+                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
                 });
-                if (pendingBgmPlay) { pendingBgmPlay = false; startBgm(); }
-            }).catch(function(err) { console.error('BGM preload error:', err); });
+                audio.addEventListener('ended', function() {
+                    if (bgmType === 'theme') {
+                        audio.currentTime = 0;
+                        audio.play().catch(function(){});
+                    } else {
+                        document.getElementById('bgmBar').classList.remove('active');
+                        document.getElementById('themePlayBtn').textContent = '▶';
+                        document.getElementById('btnTheme').classList.remove('playing');
+                        bgmType = null;
+                    }
+                });
+
+                if (pendingBgmPlay) {
+                    pendingBgmPlay = false;
+                    startBgm();
+                }
+            })
+            .catch(function(err) { console.error('BGM preload fetch error:', err); });
     }
 
     function startBgm() {
         var audio = audioPlayers['theme'];
         if (!audio) return;
-        audio.volume = 0.5; audio.currentTime = 0; audio.loop = true;
+        audio.volume = 0.5;
+        audio.currentTime = 0;
+        audio.loop = true;
         audio.play().then(function() {
             bgmType = 'theme';
+            audioLoaded['theme'] = true;
+
+            // BGM 바 업데이트
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
             document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
             document.getElementById('bgmSub').textContent = '배경음악 재생 중';
+
+            // 테마곡 섹션 버튼만 playing 표시 (패널은 열지 않음)
             document.getElementById('btnTheme').classList.add('playing');
             startProgressUpdate('theme');
-        }).catch(function() {
+
+            // duration 표시
+            if (audio.duration) {
+                document.getElementById('themeDuration').textContent = formatTime(audio.duration);
+            } else {
+                audio.addEventListener('loadedmetadata', function() {
+                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
+                });
+            }
+        }).catch(function(e) {
+            console.log('BGM autoplay blocked:', e);
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '▶';
-            document.getElementById('bgmSub').textContent = '터치하여 재생';
+            document.getElementById('bgmSub').textContent = '터치하며 재생';
             bgmType = 'theme';
         });
     }
 
+
+
+
+    function toggleBgm() {
+        if (!bgmType || !audioPlayers[bgmType]) return;
+        playPause(bgmType);
+    }
+
+    /* ── 플레이어 토글 & 재생 ── */
     function togglePlayer(type) {
         var wrap = document.getElementById('player' + capitalize(type));
         var btn = document.getElementById('btn' + capitalize(type));
         var isOpen = wrap.classList.contains('open');
+
+        // 다른 플레이어 닫기
         ['theme','voice','healing'].forEach(function(t) {
             if (t !== type) {
                 document.getElementById('player' + capitalize(t)).classList.remove('open');
                 document.getElementById('btn' + capitalize(t)).classList.remove('expanded');
             }
         });
-        if (isOpen) { wrap.classList.remove('open'); btn.classList.remove('expanded'); }
-        else { wrap.classList.add('open'); btn.classList.add('expanded'); if (!audioLoaded[type]) loadAudio(type); }
+
+        if (isOpen) {
+            wrap.classList.remove('open');
+            btn.classList.remove('expanded');
+        } else {
+            wrap.classList.add('open');
+            btn.classList.add('expanded');
+            if (!audioLoaded[type]) { loadAudio(type); }
+        }
     }
 
     function loadAudio(type) {
         var linkMap = { theme: certData.themeLink, voice: certData.voiceLink, healing: certData.healingLink };
         var rawUrl = linkMap[type];
         if (!rawUrl) return;
+
         var fileId = extractFileId(rawUrl);
         if (!fileId) return;
+
         audioFileIds[type] = fileId;
         var loadingEl = document.getElementById(type + 'Loading');
         if (loadingEl) loadingEl.style.display = 'block';
+
+        // BGM으로 이미 로드된 테마곡 재사용
         if (type === 'theme' && audioLoaded['theme'] && audioPlayers['theme']) {
-            if (loadingEl) loadingEl.style.display = 'none'; playPause('theme'); return;
+            if (loadingEl) loadingEl.style.display = 'none';
+            playPause('theme');
+            return;
         }
+
         fetch(GAS_URL + '?audio=' + fileId)
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (loadingEl) loadingEl.style.display = 'none';
-                if (data.error || !data.audioBase64) { showToast('음원을 불러올 수 없습니다'); return; }
+                if (data.error || !data.audioBase64) {
+                    showToast('음원을 불러올 수 없습니다');
+                    return;
+                }
                 var audio = new Audio();
                 audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
                 audio.preload = 'auto';
-                audioPlayers[type] = audio; audioLoaded[type] = true;
-                audio.addEventListener('loadedmetadata', function() { document.getElementById(type + 'Duration').textContent = formatTime(audio.duration); });
+                audioPlayers[type] = audio;
+                audioLoaded[type] = true;
+
+                audio.addEventListener('loadedmetadata', function() {
+                    document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
+                });
                 audio.addEventListener('ended', function() {
                     document.getElementById(type + 'PlayBtn').textContent = '▶';
                     document.getElementById('btn' + capitalize(type)).classList.remove('playing');
                     clearInterval(playerIntervals[type]);
-                    if (bgmType === type) { document.getElementById('bgmBtn').textContent = '▶'; document.getElementById('bgmSub').textContent = '재생 완료'; }
+
+                    // BGM 바 리셋
+                    if (bgmType === type) {
+                        document.getElementById('bgmBtn').textContent = '▶';
+                        document.getElementById('bgmSub').textContent = '재생 완료';
+                        var bgmProgress = document.getElementById('bgmProgress');
+                        if (bgmProgress) bgmProgress.value = 0;
+                    }
                 });
+
+                // 다운로드 링크
                 var dlLink = document.getElementById(type + 'Download');
-                if (dlLink) { dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64; dlLink.download = (data.fileName || type) + '.mp3'; }
-            }).catch(function() { if (loadingEl) loadingEl.style.display = 'none'; showToast('음원 로딩 실패'); });
+                if (dlLink) {
+                    dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                    dlLink.download = (data.fileName || type + '_audio') + '.mp3';
+                }
+            })
+            .catch(function(err) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                showToast('음원 로딩 실패');
+                console.error('loadAudio error:', err);
+            });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         var bgmBtn = document.getElementById('bgmBtn');
-        if (bgmBtn) bgmBtn.addEventListener('click', function() { if (bgmType && audioPlayers[bgmType]) playPause(bgmType); });
+        if (bgmBtn) {
+            bgmBtn.addEventListener('click', function() {
+                if (!bgmType || !audioPlayers[bgmType]) return;
+                playPause(bgmType);
+            });
+        }
     });
 
+
+
+        
     function playPause(type) {
         var audio = audioPlayers[type];
         if (!audio) { loadAudio(type); return; }
+
         if (audio.paused) {
+            // 다른 오디오 정지
             ['theme','voice','healing'].forEach(function(t) {
                 if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                     audioPlayers[t].pause();
@@ -1657,6 +1388,8 @@
             document.getElementById(type + 'PlayBtn').textContent = '⏸';
             document.getElementById('btn' + capitalize(type)).classList.add('playing');
             startProgressUpdate(type);
+
+            // BGM 바 업데이트
             bgmType = type;
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
@@ -1676,28 +1409,42 @@
     function seek(type) {
         var audio = audioPlayers[type];
         var slider = document.getElementById(type + 'Progress');
-        if (audio && audio.duration) audio.currentTime = (slider.value / 100) * audio.duration;
+        if (audio && audio.duration) {
+            audio.currentTime = (slider.value / 100) * audio.duration;
+        }
     }
 
-    function startProgressUpdate(type) {
-        clearInterval(playerIntervals[type]);
-        playerIntervals[type] = setInterval(function() {
-            var audio = audioPlayers[type];
-            if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
-            var pct = (audio.currentTime / audio.duration) * 100;
-            document.getElementById(type + 'Progress').value = pct;
-            document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
-            if (bgmType === type) { var bp = document.getElementById('bgmProgress'); if (bp) bp.value = pct; }
-        }, 300);
-    }
+function startProgressUpdate(type) {
+    clearInterval(playerIntervals[type]);
+    playerIntervals[type] = setInterval(function() {
+        var audio = audioPlayers[type];
+        if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
+        var pct = (audio.currentTime / audio.duration) * 100;
+        document.getElementById(type + 'Progress').value = pct;
+        document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
 
+        // BGM 바 진행률 동기화
+        if (bgmType === type) {
+            var bgmProgress = document.getElementById('bgmProgress');
+            if (bgmProgress) bgmProgress.value = pct;
+            var bgmTime = document.getElementById('bgmTime');
+            if (bgmTime) bgmTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+        }
+    }, 300);
+}
+
+        
     /* ══════════════════════════════════════
-       9. 공유
+       7. 공유
        ══════════════════════════════════════ */
     function shareKakao() {
-        if (!window.Kakao || !Kakao.isInitialized()) { showToast('카카오 공유를 불러오는 중...'); return; }
+        if (!window.Kakao || !Kakao.isInitialized()) {
+            showToast('카카오 공유를 불러오는 중...');
+            return;
+        }
         var pageUrl = window.location.href;
         var desc = certData.soreLine || '당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.';
+
         Kakao.Share.sendDefault({
             objectType: 'feed',
             content: {
@@ -1706,127 +1453,138 @@
                 imageUrl: 'https://readmelab.github.io/og-image.png',
                 link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
             },
-            buttons: [{ title: '내 운명 보기', link: { mobileWebUrl: pageUrl, webUrl: pageUrl } }]
+            buttons: [{
+                title: '내 운명 보기',
+                link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
+            }]
         });
     }
+
     function shareLink() {
         var url = window.location.href;
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(url).then(function() { showToast('링크가 복사되었습니다'); }).catch(function() { fallbackCopy(url); });
-        } else { fallbackCopy(url); }
+            navigator.clipboard.writeText(url).then(function() {
+                showToast('링크가 복사되었습니다');
+            }).catch(function() { fallbackCopy(url); });
+        } else {
+            fallbackCopy(url);
+        }
     }
+
     function fallbackCopy(text) {
-        var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
-        document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); } catch(e) { showToast('복사에 실패했습니다'); }
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); }
+        catch(e) { showToast('복사에 실패했습니다'); }
         document.body.removeChild(ta);
     }
+
     function shareNative() {
         if (!navigator.share) return;
-        navigator.share({ title: '나를읽다 연구소 — 운명 분석 결과', text: certData.soreLine || '당신만을 위한 운명 분석', url: window.location.href }).catch(function(){});
+        navigator.share({
+            title: '나를읽다 연구소 — 운명 분석 결과',
+            text: certData.soreLine || '당신만을 위한 운명 분석',
+            url: window.location.href
+        }).catch(function(){});
     }
 
     /* ══════════════════════════════════════
-       10. 유틸리티
+       8. 유틸
        ══════════════════════════════════════ */
-    function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    function showToast(msg) {
-        var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-        setTimeout(function() { t.classList.remove('show'); }, 2500);
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    /* ══════════════════════════════════════
-       11. 디자인설정 시트 적용 (변수명 수정 완료)
-       ══════════════════════════════════════ */
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+            /* ═════════════════════════════════════════════════════════
+       디자인설정 적용 (구글시트 연동)
+       ═════════════════════════════════════════════════════════ */
     function applyDesignFromSheet(design) {
         if (!design) return;
+
         var root = document.documentElement;
 
         // 배경 그라데이션
         if (design['배경시작'] && design['배경중간'] && design['배경끝']) {
-            document.body.style.background = 'linear-gradient(180deg, '+design['배경시작']+' 0%, '+design['배경중간']+' 50%, '+design['배경끝']+' 100%)';
+            document.body.style.background = 'linear-gradient(180deg, '
+                + design['배경시작'] + ' 0%, '
+                + design['배경중간'] + ' 50%, '
+                + design['배경끝'] + ' 100%)';
             document.body.style.backgroundAttachment = 'fixed';
         }
 
-        // ★ 수정됨: 실제 CSS :root 변수명과 일치
+        // CSS 변수 매핑
         var mappings = {
-            '--bg-deep':        '보조컬러',
-            '--bg-card':        '카드배경',
-            '--gold':           '메인컬러',
-            '--gold-dim':       '카드보더',
-            '--text-primary':   '텍스트컬러',
-            '--text-secondary': '서브텍스트'
+            '--accent':       '메인컬러',
+            '--gold':         '메인컬러',
+            '--card-bg':      '카드배경',
+            '--card-border':  '카드보더',
+            '--text':         '텍스트컬러',
+            '--sub-text':     '서브텍스트',
+            '--secondary-bg': '보조컬러'
         };
 
         for (var cssVar in mappings) {
             var sheetKey = mappings[cssVar];
             if (design[sheetKey]) {
                 root.style.setProperty(cssVar, design[sheetKey]);
-
-                // 메인컬러가 바뀌면 RGB 변수도 갱신
-                if (cssVar === '--gold' && design[sheetKey]) {
-                    var rgb = hexToRgb(design[sheetKey]);
-                    if (rgb) {
-                        root.style.setProperty('--gold-rgb', rgb);
-                        // 투명도 프리셋 재계산
-                        root.style.setProperty('--gold-dim', 'rgba('+rgb+', 0.2)');
-                        root.style.setProperty('--gold-mid', 'rgba('+rgb+', 0.4)');
-                        root.style.setProperty('--gold-005', 'rgba('+rgb+', 0.05)');
-                        root.style.setProperty('--gold-007', 'rgba('+rgb+', 0.07)');
-                        root.style.setProperty('--gold-01', 'rgba('+rgb+', 0.1)');
-                        root.style.setProperty('--gold-015', 'rgba('+rgb+', 0.15)');
-                        root.style.setProperty('--gold-02', 'rgba('+rgb+', 0.2)');
-                        root.style.setProperty('--gold-03', 'rgba('+rgb+', 0.3)');
-                        root.style.setProperty('--gold-04', 'rgba('+rgb+', 0.4)');
-                        root.style.setProperty('--gold-shadow', 'rgba('+rgb+', 0.2)');
-                        root.style.setProperty('--gold-shadow-strong', 'rgba('+rgb+', 0.3)');
-                        root.style.setProperty('--gold-glow', 'rgba('+rgb+', 0.15)');
-                        root.style.setProperty('--gold-bg-subtle', 'rgba('+rgb+', 0.03)');
-                    }
-                }
             }
         }
 
         // 카드 둥글기
-        if (design['카드둥글기']) root.style.setProperty('--card-radius', design['카드둥글기'] + 'px');
+        if (design['카드둥글기']) {
+            root.style.setProperty('--card-radius', design['카드둥글기'] + 'px');
+        }
 
-        // ★ 수정됨: 폰트를 CSS 변수로 적용
+        // 폰트
         if (design['폰트']) {
             var fontName = design['폰트'];
+            // 구글폰트 동적 로드
             if (!document.querySelector('link[data-design-font]')) {
-                var link = document.createElement('link'); link.rel = 'stylesheet';
-                link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontName) + ':wght@300;400;500;600;700&display=swap';
-                link.setAttribute('data-design-font', 'true'); document.head.appendChild(link);
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://fonts.googleapis.com/css2?family='
+                    + encodeURIComponent(fontName) + ':wght@300;400;500;600;700&display=swap';
+                link.setAttribute('data-design-font', 'true');
+                document.head.appendChild(link);
             }
-            root.style.setProperty('--font-main', "'" + fontName + "', sans-serif");
-            root.style.setProperty('--font-serif', "'" + fontName + "', serif");
+            root.style.setProperty('--font-main', "'" + fontName + "', serif");
         }
 
-        // 하이라이트
-        if (design['하이라이트배경']) root.style.setProperty('--highlight-bg', design['하이라이트배경']);
-        if (design['하이라이트보더']) root.style.setProperty('--highlight-border', design['하이라이트보더']);
+        // 하이라이트 (명언 카드)
+        if (design['하이라이트배경']) {
+            root.style.setProperty('--highlight-bg', design['하이라이트배경']);
+        }
+        if (design['하이라이트보더']) {
+            root.style.setProperty('--highlight-border', design['하이라이트보더']);
+        }
 
-        // 커스텀 CSS
+        // 푸터 텍스트
+        if (design['푸터텍스트']) {
+            var footerEl = document.querySelector('.footer');
+            if (footerEl) {
+                var footerText = footerEl.querySelector('p, span');
+                if (footerText) footerText.textContent = design['푸터텍스트'];
+            }
+        }
+
+        // 커스텀 CSS (고급용)
         if (design['커스텀CSS'] && design['커스텀CSS'].trim()) {
-            var s = document.createElement('style'); s.textContent = design['커스텀CSS']; document.head.appendChild(s);
+            var customStyle = document.createElement('style');
+            customStyle.textContent = design['커스텀CSS'];
+            document.head.appendChild(customStyle);
         }
 
-        console.log('✅ 디자인설정 적용 완료:', design['템플릿명'] || design['상품코드'] || '');
+        console.log('✅ 디자인설정 적용 완료:', design['템플릿명'] || design['상품코드']);
     }
 
-    // hex → "r,g,b" 문자열 변환
-    function hexToRgb(hex) {
-        if (!hex) return null;
-        hex = hex.replace('#', '');
-        if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-        if (hex.length !== 6) return null;
-        var r = parseInt(hex.substring(0, 2), 16);
-        var g = parseInt(hex.substring(2, 4), 16);
-        var b = parseInt(hex.substring(4, 6), 16);
-        if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
-        return r + ',' + g + ',' + b;
-    }
     </script>
 </body>
 </html>
