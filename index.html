@@ -936,8 +936,13 @@
         var data = [];
         var total = 0;
         ['목','화','토','금','수'].forEach(function(key) {
-            var val = oheng[key] || oheng.distribution && oheng.distribution[key] || 0;
-            if (typeof val === 'string') val = parseFloat(val) || 0;
+            var val = 0;
+            if (oheng[key] !== undefined && oheng[key] !== null && typeof oheng[key] === 'number') {
+                val = oheng[key];
+            } else if (oheng.distribution && oheng.distribution[key]) {
+                var d = oheng.distribution[key];
+                val = (typeof d === 'object') ? (d.percentage || d.count || 0) : (parseFloat(d) || 0);
+            }
             data.push({ key: key, value: val });
             total += val;
         });
@@ -999,15 +1004,21 @@
 
             var title = ch.title || ('Chapter ' + (idx + 1));
             var body = ch.content || ch.body || ch.text || '';
+            var isHtml = /<[a-z][\s\S]*>/i.test(body.substring(0, 100));
 
-            // 본문 → 단락 분리
-            var paragraphs = body.split(/\n\n+/).map(function(p) {
-                return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
-            }).join('');
+            var bodyHtml;
+            if (isHtml) {
+                bodyHtml = body;
+            } else {
+                bodyHtml = body.split(/\n\n+/).map(function(p) {
+                    return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
+                }).join('');
+            }
+
 
             var html = '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>' +
                 '<div class="chapter-title">' + escapeHtml(title) + '</div>' +
-                '<div class="chapter-body">' + paragraphs + '</div>';
+                '<div class="chapter-body">' + bodyHtml + '</div>';
 
             // 감정 바
             if (ch.emotion !== undefined) {
