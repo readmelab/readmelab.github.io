@@ -176,30 +176,7 @@
             color: var(--text-muted); font-style: italic;
         }
 
-        /* 챕터 카드 */
-        .chapter-card {
-            background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 28px 20px; margin-bottom: 20px;
-            opacity: 0; transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        .chapter-card.visible { opacity: 1; transform: translateY(0); }
-        .chapter-number {
-            font-family: 'Noto Serif KR', serif; font-size: 11px;
-            color: var(--gold-mid); letter-spacing: 3px; margin-bottom: 8px;
-        }
-        .chapter-title {
-            font-family: 'Noto Serif KR', serif; font-size: 18px;
-            color: var(--gold); font-weight: 700; margin-bottom: 16px;
-            line-height: 1.5;
-        }
-        .chapter-body {
-            font-size: calc(var(--font-size-base) * var(--font-scale));
-            color: var(--text-primary); line-height: 2.0;
-            word-break: keep-all;
-        }
-        .chapter-body p { margin-bottom: 16px; }
-        .chapter-body strong { color: var(--gold); font-weight: 500; }
+
         .chapter-emotion {
             display: flex; align-items: center; gap: 8px;
             margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gold-dim);
@@ -364,7 +341,153 @@
     width: 100% !important;
 }
 
-  
+
+                /* ══════════════════════════════════════
+           5-1. 챕터 디자인 업그레이드 (v2)
+           시트 CSS 변수 연동: --highlight-bg, --highlight-border,
+           --card-bg, --card-border, --card-radius, --accent
+           ══════════════════════════════════════ */
+        
+        :root {
+            --highlight-bg: rgba(201, 168, 76, 0.06);
+            --highlight-border: rgba(201, 168, 76, 0.3);
+            --card-radius: 12px;
+        }
+
+        /* 챕터 카드 — 시트의 카드배경/보더/둥글기 연동 */
+        .chapter-card {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 48px 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--card-border, var(--gold-dim));
+        }
+        .chapter-card:last-child { border-bottom: none; }
+        
+        /* 챕터 헤더 */
+        .chapter-header {
+            text-align: center;
+            margin-bottom: 36px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(201,168,76,0.08);
+        }
+        .chapter-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+            opacity: 0.8;
+        }
+        .chapter-number {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 10px;
+            color: var(--sub-text, var(--text-dim));
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .chapter-title {
+            font-family: var(--font-main, 'Noto Serif KR', serif);
+            font-size: 20px;
+            color: var(--accent, var(--gold));
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .chapter-summary {
+            font-family: var(--font-main, 'Noto Serif KR', serif);
+            font-size: 13px;
+            color: var(--sub-text, var(--text-muted));
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+        
+        /* 챕터 본문 */
+        .chapter-body {
+            font-size: calc(var(--font-size-base) * var(--font-scale));
+            color: var(--text, var(--text-primary));
+            line-height: 2.1;
+            word-break: keep-all;
+        }
+        .chapter-body p {
+            margin-bottom: 24px;
+        }
+        .chapter-body p:last-child { margin-bottom: 0; }
+        .chapter-body strong, .chapter-body b {
+            color: var(--accent, var(--gold));
+            font-weight: 500;
+        }
+        
+        /* highlight_quote — 시트의 하이라이트배경/보더 연동 */
+        .highlight-quote {
+            position: relative;
+            margin: 40px -20px;
+            padding: 48px 24px;
+            text-align: center;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                var(--highlight-bg) 20%,
+                var(--highlight-bg) 80%,
+                transparent 100%
+            );
+        }
+        .highlight-quote::before,
+        .highlight-quote::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--highlight-border), transparent);
+            margin: 0 auto;
+        }
+        .highlight-quote::before { margin-bottom: 24px; }
+        .highlight-quote::after { margin-top: 24px; }
+        .highlight-quote-text {
+            font-family: var(--font-main, 'Noto Serif KR', serif);
+            font-size: calc(18px * var(--font-scale));
+            color: var(--gold-bright);
+            font-weight: 700;
+            line-height: 2.0;
+            letter-spacing: 0.5px;
+            word-break: keep-all;
+            text-shadow: 0 0 40px rgba(232, 196, 76, 0.15);
+        }
+        
+        /* bridge 문장 */
+        .chapter-bridge {
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(201,168,76,0.08);
+            font-family: var(--font-main, 'Noto Serif KR', serif);
+            font-size: 13px;
+            color: var(--sub-text, var(--text-dim));
+            font-style: italic;
+            line-height: 1.9;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 챕터 구분자 */
+        .chapter-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        .chapter-divider-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--card-border, var(--gold-dim));
+            border-radius: 50%;
+            margin: 0 8px;
+        }
+        .chapter-divider-dot:nth-child(2) {
+            width: 6px;
+            height: 6px;
+            background: var(--accent, var(--gold-mid));
+        }
+
     </style>
 </head>
 <body>
@@ -1008,50 +1131,83 @@
             '주도: ' + OHENG_LABELS[dominant] + '  |  보완 필요: ' + OHENG_LABELS[weakest];
     }
 
-    /* ── 4-2. 챕터 렌더링 ── */
-function renderChapters(chapters) {
-    var container = document.getElementById('chaptersContainer');
-    container.innerHTML = '';
+    /* ── 4-2. 챕터 렌더링 (v2 — highlight_quote + bridge + mood) ── */
+    function renderChapters(chapters) {
+        var container = document.getElementById('chaptersContainer');
+        container.innerHTML = '';
 
-    chapters.forEach(function(ch, idx) {
-        var title = ch.title || ('Chapter ' + (idx + 1));
-        var body = ch.content || ch.body || ch.text || '';
-        var isHtml = /<[a-z]/i.test(body.substring(0, 10));
+        chapters.forEach(function(ch, idx) {
+            var title = ch.title || ('Chapter ' + (idx + 1));
+            var body = ch.content || ch.body || ch.text || '';
+            var isHtml = /<[a-z]/i.test(body.substring(0, 10));
 
-        if (isHtml) {
-            // 서버가 보낸 HTML을 그대로 렌더링 (확장성: 어떤 상품이든 HTML이면 바로 출력)
-            var wrapper = document.createElement('div');
-            wrapper.className = 'chapter-html-block visible';
-            wrapper.style.marginBottom = '20px';
-            wrapper.innerHTML = body;
-            container.appendChild(wrapper);
-        } else {
-            // 텍스트 기반 챕터 (향후 궁합 등 텍스트형 리포트 대응)
-            var card = document.createElement('div');
-            card.className = 'chapter-card visible';
-            card.setAttribute('data-chapter', idx);
-
-            var paragraphs = body.split(/\n\n+/).map(function(p) {
-                return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
-            }).join('');
-
-            var html = '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>' +
-                '<div class="chapter-title">' + escapeHtml(title) + '</div>' +
-                '<div class="chapter-body">' + paragraphs + '</div>';
-
-            if (ch.emotion !== undefined) {
-                var emo = Math.max(0, Math.min(100, Number(ch.emotion) || 50));
-                html += '<div class="chapter-emotion">' +
-                    '<div class="chapter-emotion-label">감정</div>' +
-                    '<div class="chapter-emotion-bar"><div class="chapter-emotion-fill" style="width:' + emo + '%"></div></div>' +
-                    '</div>';
+            if (isHtml) {
+                var wrapper = document.createElement('div');
+                wrapper.className = 'chapter-html-block visible';
+                wrapper.style.marginBottom = '20px';
+                wrapper.innerHTML = body;
+                container.appendChild(wrapper);
+                return;
             }
 
-            card.innerHTML = html;
+            var card = document.createElement('div');
+            card.className = 'chapter-card';
+            card.setAttribute('data-chapter', idx);
+            if (ch.mood) card.setAttribute('data-mood', ch.mood);
+
+            // ── 챕터 헤더 ──
+            var headerHtml = '<div class="chapter-header">';
+            if (ch.icon) {
+                headerHtml += '<span class="chapter-icon">' + ch.icon + '</span>';
+            }
+            headerHtml += '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>';
+            headerHtml += '<div class="chapter-title">' + escapeHtml(title) + '</div>';
+            if (ch.summary) {
+                headerHtml += '<div class="chapter-summary">' + escapeHtml(ch.summary) + '</div>';
+            }
+            headerHtml += '</div>';
+
+            // ── 본문 (highlight_quote를 중간에 삽입) ──
+            var paragraphs = body.split(/\n\n+/);
+            var bodyHtml = '<div class="chapter-body">';
+            var quoteInsertIdx = Math.max(1, Math.floor(paragraphs.length * 0.6));
+
+            paragraphs.forEach(function(p, pIdx) {
+                var processed = p.replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                bodyHtml += '<p>' + processed + '</p>';
+
+                // highlight_quote 삽입
+                if (ch.highlight_quote && pIdx === quoteInsertIdx - 1) {
+                    bodyHtml += '</div>';
+                    bodyHtml += '<div class="highlight-quote">';
+                    bodyHtml += '<div class="highlight-quote-text">"' + escapeHtml(ch.highlight_quote) + '"</div>';
+                    bodyHtml += '</div>';
+                    bodyHtml += '<div class="chapter-body">';
+                }
+            });
+            bodyHtml += '</div>';
+
+            // ── bridge ──
+            var bridgeHtml = '';
+            if (ch.bridge) {
+                bridgeHtml = '<div class="chapter-bridge">' + escapeHtml(ch.bridge) + '</div>';
+            }
+
+            card.innerHTML = headerHtml + bodyHtml + bridgeHtml;
             container.appendChild(card);
-        }
-    });
-}
+
+            // 챕터 구분자
+            if (idx < chapters.length - 1) {
+                var divider = document.createElement('div');
+                divider.className = 'chapter-divider';
+                divider.innerHTML = '<div class="chapter-divider-dot"></div>' +
+                    '<div class="chapter-divider-dot"></div>' +
+                    '<div class="chapter-divider-dot"></div>';
+                container.appendChild(divider);
+            }
+        });
+    }
 
 
     /* ── 4-3. Intersection Observer (스크롤 페이드인) ── */
@@ -1522,13 +1678,19 @@ function startProgressUpdate(type) {
 
         // CSS 변수 매핑
         var mappings = {
-            '--accent':       '메인컬러',
-            '--gold':         '메인컬러',
-            '--card-bg':      '카드배경',
-            '--card-border':  '카드보더',
-            '--text':         '텍스트컬러',
-            '--sub-text':     '서브텍스트',
-            '--secondary-bg': '보조컬러'
+            '--accent':        '메인컬러',
+            '--gold':          '메인컬러',
+            '--gold-bright':   '메인컬러',
+            '--card-bg':       '카드배경',
+            '--bg-card':       '카드배경',
+            '--card-border':   '카드보더',
+            '--gold-dim':      '카드보더',
+            '--text':          '텍스트컬러',
+            '--text-primary':  '텍스트컬러',
+            '--sub-text':      '서브텍스트',
+            '--text-muted':    '서브텍스트',
+            '--text-secondary':'서브텍스트',
+            '--secondary-bg':  '보조컬러'
         };
 
         for (var cssVar in mappings) {
