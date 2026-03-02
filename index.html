@@ -1115,7 +1115,7 @@ function renderChapters(chapters) {
     chapters.forEach(function(ch, idx) {
         var title = ch.title || ('Chapter ' + (idx + 1));
         var body = ch.content || ch.body || ch.text || '';
-        var isHtml = /<[a-z][\s\S]*>/i.test(body.substring(0, 200));
+        var isHtml = /<[a-z]/i.test(body.substring(0, 10));
 
         if (isHtml) {
             // 서버가 보낸 HTML을 그대로 렌더링 (확장성: 어떤 상품이든 HTML이면 바로 출력)
