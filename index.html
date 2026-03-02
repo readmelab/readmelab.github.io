@@ -754,6 +754,7 @@
         // 정적 JSON: d.report 객체
         if (d.report) {
             reportData = d.report;
+            applyDesignFromSheet(d.design || null);
             return;
         }
         // GAS doGet: d.webReportData (문자열이면 파싱)
@@ -762,6 +763,7 @@
                 try { reportData = JSON.parse(d.webReportData); } catch(e) { reportData = null; }
             } else {
                 reportData = d.webReportData;
+                applyDesignFromSheet(d.design || null);
             }
             return;
         }
@@ -1470,6 +1472,88 @@ function startProgressUpdate(type) {
         if (!str) return '';
         return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+            /* ═════════════════════════════════════════════════════════
+       디자인설정 적용 (구글시트 연동)
+       ═════════════════════════════════════════════════════════ */
+    function applyDesignFromSheet(design) {
+        if (!design) return;
+
+        var root = document.documentElement;
+
+        // 배경 그라데이션
+        if (design['배경시작'] && design['배경중간'] && design['배경끝']) {
+            document.body.style.background = 'linear-gradient(180deg, '
+                + design['배경시작'] + ' 0%, '
+                + design['배경중간'] + ' 50%, '
+                + design['배경끝'] + ' 100%)';
+            document.body.style.backgroundAttachment = 'fixed';
+        }
+
+        // CSS 변수 매핑
+        var mappings = {
+            '--accent':       '메인컬러',
+            '--gold':         '메인컬러',
+            '--card-bg':      '카드배경',
+            '--card-border':  '카드보더',
+            '--text':         '텍스트컬러',
+            '--sub-text':     '서브텍스트',
+            '--secondary-bg': '보조컬러'
+        };
+
+        for (var cssVar in mappings) {
+            var sheetKey = mappings[cssVar];
+            if (design[sheetKey]) {
+                root.style.setProperty(cssVar, design[sheetKey]);
+            }
+        }
+
+        // 카드 둥글기
+        if (design['카드둥글기']) {
+            root.style.setProperty('--card-radius', design['카드둥글기'] + 'px');
+        }
+
+        // 폰트
+        if (design['폰트']) {
+            var fontName = design['폰트'];
+            // 구글폰트 동적 로드
+            if (!document.querySelector('link[data-design-font]')) {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://fonts.googleapis.com/css2?family='
+                    + encodeURIComponent(fontName) + ':wght@300;400;500;600;700&display=swap';
+                link.setAttribute('data-design-font', 'true');
+                document.head.appendChild(link);
+            }
+            root.style.setProperty('--font-main', "'" + fontName + "', serif");
+        }
+
+        // 하이라이트 (명언 카드)
+        if (design['하이라이트배경']) {
+            root.style.setProperty('--highlight-bg', design['하이라이트배경']);
+        }
+        if (design['하이라이트보더']) {
+            root.style.setProperty('--highlight-border', design['하이라이트보더']);
+        }
+
+        // 푸터 텍스트
+        if (design['푸터텍스트']) {
+            var footerEl = document.querySelector('.footer');
+            if (footerEl) {
+                var footerText = footerEl.querySelector('p, span');
+                if (footerText) footerText.textContent = design['푸터텍스트'];
+            }
+        }
+
+        // 커스텀 CSS (고급용)
+        if (design['커스텀CSS'] && design['커스텀CSS'].trim()) {
+            var customStyle = document.createElement('style');
+            customStyle.textContent = design['커스텀CSS'];
+            document.head.appendChild(customStyle);
+        }
+
+        console.log('✅ 디자인설정 적용 완료:', design['템플릿명'] || design['상품코드']);
+    }
+
     </script>
 </body>
 </html>
