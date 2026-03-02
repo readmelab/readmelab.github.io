@@ -351,6 +351,88 @@
         #bgmProgress::-webkit-progress-bar { background: rgba(255,255,255,0.1); border-radius: 2px; }
         #bgmProgress::-webkit-progress-value { background: var(--gold); border-radius: 2px; }
         #bgmProgress::-moz-progress-bar { background: var(--gold); border-radius: 2px; }
+    /* ══════════════════════════════════════
+   10. 서버 HTML 오버라이드 (chapter-html-block)
+   ══════════════════════════════════════ */
+.chapter-html-block {
+    width: 100%;
+    overflow-x: hidden;
+}
+.chapter-html-block > div {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    font-family: 'Noto Sans KR', sans-serif !important;
+}
+.chapter-html-block h1,
+.chapter-html-block h2,
+.chapter-html-block h3 {
+    font-family: 'Noto Serif KR', serif !important;
+    color: var(--gold) !important;
+    text-align: center !important;
+    word-break: keep-all !important;
+}
+.chapter-html-block h1 { font-size: 22px !important; margin-bottom: 8px !important; }
+.chapter-html-block h2 { font-size: 18px !important; margin: 32px 0 12px !important; }
+.chapter-html-block h3 { font-size: 15px !important; color: var(--text-secondary) !important; }
+.chapter-html-block p,
+.chapter-html-block li,
+.chapter-html-block span,
+.chapter-html-block div {
+    color: var(--text-primary) !important;
+    line-height: 2.0 !important;
+    word-break: keep-all !important;
+    font-size: calc(var(--font-size-base) * var(--font-scale)) !important;
+}
+.chapter-html-block p {
+    margin-bottom: 14px !important;
+    text-align: left !important;
+}
+/* 서버 HTML 내부 카드/박스 */
+.chapter-html-block [style*="border"] {
+    border-color: var(--gold-dim) !important;
+    background: var(--bg-card) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin: 16px 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+/* 서버 HTML 내부 인라인 가로배치 → 세로로 전환 */
+.chapter-html-block [style*="display: flex"],
+.chapter-html-block [style*="display:flex"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+/* 서버 HTML 내부 컬러 텍스트 유지 */
+.chapter-html-block [style*="color: #e74c3c"],
+.chapter-html-block [style*="color:#e74c3c"] { color: #F44336 !important; }
+.chapter-html-block [style*="color: #27ae60"],
+.chapter-html-block [style*="color:#27ae60"] { color: #4CAF50 !important; }
+.chapter-html-block [style*="color: #f39c12"],
+.chapter-html-block [style*="color:#f39c12"] { color: #FFC107 !important; }
+/* 이미지/SVG 반응형 */
+.chapter-html-block img,
+.chapter-html-block svg {
+    max-width: 100% !important;
+    height: auto !important;
+}
+/* 테이블 반응형 */
+.chapter-html-block table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 13px !important;
+}
+.chapter-html-block td,
+.chapter-html-block th {
+    padding: 10px 8px !important;
+    border-color: var(--gold-dim) !important;
+    color: var(--text-primary) !important;
+}
+
     </style>
 </head>
 <body>
