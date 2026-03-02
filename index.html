@@ -911,28 +911,293 @@
     /* ══════════════════════════════════════
        2. 인트로 & 진입
        ══════════════════════════════════════ */
-    function showIntro() {
-        var d = certData;
-        var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
-        var nameText = d.name;
-        if (isCouple && d.name2) nameText += ' & ' + d.name2;
+function showIntro() {
+    var d = certData;
+    var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
 
-        document.getElementById('introTitle').textContent =
-            nameText + '님의 ' + (isCouple ? '궁합' : '운명') + ' 분석이 완성되었습니다';
-
-        if (d.soreLine) {
-            document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"';
-        }
-
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('intro').style.display = 'flex';
-
-        // BGM 미리로딩
-        if (d.themeLink) {
-            var fid = extractFileId(d.themeLink);
-            if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
-        }
+    if (isCouple) {
+        showCoupleIntro(d);
+    } else {
+        showSingleIntro(d);
     }
+
+    // BGM 미리로딩
+    if (d.themeLink) {
+        var fid = extractFileId(d.themeLink);
+        if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
+    }
+}
+
+function showSingleIntro(d) {
+    var name = d.name || '';
+    var mbti = d.mbti || d.MBTI || '';
+    var pillars = (reportData && reportData.sajuSummary && reportData.sajuSummary.fourPillars) 
+        ? reportData.sajuSummary.fourPillars : null;
+    var dayMaster = (reportData && reportData.dashboard && reportData.dashboard.dayMaster)
+        ? reportData.dashboard.dayMaster : {gan:'', oheng:''};
+    var dominant = (reportData && reportData.dashboard && reportData.dashboard.dominantElement) || '';
+    var oneLiner = d.soreLine || (reportData && reportData.oneLiner) || '';
+
+    var ohengColorMap = {'목':'#5A8F5A','화':'#C75B3A','토':'#B8963E','금':'#C4A24E','수':'#4A7FB5'};
+    var ohengGlow = {'목':'#7BC67B','화':'#FF7B55','토':'#E8C060','금':'#FFD966','수':'#6AADEA'};
+    var ganOheng = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
+    var jiOheng = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
+    var mbtiColors = {
+        'INFP':'#A67BC5','INFJ':'#8B6AAE','INTP':'#6B7DC9','INTJ':'#4A5A99',
+        'ISFP':'#5AADA0','ISFJ':'#3D9485','ISTP':'#6A9AB5','ISTJ':'#4A7080',
+        'ENFP':'#C97A6A','ENFJ':'#B5604A','ENTP':'#C9A855','ENTJ':'#B58A40',
+        'ESFP':'#C76A8A','ESFJ':'#A94A6A','ESTP':'#8A80B5','ESTJ':'#6A5A99'
+    };
+    var mbtiColor = mbtiColors[mbti] || '#A67BC5';
+
+    function splitHanja(h){ return (!h||h.length<2)?{gan:'?',ji:'?'}:{gan:h.charAt(0),ji:h.charAt(1)}; }
+    function getColor(c,t){ var m=t==='gan'?ganOheng:jiOheng; return ohengColorMap[m[c]||'수']||'#4A7FB5'; }
+
+    var glowColor = ohengGlow[dominant] || '#6AADEA';
+    var baseColor = ohengColorMap[dominant] || '#4A7FB5';
+    var dmBase = ohengColorMap[dayMaster.oheng] || '#4A7FB5';
+
+    // 기존 intro/loading 숨기기
+    document.getElementById('loading').style.display = 'none';
+    var oldIntro = document.getElementById('intro');
+    if (oldIntro) oldIntro.style.display = 'none';
+
+    var overlay = document.createElement('div');
+    overlay.id = 'single-intro-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:linear-gradient(170deg,#06060e 0%,#0a0a14 40%,#080812 100%);overflow:hidden;font-family:"Noto Serif KR",serif;';
+
+    var css = document.createElement('style');
+    css.id = 'single-intro-css';
+    css.textContent = 
+        '@keyframes si-rise{0%{transform:translateY(0) translateX(0);opacity:0}8%{opacity:0.5}92%{opacity:0.15}100%{transform:translateY(-110vh) translateX(25px);opacity:0}}' +
+        '@keyframes si-fall{0%{transform:translateY(0);opacity:0}6%{opacity:0.8}100%{transform:translateY(110vh);opacity:0}}' +
+        '@keyframes si-nebula{0%,100%{opacity:0.2;transform:translate(-50%,-50%) scale(1) rotate(0deg)}50%{opacity:0.35;transform:translate(-50%,-50%) scale(1.1) rotate(180deg)}}' +
+        '@keyframes si-border-flow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}' +
+        '@keyframes si-corner-breathe{0%,100%{opacity:0.15}50%{opacity:0.4}}' +
+        '@keyframes si-text-pulse{0%,100%{opacity:0.85;text-shadow:0 0 15px currentColor}50%{opacity:1;text-shadow:0 0 25px currentColor,0 0 45px currentColor}}' +
+        '@keyframes si-breathe{0%,100%{opacity:0.75}50%{opacity:1}}' +
+        '@keyframes si-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}' +
+        '@keyframes si-btn-glow{0%,100%{box-shadow:0 0 12px '+baseColor+'20,0 0 30px '+baseColor+'08}50%{box-shadow:0 0 20px '+glowColor+'35,0 0 50px '+baseColor+'15,0 0 80px '+baseColor+'05}}' +
+        '@keyframes si-shimmer{0%{left:-120%}100%{left:220%}}' +
+        '@keyframes si-btn-dust{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-20px) scale(0);opacity:0}}' +
+        '@keyframes si-seal-spin{0%{transform:rotate(0deg);opacity:0.08}50%{opacity:0.15}100%{transform:rotate(360deg);opacity:0.08}}' +
+        '.si-btn{transition:transform 0.4s cubic-bezier(0.25,1,0.5,1),box-shadow 0.4s,border-color 0.4s}' +
+        '.si-btn:hover{transform:scale(1.03)!important;box-shadow:0 0 35px '+glowColor+'50,0 0 70px '+baseColor+'20!important;border-color:'+glowColor+'90!important}' +
+        '.si-btn:active{transform:scale(0.98)!important}';
+    document.head.appendChild(css);
+
+    // 배경
+    var bg = '';
+    bg += '<div style="position:absolute;top:45%;left:45%;width:600px;height:600px;border-radius:50%;background:radial-gradient(ellipse,'+baseColor+'08 0%,'+baseColor+'03 40%,transparent 70%);animation:si-nebula 30s linear infinite;pointer-events:none;"></div>';
+    bg += '<div style="position:absolute;top:55%;left:55%;width:400px;height:400px;border-radius:50%;background:radial-gradient(ellipse,'+mbtiColor+'05 0%,transparent 65%);animation:si-nebula 40s 8s linear infinite reverse;pointer-events:none;"></div>';
+
+    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;">';
+    for(var i=0;i<18;i++){
+        var x=Math.random()*100,sz=Math.random()*1.5+0.5,dur=Math.random()*20+15,delay=Math.random()*15;
+        bg += '<div style="position:absolute;left:'+x+'%;bottom:-3%;width:'+sz+'px;height:'+sz+'px;background:'+glowColor+';border-radius:50%;box-shadow:0 0 '+(sz*2)+'px '+glowColor+'30;animation:si-rise '+dur+'s '+delay+'s linear infinite;"></div>';
+    }
+    bg += '</div>';
+
+    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;">';
+    for(var j=0;j<10;j++){
+        var sx=Math.random()*100,ssz=Math.random()*1+0.3,sdur=Math.random()*18+12,sdelay=Math.random()*12;
+        bg += '<div style="position:absolute;left:'+sx+'%;top:-2%;width:'+ssz+'px;height:'+ssz+'px;background:rgba(255,255,255,0.6);border-radius:50%;animation:si-fall '+sdur+'s '+sdelay+'s linear infinite;"></div>';
+    }
+    bg += '</div>';
+
+    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;padding:6px;box-sizing:border-box;">';
+    bg += '<div style="position:relative;width:100%;height:100%;border-radius:20px;overflow:hidden;">';
+    bg += '<div style="position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 0%,'+baseColor+'08 8%,transparent 16%,'+baseColor+'05 24%,transparent 32%,'+baseColor+'10 40%,transparent 48%,'+baseColor+'06 56%,transparent 64%,'+baseColor+'08 72%,transparent 80%,'+baseColor+'05 88%,transparent 96%);animation:si-border-flow 25s linear infinite;"></div>';
+    bg += '<div style="position:absolute;top:1px;left:1px;right:1px;bottom:1px;background:linear-gradient(170deg,#06060e 0%,#0a0a14 40%,#080812 100%);border-radius:19px;"></div>';
+    bg += '</div></div>';
+
+    var cs='position:absolute;pointer-events:none;animation:si-corner-breathe 7s ease-in-out infinite;';
+    bg += '<div style="'+cs+'top:14px;left:14px;width:45px;height:45px;border-top:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:3px 0 0 0;"></div>';
+    bg += '<div style="'+cs+'top:14px;right:14px;width:45px;height:45px;border-top:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 3px 0 0;animation-delay:1.8s;"></div>';
+    bg += '<div style="'+cs+'bottom:14px;left:14px;width:45px;height:45px;border-bottom:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:0 0 0 3px;animation-delay:3.5s;"></div>';
+    bg += '<div style="'+cs+'bottom:14px;right:14px;width:45px;height:45px;border-bottom:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 0 3px 0;animation-delay:5.2s;"></div>';
+
+    bg += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border:1px solid '+baseColor+'06;border-radius:50%;animation:si-seal-spin 60s linear infinite;pointer-events:none;"></div>';
+    bg += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:340px;height:340px;border:1px solid '+baseColor+'04;border-radius:50%;animation:si-seal-spin 80s linear infinite reverse;pointer-events:none;"></div>';
+
+    // 콘텐츠
+    var h = '';
+    h += '<div class="si-el" style="opacity:0;color:rgba(255,255,255,0.18);font-size:10px;letter-spacing:10px;margin-bottom:36px;font-weight:300;">나 를 읽 다</div>';
+
+    h += '<div class="si-el" style="opacity:0;margin-bottom:8px;"><div style="font-size:38px;font-weight:700;color:rgba(255,255,255,0.95);letter-spacing:10px;">'+name+'</div></div>';
+
+    h += '<div class="si-name-line" style="opacity:0;width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'35,transparent);margin:0 auto 38px;transition:width 2.5s cubic-bezier(0.4,0,0.2,1),opacity 1.5s;"></div>';
+
+    // 사주 기둥
+    var pillarOrder=['year','month','day','hour'];
+    var pillarLabels={year:'년주',month:'월주',day:'일주',hour:'시주'};
+    h += '<div class="si-pillars" style="opacity:0;display:flex;gap:12px;margin-bottom:22px;">';
+    pillarOrder.forEach(function(key,i){
+        var p=pillars?pillars[key]:null;
+        var parsed=p?splitHanja(p.hanja):{gan:'?',ji:'?'};
+        var gc=getColor(parsed.gan,'gan'), jc=getColor(parsed.ji,'ji');
+        h += '<div class="si-pillar" style="opacity:0;transform:translateY(-30px);text-align:center;padding:14px 14px 12px;border-radius:12px;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);min-width:58px;backdrop-filter:blur(8px);" data-delay="'+(i*280)+'">';
+        h += '<div style="color:rgba(255,255,255,0.2);font-size:9px;letter-spacing:3px;margin-bottom:10px;font-weight:300;">'+pillarLabels[key]+'</div>';
+        h += '<div style="font-size:32px;color:'+gc+';line-height:1.25;font-weight:500;animation:si-text-pulse 6s '+(i*1)+'s ease-in-out infinite;">'+parsed.gan+'</div>';
+        h += '<div style="width:14px;height:1px;background:linear-gradient(90deg,'+gc+'20,'+jc+'20);margin:8px auto;"></div>';
+        h += '<div style="font-size:32px;color:'+jc+';line-height:1.25;font-weight:500;animation:si-text-pulse 6s '+(i*1+3)+'s ease-in-out infinite;">'+parsed.ji+'</div>';
+        h += '</div>';
+    });
+    h += '</div>';
+
+    // 다이아 구분선
+    h += '<div class="si-divider" style="opacity:0;display:flex;align-items:center;gap:16px;margin:8px 0 22px;">';
+    h += '<div class="si-line-l" style="width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'50);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
+    h += '<div class="si-diamond" style="opacity:0;transform:rotate(45deg) scale(0);transition:all 1.2s cubic-bezier(0.34,1.56,0.64,1);width:6px;height:6px;background:'+glowColor+';box-shadow:0 0 8px '+glowColor+'50;"></div>';
+    h += '<div class="si-line-r" style="width:0;height:1px;background:linear-gradient(270deg,transparent,'+baseColor+'50);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
+    h += '</div>';
+
+    // MBTI
+    h += '<div class="si-el" style="opacity:0;transform:translateY(20px);margin-bottom:18px;">';
+    h += '<div style="display:inline-block;padding:8px 26px;border:1px solid '+mbtiColor+'30;border-radius:22px;background:'+mbtiColor+'06;position:relative;overflow:hidden;">';
+    h += '<div style="position:absolute;top:0;left:-120%;width:50%;height:100%;background:linear-gradient(90deg,transparent,'+mbtiColor+'12,transparent);animation:si-shimmer 6s 7s ease-in-out infinite;"></div>';
+    h += '<span style="position:relative;color:'+mbtiColor+';font-size:18px;font-weight:500;letter-spacing:6px;">'+mbti+'</span>';
+    h += '</div></div>';
+
+    // 일간
+    h += '<div class="si-el" style="opacity:0;transform:translateY(15px);margin-bottom:34px;">';
+    h += '<span style="display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border:1px solid '+dmBase+'25;border-radius:14px;background:'+dmBase+'05;animation:si-float 8s ease-in-out infinite;">';
+    h += '<span style="font-size:20px;color:'+dmBase+';font-weight:500;">'+dayMaster.gan+'</span>';
+    h += '<span style="color:rgba(255,255,255,0.3);font-size:11px;letter-spacing:1px;font-weight:300;">일간 · '+dayMaster.oheng+'</span>';
+    h += '</span></div>';
+
+    // 타이틀
+    h += '<div class="si-el" style="opacity:0;color:rgba(255,255,255,0.25);font-size:11px;letter-spacing:2px;margin-bottom:18px;font-weight:300;">'+name+'님의 운명 분석이 완성되었습니다</div>';
+
+    // 소름 한줄
+    h += '<div class="si-el" style="opacity:0;max-width:320px;text-align:center;margin-bottom:42px;">';
+    h += '<div style="color:'+baseColor+';font-size:17px;font-weight:400;line-height:2.0;letter-spacing:0.5px;font-style:italic;animation:si-breathe 6s ease-in-out infinite;text-shadow:0 0 20px '+baseColor+'20;word-break:keep-all;overflow-wrap:break-word;">'+oneLiner+'</div>';
+    h += '</div>';
+
+    // 열어보기 버튼
+    h += '<div class="si-btn-wrap" style="opacity:0;position:relative;display:inline-block;">';
+    for(var bp=0;bp<4;bp++){
+        var bx=20+Math.random()*80,bd=Math.random()*4+2,bsz=Math.random()*2+1.5;
+        h += '<div style="position:absolute;bottom:100%;left:'+bx+'px;width:'+bsz+'px;height:'+bsz+'px;background:'+glowColor+';border-radius:50%;opacity:0;animation:si-btn-dust 3s '+bd+'s ease-out infinite;pointer-events:none;"></div>';
+    }
+    h += '<div class="si-btn" style="padding:15px 52px;border:1px solid '+baseColor+'30;border-radius:10px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;letter-spacing:4px;font-weight:400;background:linear-gradient(135deg,'+baseColor+'08,transparent);animation:si-btn-glow 3.5s ease-in-out infinite;position:relative;overflow:hidden;">';
+    h += '<div style="position:absolute;top:0;left:-120%;width:35%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:si-shimmer 5s 9s ease-in-out infinite;pointer-events:none;"></div>';
+    h += '<span style="position:relative;">열어보기</span>';
+    h += '</div></div>';
+
+    var content = document.createElement('div');
+    content.style.cssText = 'position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;';
+    content.innerHTML = h;
+
+    overlay.innerHTML = bg;
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+
+    // 애니메이션 타임라인
+    var els = overlay.querySelectorAll('.si-el');
+    var baseDelay = 300;
+
+    setTimeout(function(){
+        // 브랜드 (0s)
+        els[0].style.transition='opacity 2s ease'; els[0].style.opacity='1';
+
+        // 이름 (1.0s)
+        setTimeout(function(){
+            els[1].style.transition='opacity 1.5s ease'; els[1].style.opacity='1';
+        },1000);
+
+        // 이름 금선 (2.0s)
+        setTimeout(function(){
+            var ln=overlay.querySelector('.si-name-line');
+            ln.style.opacity='1'; ln.style.width='100px';
+        },2000);
+
+        // 기둥 (2.8s)
+        setTimeout(function(){
+            overlay.querySelector('.si-pillars').style.transition='opacity 0.4s';
+            overlay.querySelector('.si-pillars').style.opacity='1';
+            overlay.querySelectorAll('.si-pillar').forEach(function(el){
+                var dd=parseInt(el.getAttribute('data-delay'))||0;
+                setTimeout(function(){
+                    el.style.transition='opacity 1s ease, transform 1s cubic-bezier(0.25,1,0.5,1)';
+                    el.style.opacity='1'; el.style.transform='translateY(0)';
+                },dd);
+            });
+        },2800);
+
+        // 구분선 (4.5s)
+        setTimeout(function(){
+            overlay.querySelector('.si-divider').style.opacity='1';
+            overlay.querySelector('.si-line-l').style.width='70px';
+            overlay.querySelector('.si-line-r').style.width='70px';
+            setTimeout(function(){
+                var dm=overlay.querySelector('.si-diamond');
+                dm.style.opacity='1'; dm.style.transform='rotate(45deg) scale(1)';
+            },600);
+        },4500);
+
+        // MBTI (5.4s)
+        setTimeout(function(){
+            els[2].style.transition='opacity 1s ease, transform 1s cubic-bezier(0.25,1,0.5,1)';
+            els[2].style.opacity='1'; els[2].style.transform='translateY(0)';
+        },5400);
+
+        // 일간 (6.2s)
+        setTimeout(function(){
+            els[3].style.transition='opacity 0.8s ease, transform 0.8s ease';
+            els[3].style.opacity='1'; els[3].style.transform='translateY(0)';
+        },6200);
+
+        // 타이틀 (7.0s)
+        setTimeout(function(){
+            els[4].style.transition='opacity 1.2s ease'; els[4].style.opacity='1';
+        },7000);
+
+        // 소름한줄 (8.0s)
+        setTimeout(function(){
+            els[5].style.transition='opacity 1.5s ease'; els[5].style.opacity='1';
+        },8000);
+
+        // 열어보기 (9.5s)
+        setTimeout(function(){
+            overlay.querySelector('.si-btn-wrap').style.transition='opacity 1.2s ease';
+            overlay.querySelector('.si-btn-wrap').style.opacity='1';
+        },9500);
+    }, baseDelay);
+
+    // 열어보기 클릭 → 인트로 닫고 본문 표시
+    overlay.addEventListener('click', function(e){
+        if(e.target.closest('.si-btn')){
+            overlay.style.transition='opacity 1s ease';
+            overlay.style.opacity='0';
+            setTimeout(function(){
+                overlay.remove();
+                css.remove();
+                // 본문 리포트 표시
+                document.getElementById('report').style.display = 'block';
+                if (typeof observeChapters === 'function') observeChapters();
+            },1000);
+        }
+    });
+}
+
+function showCoupleIntro(d) {
+    // TODO: 궁합 인트로 (W1, W2) — 추후 구현
+    // 임시로 기존 방식 사용
+    var nameText = d.name;
+    if (d.name2) nameText += ' & ' + d.name2;
+
+    document.getElementById('introTitle').textContent =
+        nameText + '님의 궁합 분석이 완성되었습니다';
+
+    if (d.soreLine) {
+        document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"';
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('intro').style.display = 'flex';
+}
+
 
     function showError() {
         document.getElementById('loading').style.display = 'none';
