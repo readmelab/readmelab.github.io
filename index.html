@@ -1173,8 +1173,8 @@ function showSingleIntro(d) {
             setTimeout(function(){
                 overlay.remove();
                 css.remove();
-                // 본문 리포트 표시
-                document.getElementById('report').style.display = 'block';
+                // 본문 리포트 표시 — 보증서 화면으로 전환
+                document.getElementById('certificate').style.display = 'block';
                 if (typeof observeChapters === 'function') observeChapters();
             },1000);
         }
