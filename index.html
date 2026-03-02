@@ -1173,10 +1173,9 @@ function showSingleIntro(d) {
             setTimeout(function(){
                 overlay.remove();
                 css.remove();
-                // 본문 리포트 표시 — 보증서 화면으로 전환
-                document.getElementById('certificate').style.display = 'block';
-                if (typeof observeChapters === 'function') observeChapters();
-            },1000);
+                // 보증서 화면으로 전환 (기존 흐름 유지)
+                enterCertificate();
+         },1000);
         }
     });
 }
