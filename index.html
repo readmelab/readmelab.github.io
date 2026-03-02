@@ -433,6 +433,37 @@
     color: var(--text-primary) !important;
 }
 
+      /* 서버 HTML 내부 고정 width 카드 → 반응형 전환 */
+.chapter-html-block [style*="width:"],
+.chapter-html-block [style*="width :"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+/* 가로 나열된 사주 기둥 등은 세로가 아닌 2열 그리드로 */
+.chapter-html-block [style*="display: flex"] > [style*="width:"],
+.chapter-html-block [style*="display:flex"] > [style*="width:"] {
+    width: 48% !important;
+    flex: 0 0 48% !important;
+}
+.chapter-html-block [style*="display: flex"],
+.chapter-html-block [style*="display:flex"] {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 12px !important;
+}
+/* 텍스트 카드 내부 패딩 확보 */
+.chapter-html-block [style*="padding"] {
+    padding: 16px !important;
+    box-sizing: border-box !important;
+}
+/* 중앙 정렬 보정 */
+.chapter-html-block [style*="margin: 0 auto"],
+.chapter-html-block [style*="margin:0 auto"] {
+    margin: 0 !important;
+    width: 100% !important;
+}
+  
     </style>
 </head>
 <body>
