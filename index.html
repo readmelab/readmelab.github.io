@@ -935,17 +935,19 @@
 
         var data = [];
         var total = 0;
-        ['목','화','토','금','수'].forEach(function(key) {
-            var val = 0;
-            if (oheng[key] !== undefined && oheng[key] !== null && typeof oheng[key] === 'number') {
-                val = oheng[key];
-            } else if (oheng.distribution && oheng.distribution[key]) {
-                var d = oheng.distribution[key];
-                val = (typeof d === 'object') ? (d.percentage || d.count || 0) : (parseFloat(d) || 0);
-            }
-            data.push({ key: key, value: val });
-            total += val;
-        });
+['목','화','토','금','수'].forEach(function(key) {
+    var val = 0;
+    if (typeof oheng[key] === 'number') {
+        val = oheng[key];
+    } else if (oheng[key] !== undefined && oheng[key] !== null) {
+        val = parseFloat(oheng[key]) || 0;
+    } else if (oheng.distribution && oheng.distribution[key]) {
+        var d = oheng.distribution[key];
+        val = (typeof d === 'object') ? (Number(d.percentage) || Number(d.count) || 0) : (parseFloat(d) || 0);
+    }
+    data.push({ key: key, value: val });
+    total += val;
+});
         if (total === 0) { card.style.display = 'none'; return; }
 
         // SVG 도넛
@@ -993,46 +995,50 @@
     }
 
     /* ── 4-2. 챕터 렌더링 ── */
-    function renderChapters(chapters) {
-        var container = document.getElementById('chaptersContainer');
-        container.innerHTML = '';
+function renderChapters(chapters) {
+    var container = document.getElementById('chaptersContainer');
+    container.innerHTML = '';
 
-        chapters.forEach(function(ch, idx) {
+    chapters.forEach(function(ch, idx) {
+        var title = ch.title || ('Chapter ' + (idx + 1));
+        var body = ch.content || ch.body || ch.text || '';
+        var isHtml = /<[a-z][\s\S]*>/i.test(body.substring(0, 200));
+
+        if (isHtml) {
+            // 서버가 보낸 HTML을 그대로 렌더링 (확장성: 어떤 상품이든 HTML이면 바로 출력)
+            var wrapper = document.createElement('div');
+            wrapper.className = 'chapter-html-block visible';
+            wrapper.style.marginBottom = '20px';
+            wrapper.innerHTML = body;
+            container.appendChild(wrapper);
+        } else {
+            // 텍스트 기반 챕터 (향후 궁합 등 텍스트형 리포트 대응)
             var card = document.createElement('div');
-            card.className = 'chapter-card';
+            card.className = 'chapter-card visible';
             card.setAttribute('data-chapter', idx);
 
-            var title = ch.title || ('Chapter ' + (idx + 1));
-            var body = ch.content || ch.body || ch.text || '';
-            var isHtml = /<[a-z][\s\S]*>/i.test(body.substring(0, 100));
-
-            var bodyHtml;
-            if (isHtml) {
-                bodyHtml = body;
-            } else {
-                bodyHtml = body.split(/\n\n+/).map(function(p) {
-                    return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
-                }).join('');
-            }
-
+            var paragraphs = body.split(/\n\n+/).map(function(p) {
+                return '<p>' + p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</p>';
+            }).join('');
 
             var html = '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>' +
                 '<div class="chapter-title">' + escapeHtml(title) + '</div>' +
-                '<div class="chapter-body">' + bodyHtml + '</div>';
+                '<div class="chapter-body">' + paragraphs + '</div>';
 
-            // 감정 바
             if (ch.emotion !== undefined) {
                 var emo = Math.max(0, Math.min(100, Number(ch.emotion) || 50));
                 html += '<div class="chapter-emotion">' +
                     '<div class="chapter-emotion-label">감정</div>' +
-                    '<div class="chapter-emotion-bar"><div class="chapter-emotion-fill" style="width:'+emo+'%"></div></div>' +
+                    '<div class="chapter-emotion-bar"><div class="chapter-emotion-fill" style="width:' + emo + '%"></div></div>' +
                     '</div>';
             }
 
             card.innerHTML = html;
             container.appendChild(card);
-        });
-    }
+        }
+    });
+}
+}
 
     /* ── 4-3. Intersection Observer (스크롤 페이드인) ── */
     function observeChapters() {
