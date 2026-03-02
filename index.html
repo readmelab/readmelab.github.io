@@ -930,7 +930,7 @@ function showIntro() {
 
 function showSingleIntro(d) {
     var name = d.name || '';
-    var mbti = d.mbti || d.MBTI || '';
+    var mbti = d.mbti || d.MBTI || (reportData && reportData.meta && (reportData.meta.MBTI || reportData.meta.mbti)) || (reportData && reportData.dashboard && reportData.dashboard.mbti) || '';
     var pillars = (reportData && reportData.sajuSummary && reportData.sajuSummary.fourPillars) 
         ? reportData.sajuSummary.fourPillars : null;
     var dayMaster = (reportData && reportData.dashboard && reportData.dashboard.dayMaster)
