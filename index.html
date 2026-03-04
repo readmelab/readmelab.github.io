@@ -939,7 +939,11 @@
             var pv = r.dashboard.pillars_visual;
             var stemElement = {
                 '갑':'목','을':'목','병':'화','정':'화','무':'토',
-                '기':'토','경':'금','신':'금','임':'수','계':'수'
+            '기':'토','경':'금','신':'금','임':'수','계':'수'
+            };
+            var hanjaMap = {
+                '갑':'甲','을':'乙','병':'丙','정':'丁','무':'戊',
+                '기':'己','경':'庚','신':'辛','임':'壬','계':'癸'
             };
             var pillars = {};
             ['year','month','day','hour'].forEach(function(key) {
@@ -954,9 +958,12 @@
             r.sajuSummary = { fourPillars: pillars };
 
             if (!r.dashboard.dayMaster && pv.day && pv.day.cheongan) {
+                var dm = pv.day.cheongan;
                 r.dashboard.dayMaster = {
-                    char: pv.day.cheongan,
-                    element: stemElement[pv.day.cheongan] || '?'
+                    gan: hanjaMap[dm] || dm,
+                    oheng: stemElement[dm] || '?',
+                    char: dm,
+                    element: stemElement[dm] || '?'
                 };
             }
         }
@@ -2002,10 +2009,10 @@ function startProgressUpdate(type) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
+function escapeHtml(str) {
+    if (typeof str !== 'string') str = String(str || '');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
             /* ═════════════════════════════════════════════════════════
        디자인설정 적용 (구글시트 연동)
        ═════════════════════════════════════════════════════════ */
