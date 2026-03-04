@@ -31,6 +31,14 @@
             --text-ghost: #3a3530;
             --font-size-base: 15px;
             --font-scale: 1;
+            --highlight-bg: rgba(201, 168, 76, 0.06);
+            --highlight-border: rgba(201, 168, 76, 0.3);
+            --card-radius: 12px;
+            --oheng-wood: #4CAF50;
+            --oheng-fire: #F44336;
+            --oheng-earth: #FFC107;
+            --oheng-metal: #9E9E9E;
+            --oheng-water: #2196F3;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -149,78 +157,371 @@
         .product-tag { display: inline-block; padding: 4px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; font-size: 12px; color: var(--gold); margin-bottom: 24px; letter-spacing: 1px; }
 
         /* ══════════════════════════════════════
-           5. 리포트 섹션 (신규)
+           5. 리포트 섹션
            ══════════════════════════════════════ */
         .report-section { display: none; margin-top: 32px; text-align: left; }
         .report-section.active { display: block; }
 
-        /* 오행 차트 */
+        /* ── 5-0. 스크롤 진행률 바 ── */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; width: 0%; height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+            z-index: 99998; transition: width 0.1s linear;
+            box-shadow: 0 0 8px rgba(201,168,76,0.4);
+            display: none;
+        }
+        .scroll-progress.active { display: block; }
+
+        /* ── 5-1. 플로팅 TOC ── */
+        .toc-fab {
+            position: fixed; bottom: 70px; right: 16px; z-index: 9997;
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1px solid var(--gold-dim); background: var(--bg-card);
+            color: var(--gold); font-size: 18px; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+            transition: all 0.3s; box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .toc-fab.active { display: flex; }
+        .toc-fab:hover { border-color: var(--gold); background: #c9a84c11; }
+
+        .toc-panel {
+            position: fixed; bottom: 120px; right: 16px; z-index: 9997;
+            width: 220px; max-height: 60vh; overflow-y: auto;
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 12px; padding: 16px 12px;
+            display: none; box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+        }
+        .toc-panel.open { display: block; }
+        .toc-panel-title {
+            font-family: 'Noto Serif KR', serif; font-size: 11px;
+            color: var(--gold); letter-spacing: 3px; margin-bottom: 12px;
+            text-align: center;
+        }
+        .toc-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 6px; border-radius: 6px; cursor: pointer;
+            transition: background 0.2s; font-size: 12px; color: var(--text-secondary);
+        }
+        .toc-item:hover { background: rgba(201,168,76,0.06); color: var(--gold); }
+        .toc-item.current { color: var(--gold); background: rgba(201,168,76,0.08); }
+        .toc-item-num { font-size: 10px; color: var(--text-dim); min-width: 20px; }
+        .toc-item-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ── 5-2. 플로팅 버튼 (위로가기 + 보증서) ── */
+        .float-btns {
+            position: fixed; bottom: 70px; left: 16px; z-index: 9997;
+            display: none; flex-direction: column; gap: 8px;
+        }
+        .float-btns.active { display: flex; }
+        .float-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1px solid var(--gold-dim); background: var(--bg-card);
+            color: var(--gold); font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .float-btn:hover { border-color: var(--gold); background: #c9a84c11; }
+
+        /* ── 5-3. 오버뷰 슬라이드 ── */
+        .overview-slider {
+            margin-bottom: 32px; overflow: hidden; position: relative;
+        }
+        .overview-track {
+            display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+            padding: 8px 4px 16px; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .overview-track::-webkit-scrollbar { display: none; }
+        .overview-card {
+            flex: 0 0 140px; scroll-snap-align: start;
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: 10px; padding: 16px 12px; text-align: center;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .overview-card:hover { border-color: var(--gold-mid); transform: translateY(-2px); }
+        .overview-card-icon { font-size: 24px; margin-bottom: 8px; }
+        .overview-card-num { font-size: 9px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 4px; }
+        .overview-card-title { font-size: 12px; color: var(--text-primary); font-weight: 500; line-height: 1.4; }
+        .overview-dots {
+            display: flex; justify-content: center; gap: 6px; margin-top: 8px;
+        }
+        .overview-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--gold-dim); transition: all 0.3s;
+        }
+        .overview-dot.active { background: var(--gold); transform: scale(1.3); }
+
+        /* ── 5-4. 사주 팔자 표 ── */
+        .pillars-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: var(--card-radius); padding: 28px 16px; margin-bottom: 28px;
+        }
+        .pillars-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+        .pillars-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+        }
+        .pillar-col { text-align: center; }
+        .pillar-label {
+            font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .pillar-gan {
+            font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 700;
+            line-height: 1.3; padding: 8px 0;
+            border-bottom: 1px solid rgba(201,168,76,0.1);
+        }
+        .pillar-ji {
+            font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 700;
+            line-height: 1.3; padding: 8px 0;
+        }
+        .pillar-oheng-tag {
+            display: inline-block; font-size: 9px; padding: 2px 8px;
+            border-radius: 10px; margin-top: 4px; letter-spacing: 1px;
+        }
+        .pillar-daymaster-badge {
+            display: inline-block; margin-top: 12px; padding: 4px 14px;
+            border: 1px solid var(--gold-dim); border-radius: 16px;
+            font-size: 11px; color: var(--gold); letter-spacing: 1px;
+        }
+
+        /* ── 5-5. 용신/희신 카드 ── */
+        .yongshin-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: var(--card-radius); padding: 28px 20px; margin-bottom: 28px;
+        }
+        .yongshin-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+        .yongshin-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+        }
+        .yongshin-item {
+            text-align: center; padding: 16px 8px;
+            border: 1px solid rgba(201,168,76,0.08); border-radius: 10px;
+            background: rgba(201,168,76,0.02);
+        }
+        .yongshin-label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 6px; }
+        .yongshin-value { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; }
+        .yongshin-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .yongshin-reason {
+            text-align: center; font-size: 12px; color: var(--text-muted);
+            font-style: italic; padding-top: 12px;
+            border-top: 1px solid rgba(201,168,76,0.08);
+        }
+
+        /* ── 5-6. 대운 타임라인 ── */
+        .daeun-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: var(--card-radius); padding: 28px 16px; margin-bottom: 28px;
+        }
+        .daeun-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+        .daeun-timeline {
+            position: relative; padding: 0 8px;
+        }
+        .daeun-line {
+            position: absolute; top: 20px; left: 24px; right: 24px; height: 2px;
+            background: var(--gold-dim);
+        }
+        .daeun-items {
+            display: flex; overflow-x: auto; gap: 0; padding-bottom: 8px;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+        }
+        .daeun-items::-webkit-scrollbar { display: none; }
+        .daeun-item {
+            flex: 0 0 72px; text-align: center; position: relative; padding-top: 28px;
+        }
+        .daeun-dot {
+            position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+            width: 12px; height: 12px; border-radius: 50%;
+            border: 2px solid var(--gold-dim); background: var(--bg-card);
+            transition: all 0.3s;
+        }
+        .daeun-item.current .daeun-dot {
+            border-color: var(--gold); background: var(--gold);
+            box-shadow: 0 0 12px rgba(201,168,76,0.5);
+        }
+        .daeun-pillar {
+            font-family: 'Noto Serif KR', serif; font-size: 16px;
+            font-weight: 700; margin-bottom: 2px;
+        }
+        .daeun-item.current .daeun-pillar { color: var(--gold); }
+        .daeun-age { font-size: 10px; color: var(--text-dim); }
+        .daeun-year { font-size: 9px; color: var(--text-ghost); }
+
+        /* ── 5-7. 세운 그래프 ── */
+        .seun-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: var(--card-radius); padding: 28px 16px; margin-bottom: 28px;
+        }
+        .seun-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+        .seun-bars { display: flex; align-items: flex-end; justify-content: center; gap: 12px; height: 120px; }
+        .seun-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .seun-bar {
+            width: 36px; border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, var(--gold), var(--gold-mid));
+            transition: height 0.8s cubic-bezier(0.25,1,0.5,1);
+            position: relative;
+        }
+        .seun-bar.current-year {
+            background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+            box-shadow: 0 0 12px rgba(201,168,76,0.3);
+        }
+        .seun-bar-pillar {
+            font-family: 'Noto Serif KR', serif; font-size: 11px;
+            color: var(--text-secondary); margin-top: 4px;
+        }
+        .seun-bar-year { font-size: 10px; color: var(--text-dim); }
+
+        /* ── 5-8. 오행 도넛 차트 ── */
         .oheng-card {
             background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+            border-radius: var(--card-radius); padding: 28px 20px; margin-bottom: 28px;
         }
         .oheng-title {
             font-family: 'Noto Serif KR', serif; font-size: 14px;
             color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
         }
         .oheng-chart { display: flex; justify-content: center; margin-bottom: 20px; }
-        .oheng-legend {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
-        }
-        .oheng-legend-item {
-            display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary);
-        }
+        .oheng-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+        .oheng-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
         .oheng-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .oheng-dominant {
-            text-align: center; margin-top: 16px; font-size: 13px;
-            color: var(--text-muted); font-style: italic;
+        .oheng-dominant { text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-muted); font-style: italic; }
+
+        /* ── 5-9. 십성 분포 차트 ── */
+        .sipsung-card {
+            background: var(--bg-card); border: 1px solid var(--gold-dim);
+            border-radius: var(--card-radius); padding: 28px 20px; margin-bottom: 28px;
+        }
+        .sipsung-title {
+            font-family: 'Noto Serif KR', serif; font-size: 14px;
+            color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
+        }
+        .sipsung-bars { display: flex; flex-direction: column; gap: 8px; }
+        .sipsung-row { display: flex; align-items: center; gap: 10px; }
+        .sipsung-label { font-size: 12px; color: var(--text-secondary); min-width: 50px; text-align: right; }
+        .sipsung-bar-bg {
+            flex: 1; height: 8px; background: rgba(201,168,76,0.08);
+            border-radius: 4px; overflow: hidden;
+        }
+        .sipsung-bar-fill {
+            height: 100%; border-radius: 4px;
+            background: linear-gradient(90deg, var(--gold-mid), var(--gold));
+            transition: width 0.8s cubic-bezier(0.25,1,0.5,1);
+        }
+        .sipsung-count { font-size: 11px; color: var(--text-dim); min-width: 20px; }
+
+        /* ── 5-10. 챕터 카드 ── */
+        .chapter-card {
+            background: transparent; border: none; border-radius: 0;
+            padding: 48px 0; margin-bottom: 0;
+            border-bottom: 1px solid var(--card-border, var(--gold-dim));
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .chapter-card:last-child { border-bottom: none; }
+        .chapter-card.visible { opacity: 1; transform: translateY(0); }
+
+        .chapter-header {
+            text-align: center; margin-bottom: 36px; padding-bottom: 24px;
+            border-bottom: 1px solid rgba(201,168,76,0.08);
+        }
+        .chapter-icon { font-size: 28px; margin-bottom: 12px; display: block; opacity: 0.8; }
+        .chapter-number {
+            font-family: 'Noto Serif KR', serif; font-size: 10px;
+            color: var(--sub-text, var(--text-dim)); letter-spacing: 4px;
+            text-transform: uppercase; margin-bottom: 12px;
+        }
+        .chapter-title {
+            font-family: var(--font-main, 'Noto Serif KR', serif); font-size: 20px;
+            color: var(--accent, var(--gold)); font-weight: 700;
+            margin-bottom: 8px; line-height: 1.6;
+        }
+        .chapter-summary {
+            font-family: var(--font-main, 'Noto Serif KR', serif); font-size: 13px;
+            color: var(--sub-text, var(--text-muted)); font-style: italic; letter-spacing: 1px;
         }
 
-
-        .chapter-emotion {
-            display: flex; align-items: center; gap: 8px;
-            margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gold-dim);
+        .chapter-body {
+            font-size: calc(var(--font-size-base) * var(--font-scale));
+            color: var(--text, var(--text-primary)); line-height: 2.1; word-break: keep-all;
         }
+        .chapter-body p { margin-bottom: 24px; }
+        .chapter-body p:last-child { margin-bottom: 0; }
+        .chapter-body strong, .chapter-body b { color: var(--accent, var(--gold)); font-weight: 500; }
+
+        .highlight-quote {
+            position: relative; margin: 40px -20px; padding: 48px 24px; text-align: center;
+            background: linear-gradient(180deg, transparent 0%, var(--highlight-bg) 20%, var(--highlight-bg) 80%, transparent 100%);
+        }
+        .highlight-quote::before, .highlight-quote::after {
+            content: ''; display: block; width: 40px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--highlight-border), transparent);
+            margin: 0 auto;
+        }
+        .highlight-quote::before { margin-bottom: 24px; }
+        .highlight-quote::after { margin-top: 24px; }
+        .highlight-quote-text {
+            font-family: var(--font-main, 'Noto Serif KR', serif);
+            font-size: calc(18px * var(--font-scale));
+            color: var(--gold-bright); font-weight: 700; line-height: 2.0;
+            letter-spacing: 0.5px; word-break: keep-all;
+            text-shadow: 0 0 40px rgba(232, 196, 76, 0.15);
+        }
+
+        .chapter-bridge {
+            margin-top: 36px; padding-top: 24px;
+            border-top: 1px solid rgba(201,168,76,0.08);
+            font-family: var(--font-main, 'Noto Serif KR', serif); font-size: 13px;
+            color: var(--sub-text, var(--text-dim)); font-style: italic;
+            line-height: 1.9; text-align: center; letter-spacing: 0.5px;
+        }
+
+        .chapter-divider { display: flex; align-items: center; justify-content: center; padding: 20px 0; }
+        .chapter-divider-dot {
+            width: 4px; height: 4px; background: var(--card-border, var(--gold-dim));
+            border-radius: 50%; margin: 0 8px;
+        }
+        .chapter-divider-dot:nth-child(2) { width: 6px; height: 6px; background: var(--accent, var(--gold-mid)); }
+
+        .chapter-emotion { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gold-dim); }
         .chapter-emotion-label { font-size: 11px; color: var(--text-dim); }
-        .chapter-emotion-bar {
-            flex: 1; height: 3px; background: var(--gold-dim); border-radius: 2px;
-            overflow: hidden;
-        }
-        .chapter-emotion-fill {
-            height: 100%; border-radius: 2px;
-            background: linear-gradient(90deg, #4a7c6f, var(--gold), #c75050);
-            transition: width 0.6s ease;
-        }
+        .chapter-emotion-bar { flex: 1; height: 3px; background: var(--gold-dim); border-radius: 2px; overflow: hidden; }
+        .chapter-emotion-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #4a7c6f, var(--gold), #c75050); transition: width 0.6s ease; }
 
-        /* 감정 곡선 */
+        /* ── 5-11. 감정 곡선 ── */
         .emotion-curve-card {
             background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+            border-radius: var(--card-radius); padding: 28px 20px; margin-bottom: 28px;
         }
         .emotion-curve-title {
             font-family: 'Noto Serif KR', serif; font-size: 14px;
             color: var(--gold); letter-spacing: 2px; text-align: center; margin-bottom: 20px;
         }
 
-        /* 실행 플랜 카드 */
+        /* ── 5-12. 실행 플랜 ── */
         .action-plan-card {
             background: var(--bg-card); border: 1px solid var(--gold-dim);
-            border-radius: 12px; padding: 28px 20px; margin-bottom: 28px;
+            border-radius: var(--card-radius); padding: 28px 20px; margin-bottom: 28px;
         }
         .action-plan-title {
             font-family: 'Noto Serif KR', serif; font-size: 16px;
             color: var(--gold); font-weight: 700; margin-bottom: 16px; text-align: center;
         }
-        .action-plan-item {
-            padding: 12px 0; border-bottom: 1px solid #c9a84c11;
-        }
+        .action-plan-item { padding: 12px 0; border-bottom: 1px solid #c9a84c11; }
         .action-plan-item:last-child { border-bottom: none; }
-        .action-plan-day {
-            font-size: 11px; color: var(--gold-mid); letter-spacing: 2px; margin-bottom: 4px;
-        }
+        .action-plan-day { font-size: 11px; color: var(--gold-mid); letter-spacing: 2px; margin-bottom: 4px; }
         .action-plan-text { font-size: 14px; color: var(--text-primary); line-height: 1.6; }
 
-        /* PDF 저장 버튼 */
+        /* ── 5-13. PDF 저장 ── */
         .print-btn-wrap { text-align: center; margin: 32px 0; }
         .print-btn {
             display: inline-flex; align-items: center; gap: 8px;
@@ -232,14 +533,17 @@
         .print-btn:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(201,168,76,0.15); }
         @media print {
             .font-controls, .bgm-bar, .share-section, .print-btn-wrap,
-            .buttons, .toast { display: none !important; }
+            .buttons, .toast, .scroll-progress, .toc-fab, .toc-panel,
+            .float-btns { display: none !important; }
             body { background: white; color: #222; }
             .chapter-card { break-inside: avoid; border-color: #ddd; opacity: 1; transform: none; }
-            .oheng-card, .emotion-curve-card, .action-plan-card { break-inside: avoid; border-color: #ddd; }
+            .oheng-card, .emotion-curve-card, .action-plan-card,
+            .pillars-card, .yongshin-card, .daeun-card, .seun-card,
+            .sipsung-card { break-inside: avoid; border-color: #ddd; }
         }
 
         /* ══════════════════════════════════════
-           6. 버튼 & 플레이어 (기존 유지)
+           6. 버튼 & 플레이어
            ══════════════════════════════════════ */
         .buttons { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
         .btn-item { margin-bottom: 12px; }
@@ -272,7 +576,6 @@
         .player-progress::-moz-range-track { height: 4px; border-radius: 2px; background: #c9a84c22; }
         .player-progress::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
         .player-time { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 4px; }
-        /* ── 변경: player-desc 확장 ── */
         .player-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.9; margin-top: 16px; padding: 16px; border-left: 2px solid var(--gold-dim); background: rgba(201,168,76,0.03); word-wrap: break-word; word-break: keep-all; white-space: pre-wrap; overflow-wrap: break-word; }
         .player-bottom { display: flex; justify-content: center; margin-top: 12px; }
         .player-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border: 1px solid var(--gold-dim); border-radius: 20px; background: transparent; color: var(--text-muted); font-size: 11px; text-decoration: none; transition: all 0.2s; letter-spacing: 1px; }
@@ -281,7 +584,7 @@
         .player-loading .mini-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--gold-dim); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
 
         /* ══════════════════════════════════════
-           7. BGM 바 & PDF 오버레이 (기존 유지)
+           7. BGM 바
            ══════════════════════════════════════ */
         .bgm-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt)); border-top: 1px solid var(--gold-dim); padding: 10px 16px; z-index: 9998; }
         .bgm-bar.active { display: flex; align-items: center; gap: 12px; }
@@ -289,6 +592,9 @@
         .bgm-bar-title { font-size: 12px; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .bgm-bar-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
         .bgm-bar-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gold-mid); background: transparent; color: var(--gold); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        #bgmProgress::-webkit-progress-bar { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        #bgmProgress::-webkit-progress-value { background: var(--gold); border-radius: 2px; }
+        #bgmProgress::-moz-progress-bar { background: var(--gold); border-radius: 2px; }
 
         /* ══════════════════════════════════════
            8. 공유 & 푸터 & 토스트
@@ -309,12 +615,9 @@
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         /* ══════════════════════════════════════
-           9. 리포트 전환 탭
+           9. 서버 HTML 컨테이너 & 전환 탭
            ══════════════════════════════════════ */
-        .view-toggle {
-            display: none; margin: 24px 0; border: 1px solid var(--gold-dim);
-            border-radius: 8px; overflow: hidden;
-        }
+        .view-toggle { display: none; margin: 24px 0; border: 1px solid var(--gold-dim); border-radius: 8px; overflow: hidden; }
         .view-toggle.active { display: flex; }
         .view-toggle-btn {
             flex: 1; padding: 12px 0; border: none; background: transparent;
@@ -325,172 +628,16 @@
             background: linear-gradient(135deg, #1a1a2e, #16162a);
             color: var(--gold); border-bottom: 2px solid var(--gold);
         }
-        #bgmProgress::-webkit-progress-bar { background: rgba(255,255,255,0.1); border-radius: 2px; }
-        #bgmProgress::-webkit-progress-value { background: var(--gold); border-radius: 2px; }
-        #bgmProgress::-moz-progress-bar { background: var(--gold); border-radius: 2px; }
-
-/* ══════════════════════════════════════
-   10. 서버 HTML 컨테이너
-   ══════════════════════════════════════ */
-.chapter-html-block {
-    width: 100%;
-    overflow-x: hidden;
-}
-.chapter-html-block > div {
-    max-width: 100% !important;
-    width: 100% !important;
-}
-
-
-                /* ══════════════════════════════════════
-           5-1. 챕터 디자인 업그레이드 (v2)
-           시트 CSS 변수 연동: --highlight-bg, --highlight-border,
-           --card-bg, --card-border, --card-radius, --accent
-           ══════════════════════════════════════ */
-        
-        :root {
-            --highlight-bg: rgba(201, 168, 76, 0.06);
-            --highlight-border: rgba(201, 168, 76, 0.3);
-            --card-radius: 12px;
-        }
-
-        /* 챕터 카드 — 시트의 카드배경/보더/둥글기 연동 */
-        .chapter-card {
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            padding: 48px 0;
-            margin-bottom: 0;
-            border-bottom: 1px solid var(--card-border, var(--gold-dim));
-        }
-        .chapter-card:last-child { border-bottom: none; }
-        
-        /* 챕터 헤더 */
-        .chapter-header {
-            text-align: center;
-            margin-bottom: 36px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid rgba(201,168,76,0.08);
-        }
-        .chapter-icon {
-            font-size: 28px;
-            margin-bottom: 12px;
-            display: block;
-            opacity: 0.8;
-        }
-        .chapter-number {
-            font-family: 'Noto Serif KR', serif;
-            font-size: 10px;
-            color: var(--sub-text, var(--text-dim));
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-        .chapter-title {
-            font-family: var(--font-main, 'Noto Serif KR', serif);
-            font-size: 20px;
-            color: var(--accent, var(--gold));
-            font-weight: 700;
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-        .chapter-summary {
-            font-family: var(--font-main, 'Noto Serif KR', serif);
-            font-size: 13px;
-            color: var(--sub-text, var(--text-muted));
-            font-style: italic;
-            letter-spacing: 1px;
-        }
-        
-        /* 챕터 본문 */
-        .chapter-body {
-            font-size: calc(var(--font-size-base) * var(--font-scale));
-            color: var(--text, var(--text-primary));
-            line-height: 2.1;
-            word-break: keep-all;
-        }
-        .chapter-body p {
-            margin-bottom: 24px;
-        }
-        .chapter-body p:last-child { margin-bottom: 0; }
-        .chapter-body strong, .chapter-body b {
-            color: var(--accent, var(--gold));
-            font-weight: 500;
-        }
-        
-        /* highlight_quote — 시트의 하이라이트배경/보더 연동 */
-        .highlight-quote {
-            position: relative;
-            margin: 40px -20px;
-            padding: 48px 24px;
-            text-align: center;
-            background: linear-gradient(
-                180deg,
-                transparent 0%,
-                var(--highlight-bg) 20%,
-                var(--highlight-bg) 80%,
-                transparent 100%
-            );
-        }
-        .highlight-quote::before,
-        .highlight-quote::after {
-            content: '';
-            display: block;
-            width: 40px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--highlight-border), transparent);
-            margin: 0 auto;
-        }
-        .highlight-quote::before { margin-bottom: 24px; }
-        .highlight-quote::after { margin-top: 24px; }
-        .highlight-quote-text {
-            font-family: var(--font-main, 'Noto Serif KR', serif);
-            font-size: calc(18px * var(--font-scale));
-            color: var(--gold-bright);
-            font-weight: 700;
-            line-height: 2.0;
-            letter-spacing: 0.5px;
-            word-break: keep-all;
-            text-shadow: 0 0 40px rgba(232, 196, 76, 0.15);
-        }
-        
-        /* bridge 문장 */
-        .chapter-bridge {
-            margin-top: 36px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(201,168,76,0.08);
-            font-family: var(--font-main, 'Noto Serif KR', serif);
-            font-size: 13px;
-            color: var(--sub-text, var(--text-dim));
-            font-style: italic;
-            line-height: 1.9;
-            text-align: center;
-            letter-spacing: 0.5px;
-        }
-        
-        /* 챕터 구분자 */
-        .chapter-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 0;
-        }
-        .chapter-divider-dot {
-            width: 4px;
-            height: 4px;
-            background: var(--card-border, var(--gold-dim));
-            border-radius: 50%;
-            margin: 0 8px;
-        }
-        .chapter-divider-dot:nth-child(2) {
-            width: 6px;
-            height: 6px;
-            background: var(--accent, var(--gold-mid));
-        }
+        .chapter-html-block { width: 100%; overflow-x: hidden; }
+        .chapter-html-block > div { max-width: 100% !important; width: 100% !important; }
 
     </style>
 </head>
+
 <body>
+    <!-- ── 스크롤 진행률 바 ── -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
     <div class="container">
 
         <!-- ── 폰트 크기 조절 ── -->
@@ -557,18 +704,17 @@
                 분석하여 조율된 맞춤형 솔루션입니다
             </div>
 
-            <!-- ── 변경: 보증서/리포트 전환 탭 삭제됨 ── -->
-
             <!-- ── 보증서 뷰: 아이템 버튼들 ── -->
             <div id="certView">
                 <div class="buttons" id="buttons">
-                    <!-- 리포트 PDF → 인라인 리포트 버튼으로 교체 -->
+                    <!-- 리포트 버튼 -->
                     <div class="btn-item">
                         <div class="btn" id="btnReport" onclick="switchView('report')">
                             <span class="icon">📜</span>
                             <span id="btnReportText">사주 분석 리포트 읽기</span>
                         </div>
                     </div>
+                    <!-- 맞춤형 음원 -->
                     <div class="btn-item">
                         <div class="btn" id="btnTheme" onclick="togglePlayer('theme')">
                             <span class="icon">🎵</span>
@@ -601,6 +747,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- 음성 해설 -->
                     <div class="btn-item">
                         <div class="btn" id="btnVoice" onclick="togglePlayer('voice')">
                             <span class="icon">🎧</span>
@@ -633,6 +780,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- 힐링음악 -->
                     <div class="btn-item">
                         <div class="btn" id="btnHealing" onclick="togglePlayer('healing')">
                             <span class="icon">🎶</span>
@@ -678,12 +826,55 @@
                     <div class="sore-line" id="reportSoreLine"></div>
                 </div>
 
+                <!-- 오버뷰 슬라이드 (JS로 동적 생성) -->
+                <div class="overview-slider" id="overviewSlider" style="display:none;">
+                    <div class="overview-track" id="overviewTrack"></div>
+                    <div class="overview-dots" id="overviewDots"></div>
+                </div>
+
+                <!-- 사주 팔자 표 -->
+                <div class="pillars-card" id="pillarsCard" style="display:none;">
+                    <div class="pillars-title">사 주 팔 자</div>
+                    <div class="pillars-grid" id="pillarsGrid"></div>
+                    <div style="text-align:center;">
+                        <div class="pillar-daymaster-badge" id="dayMasterBadge"></div>
+                    </div>
+                </div>
+
                 <!-- 오행 차트 -->
                 <div class="oheng-card" id="ohengCard" style="display:none;">
                     <div class="oheng-title">오 행 분 포</div>
                     <div class="oheng-chart" id="ohengChart"></div>
                     <div class="oheng-legend" id="ohengLegend"></div>
                     <div class="oheng-dominant" id="ohengDominant"></div>
+                </div>
+
+                <!-- 용신/희신 카드 -->
+                <div class="yongshin-card" id="yongshinCard" style="display:none;">
+                    <div class="yongshin-title">용 신 · 희 신</div>
+                    <div class="yongshin-grid" id="yongshinGrid"></div>
+                    <div class="yongshin-reason" id="yongshinReason"></div>
+                </div>
+
+                <!-- 십성 분포 차트 -->
+                <div class="sipsung-card" id="sipsungCard" style="display:none;">
+                    <div class="sipsung-title">십 성 분 포</div>
+                    <div class="sipsung-bars" id="sipsungBars"></div>
+                </div>
+
+                <!-- 대운 타임라인 -->
+                <div class="daeun-card" id="daeunCard" style="display:none;">
+                    <div class="daeun-title">대 운 흐 름</div>
+                    <div class="daeun-timeline">
+                        <div class="daeun-line"></div>
+                        <div class="daeun-items" id="daeunItems"></div>
+                    </div>
+                </div>
+
+                <!-- 세운 그래프 -->
+                <div class="seun-card" id="seunCard" style="display:none;">
+                    <div class="seun-title">세 운 전 망</div>
+                    <div class="seun-bars" id="seunBars"></div>
                 </div>
 
                 <!-- 챕터 컨테이너 (JS로 동적 생성) -->
@@ -743,6 +934,19 @@
         </div><!-- /certificate -->
     </div><!-- /container -->
 
+    <!-- ── 플로팅 TOC 버튼 ── -->
+    <button class="toc-fab" id="tocFab" onclick="toggleToc()">☰</button>
+    <div class="toc-panel" id="tocPanel">
+        <div class="toc-panel-title">목 차</div>
+        <div id="tocList"></div>
+    </div>
+
+    <!-- ── 플로팅 버튼 (위로가기 + 보증서) ── -->
+    <div class="float-btns" id="floatBtns">
+        <button class="float-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="위로가기">↑</button>
+        <button class="float-btn" onclick="switchView('cert')" title="보증서">◆</button>
+    </div>
+
     <!-- ── BGM 바 ── -->
     <div class="bgm-bar" id="bgmBar">
         <button class="bgm-bar-btn" id="bgmBtn">⏸</button>
@@ -758,19 +962,41 @@
 
     <!-- ── 공유 카드 캔버스 (숨김) ── -->
     <canvas id="shareCardCanvas" width="600" height="400" style="display:none;"></canvas>
+
     <script>
     /* ══════════════════════════════════════
        0. 상수 & 상태
        ══════════════════════════════════════ */
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
-    var DATA_BASE = ''; // Cloudflare Pages URL — 비워두면 GAS만 사용
+    var DATA_BASE = '';
     var KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
     var STORE_URL = 'https://smartstore.naver.com/readmelab/products/13142603279';
 
-    var OHENG_COLORS = {
-        '목': '#4CAF50', '화': '#F44336', '토': '#FFC107', '금': '#9E9E9E', '수': '#2196F3'
-    };
-    var OHENG_LABELS = { '목': '木 목', '화': '火 화', '토': '土 토', '금': '金 금', '수': '水 수' };
+    var OHENG_COLORS = { '목':'#4CAF50', '화':'#F44336', '토':'#FFC107', '금':'#9E9E9E', '수':'#2196F3' };
+    var OHENG_LABELS = { '목':'木 목', '화':'火 화', '토':'土 토', '금':'金 금', '수':'水 수' };
+    var OHENG_BG = { '목':'#4CAF5018', '화':'#F4433618', '토':'#FFC10718', '금':'#9E9E9E18', '수':'#2196F318' };
+
+    var CHAPTER_ICONS = [
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="4" y="6" width="5" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="6" width="5" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="19" y="6" width="5" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/><line x1="6.5" y1="10" x2="6.5" y2="18" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="14" y1="10" x2="14" y2="18" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="21.5" y1="10" x2="21.5" y2="18" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="9" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="4" stroke="currentColor" stroke-width="1" opacity="0.6"/><line x1="14" y1="5" x2="14" y2="9" stroke="currentColor" stroke-width="1"/><line x1="14" y1="19" x2="14" y2="23" stroke="currentColor" stroke-width="1"/><line x1="5" y1="14" x2="9" y2="14" stroke="currentColor" stroke-width="1"/><line x1="19" y1="14" x2="23" y2="14" stroke="currentColor" stroke-width="1"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><polygon points="14,3 17,11 25,11 18.5,16 21,24 14,19.5 7,24 9.5,16 3,11 11,11" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="5" y="5" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="14" x2="23" y2="14" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="14" y1="5" x2="14" y2="23" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 4L7 10v10l7 6 7-6V10L14 4z" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="3" stroke="currentColor" stroke-width="1" opacity="0.6"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 20 Q8 8, 14 14 Q20 20, 24 8" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="4" cy="20" r="2" fill="currentColor" opacity="0.4"/><circle cx="24" cy="8" r="2" fill="currentColor" opacity="0.4"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="5" y="4" width="18" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="9" x2="19" y2="9" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="9" y1="13" x2="19" y2="13" stroke="currentColor" stroke-width="1" opacity="0.5"/><line x1="9" y1="17" x2="15" y2="17" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="11" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 18 Q14 24 18 18" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="11" cy="10" r="1" fill="currentColor" opacity="0.5"/><circle cx="17" cy="10" r="1" fill="currentColor" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="11" cy="12" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="12" r="2.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><rect x="16" y="8" width="8" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/><line x1="18" y1="11" x2="22" y2="11" stroke="currentColor" stroke-width="0.8" opacity="0.5"/><line x1="18" y1="14" x2="22" y2="14" stroke="currentColor" stroke-width="0.8" opacity="0.5"/><line x1="18" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="0.8" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 6 C10 6, 5 10, 5 14 C5 20, 14 24, 14 24 C14 24, 23 20, 23 14 C23 10, 18 6, 14 6z" stroke="currentColor" stroke-width="1.5"/><path d="M14 10 C12.5 10, 10 11.5, 10 13.5 C10 16, 14 18, 14 18" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 4 L14 8 M14 20 L14 24 M4 14 L8 14 M20 14 L24 14" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M11 12 Q14 8 17 12 Q14 16 11 12z" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="4" y="4" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="15" y="4" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="15" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="15" y="15" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>',
+        '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="6" width="22" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="11" x2="25" y2="11" stroke="currentColor" stroke-width="1" opacity="0.4"/><line x1="9" y1="11" x2="9" y2="22" stroke="currentColor" stroke-width="1" opacity="0.3"/><line x1="15" y1="11" x2="15" y2="22" stroke="currentColor" stroke-width="1" opacity="0.3"/><line x1="21" y1="11" x2="21" y2="22" stroke="currentColor" stroke-width="1" opacity="0.3"/></svg>'
+    ];
+
+    var CHAPTER_TITLES_DEFAULT = [
+        '사주팔자 분석','음양오행 분석','십성 분석','격국 분석','용신 분석',
+        '대운 분석','세운 분석','성격 심층 분석','직업·재물운','연애·결혼운',
+        '건강운','MBTI 교차 분석','월별 운세'
+    ];
 
     // 상태
     var certData = {};
@@ -782,9 +1008,10 @@
     var bgmType = null;
     var bgmPreloaded = false;
     var pendingBgmPlay = false;
-    var fontStep = 1; // 0=small, 1=normal, 2=large
+    var fontStep = 1;
     var fontScales = [0.88, 1, 1.15];
     var currentView = 'cert';
+    var tocOpen = false;
 
     // URL 파라미터
     var urlParams = new URLSearchParams(window.location.search);
@@ -796,49 +1023,32 @@
     if (navigator.share) { document.getElementById('shareNativeBtn').style.display = 'inline'; }
 
     /* ══════════════════════════════════════
-       1. 데이터 로딩 (Cloudflare → GAS 폴백)
+       1. 데이터 로딩
        ══════════════════════════════════════ */
     async function loadData(certCode) {
         try {
             var data = null;
-
-            // 1차: 정적 JSON (Cloudflare Pages)
             if (DATA_BASE) {
                 try {
                     var staticRes = await fetch(DATA_BASE + '/data/' + certCode + '.json');
-                    if (staticRes.ok) {
-                        data = await staticRes.json();
-                        console.log('✅ 정적 JSON 로드 성공');
-                    }
+                    if (staticRes.ok) { data = await staticRes.json(); console.log('✅ 정적 JSON 로드 성공'); }
                 } catch (e) { console.log('정적 JSON 실패, GAS 폴백'); }
             }
-
-            // 2차: GAS doGet 폴백
             if (!data) {
                 var gasRes = await fetch(GAS_URL + '?code=' + encodeURIComponent(certCode));
                 data = await gasRes.json();
                 console.log('✅ GAS API 로드 성공');
             }
-
-            if (!data || data.error || data.valid === false) {
-                showError();
-                return;
-            }
-
-            // 데이터 파싱
+            if (!data || data.error || data.valid === false) { showError(); return; }
             parseCertData(data);
             parseReportData(data);
-
-            // 인트로 표시
             showIntro();
-
         } catch (e) {
             console.error('loadData error:', e);
             showError();
         }
     }
 
-    /* ── 변경: parseCertData — audio.*.description 키 추가 ── */
     function parseCertData(d) {
         var cert = d.certificate || d;
         certData = {
@@ -857,352 +1067,306 @@
             healingName: cert.healingName || d.healingName || '',
             healingDesc: (cert.healingDesc || d.healingDesc || '').trim()
         };
-
-        // audio 객체가 있는 경우 (GAS API 형식)
         if (d.audio) {
             if (d.audio.theme) {
                 certData.themeLink = certData.themeLink || d.audio.theme.url || '';
                 certData.themeName = certData.themeName || d.audio.theme.name || '';
                 certData.themeDesc = certData.themeDesc || d.audio.theme.description || d.audio.theme.desc || '';
-                if (!certData.themeLink && d.audio.theme.fileId) {
-                    certData.themeLink = 'https://drive.google.com/file/d/' + d.audio.theme.fileId + '/view';
-                }
+                if (!certData.themeLink && d.audio.theme.fileId) { certData.themeLink = 'https://drive.google.com/file/d/' + d.audio.theme.fileId + '/view'; }
             }
             if (d.audio.voice) {
                 certData.voiceLink = certData.voiceLink || d.audio.voice.url || '';
                 certData.voiceName = certData.voiceName || d.audio.voice.name || '';
                 certData.voiceDesc = certData.voiceDesc || d.audio.voice.description || d.audio.voice.desc || '';
-                if (!certData.voiceLink && d.audio.voice.fileId) {
-                    certData.voiceLink = 'https://drive.google.com/file/d/' + d.audio.voice.fileId + '/view';
-                }
+                if (!certData.voiceLink && d.audio.voice.fileId) { certData.voiceLink = 'https://drive.google.com/file/d/' + d.audio.voice.fileId + '/view'; }
             }
             if (d.audio.healing) {
                 certData.healingLink = certData.healingLink || d.audio.healing.url || '';
                 certData.healingName = certData.healingName || d.audio.healing.name || '';
                 certData.healingDesc = certData.healingDesc || d.audio.healing.description || d.audio.healing.desc || '';
-                if (!certData.healingLink && d.audio.healing.fileId) {
-                    certData.healingLink = 'https://drive.google.com/file/d/' + d.audio.healing.fileId + '/view';
-                }
+                if (!certData.healingLink && d.audio.healing.fileId) { certData.healingLink = 'https://drive.google.com/file/d/' + d.audio.healing.fileId + '/view'; }
             }
         }
     }
 
     function parseReportData(d) {
-        // 정적 JSON: d.report 객체
-        if (d.report) {
-            reportData = d.report;
-            applyDesignFromSheet(d.design || null);
-            return;
-        }
-        // GAS doGet: d.webReportData (문자열이면 파싱)
+        if (d.report) { reportData = d.report; applyDesignFromSheet(d.design || null); return; }
         if (d.webReportData) {
             if (typeof d.webReportData === 'string') {
                 try { reportData = JSON.parse(d.webReportData); } catch(e) { reportData = null; }
-            } else {
-                reportData = d.webReportData;
-                applyDesignFromSheet(d.design || null);
-            }
+            } else { reportData = d.webReportData; }
+            applyDesignFromSheet(d.design || null);
             return;
         }
-        // 리포트 없음 — 보증서만 표시
         reportData = null;
+    }
+
+    /* ══════════════════════════════════════
+       1-1. 프론트엔드 챕터 분리 폴백
+       ══════════════════════════════════════ */
+    function splitChaptersIfNeeded(chapters) {
+        if (!chapters || chapters.length === 0) return chapters;
+        if (chapters.length > 1) return chapters;
+
+        var body = chapters[0].body || chapters[0].content || chapters[0].text || '';
+        if (!body || body.length < 500) return chapters;
+
+        // 패턴1: "1. 제목" or "1. 제목"
+        var regex1 = /^(\d{1,2})\.\s+(.+)/gm;
+        // 패턴2: "## 1. 제목" or "# 1. 제목"
+        var regex2 = /^#{1,3}\s*(\d{1,2})\.\s+(.+)/gm;
+        // 패턴3: "【1】 제목" or "[1] 제목"
+        var regex3 = /^[【\[]\s*(\d{1,2})\s*[】\]]\s*(.+)/gm;
+
+        var matches = [];
+        var m;
+        var regexes = [regex2, regex3, regex1];
+
+        for (var r = 0; r < regexes.length; r++) {
+            matches = [];
+            regexes[r].lastIndex = 0;
+            while ((m = regexes[r].exec(body)) !== null) {
+                matches.push({ index: m.index, number: m[1], title: m[2].replace(/^[#*\s]+|[#*\s]+$/g, '').trim(), fullLen: m[0].length });
+            }
+            if (matches.length >= 5) break;
+        }
+
+        if (matches.length <= 1) return chapters;
+
+        console.log('✅ 프론트엔드 챕터 분리:', matches.length + '개');
+
+        return matches.map(function(match, i) {
+            var start = match.index + match.fullLen;
+            var end = (i + 1 < matches.length) ? matches[i + 1].index : body.length;
+            return {
+                number: match.number,
+                title: match.title,
+                body: body.substring(start, end).trim()
+            };
+        });
     }
 
     /* ══════════════════════════════════════
        2. 인트로 & 진입
        ══════════════════════════════════════ */
-function showIntro() {
-    var d = certData;
-    var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
-
-    if (isCouple) {
-        showCoupleIntro(d);
-    } else {
-        showSingleIntro(d);
-    }
-
-    // BGM 미리로딩
-    if (d.themeLink) {
-        var fid = extractFileId(d.themeLink);
-        if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
-    }
-}
-
-function showSingleIntro(d) {
-    var name = d.name || '';
-    var mbti = d.mbti || d.MBTI || (reportData && reportData.meta && (reportData.meta.MBTI || reportData.meta.mbti)) || (reportData && reportData.dashboard && reportData.dashboard.mbti) || '';
-    var pillars = (reportData && reportData.sajuSummary && reportData.sajuSummary.fourPillars) 
-        ? reportData.sajuSummary.fourPillars : null;
-    var dayMaster = (reportData && reportData.dashboard && reportData.dashboard.dayMaster)
-        ? reportData.dashboard.dayMaster : {gan:'', oheng:''};
-    var dominant = (reportData && reportData.dashboard && reportData.dashboard.dominantElement) || '';
-    var oneLiner = d.soreLine || (reportData && reportData.oneLiner) || '';
-
-    var ohengColorMap = {'목':'#5A8F5A','화':'#C75B3A','토':'#B8963E','금':'#C4A24E','수':'#4A7FB5'};
-    var ohengGlow = {'목':'#7BC67B','화':'#FF7B55','토':'#E8C060','금':'#FFD966','수':'#6AADEA'};
-    var ganOheng = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
-    var jiOheng = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
-    var mbtiColors = {
-        'INFP':'#A67BC5','INFJ':'#8B6AAE','INTP':'#6B7DC9','INTJ':'#4A5A99',
-        'ISFP':'#5AADA0','ISFJ':'#3D9485','ISTP':'#6A9AB5','ISTJ':'#4A7080',
-        'ENFP':'#C97A6A','ENFJ':'#B5604A','ENTP':'#C9A855','ENTJ':'#B58A40',
-        'ESFP':'#C76A8A','ESFJ':'#A94A6A','ESTP':'#8A80B5','ESTJ':'#6A5A99'
-    };
-    var mbtiColor = mbtiColors[mbti] || '#A67BC5';
-
-    function splitHanja(h){ return (!h||h.length<2)?{gan:'?',ji:'?'}:{gan:h.charAt(0),ji:h.charAt(1)}; }
-    function getColor(c,t){ var m=t==='gan'?ganOheng:jiOheng; return ohengColorMap[m[c]||'수']||'#4A7FB5'; }
-
-    var glowColor = ohengGlow[dominant] || '#6AADEA';
-    var baseColor = ohengColorMap[dominant] || '#4A7FB5';
-    var dmBase = ohengColorMap[dayMaster.oheng] || '#4A7FB5';
-
-    document.getElementById('loading').style.display = 'none';
-    var oldIntro = document.getElementById('intro');
-    if (oldIntro) oldIntro.style.display = 'none';
-
-    var overlay = document.createElement('div');
-    overlay.id = 'single-intro-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:linear-gradient(170deg,#06060e 0%,#0a0a14 40%,#080812 100%);overflow-y:auto;font-family:"Noto Serif KR",serif;';
-
-    var css = document.createElement('style');
-    css.id = 'single-intro-css';
-    css.textContent = 
-        '@keyframes si-rise{0%{transform:translateY(0) translateX(0);opacity:0}8%{opacity:0.5}92%{opacity:0.15}100%{transform:translateY(-110vh) translateX(25px);opacity:0}}' +
-        '@keyframes si-fall{0%{transform:translateY(0);opacity:0}6%{opacity:0.8}100%{transform:translateY(110vh);opacity:0}}' +
-        '@keyframes si-nebula{0%,100%{opacity:0.2;transform:translate(-50%,-50%) scale(1) rotate(0deg)}50%{opacity:0.35;transform:translate(-50%,-50%) scale(1.1) rotate(180deg)}}' +
-        '@keyframes si-border-flow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}' +
-        '@keyframes si-corner-breathe{0%,100%{opacity:0.15}50%{opacity:0.4}}' +
-        '@keyframes si-text-pulse{0%,100%{opacity:0.85;text-shadow:0 0 15px currentColor}50%{opacity:1;text-shadow:0 0 25px currentColor,0 0 45px currentColor}}' +
-        '@keyframes si-breathe{0%,100%{opacity:0.75}50%{opacity:1}}' +
-        '@keyframes si-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}' +
-        '@keyframes si-btn-glow{0%,100%{box-shadow:0 0 12px '+baseColor+'20,0 0 30px '+baseColor+'08}50%{box-shadow:0 0 20px '+glowColor+'35,0 0 50px '+baseColor+'15,0 0 80px '+baseColor+'05}}' +
-        '@keyframes si-shimmer{0%{left:-120%}100%{left:220%}}' +
-        '@keyframes si-btn-dust{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-20px) scale(0);opacity:0}}' +
-        '@keyframes si-seal-spin{0%{transform:rotate(0deg);opacity:0.08}50%{opacity:0.15}100%{transform:rotate(360deg);opacity:0.08}}' +
-        '.si-btn{transition:transform 0.4s cubic-bezier(0.25,1,0.5,1),box-shadow 0.4s,border-color 0.4s}' +
-        '.si-btn:hover{transform:scale(1.03)!important;box-shadow:0 0 35px '+glowColor+'50,0 0 70px '+baseColor+'20!important;border-color:'+glowColor+'90!important}' +
-        '.si-btn:active{transform:scale(0.98)!important}';
-    document.head.appendChild(css);
-
-    // 배경
-    var bg = '';
-    bg += '<div style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;">';
-    bg += '<div style="position:absolute;top:45%;left:45%;width:600px;height:600px;border-radius:50%;background:radial-gradient(ellipse,'+baseColor+'08 0%,'+baseColor+'03 40%,transparent 70%);animation:si-nebula 30s linear infinite;"></div>';
-    bg += '<div style="position:absolute;top:55%;left:55%;width:400px;height:400px;border-radius:50%;background:radial-gradient(ellipse,'+mbtiColor+'05 0%,transparent 65%);animation:si-nebula 40s 8s linear infinite reverse;"></div>';
-    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">';
-    for(var i=0;i<12;i++){
-        var x=Math.random()*100,sz=Math.random()*1.5+0.5,dur=Math.random()*20+15,delay=Math.random()*15;
-        bg += '<div style="position:absolute;left:'+x+'%;bottom:-3%;width:'+sz+'px;height:'+sz+'px;background:'+glowColor+';border-radius:50%;box-shadow:0 0 '+(sz*2)+'px '+glowColor+'30;animation:si-rise '+dur+'s '+delay+'s linear infinite;"></div>';
-    }
-    bg += '</div>';
-    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">';
-    for(var j=0;j<6;j++){
-        var sx=Math.random()*100,ssz=Math.random()*1+0.3,sdur=Math.random()*18+12,sdelay=Math.random()*12;
-        bg += '<div style="position:absolute;left:'+sx+'%;top:-2%;width:'+ssz+'px;height:'+ssz+'px;background:rgba(255,255,255,0.6);border-radius:50%;animation:si-fall '+sdur+'s '+sdelay+'s linear infinite;"></div>';
-    }
-    bg += '</div>';
-    var cs='position:absolute;pointer-events:none;animation:si-corner-breathe 7s ease-in-out infinite;';
-    bg += '<div style="'+cs+'top:14px;left:14px;width:35px;height:35px;border-top:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:3px 0 0 0;"></div>';
-    bg += '<div style="'+cs+'top:14px;right:14px;width:35px;height:35px;border-top:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 3px 0 0;animation-delay:1.8s;"></div>';
-    bg += '<div style="'+cs+'bottom:14px;left:14px;width:35px;height:35px;border-bottom:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:0 0 0 3px;animation-delay:3.5s;"></div>';
-    bg += '<div style="'+cs+'bottom:14px;right:14px;width:35px;height:35px;border-bottom:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 0 3px 0;animation-delay:5.2s;"></div>';
-    bg += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border:1px solid '+baseColor+'06;border-radius:50%;animation:si-seal-spin 60s linear infinite;pointer-events:none;"></div>';
-    bg += '</div>';
-
-    // 콘텐츠 — 컴팩트 간격
-    var h = '';
-    h += '<div class="si-el" style="opacity:0;color:rgba(255,255,255,0.18);font-size:9px;letter-spacing:8px;margin-bottom:12px;font-weight:300;">나 를 읽 다</div>';
-
-    h += '<div class="si-el" style="opacity:0;margin-bottom:2px;"><div style="font-size:30px;font-weight:700;color:rgba(255,255,255,0.95);letter-spacing:8px;">'+name+'</div></div>';
-
-    h += '<div class="si-name-line" style="opacity:0;width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'35,transparent);margin:0 auto 14px;transition:width 2.5s cubic-bezier(0.4,0,0.2,1),opacity 1.5s;"></div>';
-
-    // 사주 기둥
-    var pillarOrder=['year','month','day','hour'];
-    var pillarLabels={year:'년주',month:'월주',day:'일주',hour:'시주'};
-    h += '<div class="si-pillars" style="opacity:0;display:flex;gap:6px;margin-bottom:10px;">';
-    pillarOrder.forEach(function(key,i){
-        var p=pillars?pillars[key]:null;
-        var parsed=p?splitHanja(p.hanja):{gan:'?',ji:'?'};
-        var gc=getColor(parsed.gan,'gan'), jc=getColor(parsed.ji,'ji');
-        h += '<div class="si-pillar" style="opacity:0;transform:translateY(-20px);text-align:center;padding:8px 10px 6px;border-radius:10px;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);min-width:48px;" data-delay="'+(i*200)+'">';
-        h += '<div style="color:rgba(255,255,255,0.2);font-size:8px;letter-spacing:2px;margin-bottom:4px;font-weight:300;">'+pillarLabels[key]+'</div>';
-        h += '<div style="font-size:24px;color:'+gc+';line-height:1.2;font-weight:500;animation:si-text-pulse 6s '+(i*1)+'s ease-in-out infinite;">'+parsed.gan+'</div>';
-        h += '<div style="width:12px;height:1px;background:linear-gradient(90deg,'+gc+'20,'+jc+'20);margin:4px auto;"></div>';
-        h += '<div style="font-size:24px;color:'+jc+';line-height:1.2;font-weight:500;animation:si-text-pulse 6s '+(i*1+3)+'s ease-in-out infinite;">'+parsed.ji+'</div>';
-        h += '</div>';
-    });
-    h += '</div>';
-
-    // 다이아 구분선
-    h += '<div class="si-divider" style="opacity:0;display:flex;align-items:center;gap:12px;margin:2px 0 8px;">';
-    h += '<div class="si-line-l" style="width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'50);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
-    h += '<div class="si-diamond" style="opacity:0;transform:rotate(45deg) scale(0);transition:all 1.2s cubic-bezier(0.34,1.56,0.64,1);width:5px;height:5px;background:'+glowColor+';box-shadow:0 0 8px '+glowColor+'50;"></div>';
-    h += '<div class="si-line-r" style="width:0;height:1px;background:linear-gradient(270deg,transparent,'+baseColor+'50);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
-    h += '</div>';
-
-    // MBTI
-    h += '<div class="si-el" style="opacity:0;transform:translateY(15px);margin-bottom:8px;">';
-    h += '<div style="display:inline-block;padding:5px 18px;border:1px solid '+mbtiColor+'30;border-radius:20px;background:'+mbtiColor+'06;position:relative;overflow:hidden;">';
-    h += '<div style="position:absolute;top:0;left:-120%;width:50%;height:100%;background:linear-gradient(90deg,transparent,'+mbtiColor+'12,transparent);animation:si-shimmer 6s 7s ease-in-out infinite;"></div>';
-    h += '<span style="position:relative;color:'+mbtiColor+';font-size:14px;font-weight:500;letter-spacing:5px;">'+mbti+'</span>';
-    h += '</div></div>';
-
-    // 일간
-    h += '<div class="si-el" style="opacity:0;transform:translateY(10px);margin-bottom:10px;">';
-    h += '<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border:1px solid '+dmBase+'25;border-radius:12px;background:'+dmBase+'05;animation:si-float 8s ease-in-out infinite;">';
-    h += '<span style="font-size:15px;color:'+dmBase+';font-weight:500;">'+dayMaster.gan+'</span>';
-    h += '<span style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:1px;font-weight:300;">일간 · '+dayMaster.oheng+'</span>';
-    h += '</span></div>';
-
-    // 타이틀
-    h += '<div class="si-el" style="opacity:0;color:rgba(255,255,255,0.25);font-size:10px;letter-spacing:1.5px;margin-bottom:8px;font-weight:300;">'+name+'님의 운명 분석이 완성되었습니다</div>';
-
-    // 소름 한줄
-    if (oneLiner) {
-        h += '<div class="si-el" style="opacity:0;max-width:300px;text-align:center;margin-bottom:16px;">';
-        h += '<div style="color:'+baseColor+';font-size:14px;font-weight:400;line-height:1.8;letter-spacing:0.5px;font-style:italic;animation:si-breathe 6s ease-in-out infinite;text-shadow:0 0 20px '+baseColor+'20;word-break:keep-all;overflow-wrap:break-word;">'+oneLiner+'</div>';
-        h += '</div>';
-    }
-
-    // 열어보기 버튼
-    h += '<div class="si-btn-wrap" style="opacity:0;position:relative;display:inline-block;margin-bottom:20px;">';
-    for(var bp=0;bp<3;bp++){
-        var bx=20+Math.random()*60,bd=Math.random()*4+2,bsz=Math.random()*2+1.5;
-        h += '<div style="position:absolute;bottom:100%;left:'+bx+'px;width:'+bsz+'px;height:'+bsz+'px;background:'+glowColor+';border-radius:50%;opacity:0;animation:si-btn-dust 3s '+bd+'s ease-out infinite;pointer-events:none;"></div>';
-    }
-    h += '<div class="si-btn" style="padding:12px 40px;border:1px solid '+baseColor+'30;border-radius:10px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;letter-spacing:4px;font-weight:400;background:linear-gradient(135deg,'+baseColor+'08,transparent);animation:si-btn-glow 3.5s ease-in-out infinite;position:relative;overflow:hidden;">';
-    h += '<div style="position:absolute;top:0;left:-120%;width:35%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:si-shimmer 5s 9s ease-in-out infinite;pointer-events:none;"></div>';
-    h += '<span style="position:relative;">열어보기</span>';
-    h += '</div></div>';
-
-    var content = document.createElement('div');
-    content.style.cssText = 'position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:100%;padding:24px 20px;';
-    content.innerHTML = h;
-
-    overlay.innerHTML = bg;
-    overlay.appendChild(content);
-    document.body.appendChild(overlay);
-
-    // 애니메이션 타임라인 (빠르게)
-    var els = overlay.querySelectorAll('.si-el');
-    var hasOneLiner = oneLiner ? true : false;
-    var baseDelay = 200;
-
-    setTimeout(function(){
-        els[0].style.transition='opacity 1.5s ease'; els[0].style.opacity='1';
-
-        setTimeout(function(){
-            els[1].style.transition='opacity 1.2s ease'; els[1].style.opacity='1';
-        },600);
-
-        setTimeout(function(){
-            var ln=overlay.querySelector('.si-name-line');
-            ln.style.opacity='1'; ln.style.width='80px';
-        },1200);
-
-        setTimeout(function(){
-            overlay.querySelector('.si-pillars').style.transition='opacity 0.4s';
-            overlay.querySelector('.si-pillars').style.opacity='1';
-            overlay.querySelectorAll('.si-pillar').forEach(function(el){
-                var dd=parseInt(el.getAttribute('data-delay'))||0;
-                setTimeout(function(){
-                    el.style.transition='opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1)';
-                    el.style.opacity='1'; el.style.transform='translateY(0)';
-                },dd);
-            });
-        },1800);
-
-        setTimeout(function(){
-            overlay.querySelector('.si-divider').style.opacity='1';
-            overlay.querySelector('.si-line-l').style.width='60px';
-            overlay.querySelector('.si-line-r').style.width='60px';
-            setTimeout(function(){
-                var dm=overlay.querySelector('.si-diamond');
-                dm.style.opacity='1'; dm.style.transform='rotate(45deg) scale(1)';
-            },400);
-        },3000);
-
-        setTimeout(function(){
-            els[2].style.transition='opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1)';
-            els[2].style.opacity='1'; els[2].style.transform='translateY(0)';
-        },3600);
-
-        setTimeout(function(){
-            els[3].style.transition='opacity 0.6s ease, transform 0.6s ease';
-            els[3].style.opacity='1'; els[3].style.transform='translateY(0)';
-        },4200);
-
-        setTimeout(function(){
-            els[4].style.transition='opacity 1s ease'; els[4].style.opacity='1';
-        },4800);
-
-        if (hasOneLiner) {
-            setTimeout(function(){
-                els[5].style.transition='opacity 1.2s ease'; els[5].style.opacity='1';
-            },5400);
-            setTimeout(function(){
-                overlay.querySelector('.si-btn-wrap').style.transition='opacity 1s ease';
-                overlay.querySelector('.si-btn-wrap').style.opacity='1';
-            },6200);
-        } else {
-            setTimeout(function(){
-                overlay.querySelector('.si-btn-wrap').style.transition='opacity 1s ease';
-                overlay.querySelector('.si-btn-wrap').style.opacity='1';
-            },5400);
+    function showIntro() {
+        var d = certData;
+        var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
+        if (isCouple) { showCoupleIntro(d); } else { showSingleIntro(d); }
+        if (d.themeLink) {
+            var fid = extractFileId(d.themeLink);
+            if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
         }
-    }, baseDelay);
-
-    overlay.addEventListener('click', function(e){
-        if(e.target.closest('.si-btn')){
-            overlay.style.transition='opacity 1s ease';
-            overlay.style.opacity='0';
-            setTimeout(function(){
-                overlay.remove();
-                css.remove();
-                enterCertificate();
-            },1000);
-        }
-    });
-}
-
-
-function showCoupleIntro(d) {
-    // TODO: 궁합 인트로 (W1, W2) — 추후 구현
-    // 임시로 기존 방식 사용
-    var nameText = d.name;
-    if (d.name2) nameText += ' & ' + d.name2;
-
-    document.getElementById('introTitle').textContent =
-        nameText + '님의 궁합 분석이 완성되었습니다';
-
-    if (d.soreLine) {
-        document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"';
     }
 
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('intro').style.display = 'flex';
-}
+    function showSingleIntro(d) {
+        var name = d.name || '';
+        var mbti = d.mbti || d.MBTI || (reportData && reportData.meta && (reportData.meta.MBTI || reportData.meta.mbti)) || (reportData && reportData.dashboard && reportData.dashboard.mbti) || '';
+        var pillars = (reportData && reportData.sajuSummary && reportData.sajuSummary.fourPillars) ? reportData.sajuSummary.fourPillars : null;
+        var dayMaster = (reportData && reportData.dashboard && reportData.dashboard.dayMaster) ? reportData.dashboard.dayMaster : {gan:'', oheng:''};
+        var dominant = (reportData && reportData.dashboard && reportData.dashboard.dominantElement) || '';
+        var oneLiner = d.soreLine || (reportData && reportData.oneLiner) || '';
 
+        var ohengColorMap = {'목':'#5A8F5A','화':'#C75B3A','토':'#B8963E','금':'#C4A24E','수':'#4A7FB5'};
+        var ohengGlow = {'목':'#7BC67B','화':'#FF7B55','토':'#E8C060','금':'#FFD966','수':'#6AADEA'};
+        var ganOheng = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
+        var jiOheng = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
+        var mbtiColors = {
+            'INFP':'#A67BC5','INFJ':'#8B6AAE','INTP':'#6B7DC9','INTJ':'#4A5A99',
+            'ISFP':'#5AADA0','ISFJ':'#3D9485','ISTP':'#6A9AB5','ISTJ':'#4A7080',
+            'ENFP':'#C97A6A','ENFJ':'#B5604A','ENTP':'#C9A855','ENTJ':'#B58A40',
+            'ESFP':'#C76A8A','ESFJ':'#A94A6A','ESTP':'#8A80B5','ESTJ':'#6A5A99'
+        };
+        var mbtiColor = mbtiColors[mbti] || '#A67BC5';
+
+        function splitHanja(h){ return (!h||h.length<2)?{gan:'?',ji:'?'}:{gan:h.charAt(0),ji:h.charAt(1)}; }
+        function getColor(c,t){ var m=t==='gan'?ganOheng:jiOheng; return ohengColorMap[m[c]||'수']||'#4A7FB5'; }
+
+        var glowColor = ohengGlow[dominant] || '#6AADEA';
+        var baseColor = ohengColorMap[dominant] || '#4A7FB5';
+        var dmBase = ohengColorMap[dayMaster.oheng] || '#4A7FB5';
+
+        document.getElementById('loading').style.display = 'none';
+        var oldIntro = document.getElementById('intro');
+        if (oldIntro) oldIntro.style.display = 'none';
+
+        var overlay = document.createElement('div');
+        overlay.id = 'single-intro-overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:linear-gradient(170deg,#06060e 0%,#0a0a14 40%,#080812 100%);overflow-y:auto;font-family:"Noto Serif KR",serif;';
+
+        var css = document.createElement('style');
+        css.id = 'single-intro-css';
+        css.textContent =
+            '@keyframes si-rise{0%{transform:translateY(0) translateX(0);opacity:0}8%{opacity:0.5}92%{opacity:0.15}100%{transform:translateY(-110vh) translateX(25px);opacity:0}}' +
+            '@keyframes si-fall{0%{transform:translateY(0);opacity:0}6%{opacity:0.8}100%{transform:translateY(110vh);opacity:0}}' +
+            '@keyframes si-nebula{0%,100%{opacity:0.2;transform:translate(-50%,-50%) scale(1) rotate(0deg)}50%{opacity:0.35;transform:translate(-50%,-50%) scale(1.1) rotate(180deg)}}' +
+            '@keyframes si-border-flow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}' +
+            '@keyframes si-corner-breathe{0%,100%{opacity:0.15}50%{opacity:0.4}}' +
+            '@keyframes si-text-pulse{0%,100%{opacity:0.85;text-shadow:0 0 15px currentColor}50%{opacity:1;text-shadow:0 0 25px currentColor,0 0 45px currentColor}}' +
+            '@keyframes si-breathe{0%,100%{opacity:0.75}50%{opacity:1}}' +
+            '@keyframes si-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}' +
+            '@keyframes si-btn-glow{0%,100%{box-shadow:0 0 12px '+baseColor+'20,0 0 30px '+baseColor+'08}50%{box-shadow:0 0 20px '+glowColor+'35,0 0 50px '+baseColor+'15,0 0 80px '+baseColor+'05}}' +
+            '@keyframes si-shimmer{0%{left:-120%}100%{left:220%}}' +
+            '@keyframes si-btn-dust{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-20px) scale(0);opacity:0}}' +
+            '@keyframes si-seal-spin{0%{transform:rotate(0deg);opacity:0.08}50%{opacity:0.15}100%{transform:rotate(360deg);opacity:0.08}}' +
+            '.si-btn{transition:transform 0.4s cubic-bezier(0.25,1,0.5,1),box-shadow 0.4s,border-color 0.4s}' +
+            '.si-btn:hover{transform:scale(1.03)!important;box-shadow:0 0 35px '+glowColor+'50,0 0 70px '+baseColor+'20!important;border-color:'+glowColor+'90!important}' +
+            '.si-btn:active{transform:scale(0.98)!important}';
+        document.head.appendChild(css);
+
+        var bg = '';
+        bg += '<div style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;">';
+        bg += '<div style="position:absolute;top:45%;left:45%;width:600px;height:600px;border-radius:50%;background:radial-gradient(ellipse,'+baseColor+'08 0%,'+baseColor+'03 40%,transparent 70%);animation:si-nebula 30s linear infinite;"></div>';
+        bg += '<div style="position:absolute;top:55%;left:55%;width:400px;height:400px;border-radius:50%;background:radial-gradient(ellipse,'+mbtiColor+'05 0%,transparent 65%);animation:si-nebula 40s 8s linear infinite reverse;"></div>';
+        bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">';
+        for(var i=0;i<12;i++){
+            var x=Math.random()*100,sz=Math.random()*1.5+0.5,dur=Math.random()*20+15,delay=Math.random()*15;
+            bg += '<div style="position:absolute;left:'+x+'%;bottom:-3%;width:'+sz+'px;height:'+sz+'px;background:'+glowColor+';border-radius:50%;box-shadow:0 0 '+(sz*2)+'px '+glowColor+'30;animation:si-rise '+dur+'s '+delay+'s linear infinite;"></div>';
+        }
+        bg += '</div>';
+        bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">';
+        for(var j=0;j<6;j++){
+            var sx=Math.random()*100,ssz=Math.random()*1+0.3,sdur=Math.random()*18+12,sdelay=Math.random()*12;
+            bg += '<div style="position:absolute;left:'+sx+'%;top:-2%;width:'+ssz+'px;height:'+ssz+'px;background:rgba(255,255,255,0.6);border-radius:50%;animation:si-fall '+sdur+'s '+sdelay+'s linear infinite;"></div>';
+        }
+        bg += '</div>';
+        var cs='position:absolute;pointer-events:none;animation:si-corner-breathe 7s ease-in-out infinite;';
+        bg += '<div style="'+cs+'top:14px;left:14px;width:35px;height:35px;border-top:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:3px 0 0 0;"></div>';
+        bg += '<div style="'+cs+'top:14px;right:14px;width:35px;height:35px;border-top:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 3px 0 0;animation-delay:1.8s;"></div>';
+        bg += '<div style="'+cs+'bottom:14px;left:14px;width:35px;height:35px;border-bottom:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:0 0 0 3px;animation-delay:3.5s;"></div>';
+        bg += '<div style="'+cs+'bottom:14px;right:14px;width:35px;height:35px;border-bottom:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 0 3px 0;animation-delay:5.2s;"></div>';
+        bg += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border:1px solid '+baseColor+'06;border-radius:50%;animation:si-seal-spin 60s linear infinite;pointer-events:none;"></div>';
+        bg += '</div>';
+
+        var h = '';
+        h += '<div class="si-el" style="opacity:0;color:rgba(255,255,255,0.18);font-size:9px;letter-spacing:8px;margin-bottom:12px;font-weight:300;">나 를 읽 다</div>';
+        h += '<div class="si-el" style="opacity:0;margin-bottom:2px;"><div style="font-size:30px;font-weight:700;color:rgba(255,255,255,0.95);letter-spacing:8px;">'+name+'</div></div>';
+        h += '<div class="si-name-line" style="opacity:0;width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'35,transparent);margin:0 auto 14px;transition:width 2.5s cubic-bezier(0.4,0,0.2,1),opacity 1.5s;"></div>';
+
+        var pillarOrder=['year','month','day','hour'];
+        var pillarLabels={year:'년주',month:'월주',day:'일주',hour:'시주'};
+        h += '<div class="si-pillars" style="opacity:0;display:flex;gap:6px;margin-bottom:10px;">';
+        pillarOrder.forEach(function(key,i){
+            var p=pillars?pillars[key]:null;
+            var parsed=p?splitHanja(p.hanja):{gan:'?',ji:'?'};
+            var gc=getColor(parsed.gan,'gan'), jc=getColor(parsed.ji,'ji');
+            h += '<div class="si-pillar" style="opacity:0;transform:translateY(-20px);text-align:center;padding:8px 10px 6px;border-radius:10px;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);min-width:48px;" data-delay="'+(i*200)+'">';
+            h += '<div style="color:rgba(255,255,255,0.2);font-size:8px;letter-spacing:2px;margin-bottom:4px;font-weight:300;">'+pillarLabels[key]+'</div>';
+            h += '<div style="font-size:24px;color:'+gc+';line-height:1.2;font-weight:500;animation:si-text-pulse 6s '+(i*1)+'s ease-in-out infinite;">'+parsed.gan+'</div>';
+            h += '<div style="width:12px;height:1px;background:linear-gradient(90deg,'+gc+'20,'+jc+'20);margin:4px auto;"></div>';
+            h += '<div style="font-size:24px;color:'+jc+';line-height:1.2;font-weight:500;animation:si-text-pulse 6s '+(i*1+3)+'s ease-in-out infinite;">'+parsed.ji+'</div>';
+            h += '</div>';
+        });
+        h += '</div>';
+
+        h += '<div class="si-divider" style="opacity:0;display:flex;align-items:center;gap:12px;margin:2px 0 8px;">';
+        h += '<div class="si-line-l" style="width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'50);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
+        h += '<div class="si-diamond" style="opacity:0;transform:rotate(45deg) scale(0);transition:all 1.2s cubic-bezier(0.34,1.56,0.64,1);width:5px;height:5px;background:'+glowColor+';box-shadow:0 0 8px '+glowColor+'50;"></div>';
+        h += '<div class="si-line-r" style="width:0;height:1px;background:linear-gradient(270deg,transparent,'+baseColor+'50);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
+        h += '</div>';
+
+        h += '<div class="si-el" style="opacity:0;transform:translateY(15px);margin-bottom:8px;">';
+        h += '<div style="display:inline-block;padding:5px 18px;border:1px solid '+mbtiColor+'30;border-radius:20px;background:'+mbtiColor+'06;position:relative;overflow:hidden;">';
+        h += '<div style="position:absolute;top:0;left:-120%;width:50%;height:100%;background:linear-gradient(90deg,transparent,'+mbtiColor+'12,transparent);animation:si-shimmer 6s 7s ease-in-out infinite;"></div>';
+        h += '<span style="position:relative;color:'+mbtiColor+';font-size:14px;font-weight:500;letter-spacing:5px;">'+mbti+'</span>';
+        h += '</div></div>';
+
+        h += '<div class="si-el" style="opacity:0;transform:translateY(10px);margin-bottom:10px;">';
+        h += '<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border:1px solid '+dmBase+'25;border-radius:12px;background:'+dmBase+'05;animation:si-float 8s ease-in-out infinite;">';
+        h += '<span style="font-size:15px;color:'+dmBase+';font-weight:500;">'+dayMaster.gan+'</span>';
+        h += '<span style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:1px;font-weight:300;">일간 · '+dayMaster.oheng+'</span>';
+        h += '</span></div>';
+
+        h += '<div class="si-el" style="opacity:0;color:rgba(255,255,255,0.25);font-size:10px;letter-spacing:1.5px;margin-bottom:8px;font-weight:300;">'+name+'님의 운명 분석이 완성되었습니다</div>';
+
+        if (oneLiner) {
+            h += '<div class="si-el" style="opacity:0;max-width:300px;text-align:center;margin-bottom:16px;">';
+            h += '<div style="color:'+baseColor+';font-size:14px;font-weight:400;line-height:1.8;letter-spacing:0.5px;font-style:italic;animation:si-breathe 6s ease-in-out infinite;text-shadow:0 0 20px '+baseColor+'20;word-break:keep-all;overflow-wrap:break-word;">'+oneLiner+'</div>';
+            h += '</div>';
+        }
+
+        h += '<div class="si-btn-wrap" style="opacity:0;position:relative;display:inline-block;margin-bottom:20px;">';
+        for(var bp=0;bp<3;bp++){
+            var bx=20+Math.random()*60,bd=Math.random()*4+2,bsz=Math.random()*2+1.5;
+            h += '<div style="position:absolute;bottom:100%;left:'+bx+'px;width:'+bsz+'px;height:'+bsz+'px;background:'+glowColor+';border-radius:50%;opacity:0;animation:si-btn-dust 3s '+bd+'s ease-out infinite;pointer-events:none;"></div>';
+        }
+        h += '<div class="si-btn" style="padding:12px 40px;border:1px solid '+baseColor+'30;border-radius:10px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;letter-spacing:4px;font-weight:400;background:linear-gradient(135deg,'+baseColor+'08,transparent);animation:si-btn-glow 3.5s ease-in-out infinite;position:relative;overflow:hidden;">';
+        h += '<div style="position:absolute;top:0;left:-120%;width:35%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:si-shimmer 5s 9s ease-in-out infinite;pointer-events:none;"></div>';
+        h += '<span style="position:relative;">열어보기</span>';
+        h += '</div></div>';
+
+        var content = document.createElement('div');
+        content.style.cssText = 'position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:100%;padding:24px 20px;';
+        content.innerHTML = h;
+
+        overlay.innerHTML = bg;
+        overlay.appendChild(content);
+        document.body.appendChild(overlay);
+
+        var els = overlay.querySelectorAll('.si-el');
+        var hasOneLiner = oneLiner ? true : false;
+        var baseDelay = 200;
+
+        setTimeout(function(){
+            els[0].style.transition='opacity 1.5s ease'; els[0].style.opacity='1';
+            setTimeout(function(){ els[1].style.transition='opacity 1.2s ease'; els[1].style.opacity='1'; },600);
+            setTimeout(function(){ var ln=overlay.querySelector('.si-name-line'); ln.style.opacity='1'; ln.style.width='80px'; },1200);
+            setTimeout(function(){
+                overlay.querySelector('.si-pillars').style.transition='opacity 0.4s';
+                overlay.querySelector('.si-pillars').style.opacity='1';
+                overlay.querySelectorAll('.si-pillar').forEach(function(el){
+                    var dd=parseInt(el.getAttribute('data-delay'))||0;
+                    setTimeout(function(){ el.style.transition='opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1)'; el.style.opacity='1'; el.style.transform='translateY(0)'; },dd);
+                });
+            },1800);
+            setTimeout(function(){
+                overlay.querySelector('.si-divider').style.opacity='1';
+                overlay.querySelector('.si-line-l').style.width='60px';
+                overlay.querySelector('.si-line-r').style.width='60px';
+                setTimeout(function(){ var dm=overlay.querySelector('.si-diamond'); dm.style.opacity='1'; dm.style.transform='rotate(45deg) scale(1)'; },400);
+            },3000);
+            setTimeout(function(){ els[2].style.transition='opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1)'; els[2].style.opacity='1'; els[2].style.transform='translateY(0)'; },3600);
+            setTimeout(function(){ els[3].style.transition='opacity 0.6s ease, transform 0.6s ease'; els[3].style.opacity='1'; els[3].style.transform='translateY(0)'; },4200);
+            setTimeout(function(){ els[4].style.transition='opacity 1s ease'; els[4].style.opacity='1'; },4800);
+            if (hasOneLiner) {
+                setTimeout(function(){ els[5].style.transition='opacity 1.2s ease'; els[5].style.opacity='1'; },5400);
+                setTimeout(function(){ overlay.querySelector('.si-btn-wrap').style.transition='opacity 1s ease'; overlay.querySelector('.si-btn-wrap').style.opacity='1'; },6200);
+            } else {
+                setTimeout(function(){ overlay.querySelector('.si-btn-wrap').style.transition='opacity 1s ease'; overlay.querySelector('.si-btn-wrap').style.opacity='1'; },5400);
+            }
+        }, baseDelay);
+
+        overlay.addEventListener('click', function(e){
+            if(e.target.closest('.si-btn')){
+                overlay.style.transition='opacity 1s ease';
+                overlay.style.opacity='0';
+                setTimeout(function(){ overlay.remove(); css.remove(); enterCertificate(); },1000);
+            }
+        });
+    }
+
+    function showCoupleIntro(d) {
+        var nameText = d.name;
+        if (d.name2) nameText += ' & ' + d.name2;
+        document.getElementById('introTitle').textContent = nameText + '님의 궁합 분석이 완성되었습니다';
+        if (d.soreLine) { document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"'; }
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('intro').style.display = 'flex';
+    }
 
     function showError() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('error').style.display = 'flex';
     }
 
-    /* ── 변경: enterCertificate — 탭 관련 제거, 리포트 버튼명 변경 ── */
     function enterCertificate() {
         var intro = document.getElementById('intro');
         var cert = document.getElementById('certificate');
         var d = certData;
         var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
 
-        // BGM 시작
-        if (bgmPreloaded && audioPlayers['theme']) { startBgm(); }
-        else { pendingBgmPlay = true; }
+        if (bgmPreloaded && audioPlayers['theme']) { startBgm(); } else { pendingBgmPlay = true; }
 
-        // 보증서 채우기
         document.getElementById('clientName').textContent = d.name;
         document.getElementById('productTag').textContent = d.product || d.productCode || '';
 
@@ -1216,7 +1380,6 @@ function showCoupleIntro(d) {
             document.getElementById('honorific').textContent = d.name + '님의 운명 분석이 완성되었습니다';
         }
 
-        // 리포트 버튼 (탭 없이)
         if (reportData) {
             var reportName = (reportData.meta && reportData.meta.name) || d.name || '';
             document.getElementById('btnReport').classList.add('active');
@@ -1225,10 +1388,8 @@ function showCoupleIntro(d) {
             renderReport();
         }
 
-        // 오디오 버튼 활성화
         activateAudioButtons();
 
-        // 전환 애니메이션
         intro.classList.add('fade-out');
         setTimeout(function() {
             intro.style.display = 'none';
@@ -1242,28 +1403,19 @@ function showCoupleIntro(d) {
         if (d.themeLink) {
             document.getElementById('btnTheme').classList.add('active');
             document.getElementById('btnThemeText').textContent = d.themeName || '맞춤형 음원';
-            if (d.themeDesc) {
-                document.getElementById('themeDesc').textContent = d.themeDesc;
-                document.getElementById('themeDesc').style.display = 'block';
-            }
+            if (d.themeDesc) { document.getElementById('themeDesc').textContent = d.themeDesc; document.getElementById('themeDesc').style.display = 'block'; }
             document.getElementById('themeTitle').textContent = d.themeName || '맞춤형 음원';
         }
         if (d.voiceLink) {
             document.getElementById('btnVoice').classList.add('active');
             document.getElementById('btnVoiceText').textContent = d.voiceName || '음성 해설';
-            if (d.voiceDesc) {
-                document.getElementById('voiceDesc').textContent = d.voiceDesc;
-                document.getElementById('voiceDesc').style.display = 'block';
-            }
+            if (d.voiceDesc) { document.getElementById('voiceDesc').textContent = d.voiceDesc; document.getElementById('voiceDesc').style.display = 'block'; }
             document.getElementById('voiceTitle').textContent = d.voiceName || '음성 해설';
         }
         if (d.healingLink) {
             document.getElementById('btnHealing').classList.add('active');
             document.getElementById('btnHealingText').textContent = d.healingName || '힐링음악';
-            if (d.healingDesc) {
-                document.getElementById('healingDesc').textContent = d.healingDesc;
-                document.getElementById('healingDesc').style.display = 'block';
-            }
+            if (d.healingDesc) { document.getElementById('healingDesc').textContent = d.healingDesc; document.getElementById('healingDesc').style.display = 'block'; }
             document.getElementById('healingTitle').textContent = d.healingName || '힐링음악';
         }
     }
@@ -1271,28 +1423,40 @@ function showCoupleIntro(d) {
     /* ══════════════════════════════════════
        3. 뷰 전환
        ══════════════════════════════════════ */
-    /* ── 변경: switchView — 탭 참조 제거 ── */
     function switchView(view) {
         currentView = view;
         var certView = document.getElementById('certView');
         var reportView = document.getElementById('reportView');
+        var scrollBar = document.getElementById('scrollProgress');
+        var tocFab = document.getElementById('tocFab');
+        var floatBtns = document.getElementById('floatBtns');
 
         if (view === 'report' && reportData) {
             certView.style.display = 'none';
             reportView.classList.add('active');
+            scrollBar.classList.add('active');
+            tocFab.classList.add('active');
+            floatBtns.classList.add('active');
             setTimeout(observeChapters, 100);
             window.scrollTo({ top: document.getElementById('certificate').offsetTop, behavior: 'smooth' });
         } else {
             certView.style.display = 'block';
             reportView.classList.remove('active');
+            scrollBar.classList.remove('active');
+            tocFab.classList.remove('active');
+            floatBtns.classList.remove('active');
+            document.getElementById('tocPanel').classList.remove('open');
+            tocOpen = false;
         }
     }
 
     /* ══════════════════════════════════════
-       4. 리포트 렌더링
+       4. 리포트 렌더링 (메인)
        ══════════════════════════════════════ */
     function renderReport() {
         if (!reportData) return;
+
+        var db = reportData.dashboard || {};
 
         // 소름한줄
         var oneLiner = reportData.oneLiner || reportData.soremOneLiner || certData.soreLine || '';
@@ -1301,12 +1465,38 @@ function showCoupleIntro(d) {
             document.getElementById('reportOneLiner').style.display = 'block';
         }
 
-        // 오행 차트
-        if (reportData.oheng) { renderOhengChart(reportData.oheng); }
-
-        // 챕터
+        // 챕터 분리
         var chapters = reportData.chapters || [];
-        if (chapters.length > 0) { renderChapters(chapters); }
+        chapters = splitChaptersIfNeeded(chapters);
+
+        // 오버뷰 슬라이드
+        if (chapters.length > 1) { renderOverviewSlider(chapters); }
+
+        // 사주 팔자 표
+        if (db.fourPillars) { renderPillarsTable(db.fourPillars, db.dayMaster); }
+
+        // 오행 차트
+        var ohengData = reportData.oheng || db.ohengDistribution || null;
+        if (ohengData) { renderOhengChart(ohengData, db); }
+
+        // 용신/희신
+        if (db.yongShin) { renderYongShin(db.yongShin); }
+
+        // 십성 분포
+        if (db.sipsung || db.sipsungDistribution) { renderSipsung(db.sipsung || db.sipsungDistribution); }
+
+        // 대운
+        if (db.luckCycles && db.luckCycles.currentDaeun && db.luckCycles.currentDaeun.daeuns) {
+            renderDaeun(db.luckCycles.currentDaeun.daeuns);
+        }
+
+        // 세운
+        if (db.luckCycles && db.luckCycles.currentSeun) {
+            renderSeun(db.luckCycles.currentSeun);
+        }
+
+        // 챕터 렌더링
+        if (chapters.length > 0) { renderChapters(chapters); buildToc(chapters); }
 
         // 감정 곡선
         if (reportData.emotionCurve || chapters.some(function(c){ return c.emotion !== undefined; })) {
@@ -1315,82 +1505,293 @@ function showCoupleIntro(d) {
 
         // 7일 실행 플랜
         if (reportData.actionPlan) { renderActionPlan(reportData.actionPlan); }
+
+        // sessionStorage 저장
+        try { sessionStorage.setItem('naread_report', JSON.stringify(reportData)); } catch(e){}
     }
 
-    /* ── 4-1. 오행 도넛 차트 (SVG) ── */
-    function renderOhengChart(oheng) {
+    /* ── 4-0. 오버뷰 슬라이드 ── */
+    function renderOverviewSlider(chapters) {
+        var slider = document.getElementById('overviewSlider');
+        var track = document.getElementById('overviewTrack');
+        var dots = document.getElementById('overviewDots');
+        slider.style.display = 'block';
+
+        var html = '';
+        chapters.forEach(function(ch, idx) {
+            var icon = CHAPTER_ICONS[idx] || CHAPTER_ICONS[0];
+            var title = ch.title || CHAPTER_TITLES_DEFAULT[idx] || ('Chapter ' + (idx+1));
+            html += '<div class="overview-card" onclick="scrollToChapter('+idx+')">';
+            html += '<div class="overview-card-icon" style="color:var(--gold);">'+icon+'</div>';
+            html += '<div class="overview-card-num">CH.'+ String(idx+1).padStart(2,'0') +'</div>';
+            html += '<div class="overview-card-title">'+escapeHtml(title)+'</div>';
+            html += '</div>';
+        });
+        track.innerHTML = html;
+
+        // 도트 인디케이터
+        var dotCount = Math.ceil(chapters.length / 3);
+        var dotHtml = '';
+        for (var i=0; i<dotCount; i++) {
+            dotHtml += '<div class="overview-dot'+(i===0?' active':'')+'"></div>';
+        }
+        dots.innerHTML = dotHtml;
+
+        track.addEventListener('scroll', function() {
+            var scrollLeft = track.scrollLeft;
+            var cardWidth = 152;
+            var activeIdx = Math.round(scrollLeft / (cardWidth * 3));
+            dots.querySelectorAll('.overview-dot').forEach(function(d, i) {
+                d.classList.toggle('active', i === activeIdx);
+            });
+        });
+    }
+
+    function scrollToChapter(idx) {
+        var card = document.querySelector('.chapter-card[data-chapter="'+idx+'"]');
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    /* ── 4-1. 사주 팔자 표 ── */
+    function renderPillarsTable(fp, dayMaster) {
+        var card = document.getElementById('pillarsCard');
+        var grid = document.getElementById('pillarsGrid');
+        var badge = document.getElementById('dayMasterBadge');
+
+        var keys = ['시주','일주','월주','년주'];
+        var hasData = false;
+
+        var html = '';
+        keys.forEach(function(key) {
+            var p = fp[key] || {};
+            var gan = p.gan || '';
+            var ji = p.ji || '';
+            var ganOheng = p.ganOheng || '';
+            var jiOheng = p.jiOheng || '';
+            if (gan || ji) hasData = true;
+
+            var ganColor = OHENG_COLORS[ganOheng] || 'var(--text-primary)';
+            var jiColor = OHENG_COLORS[jiOheng] || 'var(--text-primary)';
+            var ganBg = OHENG_BG[ganOheng] || 'transparent';
+            var jiBg = OHENG_BG[jiOheng] || 'transparent';
+
+            html += '<div class="pillar-col">';
+            html += '<div class="pillar-label">'+key+'</div>';
+            html += '<div class="pillar-gan" style="color:'+ganColor+';">'+(gan||'—')+'</div>';
+            if (ganOheng) html += '<div class="pillar-oheng-tag" style="color:'+ganColor+';background:'+ganBg+';">'+ganOheng+'</div>';
+            html += '<div class="pillar-ji" style="color:'+jiColor+';">'+(ji||'—')+'</div>';
+            if (jiOheng) html += '<div class="pillar-oheng-tag" style="color:'+jiColor+';background:'+jiBg+';">'+jiOheng+'</div>';
+            html += '</div>';
+        });
+
+        if (!hasData) return;
+
+        grid.innerHTML = html;
+        card.style.display = 'block';
+
+        if (dayMaster && dayMaster.gan) {
+            var dmColor = OHENG_COLORS[dayMaster.oheng] || 'var(--gold)';
+            badge.innerHTML = '일간 <span style="color:'+dmColor+';font-weight:700;">'+dayMaster.gan+'</span> · '+( dayMaster.oheng || '');
+            badge.style.display = 'inline-block';
+        }
+    }
+
+    /* ── 4-2. 오행 도넛 차트 ── */
+    function renderOhengChart(oheng, db) {
         var card = document.getElementById('ohengCard');
         card.style.display = 'block';
 
         var data = [];
         var total = 0;
-['목','화','토','금','수'].forEach(function(key) {
-    var val = 0;
-    if (typeof oheng[key] === 'number') {
-        val = oheng[key];
-    } else if (oheng[key] !== undefined && oheng[key] !== null) {
-        val = parseFloat(oheng[key]) || 0;
-    } else if (oheng.distribution && oheng.distribution[key]) {
-        var d = oheng.distribution[key];
-        val = (typeof d === 'object') ? (Number(d.percentage) || Number(d.count) || 0) : (parseFloat(d) || 0);
-    }
-    data.push({ key: key, value: val });
-    total += val;
-});
+        ['목','화','토','금','수'].forEach(function(key) {
+            var val = 0;
+            if (typeof oheng === 'object' && oheng !== null) {
+                if (typeof oheng[key] === 'number') { val = oheng[key]; }
+                else if (oheng[key] !== undefined && oheng[key] !== null) {
+                    if (typeof oheng[key] === 'object') { val = Number(oheng[key].count) || Number(oheng[key].percentage) || 0; }
+                    else { val = parseFloat(oheng[key]) || 0; }
+                }
+            }
+            data.push({ key: key, value: val });
+            total += val;
+        });
         if (total === 0) { card.style.display = 'none'; return; }
 
-        // SVG 도넛
         var size = 160, cx = 80, cy = 80, r = 55, stroke = 22;
         var circumference = 2 * Math.PI * r;
-        var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" width="160" height="160">';
-
+        var svg = '<svg viewBox="0 0 '+size+' '+size+'" width="160" height="160">';
         var offset = 0;
         data.forEach(function(d) {
             var pct = d.value / total;
             var dash = pct * circumference;
             var gap = circumference - dash;
-            svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" ' +
-                'stroke="'+OHENG_COLORS[d.key]+'" stroke-width="'+stroke+'" ' +
-                'stroke-dasharray="'+dash+' '+gap+'" ' +
-                'stroke-dashoffset="'+(-offset)+'" ' +
-                'transform="rotate(-90 '+cx+' '+cy+')" ' +
-                'style="transition: stroke-dashoffset 0.6s ease;"/>';
+            svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+OHENG_COLORS[d.key]+'" stroke-width="'+stroke+'" stroke-dasharray="'+dash+' '+gap+'" stroke-dashoffset="'+(-offset)+'" transform="rotate(-90 '+cx+' '+cy+')" style="transition: stroke-dashoffset 0.6s ease;"/>';
             offset += dash;
         });
-
-        // 중앙 텍스트
-        var dominant = oheng.dominant || data.reduce(function(a,b){ return a.value > b.value ? a : b; }).key;
-        svg += '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" fill="'+OHENG_COLORS[dominant]+'" font-size="22" font-weight="700" font-family="Noto Serif KR,serif">' +
-            dominant + '</text>';
+        var dominant = (db && db.dominantElement) || data.reduce(function(a,b){ return a.value > b.value ? a : b; }).key;
+        svg += '<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" fill="'+OHENG_COLORS[dominant]+'" font-size="22" font-weight="700" font-family="Noto Serif KR,serif">' + dominant + '</text>';
         svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="#8a7a5a" font-size="10">주도 오행</text>';
         svg += '</svg>';
-
         document.getElementById('ohengChart').innerHTML = svg;
 
-        // 범례
         var legend = '';
         data.forEach(function(d) {
             var pct = Math.round(d.value / total * 100);
-            legend += '<div class="oheng-legend-item">' +
-                '<div class="oheng-dot" style="background:'+OHENG_COLORS[d.key]+'"></div>' +
-                '<span>' + OHENG_LABELS[d.key] + ' ' + pct + '%</span></div>';
+            legend += '<div class="oheng-legend-item"><div class="oheng-dot" style="background:'+OHENG_COLORS[d.key]+'"></div><span>'+OHENG_LABELS[d.key]+' '+pct+'%</span></div>';
         });
         document.getElementById('ohengLegend').innerHTML = legend;
 
-        // 요약
-        var weakest = oheng.weakest || data.reduce(function(a,b){ return a.value < b.value ? a : b; }).key;
-        document.getElementById('ohengDominant').textContent =
-            '주도: ' + OHENG_LABELS[dominant] + '  |  보완 필요: ' + OHENG_LABELS[weakest];
+        var weakest = (db && db.weakestElement) || data.reduce(function(a,b){ return a.value < b.value ? a : b; }).key;
+        document.getElementById('ohengDominant').textContent = '주도: ' + OHENG_LABELS[dominant] + '  |  보완 필요: ' + OHENG_LABELS[weakest];
     }
 
-    /* ── 4-2. 챕터 렌더링 (v2 — highlight_quote + bridge + mood) ── */
+    /* ── 4-3. 용신/희신 카드 ── */
+    function renderYongShin(ys) {
+        var card = document.getElementById('yongshinCard');
+        var grid = document.getElementById('yongshinGrid');
+        var reason = document.getElementById('yongshinReason');
+
+        var items = [
+            { label: '용신', value: ys.yongShin || '', sub: '가장 필요한 기운' },
+            { label: '희신', value: ys.huiShin || '', sub: '용신을 돕는 기운' },
+            { label: '기신', value: ys.giShin || '', sub: '경계해야 할 기운' },
+            { label: '격국', value: ys.gyeokgukRef || '', sub: '사주 구조' }
+        ];
+
+        var html = '';
+        items.forEach(function(item) {
+            if (!item.value) return;
+            var color = OHENG_COLORS[item.value] || 'var(--gold)';
+            html += '<div class="yongshin-item">';
+            html += '<div class="yongshin-label">'+item.label+'</div>';
+            html += '<div class="yongshin-value" style="color:'+color+';">'+item.value+'</div>';
+            html += '<div class="yongshin-sub">'+item.sub+'</div>';
+            html += '</div>';
+        });
+
+        if (!html) return;
+        grid.innerHTML = html;
+        card.style.display = 'block';
+
+        if (ys.reasoning) {
+            reason.textContent = '판단 근거: ' + ys.reasoning;
+        }
+    }
+
+    /* ── 4-4. 십성 분포 ── */
+    function renderSipsung(data) {
+        if (!data) return;
+        var card = document.getElementById('sipsungCard');
+        var container = document.getElementById('sipsungBars');
+
+        var items = [];
+        var max = 0;
+        var names = ['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'];
+
+        if (Array.isArray(data)) {
+            items = data;
+        } else {
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    items.push({ name: key, count: Number(data[key]) || 0 });
+                }
+            }
+        }
+
+        if (items.length === 0) return;
+        items.forEach(function(it) { if (it.count > max) max = it.count; });
+        if (max === 0) return;
+
+        var html = '';
+        items.forEach(function(it) {
+            var pct = Math.round((it.count / max) * 100);
+            html += '<div class="sipsung-row">';
+            html += '<div class="sipsung-label">'+(it.name || '')+'</div>';
+            html += '<div class="sipsung-bar-bg"><div class="sipsung-bar-fill" style="width:'+pct+'%;"></div></div>';
+            html += '<div class="sipsung-count">'+it.count+'</div>';
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+        card.style.display = 'block';
+    }
+
+    /* ── 4-5. 대운 타임라인 ── */
+    function renderDaeun(daeuns) {
+        if (!daeuns || daeuns.length === 0) return;
+        var card = document.getElementById('daeunCard');
+        var container = document.getElementById('daeunItems');
+
+        var currentYear = new Date().getFullYear();
+        var html = '';
+
+        daeuns.forEach(function(d) {
+            var startYear = d.startYear || 0;
+            var endYear = startYear + 9;
+            var isCurrent = (currentYear >= startYear && currentYear <= endYear);
+
+            html += '<div class="daeun-item'+(isCurrent?' current':'')+'">';
+            html += '<div class="daeun-dot"></div>';
+            html += '<div class="daeun-pillar">'+(d.pillar || (d.gan||'')+(d.ji||''))+'</div>';
+            html += '<div class="daeun-age">'+(d.age||'')+'세</div>';
+            html += '<div class="daeun-year">'+startYear+'</div>';
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+        card.style.display = 'block';
+
+        // 현재 대운으로 스크롤
+        setTimeout(function() {
+            var cur = container.querySelector('.daeun-item.current');
+            if (cur) { cur.scrollIntoView({ inline: 'center', behavior: 'smooth' }); }
+        }, 300);
+    }
+
+    /* ── 4-6. 세운 그래프 ── */
+    function renderSeun(seunList) {
+        if (!seunList || seunList.length === 0) return;
+        var card = document.getElementById('seunCard');
+        var container = document.getElementById('seunBars');
+
+        var currentYear = new Date().getFullYear();
+        var html = '';
+
+        // 높이를 인덱스 기반으로 산출 (가운데가 가장 높은 아치형 또는 랜덤)
+        var heights = seunList.map(function(s, i) {
+            // 간단하게 해시 기반 높이 생성
+            var h = 40 + ((s.year || 0) * 7 + i * 13) % 60;
+            return Math.min(100, h);
+        });
+
+        seunList.forEach(function(s, i) {
+            var year = s.year || '';
+            var pillar = s.pillarHanja || s.pillar || '';
+            var isCurrent = (year === currentYear);
+            var h = heights[i];
+
+            html += '<div class="seun-bar-wrap">';
+            html += '<div class="seun-bar'+(isCurrent?' current-year':'')+'" style="height:'+h+'px;"></div>';
+            html += '<div class="seun-bar-pillar">'+pillar+'</div>';
+            html += '<div class="seun-bar-year'+(isCurrent?' style="color:var(--gold);font-weight:700;"':'')+'">'+year+'</div>';
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+        card.style.display = 'block';
+    }
+
+    /* ── 4-7. 챕터 렌더링 ── */
     function renderChapters(chapters) {
         var container = document.getElementById('chaptersContainer');
         container.innerHTML = '';
 
         chapters.forEach(function(ch, idx) {
-            var title = ch.title || ('Chapter ' + (idx + 1));
+            var title = ch.title || CHAPTER_TITLES_DEFAULT[idx] || ('Chapter ' + (idx + 1));
             var body = ch.content || ch.body || ch.text || '';
+            var icon = CHAPTER_ICONS[idx] || CHAPTER_ICONS[0];
             var isHtml = /<[a-z]/i.test(body.substring(0, 10));
 
             if (isHtml) {
@@ -1407,71 +1808,70 @@ function showCoupleIntro(d) {
             card.setAttribute('data-chapter', idx);
             if (ch.mood) card.setAttribute('data-mood', ch.mood);
 
-            // ── 챕터 헤더 ──
             var headerHtml = '<div class="chapter-header">';
-            if (ch.icon) {
-                headerHtml += '<span class="chapter-icon">' + ch.icon + '</span>';
-            }
+            headerHtml += '<span class="chapter-icon" style="color:var(--gold);">'+icon+'</span>';
             headerHtml += '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>';
             headerHtml += '<div class="chapter-title">' + escapeHtml(title) + '</div>';
-            if (ch.summary) {
-                headerHtml += '<div class="chapter-summary">' + escapeHtml(ch.summary) + '</div>';
-            }
+            if (ch.summary) { headerHtml += '<div class="chapter-summary">' + escapeHtml(ch.summary) + '</div>'; }
             headerHtml += '</div>';
 
-            // ── 본문 (highlight_quote를 중간에 삽입) ──
             var paragraphs = body.split(/\n\n+/);
             var bodyHtml = '<div class="chapter-body">';
             var quoteInsertIdx = Math.max(1, Math.floor(paragraphs.length * 0.6));
 
             paragraphs.forEach(function(p, pIdx) {
-                var processed = p.replace(/\n/g, '<br>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                var processed = p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                 bodyHtml += '<p>' + processed + '</p>';
-
-                // highlight_quote 삽입
                 if (ch.highlight_quote && pIdx === quoteInsertIdx - 1) {
                     bodyHtml += '</div>';
-                    bodyHtml += '<div class="highlight-quote">';
-                    bodyHtml += '<div class="highlight-quote-text">"' + escapeHtml(ch.highlight_quote) + '"</div>';
-                    bodyHtml += '</div>';
+                    bodyHtml += '<div class="highlight-quote"><div class="highlight-quote-text">"' + escapeHtml(ch.highlight_quote) + '"</div></div>';
                     bodyHtml += '<div class="chapter-body">';
                 }
             });
             bodyHtml += '</div>';
 
-            // ── bridge ──
             var bridgeHtml = '';
-            if (ch.bridge) {
-                bridgeHtml = '<div class="chapter-bridge">' + escapeHtml(ch.bridge) + '</div>';
-            }
+            if (ch.bridge) { bridgeHtml = '<div class="chapter-bridge">' + escapeHtml(ch.bridge) + '</div>'; }
 
             card.innerHTML = headerHtml + bodyHtml + bridgeHtml;
             container.appendChild(card);
 
-            // 챕터 구분자
             if (idx < chapters.length - 1) {
                 var divider = document.createElement('div');
                 divider.className = 'chapter-divider';
-                divider.innerHTML = '<div class="chapter-divider-dot"></div>' +
-                    '<div class="chapter-divider-dot"></div>' +
-                    '<div class="chapter-divider-dot"></div>';
+                divider.innerHTML = '<div class="chapter-divider-dot"></div><div class="chapter-divider-dot"></div><div class="chapter-divider-dot"></div>';
                 container.appendChild(divider);
             }
         });
     }
 
+    /* ── 4-8. TOC 생성 ── */
+    function buildToc(chapters) {
+        var tocList = document.getElementById('tocList');
+        var html = '';
+        chapters.forEach(function(ch, idx) {
+            var title = ch.title || CHAPTER_TITLES_DEFAULT[idx] || ('Chapter '+(idx+1));
+            html += '<div class="toc-item" onclick="scrollToChapter('+idx+');toggleToc();">';
+            html += '<span class="toc-item-num">'+String(idx+1).padStart(2,'0')+'</span>';
+            html += '<span class="toc-item-title">'+escapeHtml(title)+'</span>';
+            html += '</div>';
+        });
+        tocList.innerHTML = html;
+    }
 
-    /* ── 4-3. Intersection Observer (스크롤 페이드인) ── */
+    function toggleToc() {
+        tocOpen = !tocOpen;
+        document.getElementById('tocPanel').classList.toggle('open', tocOpen);
+    }
+
+    /* ── 4-9. Intersection Observer ── */
     function observeChapters() {
         var cards = document.querySelectorAll('.chapter-card:not(.visible)');
         if (!cards.length) return;
-
         if (!('IntersectionObserver' in window)) {
             cards.forEach(function(c) { c.classList.add('visible'); });
             return;
         }
-
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
@@ -1480,18 +1880,14 @@ function showCoupleIntro(d) {
                 }
             });
         }, { threshold: 0.15 });
-
         cards.forEach(function(c) { observer.observe(c); });
     }
 
-    /* ── 4-4. 감정 곡선 SVG ── */
+    /* ── 4-10. 감정 곡선 ── */
     function renderEmotionCurve(chapters) {
         var emotions = [];
         chapters.forEach(function(ch, i) {
-            emotions.push({
-                label: 'Ch.' + (i + 1),
-                value: ch.emotion !== undefined ? Number(ch.emotion) : 50
-            });
+            emotions.push({ label: 'Ch.' + (i + 1), value: ch.emotion !== undefined ? Number(ch.emotion) : (30 + ((i * 17 + 7) % 50)) });
         });
         if (emotions.length < 2) return;
 
@@ -1501,7 +1897,6 @@ function showCoupleIntro(d) {
         var svg = document.getElementById('emotionCurveSvg');
         var W = 440, H = 140, padX = 30, padY = 20;
         var plotW = W - padX * 2, plotH = H - padY * 2;
-
         var n = emotions.length;
         var points = emotions.map(function(e, i) {
             var x = padX + (i / (n - 1)) * plotW;
@@ -1509,58 +1904,70 @@ function showCoupleIntro(d) {
             return { x: x, y: y, label: e.label, value: e.value };
         });
 
-        // 스무스 경로
         var pathD = 'M ' + points[0].x + ' ' + points[0].y;
         for (var i = 1; i < points.length; i++) {
-            var prev = points[i - 1];
-            var curr = points[i];
+            var prev = points[i - 1], curr = points[i];
             var cpx1 = prev.x + (curr.x - prev.x) * 0.4;
             var cpx2 = prev.x + (curr.x - prev.x) * 0.6;
             pathD += ' C ' + cpx1 + ' ' + prev.y + ' ' + cpx2 + ' ' + curr.y + ' ' + curr.x + ' ' + curr.y;
         }
 
-        // 그라디언트
         var areaD = pathD + ' L ' + points[n-1].x + ' ' + (padY + plotH) + ' L ' + points[0].x + ' ' + (padY + plotH) + ' Z';
 
-        var svgContent = '' +
-            '<defs>' +
-            '  <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">' +
-            '    <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/>' +
-            '    <stop offset="100%" stop-color="#c9a84c" stop-opacity="0.02"/>' +
-            '  </linearGradient>' +
-            '</defs>' +
+        var svgContent = '<defs><linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.02"/></linearGradient></defs>' +
             '<line x1="'+padX+'" y1="'+(padY+plotH)+'" x2="'+(padX+plotW)+'" y2="'+(padY+plotH)+'" stroke="#c9a84c33" stroke-width="1"/>' +
             '<path d="'+areaD+'" fill="url(#curveGrad)"/>' +
             '<path d="'+pathD+'" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>';
-
         points.forEach(function(p) {
             svgContent += '<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#0a0a14" stroke="#c9a84c" stroke-width="2"/>';
             svgContent += '<text x="'+p.x+'" y="'+(padY + plotH + 14)+'" text-anchor="middle" fill="#8a7a5a" font-size="9">' + p.label + '</text>';
         });
-
         svg.innerHTML = svgContent;
     }
 
-    /* ── 4-5. 7일 실행 플랜 ── */
+    /* ── 4-11. 7일 실행 플랜 ── */
     function renderActionPlan(plan) {
         if (!plan || !plan.length) return;
         var card = document.getElementById('actionPlanCard');
         card.style.display = 'block';
-
         var html = '';
         plan.forEach(function(item) {
             var day = item.day || item.label || '';
             var text = item.action || item.text || item.content || '';
-            html += '<div class="action-plan-item">' +
-                '<div class="action-plan-day">' + escapeHtml(day) + '</div>' +
-                '<div class="action-plan-text">' + escapeHtml(text) + '</div>' +
-                '</div>';
+            html += '<div class="action-plan-item"><div class="action-plan-day">' + escapeHtml(day) + '</div><div class="action-plan-text">' + escapeHtml(text) + '</div></div>';
         });
         document.getElementById('actionPlanList').innerHTML = html;
     }
 
     /* ══════════════════════════════════════
-       5. 폰트 크기 조절
+       5. 스크롤 진행률 바 & TOC 하이라이트
+       ══════════════════════════════════════ */
+    window.addEventListener('scroll', function() {
+        if (currentView !== 'report') return;
+
+        // 진행률 바
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        document.getElementById('scrollProgress').style.width = pct + '%';
+
+        // TOC 현재 챕터 하이라이트
+        var chapterCards = document.querySelectorAll('.chapter-card[data-chapter]');
+        var tocItems = document.querySelectorAll('.toc-item');
+        var currentIdx = 0;
+
+        chapterCards.forEach(function(card, idx) {
+            var rect = card.getBoundingClientRect();
+            if (rect.top < window.innerHeight * 0.4) { currentIdx = idx; }
+        });
+
+        tocItems.forEach(function(item, idx) {
+            item.classList.toggle('current', idx === currentIdx);
+        });
+    });
+
+    /* ══════════════════════════════════════
+       6. 폰트 크기 조절
        ══════════════════════════════════════ */
     function changeFontSize(dir) {
         fontStep = Math.max(0, Math.min(2, fontStep + dir));
@@ -1568,7 +1975,7 @@ function showCoupleIntro(d) {
     }
 
     /* ══════════════════════════════════════
-       6. 오디오 시스템 (기존 유지 + 리팩토링)
+       7. 오디오 시스템
        ══════════════════════════════════════ */
     function extractFileId(url) {
         if (!url) return null;
@@ -1594,7 +2001,6 @@ function showCoupleIntro(d) {
         setTimeout(function() { t.classList.remove('show'); }, 2500);
     }
 
-    /* ── BGM 프리로드 ── */
     function preloadBgm(fileId) {
         fetch(GAS_URL + '?audio=' + fileId)
             .then(function(r) { return r.json(); })
@@ -1607,26 +2013,19 @@ function showCoupleIntro(d) {
                 audioPlayers['theme'] = audio;
                 audioLoaded['theme'] = true;
                 bgmPreloaded = true;
-
                 audio.addEventListener('loadedmetadata', function() {
                     document.getElementById('themeDuration').textContent = formatTime(audio.duration);
                 });
                 audio.addEventListener('ended', function() {
-                    if (bgmType === 'theme') {
-                        audio.currentTime = 0;
-                        audio.play().catch(function(){});
-                    } else {
+                    if (bgmType === 'theme') { audio.currentTime = 0; audio.play().catch(function(){}); }
+                    else {
                         document.getElementById('bgmBar').classList.remove('active');
                         document.getElementById('themePlayBtn').textContent = '▶';
                         document.getElementById('btnTheme').classList.remove('playing');
                         bgmType = null;
                     }
                 });
-
-                if (pendingBgmPlay) {
-                    pendingBgmPlay = false;
-                    startBgm();
-                }
+                if (pendingBgmPlay) { pendingBgmPlay = false; startBgm(); }
             })
             .catch(function(err) { console.error('BGM preload fetch error:', err); });
     }
@@ -1640,149 +2039,88 @@ function showCoupleIntro(d) {
         audio.play().then(function() {
             bgmType = 'theme';
             audioLoaded['theme'] = true;
-
-            // BGM 바 업데이트
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
             document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
             document.getElementById('bgmSub').textContent = '배경음악 재생 중';
-
-            // 테마곡 섹션 버튼만 playing 표시 (패널은 열지 않음)
             document.getElementById('btnTheme').classList.add('playing');
             startProgressUpdate('theme');
-
-            // duration 표시
-            if (audio.duration) {
-                document.getElementById('themeDuration').textContent = formatTime(audio.duration);
-            } else {
-                audio.addEventListener('loadedmetadata', function() {
-                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
-                });
-            }
+            if (audio.duration) { document.getElementById('themeDuration').textContent = formatTime(audio.duration); }
+            else { audio.addEventListener('loadedmetadata', function() { document.getElementById('themeDuration').textContent = formatTime(audio.duration); }); }
         }).catch(function(e) {
             console.log('BGM autoplay blocked:', e);
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '▶';
-            document.getElementById('bgmSub').textContent = '터치하며 재생';
+            document.getElementById('bgmSub').textContent = '터치하여 재생';
             bgmType = 'theme';
         });
     }
-
-
-
 
     function toggleBgm() {
         if (!bgmType || !audioPlayers[bgmType]) return;
         playPause(bgmType);
     }
 
-    /* ── 플레이어 토글 & 재생 ── */
     function togglePlayer(type) {
         var wrap = document.getElementById('player' + capitalize(type));
         var btn = document.getElementById('btn' + capitalize(type));
         var isOpen = wrap.classList.contains('open');
-
-        // 다른 플레이어 닫기
         ['theme','voice','healing'].forEach(function(t) {
             if (t !== type) {
                 document.getElementById('player' + capitalize(t)).classList.remove('open');
                 document.getElementById('btn' + capitalize(t)).classList.remove('expanded');
             }
         });
-
-        if (isOpen) {
-            wrap.classList.remove('open');
-            btn.classList.remove('expanded');
-        } else {
-            wrap.classList.add('open');
-            btn.classList.add('expanded');
-            if (!audioLoaded[type]) { loadAudio(type); }
-        }
+        if (isOpen) { wrap.classList.remove('open'); btn.classList.remove('expanded'); }
+        else { wrap.classList.add('open'); btn.classList.add('expanded'); if (!audioLoaded[type]) { loadAudio(type); } }
     }
 
     function loadAudio(type) {
         var linkMap = { theme: certData.themeLink, voice: certData.voiceLink, healing: certData.healingLink };
         var rawUrl = linkMap[type];
         if (!rawUrl) return;
-
         var fileId = extractFileId(rawUrl);
         if (!fileId) return;
-
         audioFileIds[type] = fileId;
         var loadingEl = document.getElementById(type + 'Loading');
         if (loadingEl) loadingEl.style.display = 'block';
-
-        // BGM으로 이미 로드된 테마곡 재사용
         if (type === 'theme' && audioLoaded['theme'] && audioPlayers['theme']) {
             if (loadingEl) loadingEl.style.display = 'none';
             playPause('theme');
             return;
         }
-
         fetch(GAS_URL + '?audio=' + fileId)
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (loadingEl) loadingEl.style.display = 'none';
-                if (data.error || !data.audioBase64) {
-                    showToast('음원을 불러올 수 없습니다');
-                    return;
-                }
+                if (data.error || !data.audioBase64) { showToast('음원을 불러올 수 없습니다'); return; }
                 var audio = new Audio();
                 audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
                 audio.preload = 'auto';
                 audioPlayers[type] = audio;
                 audioLoaded[type] = true;
-
-                audio.addEventListener('loadedmetadata', function() {
-                    document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
-                });
+                audio.addEventListener('loadedmetadata', function() { document.getElementById(type + 'Duration').textContent = formatTime(audio.duration); });
                 audio.addEventListener('ended', function() {
                     document.getElementById(type + 'PlayBtn').textContent = '▶';
                     document.getElementById('btn' + capitalize(type)).classList.remove('playing');
                     clearInterval(playerIntervals[type]);
-
-                    // BGM 바 리셋
-                    if (bgmType === type) {
-                        document.getElementById('bgmBtn').textContent = '▶';
-                        document.getElementById('bgmSub').textContent = '재생 완료';
-                        var bgmProgress = document.getElementById('bgmProgress');
-                        if (bgmProgress) bgmProgress.value = 0;
-                    }
+                    if (bgmType === type) { document.getElementById('bgmBtn').textContent = '▶'; document.getElementById('bgmSub').textContent = '재생 완료'; var bgmProgress = document.getElementById('bgmProgress'); if (bgmProgress) bgmProgress.value = 0; }
                 });
-
-                // 다운로드 링크
                 var dlLink = document.getElementById(type + 'Download');
-                if (dlLink) {
-                    dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
-                    dlLink.download = (data.fileName || type + '_audio') + '.mp3';
-                }
+                if (dlLink) { dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64; dlLink.download = (data.fileName || type + '_audio') + '.mp3'; }
             })
-            .catch(function(err) {
-                if (loadingEl) loadingEl.style.display = 'none';
-                showToast('음원 로딩 실패');
-                console.error('loadAudio error:', err);
-            });
+            .catch(function(err) { if (loadingEl) loadingEl.style.display = 'none'; showToast('음원 로딩 실패'); console.error('loadAudio error:', err); });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         var bgmBtn = document.getElementById('bgmBtn');
-        if (bgmBtn) {
-            bgmBtn.addEventListener('click', function() {
-                if (!bgmType || !audioPlayers[bgmType]) return;
-                playPause(bgmType);
-            });
-        }
+        if (bgmBtn) { bgmBtn.addEventListener('click', function() { if (!bgmType || !audioPlayers[bgmType]) return; playPause(bgmType); }); }
     });
 
-
-
-        
     function playPause(type) {
         var audio = audioPlayers[type];
         if (!audio) { loadAudio(type); return; }
-
         if (audio.paused) {
-            // 다른 오디오 정지
             ['theme','voice','healing'].forEach(function(t) {
                 if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                     audioPlayers[t].pause();
@@ -1796,8 +2134,6 @@ function showCoupleIntro(d) {
             document.getElementById(type + 'PlayBtn').textContent = '⏸';
             document.getElementById('btn' + capitalize(type)).classList.add('playing');
             startProgressUpdate(type);
-
-            // BGM 바 업데이트
             bgmType = type;
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
@@ -1817,42 +2153,31 @@ function showCoupleIntro(d) {
     function seek(type) {
         var audio = audioPlayers[type];
         var slider = document.getElementById(type + 'Progress');
-        if (audio && audio.duration) {
-            audio.currentTime = (slider.value / 100) * audio.duration;
-        }
+        if (audio && audio.duration) { audio.currentTime = (slider.value / 100) * audio.duration; }
     }
 
-function startProgressUpdate(type) {
-    clearInterval(playerIntervals[type]);
-    playerIntervals[type] = setInterval(function() {
-        var audio = audioPlayers[type];
-        if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
-        var pct = (audio.currentTime / audio.duration) * 100;
-        document.getElementById(type + 'Progress').value = pct;
-        document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
+    function startProgressUpdate(type) {
+        clearInterval(playerIntervals[type]);
+        playerIntervals[type] = setInterval(function() {
+            var audio = audioPlayers[type];
+            if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
+            var pct = (audio.currentTime / audio.duration) * 100;
+            document.getElementById(type + 'Progress').value = pct;
+            document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
+            if (bgmType === type) {
+                var bgmProgress = document.getElementById('bgmProgress');
+                if (bgmProgress) bgmProgress.value = pct;
+            }
+        }, 300);
+    }
 
-        // BGM 바 진행률 동기화
-        if (bgmType === type) {
-            var bgmProgress = document.getElementById('bgmProgress');
-            if (bgmProgress) bgmProgress.value = pct;
-            var bgmTime = document.getElementById('bgmTime');
-            if (bgmTime) bgmTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
-        }
-    }, 300);
-}
-
-        
     /* ══════════════════════════════════════
-       7. 공유
+       8. 공유
        ══════════════════════════════════════ */
     function shareKakao() {
-        if (!window.Kakao || !Kakao.isInitialized()) {
-            showToast('카카오 공유를 불러오는 중...');
-            return;
-        }
+        if (!window.Kakao || !Kakao.isInitialized()) { showToast('카카오 공유를 불러오는 중...'); return; }
         var pageUrl = window.location.href;
         var desc = certData.soreLine || '당신만을 위한 사주 & MBTI 맞춤 운명 분석이 완성되었습니다.';
-
         Kakao.Share.sendDefault({
             objectType: 'feed',
             content: {
@@ -1861,144 +2186,90 @@ function startProgressUpdate(type) {
                 imageUrl: 'https://readmelab.github.io/og-image.png',
                 link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
             },
-            buttons: [{
-                title: '내 운명 보기',
-                link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
-            }]
+            buttons: [{ title: '내 운명 보기', link: { mobileWebUrl: pageUrl, webUrl: pageUrl } }]
         });
     }
 
     function shareLink() {
         var url = window.location.href;
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(url).then(function() {
-                showToast('링크가 복사되었습니다');
-            }).catch(function() { fallbackCopy(url); });
-        } else {
-            fallbackCopy(url);
-        }
+            navigator.clipboard.writeText(url).then(function() { showToast('링크가 복사되었습니다'); }).catch(function() { fallbackCopy(url); });
+        } else { fallbackCopy(url); }
     }
 
     function fallbackCopy(text) {
         var ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); }
-        catch(e) { showToast('복사에 실패했습니다'); }
+        ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); showToast('링크가 복사되었습니다'); } catch(e) { showToast('복사에 실패했습니다'); }
         document.body.removeChild(ta);
     }
 
     function shareNative() {
         if (!navigator.share) return;
-        navigator.share({
-            title: '나를읽다 연구소 — 운명 분석 결과',
-            text: certData.soreLine || '당신만을 위한 운명 분석',
-            url: window.location.href
-        }).catch(function(){});
+        navigator.share({ title: '나를읽다 연구소 — 운명 분석 결과', text: certData.soreLine || '당신만을 위한 운명 분석', url: window.location.href }).catch(function(){});
     }
 
     /* ══════════════════════════════════════
-       8. 유틸
+       9. 유틸
        ══════════════════════════════════════ */
-    function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
+    function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-            /* ═════════════════════════════════════════════════════════
-       디자인설정 적용 (구글시트 연동)
-       ═════════════════════════════════════════════════════════ */
+
+    /* ══════════════════════════════════════
+       10. 디자인설정 적용 (구글시트 연동)
+       ══════════════════════════════════════ */
     function applyDesignFromSheet(design) {
         if (!design) return;
-
         var root = document.documentElement;
-
-        // 배경 그라데이션
         if (design['배경시작'] && design['배경중간'] && design['배경끝']) {
-            document.body.style.background = 'linear-gradient(180deg, '
-                + design['배경시작'] + ' 0%, '
-                + design['배경중간'] + ' 50%, '
-                + design['배경끝'] + ' 100%)';
+            document.body.style.background = 'linear-gradient(180deg, ' + design['배경시작'] + ' 0%, ' + design['배경중간'] + ' 50%, ' + design['배경끝'] + ' 100%)';
             document.body.style.backgroundAttachment = 'fixed';
         }
-
-        // CSS 변수 매핑
         var mappings = {
-            '--accent':        '메인컬러',
-            '--gold':          '메인컬러',
-            '--gold-bright':   '메인컬러',
-            '--card-bg':       '카드배경',
-            '--bg-card':       '카드배경',
-            '--card-border':   '카드보더',
-            '--gold-dim':      '카드보더',
-            '--text':          '텍스트컬러',
-            '--text-primary':  '텍스트컬러',
-            '--sub-text':      '서브텍스트',
-            '--text-muted':    '서브텍스트',
-            '--text-secondary':'서브텍스트',
-            '--secondary-bg':  '보조컬러'
+            '--accent':'메인컬러', '--gold':'메인컬러', '--gold-bright':'메인컬러',
+            '--card-bg':'카드배경', '--bg-card':'카드배경',
+            '--card-border':'카드보더', '--gold-dim':'카드보더',
+            '--text':'텍스트컬러', '--text-primary':'텍스트컬러',
+            '--sub-text':'서브텍스트', '--text-muted':'서브텍스트', '--text-secondary':'서브텍스트',
+            '--secondary-bg':'보조컬러'
         };
-
         for (var cssVar in mappings) {
             var sheetKey = mappings[cssVar];
-            if (design[sheetKey]) {
-                root.style.setProperty(cssVar, design[sheetKey]);
-            }
+            if (design[sheetKey]) { root.style.setProperty(cssVar, design[sheetKey]); }
         }
-
-        // 카드 둥글기
-        if (design['카드둥글기']) {
-            root.style.setProperty('--card-radius', design['카드둥글기'] + 'px');
-        }
-
-        // 폰트
+        if (design['카드둥글기']) { root.style.setProperty('--card-radius', design['카드둥글기'] + 'px'); }
         if (design['폰트']) {
             var fontName = design['폰트'];
-            // 구글폰트 동적 로드
             if (!document.querySelector('link[data-design-font]')) {
                 var link = document.createElement('link');
                 link.rel = 'stylesheet';
-                link.href = 'https://fonts.googleapis.com/css2?family='
-                    + encodeURIComponent(fontName) + ':wght@300;400;500;600;700&display=swap';
+                link.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fontName) + ':wght@300;400;500;600;700&display=swap';
                 link.setAttribute('data-design-font', 'true');
                 document.head.appendChild(link);
             }
             root.style.setProperty('--font-main', "'" + fontName + "', serif");
         }
-
-        // 하이라이트 (명언 카드)
-        if (design['하이라이트배경']) {
-            root.style.setProperty('--highlight-bg', design['하이라이트배경']);
-        }
-        if (design['하이라이트보더']) {
-            root.style.setProperty('--highlight-border', design['하이라이트보더']);
-        }
-
-        // 푸터 텍스트
+        if (design['하이라이트배경']) { root.style.setProperty('--highlight-bg', design['하이라이트배경']); }
+        if (design['하이라이트보더']) { root.style.setProperty('--highlight-border', design['하이라이트보더']); }
         if (design['푸터텍스트']) {
             var footerEl = document.querySelector('.footer');
-            if (footerEl) {
-                var footerText = footerEl.querySelector('p, span');
-                if (footerText) footerText.textContent = design['푸터텍스트'];
-            }
+            if (footerEl) { var footerText = footerEl.querySelector('p, span'); if (footerText) footerText.textContent = design['푸터텍스트']; }
         }
-
-        // 커스텀 CSS (고급용)
         if (design['커스텀CSS'] && design['커스텀CSS'].trim()) {
             var customStyle = document.createElement('style');
             customStyle.textContent = design['커스텀CSS'];
             document.head.appendChild(customStyle);
         }
-
         console.log('✅ 디자인설정 적용 완료:', design['템플릿명'] || design['상품코드']);
     }
 
     </script>
 </body>
 </html>
+
+
