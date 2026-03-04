@@ -1751,24 +1751,20 @@
     }
 
     /* ── 4-6. 세운 그래프 ── */
-    /* ── 4-6. 세운 그래프 ── */
     function renderSeun(seunData) {
         if (!seunData) return;
         var card = document.getElementById('seunCard');
         var container = document.getElementById('seunBars');
 
-        // 배열이 아니면 배열로 변환
         var seunList = [];
         if (Array.isArray(seunData)) {
             seunList = seunData;
         } else if (typeof seunData === 'object') {
-            // 객체인 경우 배열로 변환 시도
-            for (var key in seunData) {
-                if (seunData.hasOwnProperty(key)) {
-                    var item = seunData[key];
-                    if (typeof item === 'object') {
-                        seunList.push(item);
-                    }
+            var keys = Object.keys(seunData);
+            for (var k = 0; k < keys.length; k++) {
+                var val = seunData[keys[k]];
+                if (val && typeof val === 'object') {
+                    seunList.push(val);
                 }
             }
         }
@@ -1777,28 +1773,30 @@
 
         var currentYear = new Date().getFullYear();
         var html = '';
+        var heights = [];
+        for (var hi = 0; hi < seunList.length; hi++) {
+            var hv = 40 + (((seunList[hi].year || 0) * 7 + hi * 13) % 60);
+            heights.push(Math.min(100, hv));
+        }
 
-        var heights = seunList.map(function(s, i) {
-            var h = 40 + ((( s.year || 0) * 7 + i * 13) % 60);
-            return Math.min(100, h);
-        });
-
-        seunList.forEach(function(s, i) {
+        for (var i = 0; i < seunList.length; i++) {
+            var s = seunList[i];
             var year = s.year || '';
             var pillar = s.pillarHanja || s.pillar || '';
             var isCurrent = (year == currentYear);
             var h = heights[i];
 
             html += '<div class="seun-bar-wrap">';
-            html += '<div class="seun-bar'+(isCurrent?' current-year':'')+'" style="height:'+h+'px;"></div>';
-            html += '<div class="seun-bar-pillar">'+pillar+'</div>';
-            html += '<div class="seun-bar-year"'+(isCurrent?' style="color:var(--gold);font-weight:700;"':'')+'>'+year+'</div>';
+            html += '<div class="seun-bar' + (isCurrent ? ' current-year' : '') + '" style="height:' + h + 'px;"></div>';
+            html += '<div class="seun-bar-pillar">' + pillar + '</div>';
+            html += '<div class="seun-bar-year"' + (isCurrent ? ' style="color:var(--gold);font-weight:700;"' : '') + '>' + year + '</div>';
             html += '</div>';
-        });
+        }
 
         container.innerHTML = html;
         card.style.display = 'block';
     }
+
 
 
 
