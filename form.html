@@ -884,12 +884,12 @@
                     email: email
                 };
 
-                var response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                    redirect: 'follow'
-                });
+    var response = await fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+});
 
                 // 성공 화면
                 document.getElementById('formWrap').style.display = 'none';
