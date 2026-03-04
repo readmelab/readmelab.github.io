@@ -911,60 +911,129 @@
     function normalizeReportData(r) {
         if (!r) return null;
 
-        // ── 1. oheng: 영어→한글 변환 (수동 라인용, 자동은 이미 한글) ──
-        if (r.dashboard && r.dashboard.oheng) {
-            var oh = r.dashboard.oheng;
-            if (oh.wood !== undefined && oh['목'] === undefined) {
-                r.dashboard.oheng = {
-                    '목': Number(oh.wood) || 0,
-                    '화': Number(oh.fire) || 0,
-                    '토': Number(oh.earth) || 0,
-                    '금': Number(oh.metal) || 0,
-                    '수': Number(oh.water) || 0,
-                    dominant: oh.dominant || '',
-                    weakest: oh.weakest || ''
-                };
+        // ── 1. oheng 정규화 (3가지 소스 처리) ──
+        // 소스A: dashboard.oheng (수동라인 - 영어키 숫자)
+        // 소스B: dashboard.ohengDistribution (자동라인 - 한글키 {count,percentage})
+        // 소스C: dashboard.oheng (자동라인 - 한글키 숫자)
+        
+        if (r.dashboard) {
+            // 소스B: ohengDistribution → oheng 변환 (자동라인)
+            if (r.dashboard.ohengDistribution && !r.dashboard.oheng) {
+                var od = r.dashboard.ohengDistribution;
+                r.dashboard.oheng = {};
+                ['목','화','토','금','수'].forEach(function(k) {
+                    var v = od[k];
+                    r.dashboard.oheng[k] = (typeof v === 'object') 
+                        ? (Number(v.count) || Number(v.percentage) || 0) 
+                        : (Number(v) || 0);
+                });
             }
-            var engToKor = {wood:'목', fire:'화', earth:'토', metal:'금', water:'수'};
+
+            // 소스A: 영어→한글 변환 (수동라인)
+            if (r.dashboard.oheng) {
+                var oh = r.dashboard.oheng;
+                if (oh.wood !== undefined && oh['목'] === undefined) {
+                    r.dashboard.oheng = {
+                        '목': Number(oh.wood) || 0,
+                        '화': Number(oh.fire) || 0,
+                        '토': Number(oh.earth) || 0,
+                        '금': Number(oh.metal) || 0,
+                        '수': Number(oh.water) || 0
+                    };
+                }
+            }
+
+            // dominant / weakest 통합
             var oFinal = r.dashboard.oheng;
-            if (engToKor[oFinal.dominant]) oFinal.dominant = engToKor[oFinal.dominant];
-            if (engToKor[oFinal.weakest]) oFinal.weakest = engToKor[oFinal.weakest];
+            if (oFinal) {
+                oFinal.dominant = oFinal.dominant 
+                    || r.dashboard.dominantElement || '';
+                oFinal.weakest = oFinal.weakest 
+                    || r.dashboard.weakestElement || '';
+                // 영어→한글 매핑
+                var engToKor = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+                if (engToKor[oFinal.dominant]) oFinal.dominant = engToKor[oFinal.dominant];
+                if (engToKor[oFinal.weakest]) oFinal.weakest = engToKor[oFinal.weakest];
+                // 한자 괄호 제거: "수(水)" → "수"
+                if (oFinal.dominant) oFinal.dominant = String(oFinal.dominant).replace(/\(.*\)/,'').trim();
+                if (oFinal.weakest) oFinal.weakest = String(oFinal.weakest).replace(/\(.*\)/,'').trim();
+            }
         }
+
+        // oheng을 최상위에 복사 (렌더링용)
         if (!r.oheng && r.dashboard && r.dashboard.oheng) {
             r.oheng = r.dashboard.oheng;
         }
+        // oheng.raw 펼치기 (GAS에서 normalizeOheng_ 결과)
+        if (r.oheng && r.oheng.raw && typeof r.oheng.raw === 'object') {
+            ['목','화','토','금','수'].forEach(function(k) {
+                if (r.oheng[k] === undefined && r.oheng.raw[k] !== undefined) {
+                    r.oheng[k] = r.oheng.raw[k];
+                }
+            });
+        }
+        if (r.oheng) {
+            if (r.oheng.dominant) r.oheng.dominant = String(r.oheng.dominant).replace(/\(.*\)/,'').trim();
+            if (r.oheng.weakest) r.oheng.weakest = String(r.oheng.weakest).replace(/\(.*\)/,'').trim();
+        }
 
-        // ── 2. sajuSummary.fourPillars 생성 (수동 라인용) ──
-        if (!r.sajuSummary && r.dashboard && r.dashboard.pillars_visual) {
-            var pv = r.dashboard.pillars_visual;
+        // ── 2. sajuSummary.fourPillars 생성 ──
+        if (!r.sajuSummary) {
             var stemElement = {
                 '갑':'목','을':'목','병':'화','정':'화','무':'토',
-            '기':'토','경':'금','신':'금','임':'수','계':'수'
+                '기':'토','경':'금','신':'금','임':'수','계':'수'
             };
             var hanjaMap = {
                 '갑':'甲','을':'乙','병':'丙','정':'丁','무':'戊',
                 '기':'己','경':'庚','신':'辛','임':'壬','계':'癸'
             };
-            var pillars = {};
-            ['year','month','day','hour'].forEach(function(key) {
-                if (pv[key]) {
-                    pillars[key] = {
-                        cheongan: pv[key].cheongan || '',
-                        jiji: pv[key].jiji || '',
-                        hanja: (pv[key].cheongan || '') + (pv[key].jiji || '')
+
+            // 소스A: dashboard.pillars_visual (수동라인 - 영어키)
+            if (r.dashboard && r.dashboard.pillars_visual) {
+                var pv = r.dashboard.pillars_visual;
+                var pillars = {};
+                ['year','month','day','hour'].forEach(function(key) {
+                    if (pv[key]) {
+                        pillars[key] = {
+                            cheongan: pv[key].cheongan || '',
+                            jiji: pv[key].jiji || '',
+                            hanja: (pv[key].cheongan || '') + (pv[key].jiji || '')
+                        };
+                    }
+                });
+                r.sajuSummary = { fourPillars: pillars };
+            }
+            // 소스B: dashboard.fourPillars (자동라인 - 한글키)
+            else if (r.dashboard && r.dashboard.fourPillars) {
+                var fp = r.dashboard.fourPillars;
+                var korToEng = {'년주':'year','월주':'month','일주':'day','시주':'hour'};
+                var pillars = {};
+                Object.keys(korToEng).forEach(function(kor) {
+                    var eng = korToEng[kor];
+                    if (fp[kor]) {
+                        pillars[eng] = {
+                            cheongan: fp[kor].gan || '',
+                            jiji: fp[kor].ji || '',
+                            hanja: (fp[kor].gan || '') + (fp[kor].ji || '')
+                        };
+                    }
+                });
+                r.sajuSummary = { fourPillars: pillars };
+            }
+
+            // dayMaster 보충
+            if (r.dashboard && !r.dashboard.dayMaster) {
+                var src = (r.dashboard.pillars_visual && r.dashboard.pillars_visual.day) 
+                    || (r.dashboard.fourPillars && r.dashboard.fourPillars['일주']);
+                var dm = src ? (src.cheongan || src.gan || '') : '';
+                if (dm) {
+                    r.dashboard.dayMaster = {
+                        gan: hanjaMap[dm] || dm,
+                        oheng: stemElement[dm] || '?',
+                        char: dm,
+                        element: stemElement[dm] || '?'
                     };
                 }
-            });
-            r.sajuSummary = { fourPillars: pillars };
-
-            if (!r.dashboard.dayMaster && pv.day && pv.day.cheongan) {
-                var dm = pv.day.cheongan;
-                r.dashboard.dayMaster = {
-                    gan: hanjaMap[dm] || dm,
-                    oheng: stemElement[dm] || '?',
-                    char: dm,
-                    element: stemElement[dm] || '?'
-                };
             }
         }
 
@@ -996,6 +1065,7 @@
         console.log('✅ 리포트 데이터 정규화 완료');
         return r;
     }
+
 
 
     /* ══════════════════════════════════════
