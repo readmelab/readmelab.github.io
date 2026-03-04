@@ -1490,7 +1490,7 @@
             renderDaeun(db.luckCycles.currentDaeun.daeuns);
         }
 
-        // 세운
+        // 세운 — 기존
         if (db.luckCycles && db.luckCycles.currentSeun) {
             renderSeun(db.luckCycles.currentSeun);
         }
@@ -1751,37 +1751,56 @@
     }
 
     /* ── 4-6. 세운 그래프 ── */
-    function renderSeun(seunList) {
-        if (!seunList || seunList.length === 0) return;
+    /* ── 4-6. 세운 그래프 ── */
+    function renderSeun(seunData) {
+        if (!seunData) return;
         var card = document.getElementById('seunCard');
         var container = document.getElementById('seunBars');
+
+        // 배열이 아니면 배열로 변환
+        var seunList = [];
+        if (Array.isArray(seunData)) {
+            seunList = seunData;
+        } else if (typeof seunData === 'object') {
+            // 객체인 경우 배열로 변환 시도
+            for (var key in seunData) {
+                if (seunData.hasOwnProperty(key)) {
+                    var item = seunData[key];
+                    if (typeof item === 'object') {
+                        seunList.push(item);
+                    }
+                }
+            }
+        }
+
+        if (seunList.length === 0) return;
 
         var currentYear = new Date().getFullYear();
         var html = '';
 
-        // 높이를 인덱스 기반으로 산출 (가운데가 가장 높은 아치형 또는 랜덤)
         var heights = seunList.map(function(s, i) {
-            // 간단하게 해시 기반 높이 생성
-            var h = 40 + ((s.year || 0) * 7 + i * 13) % 60;
+            var h = 40 + ((( s.year || 0) * 7 + i * 13) % 60);
             return Math.min(100, h);
         });
 
         seunList.forEach(function(s, i) {
             var year = s.year || '';
             var pillar = s.pillarHanja || s.pillar || '';
-            var isCurrent = (year === currentYear);
+            var isCurrent = (year == currentYear);
             var h = heights[i];
 
             html += '<div class="seun-bar-wrap">';
             html += '<div class="seun-bar'+(isCurrent?' current-year':'')+'" style="height:'+h+'px;"></div>';
             html += '<div class="seun-bar-pillar">'+pillar+'</div>';
-            html += '<div class="seun-bar-year'+(isCurrent?' style="color:var(--gold);font-weight:700;"':'')+'">'+year+'</div>';
+            html += '<div class="seun-bar-year"'+(isCurrent?' style="color:var(--gold);font-weight:700;"':'')+'>'+year+'</div>';
             html += '</div>';
         });
 
         container.innerHTML = html;
         card.style.display = 'block';
     }
+
+
 
     /* ── 4-7. 챕터 렌더링 ── */
     function renderChapters(chapters) {
