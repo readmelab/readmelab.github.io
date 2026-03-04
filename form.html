@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>나를읽다 연구소 | 분석 설문</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+        :root {
+            --bg-deep: #0a0a14;
+            --bg-card: #12121f;
+            --bg-input: #16162a;
+            --gold: #c9a84c;
+            --gold-dim: #c9a84c33;
+            --gold-mid: #c9a84c66;
+            --gold-bright: #e8c44c;
+            --text-primary: #f5f0e8;
+            --text-secondary: #a09880;
+            --text-muted: #8a7a5a;
+            --text-dim: #6a6050;
+            --text-faint: #5a5040;
+            --text-ghost: #3a3530;
+            --danger: #c75050;
+            --font-serif: 'Noto Serif KR', serif;
+            --font-sans: 'Noto Sans KR', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 15px;
+            min-height: 100vh;
+            line-height: 1.8;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        /* ── 헤더 ── */
+        .header {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+
+        .brand {
+            font-family: var(--font-serif);
+            font-size: 13px;
+            color: var(--gold);
+            letter-spacing: 6px;
+        }
+
+        .ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .ornament .line {
+            height: 1px;
+            width: 60px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .ornament .diamond {
+            color: var(--gold);
+            font-size: 10px;
+        }
+
+        .page-title {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* ── 구분선 ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+            margin: 28px 0;
+        }
+
+        /* ── 섹션 ── */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 14px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* ── 폼 요소 ── */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label .required {
+            color: var(--gold);
+            margin-left: 2px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            -webkit-appearance: none;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+            line-height: 1.8;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-dim);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 6px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* 셀렉트 화살표 */
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        /* 날짜 한 줄 */
+        .form-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .form-row > * {
+            flex: 1;
+        }
+
+        /* ── 라디오 버튼 (성별, 양력/음력) ── */
+        .radio-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .radio-item {
+            flex: 1;
+        }
+
+        .radio-item input[type="radio"] {
+            display: none;
+        }
+
+        .radio-item label {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-item input[type="radio"]:checked + label {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201, 168, 76, 0.08);
+            box-shadow: 0 0 12px var(--gold-dim);
+        }
+
+        /* ── MBTI 그리드 ── */
+        .mbti-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .mbti-item input { display: none; }
+
+        .mbti-item label {
+            display: block;
+            text-align: center;
+            padding: 10px 0;
+            border: 1px solid var(--gold-dim);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mbti-item input:checked + label {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201, 168, 76, 0.08);
+        }
+
+        /* ── 객관식 (Q1, Q2) ── */
+        .choice-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .choice-item input[type="radio"] {
+            display: none;
+        }
+
+        .choice-item label {
+            display: block;
+            padding: 14px 16px;
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .choice-item input[type="radio"]:checked + label {
+            border-color: var(--gold);
+            color: var(--text-primary);
+            background: rgba(201, 168, 76, 0.06);
+            box-shadow: 0 0 15px var(--gold-dim);
+        }
+
+        /* F 선택 시 자유입력 */
+        .free-input-wrap {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .free-input-wrap.visible {
+            display: block;
+        }
+
+        /* ── 동의 ── */
+        .agree-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 0;
+        }
+
+        .agree-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .agree-item label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1.6;
+        }
+
+        /* ── 제출 버튼 ── */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+            color: var(--gold);
+            font-family: var(--font-serif);
+            font-size: 16px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(201,168,76,0.1));
+            box-shadow: 0 0 30px var(--gold-dim);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+            position: relative;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--gold-dim);
+            border-top: 2px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+        /* ── 완료 화면 ── */
+        .complete-screen {
+            display: none;
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .complete-icon {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .complete-title {
+            font-family: var(--font-serif);
+            font-size: 22px;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .complete-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* ── 에러 화면 ── */
+        .error-screen {
+            display: none;
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .error-screen h2 {
+            font-family: var(--font-serif);
+            color: var(--gold);
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .error-screen p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ── 토스트 ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+            border: 1px solid var(--gold-mid);
+            color: var(--gold);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── 푸터 ── */
+        .footer {
+            text-align: center;
+            padding: 40px 0 24px;
+            border-top: 1px solid var(--gold-dim);
+            margin-top: 40px;
+        }
+
+        .footer-brand {
+            font-family: var(--font-serif);
+            font-size: 11px;
+            color: var(--text-faint);
+            letter-spacing: 2px;
+        }
+
+        .footer-sub {
+            font-size: 11px;
+            color: var(--text-ghost);
+            margin-top: 4px;
+        }
+
+        /* ── 모바일 ── */
+        @media (max-width: 380px) {
+            body { padding: 16px; }
+            .form-input, .form-select, .form-textarea { padding: 12px 14px; }
+            .mbti-grid { gap: 6px; }
+            .mbti-item label { padding: 8px 0; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ── 헤더 ── -->
+        <div class="header">
+            <div class="brand">나를읽다</div>
+            <div class="ornament">
+                <div class="line"></div>
+                <div class="diamond">◆</div>
+                <div class="line"></div>
+            </div>
+            <div class="page-title">운명 분석 설문</div>
+            <div class="page-desc">
+                정확한 정보를 입력할수록<br>
+                더 깊이 있는 분석을 받으실 수 있습니다
+            </div>
+        </div>
+
+        <!-- ── 에러 화면 (관리코드 없을 때) ── -->
+        <div class="error-screen" id="errorScreen">
+            <h2>잘못된 접근입니다</h2>
+            <p>올바른 링크로 다시 접속해주세요</p>
+        </div>
+
+        <!-- ── 폼 ── -->
+        <div id="formWrap">
+
+            <div class="divider"></div>
+
+            <!-- 기본 정보 -->
+            <div class="section">
+                <div class="section-title">기 본 정 보</div>
+
+                <div class="form-group">
+                    <label class="form-label">이름 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="inputName"
+                           placeholder="홍길동" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">성별 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="gender" id="genderM" value="남">
+                            <label for="genderM">남성</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="gender" id="genderF" value="여">
+                            <label for="genderF">여성</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">생년월일 <span class="required">*</span></label>
+                    <div class="form-row">
+                        <select class="form-select" id="birthYear"></select>
+                        <select class="form-select" id="birthMonth"></select>
+                        <select class="form-select" id="birthDay"></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">양력 / 음력 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="calType" id="calSolar" value="양력" checked>
+                            <label for="calSolar">양력</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="calType" id="calLunar" value="음력">
+                            <label for="calLunar">음력</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">태어난 시간</label>
+                    <select class="form-select" id="birthTime">
+                        <option value="모름">모름</option>
+                        <option value="23:30">자시 (23:30~01:30)</option>
+                        <option value="01:30">축시 (01:30~03:30)</option>
+                        <option value="03:30">인시 (03:30~05:30)</option>
+                        <option value="05:30">묘시 (05:30~07:30)</option>
+                        <option value="07:30">진시 (07:30~09:30)</option>
+                        <option value="09:30">사시 (09:30~11:30)</option>
+                        <option value="11:30">오시 (11:30~13:30)</option>
+                        <option value="13:30">미시 (13:30~15:30)</option>
+                        <option value="15:30">신시 (15:30~17:30)</option>
+                        <option value="17:30">유시 (17:30~19:30)</option>
+                        <option value="19:30">술시 (19:30~21:30)</option>
+                        <option value="21:30">해시 (21:30~23:30)</option>
+                    </select>
+                    <div class="form-hint">모르시면 '모름'으로 두세요. 정확할수록 분석이 정밀해집니다.</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- MBTI -->
+            <div class="section">
+                <div class="section-title">M B T I</div>
+                <div class="form-group">
+                    <label class="form-label">본인의 MBTI를 선택해주세요</label>
+                    <div class="mbti-grid" id="mbtiGrid"></div>
+                    <div class="form-hint">모르시면 선택하지 않으셔도 됩니다</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Q1 -->
+            <div class="section">
+                <div class="section-title">당 신 의 이 야 기</div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Q1. 지금 현재, 가장 마음이 무거운 것은? <span class="required">*</span>
+                    </label>
+                    <div class="choice-group">
+                        <div class="choice-item">
+                            <input type="radio" name="q1" id="q1a" value="하고 싶은 일이 있는데 현실 때문에 못 하고 있어요" onchange="onQ1Change()">
+                            <label for="q1a">하고 싶은 일이 있는데 현실 때문에 못 하고 있어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q1" id="q1b" value="가까운 사람과의 관계가 예전 같지 않아요" onchange="onQ1Change()">
+                            <label for="q1b">가까운 사람과의 관계가 예전 같지 않아요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q1" id="q1c" value="경제적으로 불안하고, 앞으로가 걱정돼요" onchange="onQ1Change()">
+                            <label for="q1c">경제적으로 불안하고, 앞으로가 걱정돼요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q1" id="q1d" value="체력이나 건강이 예전 같지 않아요" onchange="onQ1Change()">
+                            <label for="q1d">체력이나 건강이 예전 같지 않아요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q1" id="q1e" value="나 자신이 누구인지, 뭘 원하는지 모르겠어요" onchange="onQ1Change()">
+                            <label for="q1e">나 자신이 누구인지, 뭘 원하는지 모르겠어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q1" id="q1f" value="직접입력" onchange="onQ1Change()">
+                            <label for="q1f">직접 적을게요</label>
+                        </div>
+                    </div>
+                    <div class="free-input-wrap" id="q1FreeWrap">
+                        <textarea class="form-textarea" id="q1Free"
+                                  placeholder="자유롭게 적어주세요..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="section">
+                <div class="form-group">
+                    <label class="form-label">
+                        Q2. 1년 뒤, 바라는 나의 모습은? <span class="required">*</span>
+                    </label>
+                    <div class="choice-group">
+                        <div class="choice-item">
+                            <input type="radio" name="q2" id="q2a" value="경제적으로 여유가 생겼으면 좋겠어요" onchange="onQ2Change()">
+                            <label for="q2a">경제적으로 여유가 생겼으면 좋겠어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q2" id="q2b" value="나만의 일을 하고 있었으면 좋겠어요" onchange="onQ2Change()">
+                            <label for="q2b">나만의 일을 하고 있었으면 좋겠어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q2" id="q2c" value="사랑하는 사람과 안정된 관계를 맺고 있었으면 좋겠어요" onchange="onQ2Change()">
+                            <label for="q2c">사랑하는 사람과 안정된 관계를 맺고 있었으면 좋겠어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q2" id="q2d" value="마음이 편안해졌으면 좋겠어요" onchange="onQ2Change()">
+                            <label for="q2d">마음이 편안해졌으면 좋겠어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q2" id="q2e" value="건강하고 활력이 넘쳤으면 좋겠어요" onchange="onQ2Change()">
+                            <label for="q2e">건강하고 활력이 넘쳤으면 좋겠어요</label>
+                        </div>
+                        <div class="choice-item">
+                            <input type="radio" name="q2" id="q2f" value="직접입력" onchange="onQ2Change()">
+                            <label for="q2f">직접 적을게요</label>
+                        </div>
+                    </div>
+                    <div class="free-input-wrap" id="q2FreeWrap">
+                        <textarea class="form-textarea" id="q2Free"
+                                  placeholder="자유롭게 적어주세요..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 연락처 -->
+            <div class="section">
+                <div class="section-title">연 락 처</div>
+
+                <div class="form-group">
+                    <label class="form-label">휴대폰 번호 <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="inputPhone"
+                           placeholder="010-0000-0000" autocomplete="tel">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" class="form-input" id="inputEmail"
+                           placeholder="example@email.com" autocomplete="email">
+                    <div class="form-hint">리포트 완성 시 이메일로도 안내드립니다</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 동의 -->
+            <div class="section">
+                <div class="agree-item">
+                    <input type="checkbox" id="agreePrivacy">
+                    <label for="agreePrivacy">
+                        개인정보 수집 및 이용에 동의합니다. (필수)<br>
+                        <span style="font-size:11px; color:var(--text-dim);">
+                            수집항목: 이름, 생년월일, 연락처, 이메일<br>
+                            이용목적: 사주 분석 및 결과 발송<br>
+                            보유기간: 서비스 제공 후 1년
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 제출 -->
+            <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+                제출하기
+            </button>
+        </div>
+
+        <!-- ── 완료 화면 ── -->
+        <div class="complete-screen" id="completeScreen">
+            <div class="complete-icon">✨</div>
+            <div class="complete-title">제출이 완료되었습니다</div>
+            <div class="complete-desc">
+                AI가 당신의 사주를 분석하고 있습니다.<br>
+                완성되면 알림톡으로 안내드릴게요.<br><br>
+                <span style="color:var(--text-dim); font-size:12px;">
+                    보통 영업일 기준 1~2일 내에 완성됩니다
+                </span>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <div class="footer">
+            <div class="footer-brand">나를읽다 연구소</div>
+            <div class="footer-sub">사주 × MBTI × AI 운명 분석</div>
+        </div>
+    </div>
+
+    <!-- 토스트 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        /* ═══════════════════════════════════════
+           설정
+           ═══════════════════════════════════════ */
+        var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
+
+        // URL에서 관리코드 추출
+        var urlParams = new URLSearchParams(window.location.search);
+        var adminCode = urlParams.get('code') || '';
+
+        /* ═══════════════════════════════════════
+           초기화
+           ═══════════════════════════════════════ */
+        document.addEventListener('DOMContentLoaded', function() {
+            // 관리코드 없으면 에러
+            if (!adminCode) {
+                document.getElementById('formWrap').style.display = 'none';
+                document.getElementById('errorScreen').style.display = 'block';
+                return;
+            }
+
+            // 년도 옵션 (2010 ~ 1940)
+            var yearSelect = document.getElementById('birthYear');
+            var currentYear = new Date().getFullYear();
+            yearSelect.innerHTML = '<option value="">년도</option>';
+            for (var y = currentYear - 16; y >= 1940; y--) {
+                yearSelect.innerHTML += '<option value="' + y + '">' + y + '년</option>';
+            }
+
+            // 월 옵션
+            var monthSelect = document.getElementById('birthMonth');
+            monthSelect.innerHTML = '<option value="">월</option>';
+            for (var m = 1; m <= 12; m++) {
+                monthSelect.innerHTML += '<option value="' + m + '">' + m + '월</option>';
+            }
+
+            // 일 옵션
+            var daySelect = document.getElementById('birthDay');
+            daySelect.innerHTML = '<option value="">일</option>';
+            for (var d = 1; d <= 31; d++) {
+                daySelect.innerHTML += '<option value="' + d + '">' + d + '일</option>';
+            }
+
+            // MBTI 그리드
+            var mbtis = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP',
+                         'ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
+            var mbtiHtml = '';
+            for (var i = 0; i < mbtis.length; i++) {
+                mbtiHtml += '<div class="mbti-item">'
+                    + '<input type="radio" name="mbti" id="mbti_' + mbtis[i] + '" value="' + mbtis[i] + '">'
+                    + '<label for="mbti_' + mbtis[i] + '">' + mbtis[i] + '</label>'
+                    + '</div>';
+            }
+            document.getElementById('mbtiGrid').innerHTML = mbtiHtml;
+        });
+
+        /* ═══════════════════════════════════════
+           Q1, Q2 자유입력 토글
+           ═══════════════════════════════════════ */
+        function onQ1Change() {
+            var selected = document.querySelector('input[name="q1"]:checked');
+            var freeWrap = document.getElementById('q1FreeWrap');
+            if (selected && selected.value === '직접입력') {
+                freeWrap.classList.add('visible');
+            } else {
+                freeWrap.classList.remove('visible');
+            }
+        }
+
+        function onQ2Change() {
+            var selected = document.querySelector('input[name="q2"]:checked');
+            var freeWrap = document.getElementById('q2FreeWrap');
+            if (selected && selected.value === '직접입력') {
+                freeWrap.classList.add('visible');
+            } else {
+                freeWrap.classList.remove('visible');
+            }
+        }
+
+        /* ═══════════════════════════════════════
+           토스트
+           ═══════════════════════════════════════ */
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 2500);
+        }
+
+        /* ═══════════════════════════════════════
+           제출
+           ═══════════════════════════════════════ */
+        async function submitForm() {
+            // 값 수집
+            var name = document.getElementById('inputName').value.trim();
+            var gender = document.querySelector('input[name="gender"]:checked');
+            var year = document.getElementById('birthYear').value;
+            var month = document.getElementById('birthMonth').value;
+            var day = document.getElementById('birthDay').value;
+            var calType = document.querySelector('input[name="calType"]:checked');
+            var birthTime = document.getElementById('birthTime').value;
+            var mbti = document.querySelector('input[name="mbti"]:checked');
+            var q1 = document.querySelector('input[name="q1"]:checked');
+            var q2 = document.querySelector('input[name="q2"]:checked');
+            var phone = document.getElementById('inputPhone').value.trim();
+            var email = document.getElementById('inputEmail').value.trim();
+            var agree = document.getElementById('agreePrivacy').checked;
+
+            // 검증
+            if (!name) { showToast('이름을 입력해주세요'); return; }
+            if (!gender) { showToast('성별을 선택해주세요'); return; }
+            if (!year || !month || !day) { showToast('생년월일을 선택해주세요'); return; }
+            if (!q1) { showToast('Q1을 선택해주세요'); return; }
+            if (!q2) { showToast('Q2를 선택해주세요'); return; }
+            if (!phone) { showToast('연락처를 입력해주세요'); return; }
+            if (!agree) { showToast('개인정보 수집에 동의해주세요'); return; }
+
+            // Q1, Q2 값 처리
+            var q1Value = q1.value;
+            if (q1Value === '직접입력') {
+                q1Value = document.getElementById('q1Free').value.trim();
+                if (!q1Value) { showToast('Q1 답변을 적어주세요'); return; }
+            }
+
+            var q2Value = q2.value;
+            if (q2Value === '직접입력') {
+                q2Value = document.getElementById('q2Free').value.trim();
+                if (!q2Value) { showToast('Q2 답변을 적어주세요'); return; }
+            }
+
+            // 생년월일 포맷
+            var birthDate = year + '-'
+                + String(month).padStart(2, '0') + '-'
+                + String(day).padStart(2, '0');
+
+            // 심층질문 합치기 (기존 GAS가 '심층질문' 1개 필드로 받으니까)
+            var deepTopic = 'Q1. ' + q1Value + '\nQ2. ' + q2Value;
+
+            // 버튼 로딩
+            var btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.textContent = '제출 중...';
+            btn.disabled = true;
+
+            try {
+                // GAS에 데이터 전송
+                var payload = {
+                    type: 'WEB_FORM_SUBMIT',
+                    apiKey: '',
+                    adminCode: adminCode,
+                    name: name,
+                    gender: gender.value,
+                    birthDate: birthDate,
+                    calendarType: calType.value,
+                    birthTime: birthTime,
+                    mbti: mbti ? mbti.value : '',
+                    deepTopic: deepTopic,
+                    q1: q1Value,
+                    q2: q2Value,
+                    phone: phone,
+                    email: email
+                };
+
+                var response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    redirect: 'follow'
+                });
+
+                // 성공 화면
+                document.getElementById('formWrap').style.display = 'none';
+                document.getElementById('completeScreen').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error('제출 오류:', err);
+                btn.classList.remove('loading');
+                btn.textContent = '제출하기';
+                btn.disabled = false;
+                showToast('제출에 실패했습니다. 다시 시도해주세요.');
+            }
+        }
+    </script>
+</body>
+</html>
