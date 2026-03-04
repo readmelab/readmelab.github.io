@@ -890,23 +890,106 @@
     function parseReportData(d) {
         // 정적 JSON: d.report 객체
         if (d.report) {
-            reportData = d.report;
+            reportData = normalizeReportData(d.report);
             applyDesignFromSheet(d.design || null);
             return;
         }
         // GAS doGet: d.webReportData (문자열이면 파싱)
         if (d.webReportData) {
-            if (typeof d.webReportData === 'string') {
-                try { reportData = JSON.parse(d.webReportData); } catch(e) { reportData = null; }
-            } else {
-                reportData = d.webReportData;
-                applyDesignFromSheet(d.design || null);
+            var raw = d.webReportData;
+            if (typeof raw === 'string') {
+                try { raw = JSON.parse(raw); } catch(e) { raw = null; }
             }
+            reportData = normalizeReportData(raw);
+            applyDesignFromSheet(d.design || null);
             return;
         }
         // 리포트 없음 — 보증서만 표시
         reportData = null;
     }
+
+    function normalizeReportData(r) {
+        if (!r) return null;
+
+        // ── 1. oheng: 영어→한글 변환 (수동 라인용, 자동은 이미 한글) ──
+        if (r.dashboard && r.dashboard.oheng) {
+            var oh = r.dashboard.oheng;
+            if (oh.wood !== undefined && oh['목'] === undefined) {
+                r.dashboard.oheng = {
+                    '목': Number(oh.wood) || 0,
+                    '화': Number(oh.fire) || 0,
+                    '토': Number(oh.earth) || 0,
+                    '금': Number(oh.metal) || 0,
+                    '수': Number(oh.water) || 0,
+                    dominant: oh.dominant || '',
+                    weakest: oh.weakest || ''
+                };
+            }
+            var engToKor = {wood:'목', fire:'화', earth:'토', metal:'금', water:'수'};
+            var oFinal = r.dashboard.oheng;
+            if (engToKor[oFinal.dominant]) oFinal.dominant = engToKor[oFinal.dominant];
+            if (engToKor[oFinal.weakest]) oFinal.weakest = engToKor[oFinal.weakest];
+        }
+        if (!r.oheng && r.dashboard && r.dashboard.oheng) {
+            r.oheng = r.dashboard.oheng;
+        }
+
+        // ── 2. sajuSummary.fourPillars 생성 (수동 라인용) ──
+        if (!r.sajuSummary && r.dashboard && r.dashboard.pillars_visual) {
+            var pv = r.dashboard.pillars_visual;
+            var stemElement = {
+                '갑':'목','을':'목','병':'화','정':'화','무':'토',
+                '기':'토','경':'금','신':'금','임':'수','계':'수'
+            };
+            var pillars = {};
+            ['year','month','day','hour'].forEach(function(key) {
+                if (pv[key]) {
+                    pillars[key] = {
+                        cheongan: pv[key].cheongan || '',
+                        jiji: pv[key].jiji || '',
+                        hanja: (pv[key].cheongan || '') + (pv[key].jiji || '')
+                    };
+                }
+            });
+            r.sajuSummary = { fourPillars: pillars };
+
+            if (!r.dashboard.dayMaster && pv.day && pv.day.cheongan) {
+                r.dashboard.dayMaster = {
+                    char: pv.day.cheongan,
+                    element: stemElement[pv.day.cheongan] || '?'
+                };
+            }
+        }
+
+        // ── 3. oneLiner 정규화 ──
+        if (!r.oneLiner && r.meta && r.meta.oneLiner) {
+            r.oneLiner = r.meta.oneLiner;
+        }
+
+        // ── 4. actionPlan 배열 정규화 ──
+        if (r.actionPlan && !Array.isArray(r.actionPlan)) {
+            var ap = [];
+            Object.keys(r.actionPlan).forEach(function(k) {
+                ap.push({ day: k, action: r.actionPlan[k] });
+            });
+            r.actionPlan = ap;
+        }
+
+        // ── 5. emotion_curve → emotions 매핑 ──
+        if (r.chapters && r.emotion_curve) {
+            var moodMap = {'very_low':1,'low':2,'neutral':3,'high':4,'very_high':5};
+            r.chapters.forEach(function(ch, i) {
+                if (!ch.emotion && r.emotion_curve[i]) {
+                    var mood = r.emotion_curve[i].mood || r.emotion_curve[i];
+                    ch.emotion = moodMap[mood] || 3;
+                }
+            });
+        }
+
+        console.log('✅ 리포트 데이터 정규화 완료');
+        return r;
+    }
+
 
     /* ══════════════════════════════════════
        2. 인트로 & 진입
