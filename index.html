@@ -828,6 +828,7 @@
             // 데이터 파싱
             parseCertData(data);
             parseReportData(data);
+            try { sessionStorage.setItem('naread_report', JSON.stringify(data)); } catch(e) {}
 
             // 인트로 표시
             showIntro();
@@ -1431,21 +1432,18 @@ function showCoupleIntro(d) {
        3. 뷰 전환
        ══════════════════════════════════════ */
     /* ── 변경: switchView — 탭 참조 제거 ── */
-    function switchView(view) {
-        currentView = view;
-        var certView = document.getElementById('certView');
-        var reportView = document.getElementById('reportView');
-
-        if (view === 'report' && reportData) {
-            certView.style.display = 'none';
-            reportView.classList.add('active');
-            setTimeout(observeChapters, 100);
-            window.scrollTo({ top: document.getElementById('certificate').offsetTop, behavior: 'smooth' });
-        } else {
-            certView.style.display = 'block';
-            reportView.classList.remove('active');
-        }
+function switchView(view) {
+    if (view === 'report') {
+        var code = new URLSearchParams(window.location.search).get('code') || '';
+        window.location.href = 'report.html?code=' + encodeURIComponent(code);
+        return;
     }
+    currentView = view;
+    var certView = document.getElementById('certView');
+    var reportView = document.getElementById('reportView');
+    certView.style.display = 'block';
+    if (reportView) reportView.classList.remove('active');
+}
 
     /* ══════════════════════════════════════
        4. 리포트 렌더링
