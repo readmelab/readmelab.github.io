@@ -195,7 +195,7 @@
             flex: 1;
         }
 
-        /* ── 라디오 버튼 (성별, 양력/음력) ── */
+        /* ── 라디오 버튼 (성별, 양력/음력, 결혼/자녀) ── */
         .radio-group {
             display: flex;
             gap: 10px;
@@ -575,6 +575,43 @@
 
             <div class="divider"></div>
 
+            <!-- 결혼/자녀 -->
+            <div class="section">
+                <div class="section-title">결 혼 · 자 녀</div>
+                <div class="form-group">
+                    <label class="form-label">결혼 상태 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="marriage" id="marriageSingle" value="미혼">
+                            <label for="marriageSingle">미혼</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="marriage" id="marriageMarried" value="기혼">
+                            <label for="marriageMarried">기혼</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="marriage" id="marriageOther" value="이혼·사별">
+                            <label for="marriageOther">이혼·사별</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">자녀 유무 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="children" id="childrenNo" value="없음">
+                            <label for="childrenNo">없음</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="children" id="childrenYes" value="있음">
+                            <label for="childrenYes">있음</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
             <!-- Q1 -->
             <div class="section">
                 <div class="section-title">당 신 의 이 야 기</div>
@@ -684,7 +721,7 @@
                     <label for="agreePrivacy">
                         개인정보 수집 및 이용에 동의합니다. (필수)<br>
                         <span style="font-size:11px; color:var(--text-dim);">
-                            수집항목: 이름, 생년월일, 연락처, 이메일<br>
+                            수집항목: 이름, 생년월일, 성별, 결혼 상태, 자녀 유무, 연락처, 이메일<br>
                             이용목적: 사주 분석 및 결과 발송<br>
                             보유기간: 서비스 제공 후 1년
                         </span>
@@ -825,6 +862,8 @@
             var mbti = document.querySelector('input[name="mbti"]:checked');
             var q1 = document.querySelector('input[name="q1"]:checked');
             var q2 = document.querySelector('input[name="q2"]:checked');
+            var marriage = document.querySelector('input[name="marriage"]:checked');
+            var children = document.querySelector('input[name="children"]:checked');
             var phone = document.getElementById('inputPhone').value.trim();
             var email = document.getElementById('inputEmail').value.trim();
             var agree = document.getElementById('agreePrivacy').checked;
@@ -835,6 +874,8 @@
             if (!year || !month || !day) { showToast('생년월일을 선택해주세요'); return; }
             if (!q1) { showToast('Q1을 선택해주세요'); return; }
             if (!q2) { showToast('Q2를 선택해주세요'); return; }
+            if (!marriage) { showToast('결혼 상태를 선택해주세요'); return; }
+            if (!children) { showToast('자녀 유무를 선택해주세요'); return; }
             if (!phone) { showToast('연락처를 입력해주세요'); return; }
             if (!agree) { showToast('개인정보 수집에 동의해주세요'); return; }
 
@@ -856,7 +897,7 @@
                 + String(month).padStart(2, '0') + '-'
                 + String(day).padStart(2, '0');
 
-            // 심층질문 합치기 (기존 GAS가 '심층질문' 1개 필드로 받으니까)
+            // 심층질문 합치기
             var deepTopic = 'Q1. ' + q1Value + '\nQ2. ' + q2Value;
 
             // 버튼 로딩
@@ -880,16 +921,18 @@
                     deepTopic: deepTopic,
                     q1: q1Value,
                     q2: q2Value,
+                    marriageStatus: marriage.value,
+                    childrenStatus: children.value,
                     phone: phone,
                     email: email
                 };
 
-    var response = await fetch(GAS_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(payload)
-});
+                var response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
 
                 // 성공 화면
                 document.getElementById('formWrap').style.display = 'none';
