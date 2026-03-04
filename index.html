@@ -1434,8 +1434,9 @@ function showCoupleIntro(d) {
     /* ── 변경: switchView — 탭 참조 제거 ── */
 function switchView(view) {
     if (view === 'report') {
-        var code = new URLSearchParams(window.location.search).get('code') || '';
-        window.location.href = 'report.html?code=' + encodeURIComponent(code);
+        var code = new URLSearchParams(window.location.search).get('c') || 
+                   new URLSearchParams(window.location.search).get('code') || '';
+        window.location.href = '/report?code=' + encodeURIComponent(code);
         return;
     }
     currentView = view;
@@ -2156,13 +2157,8 @@ function escapeHtml(str) {
         console.log('✅ 디자인설정 적용 완료:', design['템플릿명'] || design['상품코드']);
     }
 
-     function switchView(view) {
-  if (view === 'report') {
-    var code = new URLSearchParams(window.location.search).get('code') || '';
-    window.location.href = '/report?code=' + encodeURIComponent(code);
-    return;
-  }
-}   
+}
+        
     </script>
 </body>
 </html>
