@@ -22,7 +22,16 @@ var ChartVisuals = (function() {
   };
   var OHENG_LABELS = {
     '목': '木', '화': '火', '토': '土', '금': '金', '수': '水'
-  };
+
+ };
+  
+    // ── 점수 범위 조정 (C안: 55~95) ──
+  function normalizeScore(raw, rawMin, rawMax) {
+  var MIN = 55, MAX = 95;
+  var clamped = Math.max(rawMin, Math.min(rawMax, raw));
+  var ratio = (clamped - rawMin) / (rawMax - rawMin || 1);
+  return Math.round(MIN + ratio * (MAX - MIN));
+}
 
   // ═══════════════════════════════════
   // 스크롤 트리거
@@ -347,7 +356,8 @@ var ChartVisuals = (function() {
     var pyeonJae = detail['편재']||0, jeongJae = detail['정재']||0;
     var pyeonGwan = detail['편관']||0, jeongGwan = detail['정관']||0;
 
-    var loveScore = Math.min(100, Math.round((jae + gwan) * 12 + 20));
+    var rawWealth = jaeTotal * 18 + 15;
+    var wealthScore = normalizeScore(rawWealth, 15, 100);
     var fillPct = loveScore / 100;
 
     var W = 300, H = 260;
@@ -551,7 +561,7 @@ var ChartVisuals = (function() {
       else { var hash = gan.charCodeAt(0) + (ji ? ji.charCodeAt(0) : 0); s = 45 + (hash % 16); }
       if (jiOh === yongShinOheng) s = Math.min(s + 8, 98);
       else if (SANGSAENG[jiOh] === yongShinOheng) s = Math.min(s + 5, 95);
-      return s;
+      return normalizeScore(s, 45, 98);
     }
 
     var el = document.createElement('div');
@@ -675,7 +685,8 @@ var ChartVisuals = (function() {
         '관대':80,'건록':90,'제왕':95,'쇠':50,'병':35,'사':25,'묘':15
       };
       monthly.forEach(function(m) {
-        var score = UNSUNG_SCORE[m.unsung] || 50;
+        var rawScore = UNSUNG_SCORE[m.unsung] || 50;
+        scores.push(normalizeScore(rawScore, 15, 95));
         scores.push(score);
         labels.push(m.label || (m.month+'월'));
       });
@@ -693,7 +704,7 @@ var ChartVisuals = (function() {
         else if (SANGSAENG[oh] === yongShinOheng) s = 78;
         else if (SANGSAENG[yongShinOheng] === oh) s = 72;
         else { var hash = gan.charCodeAt(0) + ji.charCodeAt(0) + i; s = 45 + (hash % 16); }
-        scores.push(s);
+        scores.push(normalizeScore(s, 45, 88));
         labels.push((i+1)+'월');
       });
     }
