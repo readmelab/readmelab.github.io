@@ -2360,11 +2360,12 @@
     var nav=document.getElementById('chapterNav');
     if(!nav)return;
     var cards=document.querySelectorAll('.chapter-card');
-    if(cards.length===0){
-      if(buildNav._retry<20){buildNav._retry++;setTimeout(buildNav,800);}
+    // 최소 10개 이상일 때만 생성 (14챕터 기대)
+    if(cards.length<10){
+      if(buildNav._retry<30){buildNav._retry++;setTimeout(buildNav,1000);}
       return;
     }
-    console.log('📍 네비 생성: 챕터 '+cards.length+'개 감지');
+    console.log('📍 네비 완성: 챕터 '+cards.length+'개');
     nav.innerHTML='';
     for(var i=0;i<cards.length;i++){
       (function(idx,card){
@@ -2393,10 +2394,11 @@
     cards.forEach(function(c){observer.observe(c);});
   }
   buildNav._retry=0;
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(buildNav,2000);});
-  window.addEventListener('load',function(){setTimeout(buildNav,3000);});
+  setTimeout(buildNav,3000);
   setTimeout(buildNav,5000);
   setTimeout(buildNav,8000);
+  setTimeout(buildNav,12000);
+  setTimeout(buildNav,16000);
 })();
 </script>
 </body>
