@@ -2263,20 +2263,19 @@ function renderSeun(seunData) {
 
             if (idx < chapters.length - 1) {
                 var CHAPTER_EMOJI = [
-                  '',      // 0
-                  '☯',    // 1→2 사이: 오행
-                  '⚖',    // 2→3: 용신
-                  '🌊',   // 3→4: 십이운성
-                  '🔗',   // 4→5: 십성
-                  '🧭',   // 5→6: 격국
-                  '🌟',   // 6→7: 2026운세
-                  '💕',   // 7→8: 연애결혼
-                  '💼',   // 8→9: 직업
-                  '💰',   // 9→10: 재물
-                  '🏥',   // 10→11: 건강
-                  '🔮',   // 11→12: 대운
-                  '📅',   // 12→13: 월별운세
-                  '✉️'    // 13→14: 편지
+                  '☯',    // idx0: CH1→CH2
+                  '⚖',    // idx1: CH2→CH3
+                  '🌊',   // idx2: CH3→CH4
+                  '🔗',   // idx3: CH4→CH5
+                  '🧭',   // idx4: CH5→CH6
+                  '✨',   // idx5: CH6→CH7
+                  '🌟',   // idx6: CH7→CH8
+                  '💕',   // idx7: CH8→CH9
+                  '🤝',   // idx8: CH9→CH10
+                  '💰',   // idx9: CH10→CH11
+                  '🏥',   // idx10: CH11→CH12
+                  '🔮',   // idx11: CH12→CH13
+                  '✉️'    // idx12: CH13→CH14
                 ];
                 var emoji = CHAPTER_EMOJI[idx] || '✦';
                 var divider = document.createElement('div');
