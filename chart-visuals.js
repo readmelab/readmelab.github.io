@@ -427,40 +427,49 @@ var ChartVisuals = (function() {
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
   // ═══════════════════════════════════
-  // CH12: 대운 — 인생 운세 타임라인 (가장 화려하게)
+  // CH12: 대운 — 인생 운세 타임라인
   // ═══════════════════════════════════
   function renderCh12(container, db) {
-    var daeunData = db.daeun || (db.luckCycles && db.luckCycles.daeun) || null;
+    // 데이터 경로 수정
+    var lc = db.luckCycles || {};
+    var daeunData = lc.currentDaeun || db.daeun || null;
     if (!daeunData) return;
     var daeuns = daeunData.daeuns || [];
     if (daeuns.length === 0) return;
 
-    // 현재 나이 계산 (생년 기준)
+    // 현재 대운 정보
+    var currentPillar = lc.currentDaeunPillar || {};
+    var currentAge = currentPillar.age || 0;
+
+    // 생년 역산
     var birthYear = 0;
-    if (db.customerInfo && db.customerInfo.birthDate) {
-      birthYear = parseInt(String(db.customerInfo.birthDate).substring(0, 4)) || 0;
-    }
-    if (!birthYear && daeuns[0]) {
+    if (currentPillar.startYear && currentPillar.age) {
+      birthYear = currentPillar.startYear - currentPillar.age;
+    } else if (daeuns[0]) {
       birthYear = daeuns[0].startYear - daeuns[0].age;
     }
-    var currentYear = 2026;
-    var currentAge = currentYear - birthYear;
+    var nowAge = 2026 - birthYear;
 
-    // 운세 점수 추정 (천간 기준 — 용신과의 관계)
+    // 용신 오행
     var yongShinOheng = (db.yongShin && db.yongShin.yongShin) || '';
     var GAN_OHENG = {
       '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토',
       '己':'토','庚':'금','辛':'금','壬':'수','癸':'수'
     };
-    // 오행 상생 관계로 점수 추정
     var SANGSAENG = {'목':'화','화':'토','토':'금','금':'수','수':'목'};
-    function scoreForGan(gan) {
+
+    function scoreForPillar(gan, ji) {
       var oh = GAN_OHENG[gan] || '';
-      if (!yongShinOheng) return 60;
-      if (oh === yongShinOheng) return 90;           // 용신과 같은 오행
-      if (SANGSAENG[oh] === yongShinOheng) return 80; // 용신을 생해줌
-      if (SANGSAENG[yongShinOheng] === oh) return 75; // 용신이 생해줌
-      return 50; // 상극 등
+      var jiOh = GAN_OHENG[ji] || '';
+      var s = 55;
+      if (oh === yongShinOheng) s = 90;
+      else if (SANGSAENG[oh] === yongShinOheng) s = 80;
+      else if (SANGSAENG[yongShinOheng] === oh) s = 75;
+      else { var hash = gan.charCodeAt(0) + (ji ? ji.charCodeAt(0) : 0); s = 45 + (hash % 16); }
+      // 지지 보정
+      if (jiOh === yongShinOheng) s = Math.min(s + 8, 98);
+      else if (SANGSAENG[jiOh] === yongShinOheng) s = Math.min(s + 5, 95);
+      return s;
     }
 
     var el = document.createElement('div');
@@ -483,121 +492,84 @@ var ChartVisuals = (function() {
       svg += '<text x="'+(padL-8)+'" y="'+(gy+3)+'" text-anchor="end" fill="#6a6050" font-size="8" opacity="0.5">'+label+'</text>';
     }
 
-    // 데이터 포인트
     var pts = [];
     var currentIdx = -1;
     var bestIdx = 0, bestScore = 0;
 
     daeuns.forEach(function(d, i) {
-      var score = scoreForGan(d.gan);
-      // 약간의 변동성 추가 (지지 기반)
-      var jiOh = GAN_OHENG[d.ji] || '';
-      if (jiOh === yongShinOheng) score = Math.min(score + 8, 98);
-      if (SANGSAENG[jiOh] === yongShinOheng) score = Math.min(score + 5, 95);
-
+      var score = scoreForPillar(d.gan, d.ji);
       var x = padL + (chartW / (n - 1 || 1)) * i;
       var y = padT + chartH * (1 - score / 100);
       pts.push({ x: x, y: y, score: score, d: d });
 
       if (score > bestScore) { bestScore = score; bestIdx = i; }
 
-      // 현재 대운 구간 판별
+      // 현재 대운 판별
       var nextAge = daeuns[i + 1] ? daeuns[i + 1].age : d.age + 10;
-      if (currentAge >= d.age && currentAge < nextAge) {
-        currentIdx = i;
-      }
+      if (nowAge >= d.age && nowAge < nextAge) { currentIdx = i; }
     });
 
-    // 면적 그라데이션
+    // 그라데이션
     svg += '<defs>';
-    svg += '<linearGradient id="cvDaeunGrad" x1="0" y1="0" x2="0" y2="1">';
-    svg += '<stop offset="0%" stop-color="#c9a84c" stop-opacity="0.2"/>';
-    svg += '<stop offset="100%" stop-color="#c9a84c" stop-opacity="0.01"/>';
-    svg += '</linearGradient>';
-    svg += '<linearGradient id="cvDaeunLineGrad" x1="0" y1="0" x2="1" y2="0">';
-    svg += '<stop offset="0%" stop-color="#c9a84c" stop-opacity="0.4"/>';
-    svg += '<stop offset="50%" stop-color="#c9a84c" stop-opacity="1"/>';
-    svg += '<stop offset="100%" stop-color="#c9a84c" stop-opacity="0.4"/>';
-    svg += '</linearGradient>';
-    // 현재 위치 글로우
+    svg += '<linearGradient id="cvDaeunGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.2"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.01"/></linearGradient>';
     svg += '<radialGradient id="cvNowGlow"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.4"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/></radialGradient>';
     svg += '</defs>';
 
-    // 곡선 경로
+    // 곡선
     if (pts.length > 1) {
       var pathD = 'M' + pts[0].x + ',' + pts[0].y;
       for (var i = 1; i < pts.length; i++) {
-        var pr = pts[i - 1], cu = pts[i];
-        var cpx1 = pr.x + (cu.x - pr.x) * 0.4;
-        var cpx2 = pr.x + (cu.x - pr.x) * 0.6;
-        pathD += ' C' + cpx1 + ',' + pr.y + ' ' + cpx2 + ',' + cu.y + ' ' + cu.x + ',' + cu.y;
+        var pr = pts[i-1], cu = pts[i];
+        pathD += ' C'+(pr.x+(cu.x-pr.x)*0.4)+','+pr.y+' '+(pr.x+(cu.x-pr.x)*0.6)+','+cu.y+' '+cu.x+','+cu.y;
       }
-
-      // 면적
-      var areaD = pathD + ' L' + pts[pts.length - 1].x + ',' + (padT + chartH) + ' L' + pts[0].x + ',' + (padT + chartH) + ' Z';
-      svg += '<path d="' + areaD + '" fill="url(#cvDaeunGrad)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="1s" fill="freeze"/></path>';
-
-      // 곡선
-      svg += '<path d="' + pathD + '" fill="none" stroke="url(#cvDaeunLineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="800" stroke-dashoffset="800"><animate attributeName="stroke-dashoffset" from="800" to="0" dur="2s" fill="freeze"/></path>';
+      var areaD = pathD + ' L'+pts[pts.length-1].x+','+(padT+chartH)+' L'+pts[0].x+','+(padT+chartH)+' Z';
+      svg += '<path d="'+areaD+'" fill="url(#cvDaeunGrad)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="1s" fill="freeze"/></path>';
+      svg += '<path d="'+pathD+'" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="800" stroke-dashoffset="800"><animate attributeName="stroke-dashoffset" from="800" to="0" dur="2s" fill="freeze"/></path>';
     }
 
-    // 각 대운 포인트
+    // 포인트
     pts.forEach(function(p, i) {
       var delay = 0.5 + i * 0.15;
       var isCurrent = (i === currentIdx);
       var isBest = (i === bestIdx);
-
-      // 점
       var dotR = isCurrent ? 7 : (isBest ? 6 : 4);
       var dotColor = isCurrent ? '#FFD700' : (isBest ? '#4CAF50' : '#c9a84c');
-      svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="0" fill="' + dotColor + '" stroke="#0a0a14" stroke-width="2">';
-      svg += '<animate attributeName="r" from="0" to="' + dotR + '" dur="0.4s" begin="' + delay + 's" fill="freeze"/>';
-      svg += '</circle>';
 
-      // 현재 대운 강조
+      svg += '<circle cx="'+p.x+'" cy="'+p.y+'" r="0" fill="'+dotColor+'" stroke="#0a0a14" stroke-width="2"><animate attributeName="r" from="0" to="'+dotR+'" dur="0.4s" begin="'+delay+'s" fill="freeze"/></circle>';
+
       if (isCurrent) {
-        svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="20" fill="url(#cvNowGlow)"><animate attributeName="r" values="15;25;15" dur="2s" repeatCount="indefinite"/></circle>';
-        svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + dotR + '" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.6"><animate attributeName="r" values="' + dotR + ';' + (dotR + 6) + ';' + dotR + '" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/></circle>';
-        // "지금" 라벨
-        svg += '<rect x="' + (p.x - 18) + '" y="' + (p.y - 32) + '" width="36" height="16" rx="8" fill="#FFD700" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.2) + 's" fill="freeze"/></rect>';
-        svg += '<text x="' + p.x + '" y="' + (p.y - 21) + '" text-anchor="middle" fill="#0a0a14" font-size="9" font-weight="700" opacity="0">지금<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.2) + 's" fill="freeze"/></text>';
+        svg += '<circle cx="'+p.x+'" cy="'+p.y+'" r="20" fill="url(#cvNowGlow)"><animate attributeName="r" values="15;25;15" dur="2s" repeatCount="indefinite"/></circle>';
+        svg += '<circle cx="'+p.x+'" cy="'+p.y+'" r="'+dotR+'" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.6"><animate attributeName="r" values="'+dotR+';'+(dotR+6)+';'+dotR+'" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/></circle>';
+        svg += '<rect x="'+(p.x-18)+'" y="'+(p.y-32)+'" width="36" height="16" rx="8" fill="#FFD700" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.2)+'s" fill="freeze"/></rect>';
+        svg += '<text x="'+p.x+'" y="'+(p.y-21)+'" text-anchor="middle" fill="#0a0a14" font-size="9" font-weight="700" opacity="0">지금<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.2)+'s" fill="freeze"/></text>';
       }
-
-      // 최고 운 표시
       if (isBest && !isCurrent) {
-        svg += '<text x="' + p.x + '" y="' + (p.y - 14) + '" text-anchor="middle" fill="#4CAF50" font-size="8" font-weight="700" opacity="0">★ 최고운<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.2) + 's" fill="freeze"/></text>';
+        svg += '<text x="'+p.x+'" y="'+(p.y-14)+'" text-anchor="middle" fill="#4CAF50" font-size="8" font-weight="700" opacity="0">★ 최고운<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.2)+'s" fill="freeze"/></text>';
       }
-
-      // 점수
       if (isCurrent || isBest) {
-        var scoreY = isCurrent ? (p.y + 18) : (p.y - 6);
-        svg += '<text x="' + p.x + '" y="' + scoreY + '" text-anchor="middle" fill="' + dotColor + '" font-size="10" font-weight="700" opacity="0">' + p.score + '점<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.3) + 's" fill="freeze"/></text>';
+        var scoreY = isCurrent ? (p.y+18) : (p.y-6);
+        svg += '<text x="'+p.x+'" y="'+scoreY+'" text-anchor="middle" fill="'+dotColor+'" font-size="10" font-weight="700" opacity="0">'+p.score+'점<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.3)+'s" fill="freeze"/></text>';
       }
 
-      // 하단 라벨: 나이 + 간지
-      svg += '<text x="' + p.x + '" y="' + (padT + chartH + 16) + '" text-anchor="middle" fill="' + (isCurrent ? '#FFD700' : '#6a6050') + '" font-size="' + (isCurrent ? '11' : '9') + '" font-weight="' + (isCurrent ? '700' : '400') + '" opacity="0">' + p.d.age + '세<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + delay + 's" fill="freeze"/></text>';
-      svg += '<text x="' + p.x + '" y="' + (padT + chartH + 30) + '" text-anchor="middle" fill="' + (isCurrent ? '#FFD700' : '#8a7a5a') + '" font-size="' + (isCurrent ? '12' : '10') + '" font-weight="700" font-family="Noto Serif KR,serif" opacity="0">' + p.d.pillar + '<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + delay + 's" fill="freeze"/></text>';
-      svg += '<text x="' + p.x + '" y="' + (padT + chartH + 44) + '" text-anchor="middle" fill="#6a6050" font-size="7" opacity="0">' + p.d.startYear + '~<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + delay + 's" fill="freeze"/></text>';
+      svg += '<text x="'+p.x+'" y="'+(padT+chartH+16)+'" text-anchor="middle" fill="'+(isCurrent?'#FFD700':'#6a6050')+'" font-size="'+(isCurrent?'11':'9')+'" font-weight="'+(isCurrent?'700':'400')+'" opacity="0">'+p.d.age+'세<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+delay+'s" fill="freeze"/></text>';
+      svg += '<text x="'+p.x+'" y="'+(padT+chartH+30)+'" text-anchor="middle" fill="'+(isCurrent?'#FFD700':'#8a7a5a')+'" font-size="'+(isCurrent?'12':'10')+'" font-weight="700" font-family="Noto Serif KR,serif" opacity="0">'+p.d.pillar+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+delay+'s" fill="freeze"/></text>';
+      svg += '<text x="'+p.x+'" y="'+(padT+chartH+44)+'" text-anchor="middle" fill="#6a6050" font-size="7" opacity="0">'+p.d.startYear+'~<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+delay+'s" fill="freeze"/></text>';
     });
 
-    // 범례
-    svg += '<circle cx="' + padL + '" cy="' + (H - 8) + '" r="4" fill="#FFD700"/>';
-    svg += '<text x="' + (padL + 8) + '" y="' + (H - 5) + '" fill="#6a6050" font-size="8">현재 대운</text>';
-    svg += '<circle cx="' + (padL + 70) + '" cy="' + (H - 8) + '" r="4" fill="#4CAF50"/>';
-    svg += '<text x="' + (padL + 78) + '" y="' + (H - 5) + '" fill="#6a6050" font-size="8">최고 운</text>';
-
+    svg += '<circle cx="'+padL+'" cy="'+(H-8)+'" r="4" fill="#FFD700"/><text x="'+(padL+8)+'" y="'+(H-5)+'" fill="#6a6050" font-size="8">현재</text>';
+    svg += '<circle cx="'+(padL+55)+'" cy="'+(H-8)+'" r="4" fill="#4CAF50"/><text x="'+(padL+63)+'" y="'+(H-5)+'" fill="#6a6050" font-size="8">최고운</text>';
     svg += '</svg>';
 
-    // 하단 요약 텍스트
+    // 요약
     var summaryHtml = '';
     if (currentIdx >= 0) {
       var cd = daeuns[currentIdx];
-      var endAge = daeuns[currentIdx + 1] ? daeuns[currentIdx + 1].age : cd.age + 10;
+      var endAge = daeuns[currentIdx+1] ? daeuns[currentIdx+1].age : cd.age+10;
       summaryHtml = '<div style="text-align:center;margin-top:12px;padding:12px;background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.1);border-radius:10px;">';
-      summaryHtml += '<span style="color:#FFD700;font-weight:700;">현재 ' + cd.pillar + ' 대운</span>';
-      summaryHtml += '<span style="color:#6a6050;font-size:12px;"> (' + cd.age + '~' + endAge + '세, ' + cd.startYear + '~' + (cd.startYear + 10) + '년)</span>';
+      summaryHtml += '<span style="color:#FFD700;font-weight:700;">현재 '+cd.pillar+' 대운</span>';
+      summaryHtml += '<span style="color:#6a6050;font-size:12px;"> ('+cd.age+'~'+endAge+'세, '+cd.startYear+'~'+(cd.startYear+10)+'년)</span>';
       if (bestIdx !== currentIdx) {
-        summaryHtml += '<br><span style="color:#4CAF50;font-size:12px;margin-top:4px;display:inline-block;">★ 최고 운세 시기: ' + daeuns[bestIdx].age + '세 (' + daeuns[bestIdx].pillar + ', ' + daeuns[bestIdx].startYear + '년~)</span>';
+        summaryHtml += '<br><span style="color:#4CAF50;font-size:12px;">★ 최고 운세 시기: '+daeuns[bestIdx].age+'세 ('+daeuns[bestIdx].pillar+', '+daeuns[bestIdx].startYear+'년~)</span>';
       }
       summaryHtml += '</div>';
     }
@@ -608,54 +580,53 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH13: 2026 월별 운세 — 12개월 그래프 + 현재 월 표시
+  // CH13: 2026 월별 운세 — 실제 API 데이터 사용!
   // ═══════════════════════════════════
   function renderCh13(container, db) {
-    var monthly = db.monthly2026;
+    var lc = db.luckCycles || {};
+    var monthly = lc.monthly2026 || db.monthly2026;
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
     el.innerHTML = '<div class="cv-section-label">2 0 2 6  월 별  운 세</div>';
 
-    // 월별 점수: 서버 데이터가 있으면 사용, 없으면 천간·지지 기반 추정
     var scores = [];
-    var hasData = (monthly && monthly !== 'NONE' && Array.isArray(monthly));
+    var labels = [];
+    var hasData = (monthly && monthly !== 'NONE' && Array.isArray(monthly) && monthly.length > 0);
 
     if (hasData) {
+      // 십이운성 → 점수 변환
+      var UNSUNG_SCORE = {
+        '절':20,'태':30,'양':40,'장생':75,'목욕':55,
+        '관대':80,'건록':90,'제왕':95,'쇠':50,'병':35,'사':25,'묘':15
+      };
       monthly.forEach(function(m) {
-        scores.push(typeof m === 'object' ? (m.score || m.luck || 50) : Number(m) || 50);
+        var score = UNSUNG_SCORE[m.unsung] || 50;
+        scores.push(score);
+        labels.push(m.label || (m.month+'월'));
       });
     } else {
-      // 2026년 월별 천간 (병오년 기준: 庚寅월부터)
+      // 폴백: 천간 기반 추정
       var monthGans2026 = ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'];
+      var monthJis2026 = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
       var yongShinOheng = (db.yongShin && db.yongShin.yongShin) || '';
-      var GAN_OHENG = {
-        '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토',
-        '己':'토','庚':'금','辛':'금','壬':'수','癸':'수'
-      };
+      var GAN_OHENG = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
       var SANGSAENG = {'목':'화','화':'토','토':'금','금':'수','수':'목'};
-
-var monthJis2026 = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
-monthGans2026.forEach(function(gan, i) {
-  var oh = GAN_OHENG[gan] || '';
-  var ji = monthJis2026[i] || '';
-  var s = 55;
-  if (oh === yongShinOheng) s = 88;
-  else if (SANGSAENG[oh] === yongShinOheng) s = 78;
-  else if (SANGSAENG[yongShinOheng] === oh) s = 72;
-  else {
-    var hash = gan.charCodeAt(0) + ji.charCodeAt(0) + i;
-    s = 45 + (hash % 16);
-  }
-  scores.push(s);
-});
+      monthGans2026.forEach(function(gan, i) {
+        var oh = GAN_OHENG[gan] || '';
+        var ji = monthJis2026[i] || '';
+        var s = 55;
+        if (oh === yongShinOheng) s = 88;
+        else if (SANGSAENG[oh] === yongShinOheng) s = 78;
+        else if (SANGSAENG[yongShinOheng] === oh) s = 72;
+        else { var hash = gan.charCodeAt(0) + ji.charCodeAt(0) + i; s = 45 + (hash % 16); }
+        scores.push(s);
+        labels.push((i+1)+'월');
+      });
     }
 
-    // 12개가 아니면 패딩
-    while (scores.length < 12) scores.push(50);
+    while (scores.length < 12) { scores.push(50); labels.push((scores.length)+'월'); }
 
-    var currentMonth = 3; // 2026년 3월 (0-indexed: 2)
-    var currentMonthIdx = currentMonth - 1;
-
+    var currentMonthIdx = 2; // 3월 (0-indexed)
     var bestMonth = 0, worstMonth = 0;
     scores.forEach(function(s, i) {
       if (s > scores[bestMonth]) bestMonth = i;
@@ -667,12 +638,11 @@ monthGans2026.forEach(function(gan, i) {
     var chartW = W - padL - padR;
     var chartH = H - padT - padB;
 
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;margin:0 auto;">';
+    var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;margin:0 auto;">';
 
-    // 격자
     for (var g = 0; g <= 4; g++) {
       var gy = padT + (chartH / 4) * g;
-      svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="rgba(201,168,76,0.06)" stroke-width="0.5"/>';
+      svg += '<line x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'" stroke="rgba(201,168,76,0.06)" stroke-width="0.5"/>';
     }
 
     var barW = chartW / 12 * 0.6;
@@ -687,66 +657,45 @@ monthGans2026.forEach(function(gan, i) {
       var isBest = (i === bestMonth);
       var isWorst = (i === worstMonth);
 
-      var color;
-      if (isCurrent) color = '#FFD700';
-      else if (isBest) color = '#4CAF50';
-      else if (isWorst) color = '#F44336';
-      else color = '#c9a84c';
-
+      var color = isCurrent ? '#FFD700' : (isBest ? '#4CAF50' : (isWorst ? '#F44336' : '#c9a84c'));
       var opacity = isCurrent ? '0.35' : '0.15';
 
-      // 바
-      svg += '<rect x="' + x + '" y="' + (padT + chartH) + '" width="' + barW + '" height="0" rx="3" fill="' + color + '" opacity="' + opacity + '">';
-      svg += '<animate attributeName="height" from="0" to="' + barH + '" dur="0.5s" begin="' + delay + 's" fill="freeze"/>';
-      svg += '<animate attributeName="y" from="' + (padT + chartH) + '" to="' + y + '" dur="0.5s" begin="' + delay + 's" fill="freeze"/>';
-      svg += '</rect>';
+      svg += '<rect x="'+x+'" y="'+(padT+chartH)+'" width="'+barW+'" height="0" rx="3" fill="'+color+'" opacity="'+opacity+'"><animate attributeName="height" from="0" to="'+barH+'" dur="0.5s" begin="'+delay+'s" fill="freeze"/><animate attributeName="y" from="'+(padT+chartH)+'" to="'+y+'" dur="0.5s" begin="'+delay+'s" fill="freeze"/></rect>';
+      svg += '<rect x="'+x+'" y="'+(padT+chartH)+'" width="'+barW+'" height="0" rx="3" fill="none" stroke="'+color+'" stroke-width="'+(isCurrent?'1.5':'0.5')+'" opacity="0.6"><animate attributeName="height" from="0" to="'+barH+'" dur="0.5s" begin="'+delay+'s" fill="freeze"/><animate attributeName="y" from="'+(padT+chartH)+'" to="'+y+'" dur="0.5s" begin="'+delay+'s" fill="freeze"/></rect>';
 
-      // 바 테두리
-      svg += '<rect x="' + x + '" y="' + (padT + chartH) + '" width="' + barW + '" height="0" rx="3" fill="none" stroke="' + color + '" stroke-width="' + (isCurrent ? '1.5' : '0.5') + '" opacity="0.6">';
-      svg += '<animate attributeName="height" from="0" to="' + barH + '" dur="0.5s" begin="' + delay + 's" fill="freeze"/>';
-      svg += '<animate attributeName="y" from="' + (padT + chartH) + '" to="' + y + '" dur="0.5s" begin="' + delay + 's" fill="freeze"/>';
-      svg += '</rect>';
-
-      // 점수 표시 (현재월, 최고, 최저만)
       if (isCurrent || isBest || isWorst) {
-        svg += '<text x="' + (x + barW / 2) + '" y="' + (y - 6) + '" text-anchor="middle" fill="' + color + '" font-size="9" font-weight="700" opacity="0">' + score + '<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.3) + 's" fill="freeze"/></text>';
+        svg += '<text x="'+(x+barW/2)+'" y="'+(y-6)+'" text-anchor="middle" fill="'+color+'" font-size="9" font-weight="700" opacity="0">'+score+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.3)+'s" fill="freeze"/></text>';
       }
 
-      // 현재 월 펄스
       if (isCurrent) {
-        svg += '<rect x="' + (x - 2) + '" y="' + y + '" width="' + (barW + 4) + '" height="' + barH + '" rx="4" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0.3"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/></rect>';
-        // "지금" 태그
-        svg += '<rect x="' + (x + barW / 2 - 14) + '" y="' + (y - 22) + '" width="28" height="14" rx="7" fill="#FFD700" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.4) + 's" fill="freeze"/></rect>';
-        svg += '<text x="' + (x + barW / 2) + '" y="' + (y - 12) + '" text-anchor="middle" fill="#0a0a14" font-size="8" font-weight="700" opacity="0">지금<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.4) + 's" fill="freeze"/></text>';
+        svg += '<rect x="'+(x+barW/2-14)+'" y="'+(y-22)+'" width="28" height="14" rx="7" fill="#FFD700" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.4)+'s" fill="freeze"/></rect>';
+        svg += '<text x="'+(x+barW/2)+'" y="'+(y-12)+'" text-anchor="middle" fill="#0a0a14" font-size="8" font-weight="700" opacity="0">지금<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.4)+'s" fill="freeze"/></text>';
       }
-
-      // 최고/최저 라벨
       if (isBest && !isCurrent) {
-        svg += '<text x="' + (x + barW / 2) + '" y="' + (y - 14) + '" text-anchor="middle" fill="#4CAF50" font-size="7" font-weight="700" opacity="0">★최고<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.3) + 's" fill="freeze"/></text>';
+        svg += '<text x="'+(x+barW/2)+'" y="'+(y-14)+'" text-anchor="middle" fill="#4CAF50" font-size="7" font-weight="700" opacity="0">★최고<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.3)+'s" fill="freeze"/></text>';
       }
       if (isWorst) {
-        svg += '<text x="' + (x + barW / 2) + '" y="' + (y - 14) + '" text-anchor="middle" fill="#F44336" font-size="7" font-weight="700" opacity="0">⚠주의<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="' + (delay + 0.3) + 's" fill="freeze"/></text>';
+        svg += '<text x="'+(x+barW/2)+'" y="'+(y-14)+'" text-anchor="middle" fill="#F44336" font-size="7" font-weight="700" opacity="0">⚠주의<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.3)+'s" fill="freeze"/></text>';
       }
 
-      // 월 라벨
-      svg += '<text x="' + (x + barW / 2) + '" y="' + (padT + chartH + 16) + '" text-anchor="middle" fill="' + (isCurrent ? '#FFD700' : '#6a6050') + '" font-size="' + (isCurrent ? '11' : '9') + '" font-weight="' + (isCurrent ? '700' : '400') + '">' + (i + 1) + '월</text>';
+      // 월 라벨 (십이운성 표시)
+      var monthLabel = (i+1)+'월';
+      svg += '<text x="'+(x+barW/2)+'" y="'+(padT+chartH+16)+'" text-anchor="middle" fill="'+(isCurrent?'#FFD700':'#6a6050')+'" font-size="'+(isCurrent?'10':'8')+'" font-weight="'+(isCurrent?'700':'400')+'">'+monthLabel+'</text>';
+
+      if (hasData && monthly[i]) {
+        svg += '<text x="'+(x+barW/2)+'" y="'+(padT+chartH+28)+'" text-anchor="middle" fill="#8a7a5a" font-size="7">'+monthly[i].unsung+'</text>';
+      }
     });
 
-    // 범례
-    svg += '<circle cx="' + padL + '" cy="' + (H - 10) + '" r="3" fill="#FFD700"/>';
-    svg += '<text x="' + (padL + 7) + '" y="' + (H - 7) + '" fill="#6a6050" font-size="7">현재</text>';
-    svg += '<circle cx="' + (padL + 42) + '" cy="' + (H - 10) + '" r="3" fill="#4CAF50"/>';
-    svg += '<text x="' + (padL + 49) + '" y="' + (H - 7) + '" fill="#6a6050" font-size="7">최고</text>';
-    svg += '<circle cx="' + (padL + 82) + '" cy="' + (H - 10) + '" r="3" fill="#F44336"/>';
-    svg += '<text x="' + (padL + 89) + '" y="' + (H - 7) + '" fill="#6a6050" font-size="7">주의</text>';
-
+    svg += '<circle cx="'+padL+'" cy="'+(H-10)+'" r="3" fill="#FFD700"/><text x="'+(padL+7)+'" y="'+(H-7)+'" fill="#6a6050" font-size="7">현재</text>';
+    svg += '<circle cx="'+(padL+42)+'" cy="'+(H-10)+'" r="3" fill="#4CAF50"/><text x="'+(padL+49)+'" y="'+(H-7)+'" fill="#6a6050" font-size="7">최고</text>';
+    svg += '<circle cx="'+(padL+82)+'" cy="'+(H-10)+'" r="3" fill="#F44336"/><text x="'+(padL+89)+'" y="'+(H-7)+'" fill="#6a6050" font-size="7">주의</text>';
     svg += '</svg>';
 
-    // 하단 요약
     var summaryHtml = '<div style="text-align:center;margin-top:10px;font-size:12px;color:#6a6050;">';
-    summaryHtml += '<span style="color:#4CAF50;font-weight:700;">' + (bestMonth + 1) + '월</span>이 가장 좋고, ';
-    summaryHtml += '<span style="color:#F44336;font-weight:700;">' + (worstMonth + 1) + '월</span>은 조심하세요. ';
-    summaryHtml += '<span style="color:#FFD700;font-weight:700;">지금(' + currentMonth + '월)</span>은 ' + scores[currentMonthIdx] + '점입니다.';
+    summaryHtml += '<span style="color:#4CAF50;font-weight:700;">'+(bestMonth+1)+'월</span>이 가장 좋고, ';
+    summaryHtml += '<span style="color:#F44336;font-weight:700;">'+(worstMonth+1)+'월</span>은 조심하세요. ';
+    summaryHtml += '<span style="color:#FFD700;font-weight:700;">지금(3월)</span>은 '+scores[currentMonthIdx]+'점입니다.';
     summaryHtml += '</div>';
 
     el.innerHTML += svg + summaryHtml;
@@ -754,32 +703,26 @@ monthGans2026.forEach(function(gan, i) {
     observeSlot(el);
   }
 
-
   // ═══════════════════════════════════
-  // CH14: 편지 — 봉투 애니메이션
+  // CH14: 편지 — 봉투 애니메이션 (에러 방지)
   // ═══════════════════════════════════
   function renderCh14(container, db) {
     var name = '';
-    if(db.customerInfo) name = db.customerInfo.name || '';
+    if (db && db.customerInfo) name = db.customerInfo.name || '';
+    if (!name && db && db.luckCycles && db.luckCycles.customerInfo) name = db.luckCycles.customerInfo.name || '';
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
     el.innerHTML = '<div class="cv-section-label">마 음  편 지</div>';
     var svg = '<svg viewBox="0 0 300 120" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
-
-    // 봉투
     svg+='<rect x="100" y="30" width="100" height="70" rx="4" fill="rgba(201,168,76,0.06)" stroke="#c9a84c" stroke-width="0.8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.6s" fill="freeze"/></rect>';
-    // 봉투 뚜껑 (열리는 애니)
     svg+='<polygon points="100,30 150,60 200,30" fill="rgba(201,168,76,0.04)" stroke="#c9a84c" stroke-width="0.5" stroke-linejoin="round"><animateTransform attributeName="transform" type="rotate" from="0 150 30" to="-180 150 30" dur="1s" begin="0.3s" fill="freeze"/><animate attributeName="opacity" from="1" to="0.3" dur="1s" begin="0.3s" fill="freeze"/></polygon>';
-    // 편지지
     svg+='<rect x="115" y="10" width="70" height="50" rx="2" fill="#12121f" stroke="rgba(201,168,76,0.3)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.8s" fill="freeze"/><animate attributeName="y" from="50" to="10" dur="0.6s" begin="0.8s" fill="freeze"/></rect>';
-    // 편지 텍스트
     svg+='<text x="150" y="35" text-anchor="middle" fill="#c9a84c" font-size="9" font-family="Noto Serif KR,serif" opacity="0">'+(name?name+' 님에게':'당신에게')+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.2s" fill="freeze"/></text>';
-    // 하트
     svg+='<text x="150" y="55" text-anchor="middle" font-size="14" opacity="0">💌<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.4s" fill="freeze"/></text>';
-
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
+
 
   // ═══════════════════════════════════
   // 메인 분기
