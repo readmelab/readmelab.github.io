@@ -1364,6 +1364,80 @@
         });
     }
 
+        
+    /* ══════════════════════════════════════
+       1-2. 챕터 본문 서식 파싱
+       ══════════════════════════════════════ */
+    function parseChapterBody(rawBody) {
+        if (!rawBody) return '';
+        var lines = rawBody.split('\n');
+        var html = '';
+        var inParagraph = false;
+        var i = 0;
+
+        while (i < lines.length) {
+            var line = lines[i].trim();
+
+            // 빈 줄: 문단 닫기
+            if (line === '') {
+                if (inParagraph) { html += '</p>'; inParagraph = false; }
+                i++;
+                continue;
+            }
+
+            // >>> 박스 >>>
+            if (line.indexOf('>>>') === 0) {
+                if (inParagraph) { html += '</p>'; inParagraph = false; }
+                var boxContent = line.replace(/^>>>/, '').replace(/>>>$/, '').trim();
+                // 여러 줄 박스 지원
+                while (i + 1 < lines.length && lines[i + 1].trim() !== '' && lines[i + 1].trim().indexOf('>>>') !== 0) {
+                    i++;
+                    var nextLine = lines[i].trim();
+                    if (nextLine.indexOf('>>>') === 0) {
+                        nextLine = nextLine.replace(/>>>$/, '').trim();
+                        boxContent += '<br>' + nextLine;
+                        break;
+                    }
+                    boxContent += '<br>' + nextLine;
+                }
+                boxContent = applyInlineStyles(boxContent);
+                html += '<div class="chapter-box">' + boxContent + '</div>';
+                i++;
+                continue;
+            }
+
+            // > 인용구
+            if (line.charAt(0) === '>' && line.charAt(1) !== '>') {
+                if (inParagraph) { html += '</p>'; inParagraph = false; }
+                var quoteText = line.substring(1).trim();
+                quoteText = applyInlineStyles(quoteText);
+                html += '<div class="highlight-quote"><div class="highlight-quote-text">"' + quoteText + '"</div></div>';
+                i++;
+                continue;
+            }
+
+            // 일반 텍스트
+            var styledLine = applyInlineStyles(line);
+            if (!inParagraph) {
+                html += '<p>' + styledLine;
+                inParagraph = true;
+            } else {
+                html += '<br>' + styledLine;
+            }
+            i++;
+        }
+        if (inParagraph) { html += '</p>'; }
+        return html;
+    }
+
+    function applyInlineStyles(text) {
+        // **볼드** → <strong>
+        text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // *이탤릭* → <em> (볼드 처리 후)
+        text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        return text;
+    }
+        
     /* ══════════════════════════════════════
        2. 인트로 & 진입
        ══════════════════════════════════════ */
@@ -2195,19 +2269,14 @@ function renderSeun(seunData) {
             if (ch.summary) { headerHtml += '<div class="chapter-summary">' + escapeHtml(ch.summary) + '</div>'; }
             headerHtml += '</div>';
 
-            var paragraphs = body.split(/\n\n+/);
             var bodyHtml = '<div class="chapter-body">';
-            var quoteInsertIdx = Math.max(1, Math.floor(paragraphs.length * 0.6));
-
-            paragraphs.forEach(function(p, pIdx) {
-                var processed = p.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                bodyHtml += '<p>' + processed + '</p>';
-                if (ch.highlight_quote && pIdx === quoteInsertIdx - 1) {
-                    bodyHtml += '</div>';
-                    bodyHtml += '<div class="highlight-quote"><div class="highlight-quote-text">"' + escapeHtml(ch.highlight_quote) + '"</div></div>';
-                    bodyHtml += '<div class="chapter-body">';
-                }
-            });
+            bodyHtml += parseChapterBody(body);
+            // highlight_quote 폴백 (기존 데이터 호환)
+            if (ch.highlight_quote && body.indexOf('>') === -1) {
+                bodyHtml += '</div>';
+                bodyHtml += '<div class="highlight-quote"><div class="highlight-quote-text">"' + escapeHtml(ch.highlight_quote) + '"</div></div>';
+                bodyHtml += '<div class="chapter-body">';
+            }
             bodyHtml += '</div>';
 
             var bridgeHtml = '';
