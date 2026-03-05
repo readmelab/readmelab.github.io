@@ -1,6 +1,5 @@
 /**
  * premium-fx.js — 프리미엄 시각 효과
- * 1. 금빛 파티클  2. 텍스트 등장  3. 구분선 애니메이션
  */
 (function() {
 
@@ -8,39 +7,23 @@
   // 1. 금빛 파티클 배경
   // ═══════════════════════════════════
   function initParticles() {
+    if (document.getElementById('goldParticles')) return;
     var container = document.createElement('div');
     container.id = 'goldParticles';
     document.body.appendChild(container);
 
-    var count = 15;
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i < 15; i++) {
       var p = document.createElement('div');
       p.className = 'gp';
       var size = 2 + Math.random() * 3;
-      var left = Math.random() * 100;
-      var dur = 14 + Math.random() * 16;
-      var delay = Math.random() * dur;
       p.style.cssText =
         'width:' + size + 'px;height:' + size + 'px;' +
-        'left:' + left + '%;' +
+        'left:' + (Math.random() * 100) + '%;' +
         'bottom:-10px;' +
-        'animation-duration:' + dur + 's;' +
-        'animation-delay:-' + delay + 's;';
+        'animation-duration:' + (14 + Math.random() * 16) + 's;' +
+        'animation-delay:-' + (Math.random() * 20) + 's;';
       container.appendChild(p);
     }
-
-    function checkActive() {
-      var report = document.querySelector('.report-section.active');
-      if (report) {
-        container.classList.add('active');
-      } else {
-        container.classList.remove('active');
-      }
-    }
-
-    var obs = new MutationObserver(checkActive);
-    obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-    checkActive();
   }
 
   // ═══════════════════════════════════
@@ -56,22 +39,20 @@
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-    function observeTexts() {
-      var els = document.querySelectorAll(
-        '.chapter-body p:not(.txt-visible):not([data-txt-watched]),' +
-        '.chapter-bridge:not(.txt-visible):not([data-txt-watched]),' +
-        '.highlight-quote:not(.txt-visible):not([data-txt-watched])'
-      );
-      els.forEach(function(el) {
-        el.setAttribute('data-txt-watched', '1');
+    function scan() {
+      document.querySelectorAll(
+        '.chapter-body p:not(.txt-visible):not([data-tw]),' +
+        '.chapter-bridge:not(.txt-visible):not([data-tw]),' +
+        '.highlight-quote:not(.txt-visible):not([data-tw])'
+      ).forEach(function(el) {
+        el.setAttribute('data-tw', '1');
         observer.observe(el);
       });
     }
 
-    // 3번만 체크 (동적 렌더링 대응)
-    setTimeout(observeTexts, 2000);
-    setTimeout(observeTexts, 5000);
-    setTimeout(observeTexts, 10000);
+    setTimeout(scan, 2000);
+    setTimeout(scan, 5000);
+    setTimeout(scan, 10000);
   }
 
   // ═══════════════════════════════════
@@ -87,17 +68,30 @@
       });
     }, { threshold: 0.5 });
 
-    function observeDividers() {
-      var divs = document.querySelectorAll('.chapter-divider:not(.div-visible):not([data-div-watched])');
-      divs.forEach(function(el) {
-        el.setAttribute('data-div-watched', '1');
+    function scan() {
+      document.querySelectorAll('.chapter-divider:not(.div-visible):not([data-dw])').forEach(function(el) {
+        el.setAttribute('data-dw', '1');
         observer.observe(el);
       });
     }
 
-    setTimeout(observeDividers, 2000);
-    setTimeout(observeDividers, 5000);
-    setTimeout(observeDividers, 10000);
+    setTimeout(scan, 2000);
+    setTimeout(scan, 5000);
+    setTimeout(scan, 10000);
+  }
+
+  // ═══════════════════════════════════
+  // 4. 파티클 표시/숨김 (MutationObserver 제거)
+  // ═══════════════════════════════════
+  function checkParticles() {
+    var container = document.getElementById('goldParticles');
+    if (!container) return;
+    var report = document.querySelector('.report-section.active');
+    if (report) {
+      container.classList.add('active');
+    } else {
+      container.classList.remove('active');
+    }
   }
 
   // ═══════════════════════════════════
@@ -107,6 +101,10 @@
     initParticles();
     initTextReveal();
     initDividerAnim();
+
+    // MutationObserver 대신 단순 폴링 (3초마다, 가벼움)
+    setInterval(checkParticles, 3000);
+    checkParticles();
   }
 
   if (document.readyState === 'complete') {
