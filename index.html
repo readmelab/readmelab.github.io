@@ -2350,21 +2350,25 @@ function renderSeun(seunData) {
     /* ── 4-9. Intersection Observer ── */
     function observeChapters() {
         var cards = document.querySelectorAll('.chapter-card:not(.visible)');
-        if (!cards.length) return;
+        var dividers = document.querySelectorAll('.chapter-divider');
         if (!('IntersectionObserver' in window)) {
             cards.forEach(function(c) { c.classList.add('visible'); });
+            dividers.forEach(function(d) { d.classList.add('div-visible'); });
             return;
         }
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                    entry.target.classList.add('div-visible');
                     observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.15 });
         cards.forEach(function(c) { observer.observe(c); });
+        dividers.forEach(function(d) { observer.observe(d); });
     }
+
 
     /* ── 4-10. 감정 곡선 ── */
     function renderEmotionCurve(chapters) {
