@@ -12,13 +12,13 @@
     container.id = 'goldParticles';
     document.body.appendChild(container);
 
-    var count = 20; // 모바일 성능 고려
+    var count = 15;
     for (var i = 0; i < count; i++) {
       var p = document.createElement('div');
       p.className = 'gp';
       var size = 2 + Math.random() * 3;
       var left = Math.random() * 100;
-      var dur = 12 + Math.random() * 18;
+      var dur = 14 + Math.random() * 16;
       var delay = Math.random() * dur;
       p.style.cssText =
         'width:' + size + 'px;height:' + size + 'px;' +
@@ -29,7 +29,6 @@
       container.appendChild(p);
     }
 
-    // 리포트 활성화 시에만 파티클 표시
     function checkActive() {
       var report = document.querySelector('.report-section.active');
       if (report) {
@@ -59,16 +58,20 @@
 
     function observeTexts() {
       var els = document.querySelectorAll(
-        '.chapter-body p:not(.txt-visible),' +
-        '.chapter-bridge:not(.txt-visible),' +
-        '.highlight-quote:not(.txt-visible)'
+        '.chapter-body p:not(.txt-visible):not([data-txt-watched]),' +
+        '.chapter-bridge:not(.txt-visible):not([data-txt-watched]),' +
+        '.highlight-quote:not(.txt-visible):not([data-txt-watched])'
       );
-      els.forEach(function(el) { observer.observe(el); });
+      els.forEach(function(el) {
+        el.setAttribute('data-txt-watched', '1');
+        observer.observe(el);
+      });
     }
 
-    // 챕터가 동적으로 생성되므로 반복 체크
-    setInterval(observeTexts, 2000);
-    setTimeout(observeTexts, 3000);
+    // 3번만 체크 (동적 렌더링 대응)
+    setTimeout(observeTexts, 2000);
+    setTimeout(observeTexts, 5000);
+    setTimeout(observeTexts, 10000);
   }
 
   // ═══════════════════════════════════
@@ -85,12 +88,16 @@
     }, { threshold: 0.5 });
 
     function observeDividers() {
-      var divs = document.querySelectorAll('.chapter-divider:not(.div-visible)');
-      divs.forEach(function(el) { observer.observe(el); });
+      var divs = document.querySelectorAll('.chapter-divider:not(.div-visible):not([data-div-watched])');
+      divs.forEach(function(el) {
+        el.setAttribute('data-div-watched', '1');
+        observer.observe(el);
+      });
     }
 
-    setInterval(observeDividers, 2000);
-    setTimeout(observeDividers, 3000);
+    setTimeout(observeDividers, 2000);
+    setTimeout(observeDividers, 5000);
+    setTimeout(observeDividers, 10000);
   }
 
   // ═══════════════════════════════════
