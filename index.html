@@ -760,6 +760,29 @@
 .chapter-divider.div-visible .chapter-divider-dot:nth-child(2) { transition-delay: 0.8s; }
 .chapter-divider.div-visible .chapter-divider-dot:nth-child(3) { transition-delay: 1.0s; }
 
+/* 챕터 구분선 이모지 */
+.chapter-divider-emoji {
+  font-size: 18px;
+  margin: 0 8px;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+  filter: grayscale(0.3) brightness(1.1);
+}
+.chapter-divider.div-visible .chapter-divider-emoji {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.report-section.active {
+  display: block;
+  animation: sectionFadeIn 0.8s ease both;
+}
+@keyframes sectionFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+        
         
     </style>
 </head>
@@ -2080,13 +2103,31 @@ function renderSeun(seunData) {
             }
 
             if (idx < chapters.length - 1) {
+                var CHAPTER_EMOJI = [
+                  '',      // 0
+                  '☯',    // 1→2 사이: 오행
+                  '⚖',    // 2→3: 용신
+                  '🌊',   // 3→4: 십이운성
+                  '🔗',   // 4→5: 십성
+                  '🧭',   // 5→6: 격국
+                  '🌟',   // 6→7: 2026운세
+                  '💕',   // 7→8: 연애결혼
+                  '💼',   // 8→9: 직업
+                  '💰',   // 9→10: 재물
+                  '🏥',   // 10→11: 건강
+                  '🔮',   // 11→12: 대운
+                  '📅',   // 12→13: 월별운세
+                  '✉️'    // 13→14: 편지
+                ];
+                var emoji = CHAPTER_EMOJI[idx] || '✦';
                 var divider = document.createElement('div');
                 divider.className = 'chapter-divider';
-                divider.innerHTML = '<div class="chapter-divider-dot"></div><div class="chapter-divider-dot"></div><div class="chapter-divider-dot"></div>';
+                divider.innerHTML = 
+                  '<div class="chapter-divider-dot"></div>' +
+                  '<div class="chapter-divider-emoji">' + emoji + '</div>' +
+                  '<div class="chapter-divider-dot"></div>';
                 container.appendChild(divider);
             }
-        });
-    }
 
     /* ── 4-8. TOC 생성 ── */
     function buildToc(chapters) {
