@@ -634,15 +634,20 @@ var ChartVisuals = (function() {
       };
       var SANGSAENG = {'목':'화','화':'토','토':'금','금':'수','수':'목'};
 
-      monthGans2026.forEach(function(gan) {
-        var oh = GAN_OHENG[gan] || '';
-        var s = 55;
-        if (oh === yongShinOheng) s = 88;
-        else if (SANGSAENG[oh] === yongShinOheng) s = 78;
-        else if (SANGSAENG[yongShinOheng] === oh) s = 72;
-        else s = 45 + Math.floor(Math.random() * 15);
-        scores.push(s);
-      });
+var monthJis2026 = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+monthGans2026.forEach(function(gan, i) {
+  var oh = GAN_OHENG[gan] || '';
+  var ji = monthJis2026[i] || '';
+  var s = 55;
+  if (oh === yongShinOheng) s = 88;
+  else if (SANGSAENG[oh] === yongShinOheng) s = 78;
+  else if (SANGSAENG[yongShinOheng] === oh) s = 72;
+  else {
+    var hash = gan.charCodeAt(0) + ji.charCodeAt(0) + i;
+    s = 45 + (hash % 16);
+  }
+  scores.push(s);
+});
     }
 
     // 12개가 아니면 패딩
