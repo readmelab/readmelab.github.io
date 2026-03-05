@@ -22,18 +22,40 @@ var ChartVisuals = (function() {
       return;
     }
     container.style.opacity = '0';
-    container.style.transform = 'translateY(20px)';
-    container.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    container.style.transform = 'translateY(24px)';
+    container.style.transition = 'opacity 1s ease, transform 1s ease';
+
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
+          // 등장 애니메이션
           entry.target.style.opacity = '1';
           entry.target.style.transform = 'translateY(0)';
           entry.target.classList.add('cv-visible');
+
+          // SVG animate 재시작
           var svgs = entry.target.querySelectorAll('svg');
           svgs.forEach(function(svg) {
-            if (svg.pauseAnimations) { svg.pauseAnimations(); svg.setCurrentTime(0); svg.unpauseAnimations(); }
+            if (svg.pauseAnimations) {
+              svg.pauseAnimations();
+              svg.setCurrentTime(0);
+              svg.unpauseAnimations();
+            }
           });
+
+          // 등장 후 미세 반복 애니메이션 시작 (2초 뒤)
+          setTimeout(function() {
+            entry.target.style.transition = 'transform 3s ease-in-out';
+            var phase = 0;
+            setInterval(function() {
+              if (!document.body.contains(entry.target)) return;
+              phase++;
+              var y = Math.sin(phase * 0.5) * 3;  // 위아래 3px
+              var s = 1 + Math.sin(phase * 0.3) * 0.003; // 0.3% 스케일
+              entry.target.style.transform = 'translateY(' + y + 'px) scale(' + s + ')';
+            }, 2000);
+          }, 2000);
+
           observer.unobserve(entry.target);
         }
       });
