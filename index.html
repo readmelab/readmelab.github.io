@@ -10,7 +10,7 @@
     <meta property="og:type" content="website">
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.9/kakao.min.js" crossorigin="anonymous"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
         /* ══════════════════════════════════════
            0. CSS 변수 & 리셋
@@ -782,6 +782,65 @@
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* 편지지 스타일 (CH14) */
+.chapter-card.letter-style {
+  background: linear-gradient(180deg, #1a1a28 0%, #14142200 100%);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 12px;
+  padding: 48px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.chapter-card.letter-style::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 38px,
+      rgba(201,168,76,0.04) 38px,
+      rgba(201,168,76,0.04) 39px
+    );
+  pointer-events: none;
+}
+.chapter-card.letter-style::after {
+  content: '✉';
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 20px;
+  opacity: 0.15;
+}
+.chapter-card.letter-style .chapter-body {
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: calc(20px * var(--font-scale));
+  line-height: 2.4;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+.chapter-card.letter-style .chapter-body strong,
+.chapter-card.letter-style .chapter-body b {
+  font-family: 'Nanum Pen Script', cursive;
+  color: var(--gold);
+  font-weight: 700;
+}
+.chapter-card.letter-style .chapter-title {
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 24px;
+}
+.chapter-card.letter-style .chapter-header {
+  border-bottom: none;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+}
+.chapter-card.letter-style .chapter-bridge {
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 18px;
+}
+
+        
         
         
     </style>
@@ -978,7 +1037,10 @@
                 <div class="chapter-card visible" id="reportOneLiner" style="text-align:center; display:none;">
                     <div class="sore-line" id="reportSoreLine"></div>
                 </div>
-
+                
+                <!-- 앞 표지 -->
+                <div class="chapter-card visible" id="reportCover" style="display:none;border-bottom:1px solid var(--gold-dim);"></div>
+                
                 <!-- 오버뷰 슬라이드 (JS로 동적 생성) -->
                 <div class="overview-slider" id="overviewSlider" style="display:none;">
                     <div class="overview-track" id="overviewTrack"></div>
@@ -1033,6 +1095,9 @@
                 <!-- 챕터 컨테이너 (JS로 동적 생성) -->
                 <div id="chaptersContainer"></div>
 
+                <!-- 뒷 표지 -->
+                <div class="chapter-card visible" id="reportOutro" style="display:none;border-bottom:none;"></div>
+                
                 <!-- 감정 곡선 -->
                 <div class="emotion-curve-card" id="emotionCurveCard" style="display:none;">
                     <div class="emotion-curve-title">감 정 곡 선</div>
@@ -1618,6 +1683,40 @@
             document.getElementById('reportOneLiner').style.display = 'block';
         }
 
+        // 앞 표지
+        var coverCard = document.getElementById('reportCover');
+        if (coverCard) {
+            var rName = (reportData.meta && reportData.meta.name) || certData.name || '';
+            var rProduct = certData.product || '사주 분석';
+            var dayMaster = (reportData.dashboard && reportData.dashboard.dayMaster) || {};
+            var dmGan = dayMaster.gan || '';
+            var dmOheng = dayMaster.oheng || '';
+            var mbti = (reportData.dashboard && reportData.dashboard.mbti) || (reportData.meta && (reportData.meta.MBTI || reportData.meta.mbti)) || '';
+            var coverHtml = '';
+            coverHtml += '<div style="padding:60px 20px;text-align:center;">';
+            coverHtml += '<div style="font-size:9px;color:var(--text-dim);letter-spacing:6px;margin-bottom:24px;">나 를 읽 다  연 구 소</div>';
+            coverHtml += '<div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 28px;"></div>';
+            coverHtml += '<div style="font-family:\'Noto Serif KR\',serif;font-size:28px;color:var(--gold);font-weight:700;margin-bottom:8px;">' + escapeHtml(rName) + '</div>';
+            coverHtml += '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:24px;">님을 위한</div>';
+            coverHtml += '<div style="font-family:\'Noto Serif KR\',serif;font-size:18px;color:var(--text-primary);letter-spacing:3px;margin-bottom:32px;">' + escapeHtml(rProduct) + ' 리포트</div>';
+            if (dmGan || mbti) {
+                coverHtml += '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:24px;">';
+                if (dmGan) {
+                    var dmColor = OHENG_COLORS[dmOheng] || 'var(--gold)';
+                    coverHtml += '<span style="padding:4px 14px;border:1px solid ' + dmColor + '30;border-radius:16px;font-size:12px;color:' + dmColor + ';background:' + dmColor + '08;">일간 ' + dmGan + ' · ' + dmOheng + '</span>';
+                }
+                if (mbti) {
+                    coverHtml += '<span style="padding:4px 14px;border:1px solid var(--gold-dim);border-radius:16px;font-size:12px;color:var(--gold);">' + mbti + '</span>';
+                }
+                coverHtml += '</div>';
+            }
+            coverHtml += '<div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin:0 auto 16px;"></div>';
+            coverHtml += '<div style="font-size:10px;color:var(--text-ghost);letter-spacing:2px;">' + new Date().getFullYear() + '.' + String(new Date().getMonth()+1).padStart(2,'0') + '</div>';
+            coverHtml += '</div>';
+            coverCard.innerHTML = coverHtml;
+            coverCard.style.display = 'block';
+        }
+        
         // 챕터 분리
         var chapters = reportData.chapters || [];
         chapters = splitChaptersIfNeeded(chapters);
@@ -1650,6 +1749,31 @@
 
         // 챕터 렌더링
         if (chapters.length > 0) { renderChapters(chapters); buildToc(chapters); }
+
+        // 뒷 표지
+        var outroCard = document.getElementById('reportOutro');
+        if (outroCard) {
+            var oName = (reportData.meta && reportData.meta.name) || certData.name || '';
+            var outroHtml = '';
+            outroHtml += '<div style="padding:60px 20px;text-align:center;">';
+            outroHtml += '<div style="font-size:32px;margin-bottom:20px;opacity:0.6;">◆</div>';
+            outroHtml += '<div style="font-family:\'Noto Serif KR\',serif;font-size:16px;color:var(--gold);line-height:2.2;margin-bottom:32px;word-break:keep-all;">';
+            outroHtml += escapeHtml(oName) + '님의 운명은<br>이미 충분히 아름답습니다';
+            outroHtml += '</div>';
+            outroHtml += '<div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 24px;"></div>';
+            outroHtml += '<div style="font-size:12px;color:var(--text-muted);line-height:2.0;margin-bottom:32px;">';
+            outroHtml += '이 리포트가 당신의 삶에<br>작은 빛이 되기를 바랍니다';
+            outroHtml += '</div>';
+            outroHtml += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;">';
+            outroHtml += '<div style="width:30px;height:1px;background:var(--gold-dim);"></div>';
+            outroHtml += '<div style="font-size:9px;color:var(--text-dim);letter-spacing:5px;">나 를 읽 다  연 구 소</div>';
+            outroHtml += '<div style="width:30px;height:1px;background:var(--gold-dim);"></div>';
+            outroHtml += '</div>';
+            outroHtml += '<div style="font-size:10px;color:var(--text-ghost);letter-spacing:1px;">사주 & MBTI 운명 분석</div>';
+            outroHtml += '</div>';
+            outroCard.innerHTML = outroHtml;
+            outroCard.style.display = 'block';
+        }        
 
         // 감정 곡선
         if (reportData.emotionCurve || chapters.some(function(c){ return c.emotion !== undefined; })) {
@@ -2060,6 +2184,9 @@ function renderSeun(seunData) {
             card.className = 'chapter-card';
             card.setAttribute('data-chapter', idx);
             if (ch.mood) card.setAttribute('data-mood', ch.mood);
+                        if (idx === chapters.length - 1) {
+                card.classList.add('letter-style');
+            }
 
             var headerHtml = '<div class="chapter-header">';
             headerHtml += '<span class="chapter-icon" style="color:var(--gold);">'+icon+'</span>';
