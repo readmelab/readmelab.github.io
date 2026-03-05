@@ -631,6 +631,53 @@
         .chapter-html-block { width: 100%; overflow-x: hidden; }
         .chapter-html-block > div { max-width: 100% !important; width: 100% !important; }
 
+/* ══════════════════════════════════════
+   7. Chart Visuals (챕터 내 SVG 애니메이션)
+   ══════════════════════════════════════ */
+.cv-visual-slot { margin: 0 0 32px; }
+.cv-section-label {
+    font-family: 'Noto Serif KR', serif; font-size: 11px;
+    color: var(--gold); letter-spacing: 4px; text-align: center;
+    margin-bottom: 16px; opacity: 0.6; text-transform: uppercase;
+}
+.cv-pillars-anim, .cv-oheng-radar, .cv-sipseong-map,
+.cv-unsung-curve, .cv-sinsal-cards {
+    margin: 0; padding: 20px 12px;
+    background: rgba(201,168,76,0.02);
+    border: 1px solid rgba(201,168,76,0.08);
+    border-radius: 12px;
+}
+@keyframes cvPillarRise {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cvRadarGrow {
+    from { opacity: 0; transform: scale(0.3); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@keyframes cvBubblePop {
+    from { opacity: 0; r: 0; }
+    to   { opacity: 1; }
+}
+@keyframes cvPathDraw {
+    from { stroke-dashoffset: var(--path-len); }
+    to   { stroke-dashoffset: 0; }
+}
+@keyframes cvCardFlip {
+    from { opacity: 0; transform: rotateY(90deg) scale(0.8); }
+    to   { opacity: 1; transform: rotateY(0) scale(1); }
+}
+.cv-sinsal-card {
+    width: 100px; padding: 14px 8px; text-align: center;
+    background: var(--bg-card); border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 10px; perspective: 600px;
+}
+.cv-sinsal-card.cv-gongmang { border-color: rgba(255,100,100,0.2); }
+.cv-sinsal-icon { font-size: 24px; margin-bottom: 6px; }
+.cv-sinsal-name { font-size: 11px; color: var(--text-primary); font-weight: 500; margin-bottom: 2px; }
+.cv-sinsal-desc { font-size: 9px; color: var(--text-dim); }
+
+        
     </style>
 </head>
 
@@ -1850,8 +1897,21 @@
             var bridgeHtml = '';
             if (ch.bridge) { bridgeHtml = '<div class="chapter-bridge">' + escapeHtml(ch.bridge) + '</div>'; }
 
-            card.innerHTML = headerHtml + bodyHtml + bridgeHtml;
+            card.innerHTML = headerHtml
+             + '<div class="cv-visual-slot" id="cvSlot' + idx + '"></div>'
+             + bodyHtml + bridgeHtml;
             container.appendChild(card);
+                        // ── 챕터 1~5 시각화 삽입 ──
+            if (idx < 5 && typeof ChartVisuals !== 'undefined') {
+                (function(i) {
+                    setTimeout(function() {
+                        var slot = document.getElementById('cvSlot' + i);
+                        if (slot) {
+                            ChartVisuals.insertVisual(i, slot, (reportData && reportData.dashboard) || {});
+                        }
+                    }, 150 + i * 100);
+                })(idx);
+            }
 
             if (idx < chapters.length - 1) {
                 var divider = document.createElement('div');
@@ -2286,6 +2346,7 @@
     }
 
     </script>
+<script src="chart-visuals.js">
 </body>
 </html>
 
