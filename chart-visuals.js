@@ -193,8 +193,8 @@ var ChartVisuals = (function() {
     el.innerHTML = '<div class="cv-section-label">에 너 지  곡 선</div>';
     var stages = ['절','태','양','장생','목욕','관대','건록','제왕','쇠','병','사','묘'];
     var sv = {}; stages.forEach(function(s,i){sv[s]=(12-i)/12;});
-    var pillars = ['년주','월주','일주','시주'], labels = ['년','월','일','시'];
-    var vals = pillars.map(function(k){ var u = unsung[k.replace('주','')]||unsung[k]||''; return sv[u]!==undefined?sv[u]:0.5; });
+    var keys = ['year','month','day','hour'], labels = ['년','월','일','시'];
+    var vals = keys.map(function(k){ var u = unsung[k]||''; return sv[u]!==undefined?sv[u]:0.5; });
     var svg = '<svg viewBox="0 0 300 160" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
     for(var i=0;i<=4;i++){svg+='<line x1="40" y1="'+(20+i*28)+'" x2="280" y2="'+(20+i*28)+'" stroke="rgba(201,168,76,0.06)" stroke-width="0.5"/>';}
     var pts = vals.map(function(v,i){return{x:70+i*60,y:130-v*110};});
@@ -204,7 +204,7 @@ var ChartVisuals = (function() {
     svg += '<path d="'+pathD+' L'+pts[3].x+',132 L'+pts[0].x+',132 Z" fill="url(#cvUG)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.8s" fill="freeze"/></path>';
     svg += '<path d="'+pathD+'" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-dasharray="300" stroke-dashoffset="300"><animate attributeName="stroke-dashoffset" from="300" to="0" dur="1.2s" fill="freeze"/></path>';
     pts.forEach(function(pt,i){
-      var nm = unsung[pillars[i].replace('주','')]||unsung[pillars[i]]||'', d=0.3+i*0.15;
+      var nm = unsung[keys[i]]||'', d=0.3+i*0.15;
       svg+='<circle cx="'+pt.x+'" cy="'+pt.y+'" r="0" fill="#c9a84c" stroke="#0a0a14" stroke-width="2"><animate attributeName="r" from="0" to="5" dur="0.3s" begin="'+d+'s" fill="freeze"/></circle>';
       svg+='<text x="'+pt.x+'" y="'+(pt.y-12)+'" text-anchor="middle" fill="#c9a84c" font-size="10" font-weight="700" opacity="0">'+nm+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+d+'s" fill="freeze"/></text>';
       svg+='<text x="'+pt.x+'" y="148" text-anchor="middle" fill="#6a6050" font-size="9">'+labels[i]+'</text>';
