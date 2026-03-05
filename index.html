@@ -1872,20 +1872,83 @@ function renderDaeun(daeuns) {
     var container = document.getElementById('daeunItems');
 
     var currentYear = new Date().getFullYear();
-    var html = '';
 
-    daeuns.forEach(function(d) {
+    // 용신 기반 점수 계산
+    var yongShinOheng = '';
+    try { yongShinOheng = reportData.dashboard.yongShin.yongShin || ''; } catch(e){}
+    var GAN_OHENG = {
+      '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토',
+      '己':'토','庚':'금','辛':'금','壬':'수','癸':'수'
+    };
+    var SANGSAENG = {'목':'화','화':'토','토':'금','금':'수','수':'목'};
+
+    function scoreFor(gan, ji) {
+      var oh = GAN_OHENG[gan]||'';
+      var jiOh = GAN_OHENG[ji]||'';
+      var s = 50;
+      if (oh === yongShinOheng) s = 88;
+      else if (SANGSAENG[oh] === yongShinOheng) s = 78;
+      else if (SANGSAENG[yongShinOheng] === oh) s = 72;
+      else { var h = gan.charCodeAt(0) + (ji?ji.charCodeAt(0):0); s = 45 + (h % 16); }
+      if (jiOh === yongShinOheng) s = Math.min(s + 8, 95);
+      return s;
+    }
+
+    // 한자→한글
+    var HJ = {
+      '甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무',
+      '己':'기','庚':'경','辛':'신','壬':'임','癸':'계',
+      '子':'자','丑':'축','寅':'인','卯':'묘','辰':'진',
+      '巳':'사','午':'오','未':'미','申':'신','酉':'유',
+      '戌':'술','亥':'해'
+    };
+    function toHangul(str) {
+      if (!str) return '';
+      var r = '';
+      for (var c = 0; c < str.length; c++) r += HJ[str[c]] || str[c];
+      return r;
+    }
+
+    // 점수 계산
+    var scores = [];
+    var maxScore = 0, maxIdx = 0;
+    daeuns.forEach(function(d, i) {
+      var s = scoreFor(d.gan||'', d.ji||'');
+      // 미래 보정: 아직 안 온 대운은 살짝 올림
+      var startYear = d.startYear || 0;
+      if (startYear > currentYear) s = Math.min(s + 3, 95);
+      scores.push(s);
+      if (s > maxScore) { maxScore = s; maxIdx = i; }
+    });
+
+    var html = '';
+    daeuns.forEach(function(d, i) {
         var startYear = d.startYear || 0;
         var endYear = startYear + 9;
         var isCurrent = (currentYear >= startYear && currentYear <= endYear);
+        var isPast = (currentYear > endYear);
+        var isBest = (i === maxIdx);
         var pillar = d.pillar || (d.gan||'')+(d.ji||'');
-        var hangul = hanjaToHangul(pillar);
+        var hangul = toHangul(pillar);
+        var score = scores[i];
+        var barH = Math.round(score * 0.7); // 최대 ~66px
 
-        html += '<div class="daeun-item'+(isCurrent?' current':'')+'">';
-        html += '<div class="daeun-dot"></div>';
-        html += '<div class="daeun-pillar">'+hangul+'</div>';
-        html += '<div class="daeun-age">'+(d.age||'')+'세</div>';
-        html += '<div class="daeun-year">'+startYear+'</div>';
+        var barColor = isCurrent ? '#c9a84c' : isPast ? 'rgba(201,168,76,0.3)' : 'rgba(201,168,76,0.6)';
+        var glow = isBest ? 'box-shadow:0 0 8px rgba(201,168,76,0.4);' : '';
+
+        html += '<div class="daeun-item'+(isCurrent?' current':'')+'" style="text-align:center;min-width:52px;">';
+        // 막대
+        html += '<div style="display:flex;align-items:flex-end;justify-content:center;height:70px;margin-bottom:4px;">';
+        html += '<div style="width:20px;height:'+barH+'px;background:'+barColor+';border-radius:3px 3px 0 0;transition:height 0.8s;'+glow+'"></div>';
+        html += '</div>';
+        // 최고 표시
+        if (isBest) html += '<div style="font-size:8px;color:#c9a84c;margin-bottom:2px;">★ 최고</div>';
+        // 지금 표시
+        if (isCurrent) html += '<div style="font-size:8px;color:#c9a84c;margin-bottom:2px;">▼ 지금</div>';
+        // 한글 간지
+        html += '<div class="daeun-pillar" style="font-size:13px;font-weight:'+(isCurrent?'700':'400')+';color:'+(isCurrent?'#c9a84c':'#a09880')+';">'+hangul+'</div>';
+        html += '<div class="daeun-age" style="font-size:10px;color:#6a6050;">'+(d.age||'')+'세</div>';
+        html += '<div class="daeun-year" style="font-size:9px;color:#4a4540;">'+startYear+'</div>';
         html += '</div>';
     });
 
@@ -1897,6 +1960,7 @@ function renderDaeun(daeuns) {
         if (cur) { cur.scrollIntoView({ inline: 'center', behavior: 'smooth' }); }
     }, 300);
 }
+
 
 /* ── 4-6. 세운 그래프 ── */
 function renderSeun(seunData) {
