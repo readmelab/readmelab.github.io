@@ -445,7 +445,7 @@ var ChartVisuals = (function() {
     else if (jeongJae > pyeonJae + 1) { tendency = '저축·안정형'; tendencyColor = '#4CAF50'; }
     else if (jaeTotal === 0) { tendency = '정신적 가치 추구형'; tendencyColor = '#9C27B0'; }
 
-    var W = 300, H = 220;
+    var W = 300, H = 260;
     var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:380px;display:block;margin:0 auto;">';
 
     svg += '<text x="150" y="28" text-anchor="middle" font-size="24" opacity="0"><animate attributeName="opacity" from="0" to="0.8" dur="0.5s" begin="0.2s" fill="freeze"/>💰</text>';
@@ -462,7 +462,7 @@ var ChartVisuals = (function() {
     svg += '<rect x="'+(cx-35)+'" y="'+(cy+28)+'" width="70" height="18" rx="9" fill="rgba(201,168,76,0.04)" stroke="'+tendencyColor+'" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></rect>';
     svg += '<text x="'+cx+'" y="'+(cy+41)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="9" font-weight="600" opacity="0">'+tendency+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
 
-    var barY = 175, totalW = 180, barX = 60;
+    var barY = 210, totalW = 180, barX = 60;
     var pjW = jaeTotal > 0 ? Math.max(20, Math.round(totalW * pyeonJae / jaeTotal)) : totalW / 2;
     var jjW = totalW - pjW;
 
