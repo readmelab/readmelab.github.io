@@ -334,7 +334,9 @@ var ChartVisuals = (function() {
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
-
+  // ═══════════════════════════════════
+  // CH8: 결혼 & 연애 
+  // ═══════════════════════════════════
 function renderCh8(container, db) {
     var counts = db.sipseongCounts;
     var fp = db.fourPillars;
@@ -348,52 +350,51 @@ function renderCh8(container, db) {
     var pyeonJae = detail['편재']||0, jeongJae = detail['정재']||0;
     var pyeonGwan = detail['편관']||0, jeongGwan = detail['정관']||0;
 
-    // 배우자궁 (일지)
-    var spouseChar = '';
-    if (fp && fp.day) spouseChar = fp.day.ji || fp.day.branch || '';
-
-    // 연애 에너지 점수 (재성+관성 기반, 최대 100)
     var loveScore = Math.min(100, Math.round((jae + gwan) * 12 + 20));
+    var fillPct = loveScore / 100;
 
-    var W = 300, H = 200;
+    var W = 300, H = 260;
     var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:380px;display:block;margin:0 auto;">';
 
-    // 중앙 원형 게이지 — 연애 에너지
-    var cx = 150, cy = 70, r = 45;
-    var circumference = 2 * Math.PI * r;
-    var dashOffset = circumference * (1 - loveScore / 100);
+    // 하트 클리핑 패스
+    svg += '<defs>';
+    svg += '<clipPath id="heartClip"><path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z"/></clipPath>';
+    svg += '<linearGradient id="heartFill" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#FF6B9D"/><stop offset="100%" stop-color="#C084FC"/></linearGradient>';
+    svg += '<linearGradient id="heartBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,107,157,0.05)"/><stop offset="100%" stop-color="rgba(255,107,157,0.02)"/></linearGradient>';
+    svg += '</defs>';
 
-    svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="6"/>';
-    svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#c9a84c" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+circumference+'" stroke-dashoffset="'+circumference+'" transform="rotate(-90 '+cx+' '+cy+')"><animate attributeName="stroke-dashoffset" from="'+circumference+'" to="'+dashOffset+'" dur="1.2s" fill="freeze"/></circle>';
+    // 하트 외곽
+    svg += '<path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z" fill="url(#heartBg)" stroke="rgba(255,107,157,0.3)" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.8s" fill="freeze"/></path>';
+
+    // 하트 채워지는 효과 (클리핑)
+    var fillY = 200 - (fillPct * 150); // 하트 높이 약 150
+    svg += '<g clip-path="url(#heartClip)">';
+    svg += '<rect x="50" y="200" width="200" height="0" fill="url(#heartFill)" opacity="0.25"><animate attributeName="height" from="0" to="'+(fillPct*150)+'" dur="1.5s" fill="freeze"/><animate attributeName="y" from="200" to="'+fillY+'" dur="1.5s" fill="freeze"/></rect>';
+    svg += '</g>';
+
     // 펄스
-    svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.3"><animate attributeName="r" values="'+r+';'+(r+8)+';'+r+'" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/></circle>';
-    // 점수
-    svg += '<text x="'+cx+'" y="'+(cy-5)+'" text-anchor="middle" fill="#c9a84c" font-size="22" font-weight="700" opacity="0">'+loveScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.8s" fill="freeze"/></text>';
-    svg += '<text x="'+cx+'" y="'+(cy+12)+'" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">연애 에너지<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.9s" fill="freeze"/></text>';
+    svg += '<path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z" fill="none" stroke="rgba(255,107,157,0.2)" stroke-width="1"><animate attributeName="stroke-width" values="1;2;1" dur="2s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values="0.2;0.05;0.2" dur="2s" repeatCount="indefinite"/></path>';
 
-    // 배우자궁 (있으면)
+    // 점수 텍스트
+    svg += '<text x="150" y="120" text-anchor="middle" fill="#FF6B9D" font-size="28" font-weight="700" opacity="0">'+loveScore+'%<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1s" fill="freeze"/></text>';
+    svg += '<text x="150" y="140" text-anchor="middle" fill="rgba(255,107,157,0.6)" font-size="9" opacity="0">연애 에너지<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.2s" fill="freeze"/></text>';
+
+    // 하단: 재성·관성 태그 스타일
+    var tagY = 222;
+    // 재성 태그
+    svg += '<rect x="30" y="'+(tagY-12)+'" width="110" height="24" rx="12" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.4s" fill="freeze"/></rect>';
+    svg += '<text x="85" y="'+(tagY+2)+'" text-anchor="middle" fill="#FF6B9D" font-size="9" opacity="0">재성 '+jae+' <tspan fill="rgba(255,107,157,0.5)" font-size="7">편재'+pyeonJae+' 정재'+jeongJae+'</tspan><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.5s" fill="freeze"/></text>';
+
+    // 관성 태그
+    svg += '<rect x="160" y="'+(tagY-12)+'" width="110" height="24" rx="12" fill="rgba(192,132,252,0.06)" stroke="rgba(192,132,252,0.2)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.6s" fill="freeze"/></rect>';
+    svg += '<text x="215" y="'+(tagY+2)+'" text-anchor="middle" fill="#C084FC" font-size="9" opacity="0">관성 '+gwan+' <tspan fill="rgba(192,132,252,0.5)" font-size="7">편관'+pyeonGwan+' 정관'+jeongGwan+'</tspan><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.7s" fill="freeze"/></text>';
+
+    // 배우자궁
+    var spouseChar = '';
+    if (fp && fp['일주']) spouseChar = fp['일주'].ji || '';
+    if (!spouseChar && fp && fp.day) spouseChar = fp.day.ji || '';
     if (spouseChar) {
-      svg += '<text x="'+cx+'" y="'+(cy+28)+'" text-anchor="middle" fill="rgba(201,168,76,0.5)" font-size="8" opacity="0">배우자궁 '+spouseChar+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></text>';
-    }
-
-    // 하단 바 — 재성
-    var barY1 = 145, barY2 = 170;
-    var barMaxW = 100;
-    var jaeW = Math.max(8, jae * 25);
-    var gwanW = Math.max(8, gwan * 25);
-
-    // 재성 바
-    svg += '<text x="45" y="'+(barY1+4)+'" text-anchor="end" fill="#FFC107" font-size="9" font-weight="600" opacity="0">재성 '+jae+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
-    svg += '<rect x="50" y="'+(barY1-5)+'" width="0" height="10" rx="5" fill="rgba(255,193,7,0.15)" stroke="#FFC107" stroke-width="0.5"><animate attributeName="width" from="0" to="'+jaeW+'" dur="0.8s" begin="1.1s" fill="freeze"/></rect>';
-    if (pyeonJae > 0 || jeongJae > 0) {
-      svg += '<text x="'+(55+jaeW)+'" y="'+(barY1+4)+'" fill="#8a7a5a" font-size="7" opacity="0">편재'+pyeonJae+' 정재'+jeongJae+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.5s" fill="freeze"/></text>';
-    }
-
-    // 관성 바
-    svg += '<text x="45" y="'+(barY2+4)+'" text-anchor="end" fill="#64B5F6" font-size="9" font-weight="600" opacity="0">관성 '+gwan+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.3s" fill="freeze"/></text>';
-    svg += '<rect x="50" y="'+(barY2-5)+'" width="0" height="10" rx="5" fill="rgba(100,181,246,0.15)" stroke="#64B5F6" stroke-width="0.5"><animate attributeName="width" from="0" to="'+gwanW+'" dur="0.8s" begin="1.3s" fill="freeze"/></rect>';
-    if (pyeonGwan > 0 || jeongGwan > 0) {
-      svg += '<text x="'+(55+gwanW)+'" y="'+(barY2+4)+'" fill="#8a7a5a" font-size="7" opacity="0">편관'+pyeonGwan+' 정관'+jeongGwan+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.7s" fill="freeze"/></text>';
+      svg += '<text x="150" y="252" text-anchor="middle" fill="rgba(255,107,157,0.4)" font-size="8" opacity="0">배우자궁 · '+spouseChar+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.8s" fill="freeze"/></text>';
     }
 
     svg += '</svg>';
@@ -430,6 +431,9 @@ function renderCh8(container, db) {
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
 
+  // ═══════════════════════════════════
+  // CH10: 재물운 —
+  // ═══════════════════════════════════
 function renderCh10(container, db) {
     var counts = db.sipseongCounts;
     var el = document.createElement('div');
@@ -440,54 +444,77 @@ function renderCh10(container, db) {
     var pyeonJae = detail['편재']||0, jeongJae = detail['정재']||0;
     var jaeTotal = pyeonJae + jeongJae;
     var wealthScore = Math.min(100, Math.round(jaeTotal * 18 + 15));
+    var fillPct = wealthScore / 100;
 
-    // 성향 판단
     var tendency = '균형형';
     var tendencyColor = '#c9a84c';
     if (pyeonJae > jeongJae + 1) { tendency = '투자·도전형'; tendencyColor = '#FF9800'; }
     else if (jeongJae > pyeonJae + 1) { tendency = '저축·안정형'; tendencyColor = '#4CAF50'; }
     else if (pyeonJae > 0 && jeongJae > 0) { tendency = '균형형'; tendencyColor = '#c9a84c'; }
-    else if (jaeTotal === 0) { tendency = '정신적 가치 추구형'; tendencyColor = '#9C27B0'; }
+    else if (jaeTotal === 0) { tendency = '정신적 가치형'; tendencyColor = '#9C27B0'; }
 
-    var W = 300, H = 210;
+    var W = 300, H = 280;
     var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:380px;display:block;margin:0 auto;">';
 
-    // 상단: 재물 점수 반원 게이지
-    var cx = 150, cy = 80, r = 55;
-    var halfCirc = Math.PI * r;
-    var gaugeOffset = halfCirc * (1 - wealthScore / 100);
+    svg += '<defs>';
+    svg += '<linearGradient id="vaultFill" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#c9a84c"/><stop offset="50%" stop-color="#FFD700"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient>';
+    svg += '<clipPath id="vaultClip"><rect x="100" y="40" width="100" height="130" rx="8"/></clipPath>';
+    svg += '<radialGradient id="coinShine"><stop offset="0%" stop-color="#FFD700" stop-opacity="0.3"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/></radialGradient>';
+    svg += '</defs>';
 
-    svg += '<path d="M'+(cx-r)+','+cy+' A'+r+','+r+' 0 0,1 '+(cx+r)+','+cy+'" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="8" stroke-linecap="round"/>';
-    svg += '<path d="M'+(cx-r)+','+cy+' A'+r+','+r+' 0 0,1 '+(cx+r)+','+cy+'" fill="none" stroke="'+tendencyColor+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+halfCirc+'" stroke-dashoffset="'+halfCirc+'"><animate attributeName="stroke-dashoffset" from="'+halfCirc+'" to="'+gaugeOffset+'" dur="1.2s" fill="freeze"/></path>';
+    // 금고 외곽
+    svg += '<rect x="100" y="40" width="100" height="130" rx="8" fill="rgba(201,168,76,0.03)" stroke="rgba(201,168,76,0.25)" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.6s" fill="freeze"/></rect>';
+    // 금고 문 디테일
+    svg += '<circle cx="150" cy="90" r="15" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="0.8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.3s" fill="freeze"/></circle>';
+    svg += '<circle cx="150" cy="90" r="3" fill="rgba(201,168,76,0.2)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.3s" fill="freeze"/></circle>';
+    // 금고 손잡이
+    svg += '<rect x="163" y="83" width="12" height="3" rx="1.5" fill="rgba(201,168,76,0.2)" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.4s" fill="freeze"/></rect>';
+
+    // 금고 안에 채워지는 금
+    var fillH = fillPct * 130;
+    var fillY = 170 - fillH;
+    svg += '<g clip-path="url(#vaultClip)">';
+    svg += '<rect x="100" y="170" width="100" height="0" fill="url(#vaultFill)" opacity="0.2"><animate attributeName="height" from="0" to="'+fillH+'" dur="1.5s" fill="freeze"/><animate attributeName="y" from="170" to="'+fillY+'" dur="1.5s" fill="freeze"/></rect>';
+    // 코인 레이어들 (채워지면서 나타남)
+    for (var ci = 0; ci < Math.min(jaeTotal, 6); ci++) {
+      var coinY = 165 - ci * 18;
+      var coinDelay = 0.5 + ci * 0.2;
+      svg += '<ellipse cx="150" cy="'+coinY+'" rx="35" ry="8" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="'+coinDelay+'s" fill="freeze"/></ellipse>';
+      svg += '<ellipse cx="150" cy="'+(coinY-3)+'" rx="35" ry="8" fill="rgba(255,215,0,0.1)" stroke="rgba(201,168,76,0.3)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="'+coinDelay+'s" fill="freeze"/></ellipse>';
+    }
+    svg += '</g>';
+
+    // 빛남 효과
+    svg += '<circle cx="150" cy="105" r="40" fill="url(#coinShine)" opacity="0"><animate attributeName="opacity" values="0;0.5;0" dur="3s" begin="1.5s" repeatCount="indefinite"/></circle>';
 
     // 점수
-    svg += '<text x="'+cx+'" y="'+(cy-15)+'" text-anchor="middle" fill="#c9a84c" font-size="26" font-weight="700" opacity="0">'+wealthScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.8s" fill="freeze"/></text>';
-    svg += '<text x="'+cx+'" y="'+(cy+2)+'" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">재물 에너지<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.9s" fill="freeze"/></text>';
+    svg += '<text x="150" y="105" text-anchor="middle" fill="#c9a84c" font-size="26" font-weight="700" opacity="0">'+wealthScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1.2s" fill="freeze"/></text>';
+    svg += '<text x="150" y="120" text-anchor="middle" fill="rgba(201,168,76,0.5)" font-size="8" opacity="0">재물 에너지<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.3s" fill="freeze"/></text>';
 
     // 성향 태그
-    svg += '<rect x="'+(cx-35)+'" y="'+(cy+10)+'" width="70" height="18" rx="9" fill="rgba(201,168,76,0.06)" stroke="'+tendencyColor+'" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></rect>';
-    svg += '<text x="'+cx+'" y="'+(cy+23)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="9" font-weight="600" opacity="0">'+tendency+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
+    svg += '<rect x="115" y="177" width="70" height="20" rx="10" fill="rgba(201,168,76,0.06)" stroke="'+tendencyColor+'" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.5s" fill="freeze"/></rect>';
+    svg += '<text x="150" y="191" text-anchor="middle" fill="'+tendencyColor+'" font-size="9" font-weight="600" opacity="0">'+tendency+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.6s" fill="freeze"/></text>';
 
-    // 하단: 편재 vs 정재 비교 바
-    var barY = 150;
-    var totalW = 200;
-    var pjW = jaeTotal > 0 ? Math.round(totalW * pyeonJae / Math.max(jaeTotal,1)) : totalW/2;
-    var jjW = totalW - pjW;
-    var barX = 50;
+    // 하단: 편재 vs 정재 — 코인 스타일
+    var coinBaseY = 225;
 
-    svg += '<text x="'+(barX-5)+'" y="'+(barY+5)+'" text-anchor="end" fill="#FF9800" font-size="8" opacity="0">편재<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.2s" fill="freeze"/></text>';
-    svg += '<text x="'+(barX+totalW+5)+'" y="'+(barY+5)+'" text-anchor="start" fill="#4CAF50" font-size="8" opacity="0">정재<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.2s" fill="freeze"/></text>';
+    // 편재 코인들
+    svg += '<text x="75" y="'+(coinBaseY-25)+'" text-anchor="middle" fill="#FF9800" font-size="8" font-weight="600" opacity="0">편재<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.8s" fill="freeze"/></text>';
+    for (var pi = 0; pi < pyeonJae; pi++) {
+      var px = 60 + pi * 18;
+      svg += '<circle cx="'+px+'" cy="'+coinBaseY+'" r="12" fill="rgba(255,152,0,0.08)" stroke="#FF9800" stroke-width="0.8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(1.9+pi*0.1)+'s" fill="freeze"/></circle>';
+      svg += '<text x="'+px+'" y="'+(coinBaseY+1)+'" text-anchor="middle" fill="#FF9800" font-size="7" opacity="0">₩<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(2+pi*0.1)+'s" fill="freeze"/></text>';
+    }
+    svg += '<text x="75" y="'+(coinBaseY+25)+'" text-anchor="middle" fill="rgba(255,152,0,0.5)" font-size="7" opacity="0">투자·사업<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.2s" fill="freeze"/></text>';
 
-    // 편재 바
-    svg += '<rect x="'+barX+'" y="'+(barY-6)+'" width="0" height="12" rx="6" fill="rgba(255,152,0,0.2)" stroke="#FF9800" stroke-width="0.5"><animate attributeName="width" from="0" to="'+pjW+'" dur="0.8s" begin="1.2s" fill="freeze"/></rect>';
-    svg += '<text x="'+(barX+pjW/2)+'" y="'+(barY+5)+'" text-anchor="middle" fill="#FF9800" font-size="10" font-weight="700" opacity="0">'+pyeonJae+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.6s" fill="freeze"/></text>';
-
-    // 정재 바
-    svg += '<rect x="'+(barX+pjW)+'" y="'+(barY-6)+'" width="0" height="12" rx="6" fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="0.5"><animate attributeName="width" from="0" to="'+jjW+'" dur="0.8s" begin="1.4s" fill="freeze"/></rect>';
-    svg += '<text x="'+(barX+pjW+jjW/2)+'" y="'+(barY+5)+'" text-anchor="middle" fill="#4CAF50" font-size="10" font-weight="700" opacity="0">'+jeongJae+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.8s" fill="freeze"/></text>';
-
-    // 설명
-    svg += '<text x="'+cx+'" y="'+(barY+30)+'" text-anchor="middle" fill="#6a6050" font-size="8" opacity="0">편재 = 투자·사업  |  정재 = 월급·저축<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="2s" fill="freeze"/></text>';
+    // 정재 코인들
+    svg += '<text x="225" y="'+(coinBaseY-25)+'" text-anchor="middle" fill="#4CAF50" font-size="8" font-weight="600" opacity="0">정재<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.8s" fill="freeze"/></text>';
+    for (var ji = 0; ji < jeongJae; ji++) {
+      var jx = 210 + ji * 18;
+      svg += '<circle cx="'+jx+'" cy="'+coinBaseY+'" r="12" fill="rgba(76,175,80,0.08)" stroke="#4CAF50" stroke-width="0.8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(1.9+ji*0.1)+'s" fill="freeze"/></circle>';
+      svg += '<text x="'+jx+'" y="'+(coinBaseY+1)+'" text-anchor="middle" fill="#4CAF50" font-size="7" opacity="0">₩<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(2+ji*0.1)+'s" fill="freeze"/></text>';
+    }
+    svg += '<text x="225" y="'+(coinBaseY+25)+'" text-anchor="middle" fill="rgba(76,175,80,0.5)" font-size="7" opacity="0">월급·저축<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.2s" fill="freeze"/></text>';
 
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
