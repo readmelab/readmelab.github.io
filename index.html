@@ -2484,16 +2484,22 @@ function renderChapters(chapters) {
             + bodyHtml + bridgeHtml;
         container.appendChild(card);
 
-        if (idx < 10 && typeof ChartVisuals !== 'undefined') {
-            (function(i) {
-                setTimeout(function() {
-                    var slot = document.getElementById('cvSlot' + i);
-                    if (slot) {
-                        ChartVisuals.insertVisual(i, slot, (reportData && reportData.dashboard) || {});
-                    }
-                }, 150 + i * 100);
-            })(idx);
-        }
+if (idx < 10) {
+    (function(i){
+        setTimeout(function(){
+            var slot = document.getElementById('cvSlot' + i);
+            if (!slot) return;
+            var db = (reportData && reportData.dashboard) || {};
+            var isCouple = !!(db.client && db.partner);
+
+            if (isCouple && typeof ChartVisualCouple !== 'undefined') {
+                ChartVisualCouple.insertVisual(i, slot, db);
+            } else if (typeof ChartVisuals !== 'undefined') {
+                ChartVisuals.insertVisual(i, slot, db);
+            }
+        }, 150 + i * 100);
+    })(idx);
+}
 
         // ★ 이모지도 서버 데이터 우선
         if (idx < chapters.length - 1) {
@@ -2992,6 +2998,7 @@ function renderOutro(isCouple) {
 
     </script>
 <script src="chart-visuals.js"></script>
+    <script src="chart-visuals-couple.js"></script>
     <script src="premium-fx.js"></script>
     <!-- 챕터 네비게이션 -->
 <div id="chapterNav" style="
