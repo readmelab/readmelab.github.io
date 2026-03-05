@@ -1848,84 +1848,103 @@
         card.style.display = 'block';
     }
 
-    /* ── 4-5. 대운 타임라인 ── */
-    function renderDaeun(daeuns) {
-        if (!daeuns || daeuns.length === 0) return;
-        var card = document.getElementById('daeunCard');
-        var container = document.getElementById('daeunItems');
+/* ── 한자→한글 변환 테이블 ── */
+var HANJA_TO_HANGUL = {
+  '甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무',
+  '己':'기','庚':'경','辛':'신','壬':'임','癸':'계',
+  '子':'자','丑':'축','寅':'인','卯':'묘','辰':'진',
+  '巳':'사','午':'오','未':'미','申':'신','酉':'유',
+  '戌':'술','亥':'해'
+};
+function hanjaToHangul(str) {
+  if (!str) return '';
+  var result = '';
+  for (var c = 0; c < str.length; c++) {
+    result += HANJA_TO_HANGUL[str[c]] || str[c];
+  }
+  return result;
+}
 
-        var currentYear = new Date().getFullYear();
-        var html = '';
+/* ── 4-5. 대운 타임라인 ── */
+function renderDaeun(daeuns) {
+    if (!daeuns || daeuns.length === 0) return;
+    var card = document.getElementById('daeunCard');
+    var container = document.getElementById('daeunItems');
 
-        daeuns.forEach(function(d) {
-            var startYear = d.startYear || 0;
-            var endYear = startYear + 9;
-            var isCurrent = (currentYear >= startYear && currentYear <= endYear);
+    var currentYear = new Date().getFullYear();
+    var html = '';
 
-            html += '<div class="daeun-item'+(isCurrent?' current':'')+'">';
-            html += '<div class="daeun-dot"></div>';
-            html += '<div class="daeun-pillar">'+(d.pillar || (d.gan||'')+(d.ji||''))+'</div>';
-            html += '<div class="daeun-age">'+(d.age||'')+'세</div>';
-            html += '<div class="daeun-year">'+startYear+'</div>';
-            html += '</div>';
-        });
+    daeuns.forEach(function(d) {
+        var startYear = d.startYear || 0;
+        var endYear = startYear + 9;
+        var isCurrent = (currentYear >= startYear && currentYear <= endYear);
+        var pillar = d.pillar || (d.gan||'')+(d.ji||'');
+        var hangul = hanjaToHangul(pillar);
 
-        container.innerHTML = html;
-        card.style.display = 'block';
+        html += '<div class="daeun-item'+(isCurrent?' current':'')+'">';
+        html += '<div class="daeun-dot"></div>';
+        html += '<div class="daeun-pillar">'+hangul+'</div>';
+        html += '<div class="daeun-age">'+(d.age||'')+'세</div>';
+        html += '<div class="daeun-year">'+startYear+'</div>';
+        html += '</div>';
+    });
 
-        // 현재 대운으로 스크롤
-        setTimeout(function() {
-            var cur = container.querySelector('.daeun-item.current');
-            if (cur) { cur.scrollIntoView({ inline: 'center', behavior: 'smooth' }); }
-        }, 300);
-    }
+    container.innerHTML = html;
+    card.style.display = 'block';
 
-    /* ── 4-6. 세운 그래프 ── */
-    function renderSeun(seunData) {
-        if (!seunData) return;
-        var card = document.getElementById('seunCard');
-        var container = document.getElementById('seunBars');
+    setTimeout(function() {
+        var cur = container.querySelector('.daeun-item.current');
+        if (cur) { cur.scrollIntoView({ inline: 'center', behavior: 'smooth' }); }
+    }, 300);
+}
 
-        var seunList = [];
-        if (Array.isArray(seunData)) {
-            seunList = seunData;
-        } else if (typeof seunData === 'object') {
-            var keys = Object.keys(seunData);
-            for (var k = 0; k < keys.length; k++) {
-                var val = seunData[keys[k]];
-                if (val && typeof val === 'object') {
-                    seunList.push(val);
-                }
+/* ── 4-6. 세운 그래프 ── */
+function renderSeun(seunData) {
+    if (!seunData) return;
+    var card = document.getElementById('seunCard');
+    var container = document.getElementById('seunBars');
+
+    var seunList = [];
+    if (Array.isArray(seunData)) {
+        seunList = seunData;
+    } else if (typeof seunData === 'object') {
+        var keys = Object.keys(seunData);
+        for (var k = 0; k < keys.length; k++) {
+            var val = seunData[keys[k]];
+            if (val && typeof val === 'object') {
+                seunList.push(val);
             }
         }
-
-        if (seunList.length === 0) return;
-
-        var currentYear = new Date().getFullYear();
-        var html = '';
-        var heights = [];
-        for (var hi = 0; hi < seunList.length; hi++) {
-            var hv = 40 + (((seunList[hi].year || 0) * 7 + hi * 13) % 60);
-            heights.push(Math.min(100, hv));
-        }
-
-        for (var i = 0; i < seunList.length; i++) {
-            var s = seunList[i];
-            var year = s.year || '';
-            var pillar = s.pillarHanja || s.pillar || '';
-            var isCurrent = (year == currentYear);
-            var h = heights[i];
-
-            html += '<div class="seun-bar-wrap">';
-            html += '<div class="seun-bar' + (isCurrent ? ' current-year' : '') + '" style="height:' + h + 'px;"></div>';
-            html += '<div class="seun-bar-pillar">' + pillar + '</div>';
-            html += '<div class="seun-bar-year"' + (isCurrent ? ' style="color:var(--gold);font-weight:700;"' : '') + '>' + year + '</div>';
-            html += '</div>';
-        }
-
-        container.innerHTML = html;
-        card.style.display = 'block';
     }
+
+    if (seunList.length === 0) return;
+
+    var currentYear = new Date().getFullYear();
+    var html = '';
+    var heights = [];
+    for (var hi = 0; hi < seunList.length; hi++) {
+        var hv = 40 + (((seunList[hi].year || 0) * 7 + hi * 13) % 60);
+        heights.push(Math.min(100, hv));
+    }
+
+    for (var i = 0; i < seunList.length; i++) {
+        var s = seunList[i];
+        var year = s.year || '';
+        var pillar = s.pillarHanja || s.pillar || '';
+        var hangul = hanjaToHangul(pillar);
+        var isCurrent = (year == currentYear);
+        var h = heights[i];
+
+        html += '<div class="seun-bar-wrap">';
+        html += '<div class="seun-bar' + (isCurrent ? ' current-year' : '') + '" style="height:' + h + 'px;"></div>';
+        html += '<div class="seun-bar-pillar">' + hangul + '</div>';
+        html += '<div class="seun-bar-year"' + (isCurrent ? ' style="color:var(--gold);font-weight:700;"' : '') + '>' + year + '</div>';
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+    card.style.display = 'block';
+}
 
 
 
