@@ -1,6 +1,17 @@
 /**
  * chart-visuals.js — 챕터 내 SVG 시각화 (나를읽다)
  * index.html의 renderChapters()에서 호출
+ * ── 10챕터 구조 ──
+ * idx 0: CH1. 당신이라는 사람 (사주팔자 + 오행 + 십성)
+ * idx 1: CH2. 에너지의 리듬 (십이운성 + 살·귀인)
+ * idx 2: CH3. 사주 × MBTI 교차 분석
+ * idx 3: CH4. 올해의 흐름
+ * idx 4: CH5. 사랑과 관계 (연애 + 관계)
+ * idx 5: CH6. 돈의 흐름
+ * idx 6: CH7. 몸이 보내는 신호
+ * idx 7: CH8. 인생의 타임라인
+ * idx 8: CH9. 올해 월별 가이드
+ * idx 9: CH10. 편지
  */
 
 var ChartVisuals = (function() {
@@ -28,12 +39,10 @@ var ChartVisuals = (function() {
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-          // 등장 애니메이션
           entry.target.style.opacity = '1';
           entry.target.style.transform = 'translateY(0)';
           entry.target.classList.add('cv-visible');
 
-          // SVG animate 재시작
           var svgs = entry.target.querySelectorAll('svg');
           svgs.forEach(function(svg) {
             if (svg.pauseAnimations) {
@@ -43,15 +52,14 @@ var ChartVisuals = (function() {
             }
           });
 
-          // 등장 후 미세 반복 애니메이션 시작 (2초 뒤)
           setTimeout(function() {
             entry.target.style.transition = 'transform 3s ease-in-out';
             var phase = 0;
             setInterval(function() {
               if (!document.body.contains(entry.target)) return;
               phase++;
-              var y = Math.sin(phase * 0.5) * 3;  // 위아래 3px
-              var s = 1 + Math.sin(phase * 0.3) * 0.003; // 0.3% 스케일
+              var y = Math.sin(phase * 0.5) * 3;
+              var s = 1 + Math.sin(phase * 0.3) * 0.003;
               entry.target.style.transform = 'translateY(' + y + 'px) scale(' + s + ')';
             }, 2000);
           }, 2000);
@@ -64,9 +72,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH1: 사주팔자 — 네 기둥
+  // 사주팔자 — 네 기둥
   // ═══════════════════════════════════
-  function renderCh1(container, db) {
+  function renderPillars(container, db) {
     var fp = db.fourPillars;
     if (!fp) return;
     var keys = ['년주','월주','일주','시주'];
@@ -107,9 +115,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH2: 오행 — 레이더
+  // 오행 — 레이더
   // ═══════════════════════════════════
-  function renderCh2(container, db) {
+  function renderOheng(container, db) {
     var oheng = db.ohengDistribution;
     if (!oheng) return;
     var keys = ['목','화','토','금','수'], values = [], total = 0;
@@ -148,9 +156,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH3: 십성 — 버블 맵
+  // 십성 — 버블 맵
   // ═══════════════════════════════════
-  function renderCh3(container, db) {
+  function renderSipseong(container, db) {
     var counts = db.sipseongCounts;
     if (!counts) return;
     var groups = counts.groups || {};
@@ -183,9 +191,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH4: 십이운성 — 에너지 곡선
+  // 십이운성 — 에너지 곡선
   // ═══════════════════════════════════
-  function renderCh4(container, db) {
+  function renderUnsung(container, db) {
     var unsung = db.unsung;
     if (!unsung) return;
     var el = document.createElement('div');
@@ -214,9 +222,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH5: 살·귀인 — 카드 플립
+  // 살·귀인 — 카드 플립
   // ═══════════════════════════════════
-  function renderCh5(container, db) {
+  function renderSinsal(container, db) {
     var sinsal = db.sinsal;
     if (!sinsal || sinsal.length === 0) return;
     var el = document.createElement('div');
@@ -234,9 +242,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH6: 사주×MBTI 교차 — 벤 다이어그램
+  // 사주×MBTI 교차 — 벤 다이어그램
   // ═══════════════════════════════════
-  function renderCh6(container, db) {
+  function renderCrossAnalysis(container, db) {
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
     el.innerHTML = '<div class="cv-section-label">사 주  ×  M B T I</div>';
@@ -250,31 +258,24 @@ var ChartVisuals = (function() {
 
     var svg = '<svg viewBox="0 0 300 200" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
 
-    // 사주 원 (왼쪽)
     svg += '<circle cx="115" cy="95" r="0" fill="'+dmColor+'" opacity="0.08"><animate attributeName="r" from="0" to="70" dur="0.8s" fill="freeze"/></circle>';
     svg += '<circle cx="115" cy="95" r="0" fill="none" stroke="'+dmColor+'" stroke-width="1" opacity="0.4"><animate attributeName="r" from="0" to="70" dur="0.8s" fill="freeze"/></circle>';
 
-    // MBTI 원 (오른쪽)
     svg += '<circle cx="185" cy="95" r="0" fill="#6C63FF" opacity="0.08"><animate attributeName="r" from="0" to="70" dur="0.8s" begin="0.2s" fill="freeze"/></circle>';
     svg += '<circle cx="185" cy="95" r="0" fill="none" stroke="#6C63FF" stroke-width="1" opacity="0.4"><animate attributeName="r" from="0" to="70" dur="0.8s" begin="0.2s" fill="freeze"/></circle>';
 
-    // 교차 영역 펄스
     svg += '<ellipse cx="150" cy="95" rx="30" ry="55" fill="rgba(201,168,76,0.06)" stroke="rgba(201,168,76,0.2)" stroke-width="0.5" stroke-dasharray="4,4"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/></ellipse>';
 
-    // 사주 라벨
     svg += '<text x="80" y="85" text-anchor="middle" fill="'+dmColor+'" font-size="11" font-weight="700" opacity="0">사주<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.5s" fill="freeze"/></text>';
     svg += '<text x="80" y="102" text-anchor="middle" fill="'+dmColor+'" font-size="16" font-weight="700" font-family="Noto Serif KR,serif" opacity="0">'+(OHENG_LABELS[dmOheng]||dm.gan||'')+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.6s" fill="freeze"/></text>';
     if (strengthText) { svg += '<text x="80" y="118" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">'+strengthText+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.7s" fill="freeze"/></text>'; }
 
-    // MBTI 라벨
     svg += '<text x="220" y="85" text-anchor="middle" fill="#6C63FF" font-size="11" font-weight="700" opacity="0">MBTI<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.5s" fill="freeze"/></text>';
     svg += '<text x="220" y="105" text-anchor="middle" fill="#6C63FF" font-size="18" font-weight="700" font-family="Noto Sans KR,sans-serif" opacity="0">'+(mbti||'?')+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.6s" fill="freeze"/></text>';
 
-    // 교차 라벨
     svg += '<text x="150" y="90" text-anchor="middle" fill="#c9a84c" font-size="9" font-weight="500" opacity="0">교차점<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.8s" fill="freeze"/></text>';
     svg += '<text x="150" y="105" text-anchor="middle" fill="#c9a84c" font-size="11" font-weight="700" opacity="0">운명 코드<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.9s" fill="freeze"/></text>';
 
-    // 용신·희신 하단
     if (ys.yongShin) {
       svg += '<text x="150" y="185" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">용신 <tspan fill="'+(OHENG_COLORS[ys.yongShin]||'#c9a84c')+'" font-weight="700">'+ys.yongShin+'</tspan> · 희신 <tspan fill="'+(OHENG_COLORS[ys.huiShin]||'#c9a84c')+'" font-weight="700">'+(ys.huiShin||'')+'</tspan><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></text>';
     }
@@ -284,9 +285,9 @@ var ChartVisuals = (function() {
   }
 
   // ═══════════════════════════════════
-  // CH7: 올해 운세 총론 — 세운 + 용신 밸런스
+  // 올해 운세 총론 — 세운 + 용신 밸런스
   // ═══════════════════════════════════
-  function renderCh7(container, db) {
+  function renderYearOverview(container, db) {
     var lc = db.luckCycles;
     if (!lc) return;
     var seun = lc.currentSeun || lc.seun || [];
@@ -300,17 +301,14 @@ var ChartVisuals = (function() {
 
     var svg = '<svg viewBox="0 0 300 160" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
 
-    // 올해 세운 중앙
     if (currentSeun) {
       var pillar = currentSeun.pillar || currentSeun.hangul || currentSeun.hanja || '';
       svg += '<circle cx="150" cy="70" r="0" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="1.5"><animate attributeName="r" from="0" to="50" dur="0.8s" fill="freeze"/></circle>';
       svg += '<text x="150" y="60" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">2026 세운<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.5s" fill="freeze"/></text>';
       svg += '<text x="150" y="82" text-anchor="middle" fill="#c9a84c" font-size="24" font-weight="700" font-family="Noto Serif KR,serif" opacity="0">'+pillar+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.6s" fill="freeze"/></text>';
-      // 펄스
       svg += '<circle cx="150" cy="70" r="50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"><animate attributeName="r" values="50;58;50" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.05;0.3" dur="2.5s" repeatCount="indefinite"/></circle>';
     }
 
-    // 용신·희신 양쪽
     if (ys.yongShin) {
       var yc = OHENG_COLORS[ys.yongShin]||'#c9a84c', hc = OHENG_COLORS[ys.huiShin]||'#c9a84c';
       svg += '<circle cx="45" cy="70" r="0" fill="'+yc+'" opacity="0.15"><animate attributeName="r" from="0" to="25" dur="0.5s" begin="0.3s" fill="freeze"/></circle>';
@@ -321,12 +319,10 @@ var ChartVisuals = (function() {
       svg += '<text x="255" y="67" text-anchor="middle" fill="'+hc+'" font-size="13" font-weight="700" opacity="0">'+(OHENG_LABELS[ys.huiShin]||'')+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.6s" fill="freeze"/></text>';
       svg += '<text x="255" y="82" text-anchor="middle" fill="'+hc+'" font-size="8" opacity="0">희신<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.6s" fill="freeze"/></text>';
 
-      // 연결선
       svg += '<line x1="70" y1="70" x2="100" y2="70" stroke="'+yc+'" stroke-width="0.5" stroke-dasharray="3,3" opacity="0"><animate attributeName="opacity" from="0" to="0.4" dur="0.5s" begin="0.7s" fill="freeze"/></line>';
       svg += '<line x1="200" y1="70" x2="233" y2="70" stroke="'+hc+'" stroke-width="0.5" stroke-dasharray="3,3" opacity="0"><animate attributeName="opacity" from="0" to="0.4" dur="0.5s" begin="0.7s" fill="freeze"/></line>';
     }
 
-    // 하단 격국
     if (ys.reasoning) {
       svg += '<text x="150" y="145" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">'+ys.reasoning+' · '+(db.gyeokguk&&db.gyeokguk.name||'')+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.8s" fill="freeze"/></text>';
     }
@@ -334,10 +330,11 @@ var ChartVisuals = (function() {
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
+
   // ═══════════════════════════════════
-  // CH8: 결혼 & 연애 
+  // 연애·결혼운 — 하트
   // ═══════════════════════════════════
-function renderCh8(container, db) {
+  function renderLove(container, db) {
     var counts = db.sipseongCounts;
     var fp = db.fourPillars;
     var el = document.createElement('div');
@@ -356,40 +353,31 @@ function renderCh8(container, db) {
     var W = 300, H = 260;
     var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:380px;display:block;margin:0 auto;">';
 
-    // 하트 클리핑 패스
     svg += '<defs>';
     svg += '<clipPath id="heartClip"><path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z"/></clipPath>';
     svg += '<linearGradient id="heartFill" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#FF6B9D"/><stop offset="100%" stop-color="#C084FC"/></linearGradient>';
     svg += '<linearGradient id="heartBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,107,157,0.05)"/><stop offset="100%" stop-color="rgba(255,107,157,0.02)"/></linearGradient>';
     svg += '</defs>';
 
-    // 하트 외곽
     svg += '<path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z" fill="url(#heartBg)" stroke="rgba(255,107,157,0.3)" stroke-width="1" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.8s" fill="freeze"/></path>';
 
-    // 하트 채워지는 효과 (클리핑)
-    var fillY = 200 - (fillPct * 150); // 하트 높이 약 150
+    var fillY = 200 - (fillPct * 150);
     svg += '<g clip-path="url(#heartClip)">';
     svg += '<rect x="50" y="200" width="200" height="0" fill="url(#heartFill)" opacity="0.25"><animate attributeName="height" from="0" to="'+(fillPct*150)+'" dur="1.5s" fill="freeze"/><animate attributeName="y" from="200" to="'+fillY+'" dur="1.5s" fill="freeze"/></rect>';
     svg += '</g>';
 
-    // 펄스
     svg += '<path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z" fill="none" stroke="rgba(255,107,157,0.2)" stroke-width="1"><animate attributeName="stroke-width" values="1;2;1" dur="2s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values="0.2;0.05;0.2" dur="2s" repeatCount="indefinite"/></path>';
 
-    // 점수 텍스트
     svg += '<text x="150" y="120" text-anchor="middle" fill="#FF6B9D" font-size="28" font-weight="700" opacity="0">'+loveScore+'%<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1s" fill="freeze"/></text>';
     svg += '<text x="150" y="140" text-anchor="middle" fill="rgba(255,107,157,0.6)" font-size="9" opacity="0">연애 에너지<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.2s" fill="freeze"/></text>';
 
-    // 하단: 재성·관성 태그 스타일
     var tagY = 222;
-    // 재성 태그
     svg += '<rect x="30" y="'+(tagY-12)+'" width="110" height="24" rx="12" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.4s" fill="freeze"/></rect>';
     svg += '<text x="85" y="'+(tagY+2)+'" text-anchor="middle" fill="#FF6B9D" font-size="9" opacity="0">재성 '+jae+' <tspan fill="rgba(255,107,157,0.5)" font-size="7">편재'+pyeonJae+' 정재'+jeongJae+'</tspan><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.5s" fill="freeze"/></text>';
 
-    // 관성 태그
     svg += '<rect x="160" y="'+(tagY-12)+'" width="110" height="24" rx="12" fill="rgba(192,132,252,0.06)" stroke="rgba(192,132,252,0.2)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.6s" fill="freeze"/></rect>';
     svg += '<text x="215" y="'+(tagY+2)+'" text-anchor="middle" fill="#C084FC" font-size="9" opacity="0">관성 '+gwan+' <tspan fill="rgba(192,132,252,0.5)" font-size="7">편관'+pyeonGwan+' 정관'+jeongGwan+'</tspan><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.7s" fill="freeze"/></text>';
 
-    // 배우자궁
     var spouseChar = '';
     if (fp && fp['일주']) spouseChar = fp['일주'].ji || '';
     if (!spouseChar && fp && fp.day) spouseChar = fp.day.ji || '';
@@ -401,11 +389,10 @@ function renderCh8(container, db) {
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
 
-
   // ═══════════════════════════════════
-  // CH9: 관계운 — 사람 연결 네트워크
+  // 관계운 — 사람 연결 네트워크
   // ═══════════════════════════════════
-  function renderCh9(container, db) {
+  function renderRelationship(container, db) {
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
     el.innerHTML = '<div class="cv-section-label">관 계 운</div>';
@@ -413,7 +400,6 @@ function renderCh8(container, db) {
 
     var nodes = [{x:150,y:50,label:'나',color:'#c9a84c',r:20},{x:60,y:45,label:'가족',color:'#4CAF50',r:14},{x:240,y:45,label:'직장',color:'#2196F3',r:14},{x:80,y:110,label:'친구',color:'#FF9800',r:14},{x:220,y:110,label:'연인',color:'#F44336',r:14}];
 
-    // 연결선
     for(var i=1;i<nodes.length;i++){
       svg+='<line x1="150" y1="50" x2="'+nodes[i].x+'" y2="'+nodes[i].y+'" stroke="rgba(201,168,76,0.15)" stroke-width="0.5" stroke-dasharray="4,3" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="'+(i*0.1)+'s" fill="freeze"/></line>';
     }
@@ -432,9 +418,9 @@ function renderCh8(container, db) {
   }
 
   // ═══════════════════════════════════
-  // CH10: 재물운 —
+  // 재물운 — 원형 게이지
   // ═══════════════════════════════════
-function renderCh10(container, db) {
+  function renderWealth(container, db) {
     var counts = db.sipseongCounts;
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
@@ -452,26 +438,20 @@ function renderCh10(container, db) {
     var W = 300, H = 220;
     var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:380px;display:block;margin:0 auto;">';
 
-    // 코인 아이콘 (상단)
     svg += '<text x="150" y="28" text-anchor="middle" font-size="24" opacity="0"><animate attributeName="opacity" from="0" to="0.8" dur="0.5s" begin="0.2s" fill="freeze"/>💰</text>';
 
-    // 점수 원형 게이지
     var cx = 150, cy = 90, r = 45;
     var circumference = 2 * Math.PI * r;
     var dashOffset = circumference * (1 - wealthScore / 100);
     svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="rgba(201,168,76,0.08)" stroke-width="8"/>';
     svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+tendencyColor+'" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+circumference+'" stroke-dashoffset="'+circumference+'" transform="rotate(-90 '+cx+' '+cy+')"><animate attributeName="stroke-dashoffset" from="'+circumference+'" to="'+dashOffset+'" dur="1.2s" fill="freeze"/></circle>';
-    // 맥박 효과
     svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+tendencyColor+'" stroke-width="1" opacity="0.3"><animate attributeName="r" values="'+r+';'+(r+8)+';'+r+'" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/></circle>';
-    // 점수
     svg += '<text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="28" font-weight="700" opacity="0">'+wealthScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.8s" fill="freeze"/></text>';
     svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">/ 100점<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.9s" fill="freeze"/></text>';
 
-    // 성향 태그
     svg += '<rect x="'+(cx-35)+'" y="'+(cy+28)+'" width="70" height="18" rx="9" fill="rgba(201,168,76,0.04)" stroke="'+tendencyColor+'" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></rect>';
     svg += '<text x="'+cx+'" y="'+(cy+41)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="9" font-weight="600" opacity="0">'+tendency+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
 
-    // 하단 편재 vs 정재 바
     var barY = 175, totalW = 180, barX = 60;
     var pjW = jaeTotal > 0 ? Math.max(20, Math.round(totalW * pyeonJae / jaeTotal)) : totalW / 2;
     var jjW = totalW - pjW;
@@ -482,20 +462,18 @@ function renderCh10(container, db) {
     svg += '<rect x="'+(barX+pjW)+'" y="'+(barY-6)+'" width="0" height="12" rx="6" fill="rgba(76,175,80,0.15)" stroke="#4CAF50" stroke-width="0.5"><animate attributeName="width" from="0" to="'+jjW+'" dur="0.8s" begin="1.4s" fill="freeze"/></rect>';
     svg += '<text x="'+(barX+totalW+5)+'" y="'+(barY+4)+'" text-anchor="start" fill="#4CAF50" font-size="9" font-weight="600" opacity="0">정재 '+jeongJae+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.4s" fill="freeze"/></text>';
 
-    // 설명
     svg += '<text x="'+cx+'" y="'+(barY+24)+'" text-anchor="middle" fill="#6a6050" font-size="8" opacity="0">편재 = 투자·사업  |  정재 = 월급·저축<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.8s" fill="freeze"/></text>';
 
     svg += '</svg>';
     el.innerHTML += svg;
     container.appendChild(el);
     observeSlot(el);
-}
-
+  }
 
   // ═══════════════════════════════════
-  // CH11: 건강운 — 오행 인체 매핑
+  // 건강운 — 오행 인체 매핑
   // ═══════════════════════════════════
-  function renderCh11(container, db) {
+  function renderHealth(container, db) {
     var oheng = db.ohengDistribution;
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
@@ -526,22 +504,20 @@ function renderCh10(container, db) {
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
+
   // ═══════════════════════════════════
-  // CH12: 대운 — 인생 운세 타임라인
+  // 대운 — 인생 운세 타임라인
   // ═══════════════════════════════════
-  function renderCh12(container, db) {
-    // 데이터 경로 수정
+  function renderDaeun(container, db) {
     var lc = db.luckCycles || {};
     var daeunData = lc.currentDaeun || db.daeun || null;
     if (!daeunData) return;
     var daeuns = daeunData.daeuns || [];
     if (daeuns.length === 0) return;
 
-    // 현재 대운 정보
     var currentPillar = lc.currentDaeunPillar || {};
     var currentAge = currentPillar.age || 0;
 
-    // 생년 역산
     var birthYear = 0;
     if (currentPillar.startYear && currentPillar.age) {
       birthYear = currentPillar.startYear - currentPillar.age;
@@ -550,14 +526,13 @@ function renderCh10(container, db) {
     }
     var nowAge = 2026 - birthYear;
 
-    // 용신 오행
     var yongShinOheng = (db.yongShin && db.yongShin.yongShin) || '';
     var GAN_OHENG = {
       '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토',
       '己':'토','庚':'금','辛':'금','壬':'수','癸':'수'
     };
     var SANGSAENG = {'목':'화','화':'토','토':'금','금':'수','수':'목'};
-        var HJ = {
+    var HJ = {
       '甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무',
       '己':'기','庚':'경','辛':'신','壬':'임','癸':'계',
       '子':'자','丑':'축','寅':'인','卯':'묘','辰':'진',
@@ -574,7 +549,6 @@ function renderCh10(container, db) {
       else if (SANGSAENG[oh] === yongShinOheng) s = 80;
       else if (SANGSAENG[yongShinOheng] === oh) s = 75;
       else { var hash = gan.charCodeAt(0) + (ji ? ji.charCodeAt(0) : 0); s = 45 + (hash % 16); }
-      // 지지 보정
       if (jiOh === yongShinOheng) s = Math.min(s + 8, 98);
       else if (SANGSAENG[jiOh] === yongShinOheng) s = Math.min(s + 5, 95);
       return s;
@@ -592,7 +566,6 @@ function renderCh10(container, db) {
 
     var svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;margin:0 auto;">';
 
-    // 배경 격자
     for (var g = 0; g <= 4; g++) {
       var gy = padT + (chartH / 4) * g;
       var label = (100 - g * 25);
@@ -612,18 +585,15 @@ function renderCh10(container, db) {
 
       if (score > bestScore) { bestScore = score; bestIdx = i; }
 
-      // 현재 대운 판별
       var nextAge = daeuns[i + 1] ? daeuns[i + 1].age : d.age + 10;
       if (nowAge >= d.age && nowAge < nextAge) { currentIdx = i; }
     });
 
-    // 그라데이션
     svg += '<defs>';
     svg += '<linearGradient id="cvDaeunGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.2"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0.01"/></linearGradient>';
     svg += '<radialGradient id="cvNowGlow"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.4"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/></radialGradient>';
     svg += '</defs>';
 
-    // 곡선
     if (pts.length > 1) {
       var pathD = 'M' + pts[0].x + ',' + pts[0].y;
       for (var i = 1; i < pts.length; i++) {
@@ -635,7 +605,6 @@ function renderCh10(container, db) {
       svg += '<path d="'+pathD+'" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="800" stroke-dashoffset="800"><animate attributeName="stroke-dashoffset" from="800" to="0" dur="2s" fill="freeze"/></path>';
     }
 
-    // 포인트
     pts.forEach(function(p, i) {
       var delay = 0.5 + i * 0.15;
       var isCurrent = (i === currentIdx);
@@ -668,17 +637,16 @@ function renderCh10(container, db) {
     svg += '<circle cx="'+(padL+55)+'" cy="'+(H-8)+'" r="4" fill="#4CAF50"/><text x="'+(padL+63)+'" y="'+(H-5)+'" fill="#6a6050" font-size="8">최고운</text>';
     svg += '</svg>';
 
-    // 요약
     var summaryHtml = '';
     if (currentIdx >= 0) {
       var cd = daeuns[currentIdx];
       var endAge = daeuns[currentIdx+1] ? daeuns[currentIdx+1].age : cd.age+10;
       summaryHtml = '<div style="text-align:center;margin-top:12px;padding:12px;background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.1);border-radius:10px;">';
-summaryHtml += '<span style="color:#FFD700;font-weight:700;">현재 '+toH(cd.pillar)+' 대운</span>';
-summaryHtml += '<span style="color:#6a6050;font-size:12px;"> ('+cd.age+'~'+endAge+'세, '+cd.startYear+'~'+(cd.startYear+10)+'년)</span>';
-if (bestIdx !== currentIdx) {
-  summaryHtml += '<br><span style="color:#4CAF50;font-size:12px;">★ 최고 운세 시기: '+daeuns[bestIdx].age+'세 ('+toH(daeuns[bestIdx].pillar)+', '+daeuns[bestIdx].startYear+'년~)</span>';
-}
+      summaryHtml += '<span style="color:#FFD700;font-weight:700;">현재 '+toH(cd.pillar)+' 대운</span>';
+      summaryHtml += '<span style="color:#6a6050;font-size:12px;"> ('+cd.age+'~'+endAge+'세, '+cd.startYear+'~'+(cd.startYear+10)+'년)</span>';
+      if (bestIdx !== currentIdx) {
+        summaryHtml += '<br><span style="color:#4CAF50;font-size:12px;">★ 최고 운세 시기: '+daeuns[bestIdx].age+'세 ('+toH(daeuns[bestIdx].pillar)+', '+daeuns[bestIdx].startYear+'년~)</span>';
+      }
       summaryHtml += '</div>';
     }
 
@@ -688,9 +656,9 @@ if (bestIdx !== currentIdx) {
   }
 
   // ═══════════════════════════════════
-  // CH13: 2026 월별 운세 — 실제 API 데이터 사용!
+  // 2026 월별 운세 — 바 차트
   // ═══════════════════════════════════
-  function renderCh13(container, db) {
+  function renderMonthly(container, db) {
     var lc = db.luckCycles || {};
     var monthly = lc.monthly2026 || db.monthly2026;
     var el = document.createElement('div');
@@ -702,7 +670,6 @@ if (bestIdx !== currentIdx) {
     var hasData = (monthly && monthly !== 'NONE' && Array.isArray(monthly) && monthly.length > 0);
 
     if (hasData) {
-      // 십이운성 → 점수 변환
       var UNSUNG_SCORE = {
         '절':20,'태':30,'양':40,'장생':75,'목욕':55,
         '관대':80,'건록':90,'제왕':95,'쇠':50,'병':35,'사':25,'묘':15
@@ -713,7 +680,6 @@ if (bestIdx !== currentIdx) {
         labels.push(m.label || (m.month+'월'));
       });
     } else {
-      // 폴백: 천간 기반 추정
       var monthGans2026 = ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'];
       var monthJis2026 = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
       var yongShinOheng = (db.yongShin && db.yongShin.yongShin) || '';
@@ -734,7 +700,7 @@ if (bestIdx !== currentIdx) {
 
     while (scores.length < 12) { scores.push(50); labels.push((scores.length)+'월'); }
 
-    var currentMonthIdx = new Date().getMonth(); // 0=1월, 1=2월, 2=3월...
+    var currentMonthIdx = new Date().getMonth();
     var bestMonth = 0, worstMonth = 0;
     scores.forEach(function(s, i) {
       if (s > scores[bestMonth]) bestMonth = i;
@@ -786,7 +752,6 @@ if (bestIdx !== currentIdx) {
         svg += '<text x="'+(x+barW/2)+'" y="'+(y-14)+'" text-anchor="middle" fill="#F44336" font-size="7" font-weight="700" opacity="0">⚠주의<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(delay+0.3)+'s" fill="freeze"/></text>';
       }
 
-      // 월 라벨 (십이운성 표시)
       var monthLabel = (i+1)+'월';
       svg += '<text x="'+(x+barW/2)+'" y="'+(padT+chartH+16)+'" text-anchor="middle" fill="'+(isCurrent?'#FFD700':'#6a6050')+'" font-size="'+(isCurrent?'10':'8')+'" font-weight="'+(isCurrent?'700':'400')+'">'+monthLabel+'</text>';
 
@@ -812,9 +777,9 @@ if (bestIdx !== currentIdx) {
   }
 
   // ═══════════════════════════════════
-  // CH14: 편지 — 봉투 애니메이션 (에러 방지)
+  // 편지 — 봉투 애니메이션
   // ═══════════════════════════════════
-  function renderCh14(container, db) {
+  function renderLetter(container, db) {
     var name = '';
     if (db && db.customerInfo) name = db.customerInfo.name || '';
     if (!name && db && db.luckCycles && db.luckCycles.customerInfo) name = db.luckCycles.customerInfo.name || '';
@@ -832,26 +797,46 @@ if (bestIdx !== currentIdx) {
   }
 
 
-  // ═══════════════════════════════════
-  // 메인 분기
-  // ═══════════════════════════════════
+  // ═══════════════════════════════════════════════════
+  // ★ 메인 분기 — 10챕터 매핑 ★
+  // ═══════════════════════════════════════════════════
   function insertVisual(chapterIndex, container, dashboard) {
     if (!dashboard) return;
     switch(chapterIndex) {
-      case 0:  renderCh1(container, dashboard); break;
-      case 1:  renderCh2(container, dashboard); break;
-      case 2:  renderCh3(container, dashboard); break;
-      case 3:  renderCh4(container, dashboard); break;
-      case 4:  renderCh5(container, dashboard); break;
-      case 5:  renderCh6(container, dashboard); break;
-      case 6:  renderCh7(container, dashboard); break;
-      case 7:  renderCh8(container, dashboard); break;
-      case 8:  renderCh9(container, dashboard); break;
-      case 9:  renderCh10(container, dashboard); break;
-      case 10: renderCh11(container, dashboard); break;
-      case 11: renderCh12(container, dashboard); break;  // 대운
-      case 12: renderCh13(container, dashboard); break;  // 월운
-      case 13: renderCh14(container, dashboard); break;         // 편지
+      case 0:  // CH1. 당신이라는 사람 (사주팔자 + 오행 + 십성)
+        renderPillars(container, dashboard);
+        renderOheng(container, dashboard);
+        renderSipseong(container, dashboard);
+        break;
+      case 1:  // CH2. 에너지의 리듬 (십이운성 + 살·귀인)
+        renderUnsung(container, dashboard);
+        renderSinsal(container, dashboard);
+        break;
+      case 2:  // CH3. 사주 × MBTI 교차 분석
+        renderCrossAnalysis(container, dashboard);
+        break;
+      case 3:  // CH4. 올해의 흐름
+        renderYearOverview(container, dashboard);
+        break;
+      case 4:  // CH5. 사랑과 관계 (연애 + 관계)
+        renderLove(container, dashboard);
+        renderRelationship(container, dashboard);
+        break;
+      case 5:  // CH6. 돈의 흐름
+        renderWealth(container, dashboard);
+        break;
+      case 6:  // CH7. 몸이 보내는 신호
+        renderHealth(container, dashboard);
+        break;
+      case 7:  // CH8. 인생의 타임라인
+        renderDaeun(container, dashboard);
+        break;
+      case 8:  // CH9. 올해 월별 가이드
+        renderMonthly(container, dashboard);
+        break;
+      case 9:  // CH10. 편지
+        renderLetter(container, dashboard);
+        break;
     }
   }
 
