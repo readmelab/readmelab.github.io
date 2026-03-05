@@ -1901,8 +1901,8 @@
              + '<div class="cv-visual-slot" id="cvSlot' + idx + '"></div>'
              + bodyHtml + bridgeHtml;
             container.appendChild(card);
-                        // ── 챕터 1~5 시각화 삽입 ──
-            if (idx < 5 && typeof ChartVisuals !== 'undefined') {
+            // ── 챕터 1~13 시각화 삽입 ──
+            if (idx < 13 && typeof ChartVisuals !== 'undefined') {
                 (function(i) {
                     setTimeout(function() {
                         var slot = document.getElementById('cvSlot' + i);
