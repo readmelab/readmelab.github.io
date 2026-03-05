@@ -1037,10 +1037,7 @@
                 <div class="chapter-card visible" id="reportOneLiner" style="text-align:center; display:none;">
                     <div class="sore-line" id="reportSoreLine"></div>
                 </div>
-                
-                <!-- 앞 표지 -->
-                <div class="chapter-card visible" id="reportCover" style="display:none;border-bottom:1px solid var(--gold-dim);"></div>
-                
+                                
                 <!-- 오버뷰 슬라이드 (JS로 동적 생성) -->
                 <div class="overview-slider" id="overviewSlider" style="display:none;">
                     <div class="overview-track" id="overviewTrack"></div>
@@ -1755,40 +1752,6 @@
         if (oneLiner) {
             document.getElementById('reportSoreLine').innerHTML = '"' + oneLiner.replace(/\//g, '<br>') + '"';
             document.getElementById('reportOneLiner').style.display = 'block';
-        }
-
-        // 앞 표지
-        var coverCard = document.getElementById('reportCover');
-        if (coverCard) {
-            var rName = (reportData.meta && reportData.meta.name) || certData.name || '';
-            var rProduct = certData.product || '사주 분석';
-            var dayMaster = (reportData.dashboard && reportData.dashboard.dayMaster) || {};
-            var dmGan = dayMaster.gan || '';
-            var dmOheng = dayMaster.oheng || '';
-            var mbti = (reportData.dashboard && reportData.dashboard.mbti) || (reportData.meta && (reportData.meta.MBTI || reportData.meta.mbti)) || '';
-            var coverHtml = '';
-            coverHtml += '<div style="padding:60px 20px;text-align:center;">';
-            coverHtml += '<div style="font-size:9px;color:var(--text-dim);letter-spacing:6px;margin-bottom:24px;">나 를 읽 다  연 구 소</div>';
-            coverHtml += '<div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 28px;"></div>';
-            coverHtml += '<div style="font-family:\'Noto Serif KR\',serif;font-size:28px;color:var(--gold);font-weight:700;margin-bottom:8px;">' + escapeHtml(rName) + '</div>';
-            coverHtml += '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:24px;">님을 위한</div>';
-            coverHtml += '<div style="font-family:\'Noto Serif KR\',serif;font-size:18px;color:var(--text-primary);letter-spacing:3px;margin-bottom:32px;">' + escapeHtml(rProduct) + ' 리포트</div>';
-            if (dmGan || mbti) {
-                coverHtml += '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:24px;">';
-                if (dmGan) {
-                    var dmColor = OHENG_COLORS[dmOheng] || 'var(--gold)';
-                    coverHtml += '<span style="padding:4px 14px;border:1px solid ' + dmColor + '30;border-radius:16px;font-size:12px;color:' + dmColor + ';background:' + dmColor + '08;">일간 ' + dmGan + ' · ' + dmOheng + '</span>';
-                }
-                if (mbti) {
-                    coverHtml += '<span style="padding:4px 14px;border:1px solid var(--gold-dim);border-radius:16px;font-size:12px;color:var(--gold);">' + mbti + '</span>';
-                }
-                coverHtml += '</div>';
-            }
-            coverHtml += '<div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin:0 auto 16px;"></div>';
-            coverHtml += '<div style="font-size:10px;color:var(--text-ghost);letter-spacing:2px;">' + new Date().getFullYear() + '.' + String(new Date().getMonth()+1).padStart(2,'0') + '</div>';
-            coverHtml += '</div>';
-            coverCard.innerHTML = coverHtml;
-            coverCard.style.display = 'block';
         }
         
         // 챕터 분리
