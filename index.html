@@ -2347,6 +2347,53 @@
 
     </script>
 <script src="chart-visuals.js"></script>
+    <!-- 챕터 네비게이션 -->
+<div id="chapterNav" style="
+  position:fixed; right:10px; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:8px; z-index:999;
+  padding:8px 4px; background:rgba(10,10,20,0.6); border-radius:20px;
+  border:1px solid rgba(201,168,76,0.1); backdrop-filter:blur(8px);
+"></div>
+<script>
+(function(){
+  function buildNav(){
+    var nav=document.getElementById('chapterNav');
+    if(!nav)return;
+    var cards=document.querySelectorAll('.chapter-card');
+    if(cards.length===0){setTimeout(buildNav,500);return;}
+    nav.innerHTML='';
+    for(var i=0;i<cards.length;i++){
+      (function(idx,card){
+        var dot=document.createElement('div');
+        dot.title='CH'+(idx+1);
+        dot.style.cssText='width:8px;height:8px;border-radius:50%;background:rgba(201,168,76,0.25);cursor:pointer;transition:all 0.3s;border:1px solid rgba(201,168,76,0.1);';
+        dot.addEventListener('mouseenter',function(){dot.style.background='#c9a84c';dot.style.transform='scale(1.4)';});
+        dot.addEventListener('mouseleave',function(){if(!dot.classList.contains('cv-nav-active')){dot.style.background='rgba(201,168,76,0.25)';dot.style.transform='scale(1)';}});
+        dot.addEventListener('click',function(){card.scrollIntoView({behavior:'smooth',block:'start'});});
+        dot.setAttribute('data-ch',idx);
+        nav.appendChild(dot);
+      })(i,cards[i]);
+    }
+    // 스크롤 트래킹
+    var allDots=nav.querySelectorAll('div');
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var idx=Array.prototype.indexOf.call(cards,entry.target);
+        if(idx>=0&&allDots[idx]){
+          if(entry.isIntersecting){
+            allDots[idx].style.background='#c9a84c';allDots[idx].style.transform='scale(1.5)';allDots[idx].classList.add('cv-nav-active');
+          } else {
+            allDots[idx].style.background='rgba(201,168,76,0.25)';allDots[idx].style.transform='scale(1)';allDots[idx].classList.remove('cv-nav-active');
+          }
+        }
+      });
+    },{threshold:0.3});
+    cards.forEach(function(c){observer.observe(c);});
+  }
+  if(document.readyState==='complete')buildNav();
+  else window.addEventListener('load',function(){setTimeout(buildNav,1000);});
+})();
+</script>
 </body>
 </html>
 
