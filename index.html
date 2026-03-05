@@ -2359,14 +2359,25 @@
   function buildNav(){
     var nav=document.getElementById('chapterNav');
     if(!nav)return;
-    var cards=document.querySelectorAll('.chapter-card');
-    // 최소 10개 이상일 때만 생성 (14챕터 기대)
-    if(cards.length<10){
-      if(buildNav._retry<30){buildNav._retry++;setTimeout(buildNav,1000);}
+
+    // 리포트 섹션이 활성화되었는지 확인
+    var reportSection=document.querySelector('.report-section.active');
+    if(!reportSection){
+      if(buildNav._retry<60){buildNav._retry++;setTimeout(buildNav,1000);}
       return;
     }
+
+    // 리포트 섹션 안의 챕터 카드만 찾기
+    var cards=reportSection.querySelectorAll('.chapter-card');
+    if(cards.length<10){
+      if(buildNav._retry<60){buildNav._retry++;setTimeout(buildNav,1000);}
+      return;
+    }
+
     console.log('📍 네비 완성: 챕터 '+cards.length+'개');
     nav.innerHTML='';
+    nav.style.display='flex';
+
     for(var i=0;i<cards.length;i++){
       (function(idx,card){
         var dot=document.createElement('div');
@@ -2378,6 +2389,7 @@
         nav.appendChild(dot);
       })(i,cards[i]);
     }
+
     var allDots=nav.querySelectorAll('div');
     var observer=new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
@@ -2394,11 +2406,30 @@
     cards.forEach(function(c){observer.observe(c);});
   }
   buildNav._retry=0;
-  setTimeout(buildNav,3000);
+
+  // 처음엔 숨김
+  var nav=document.getElementById('chapterNav');
+  if(nav) nav.style.display='none';
+
+  // 리포트 활성화 감시
+  var bodyObs=new MutationObserver(function(){
+    var active=document.querySelector('.report-section.active');
+    var nav=document.getElementById('chapterNav');
+    if(active && nav){
+      if(nav.children.length<2){
+        buildNav._retry=0;
+        buildNav();
+      }
+    } else if(nav){
+      nav.style.display='none';
+    }
+  });
+  bodyObs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+
+  // 폴백
   setTimeout(buildNav,5000);
-  setTimeout(buildNav,8000);
-  setTimeout(buildNav,12000);
-  setTimeout(buildNav,16000);
+  setTimeout(buildNav,10000);
+  setTimeout(buildNav,15000);
 })();
 </script>
 </body>
