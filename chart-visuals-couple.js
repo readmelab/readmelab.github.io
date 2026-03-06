@@ -139,109 +139,231 @@ var ChartVisualCouple = (function () {
     }
 
     /* ═══════════════════════════════════
-       CH1 – 일간 상호작용
+       CH1 – 일간 상호작용 (업그레이드)
        ═══════════════════════════════════ */
     function renderCH1(container, db) {
         var names = getNames(db);
         var cDb = db.client||db, pDb = db.partner||{};
-        var cross = db.crossReference || {};
         var cDM = getDayMasterGan(cDb), pDM = getDayMasterGan(pDb);
         var cOh = getDayMasterOheng(cDb), pOh = getDayMasterOheng(pDb);
+        var cColor = OHENG_COLORS[cOh]||'#c9a96e';
+        var pColor = OHENG_COLORS[pOh]||'#6eaac9';
 
-        var svgW=280, svgH=160, cx1=70, cx2=210, cy=70, r=36;
-        var svg = '<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;max-width:300px;display:block;margin:0 auto;">';
-        svg += '<circle cx="'+cx1+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+(OHENG_COLORS[cOh]||'#c9a96e')+'" stroke-width="2" opacity="0.8"/>';
-        svg += '<circle cx="'+cx2+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+(OHENG_COLORS[pOh]||'#6eaac9')+'" stroke-width="2" opacity="0.8"/>';
-        svg += '<text x="'+cx1+'" y="'+(cy+2)+'" text-anchor="middle" dominant-baseline="middle" fill="'+(OHENG_COLORS[cOh]||'#c9a96e')+'" font-size="22" font-family="Noto Serif KR,serif">'+esc(cDM)+'</text>';
-        svg += '<text x="'+cx2+'" y="'+(cy+2)+'" text-anchor="middle" dominant-baseline="middle" fill="'+(OHENG_COLORS[pOh]||'#6eaac9')+'" font-size="22" font-family="Noto Serif KR,serif">'+esc(pDM)+'</text>';
-        svg += '<text x="'+cx1+'" y="'+(cy+r+16)+'" text-anchor="middle" fill="#8a8a7a" font-size="9">'+esc(names.client)+'</text>';
-        svg += '<text x="'+cx2+'" y="'+(cy+r+16)+'" text-anchor="middle" fill="#8a8a7a" font-size="9">'+esc(names.partner)+'</text>';
+        // 오행 상생상극 판별
+        var sangMap = {'목':'화','화':'토','토':'금','금':'수','수':'목'};
+        var geukMap = {'목':'토','토':'수','수':'화','화':'금','금':'목'};
+        var relType = '—', relLabel = '', relColor = '#888';
+        if (cOh && pOh) {
+            if (cOh === pOh) { relType = '비화'; relLabel = '같은 기운'; relColor = '#c9a96e'; }
+            else if (sangMap[cOh] === pOh) { relType = '상생'; relLabel = esc(cOh)+' → '+esc(pOh)+' 생'; relColor = '#50b080'; }
+            else if (sangMap[pOh] === cOh) { relType = '상생'; relLabel = esc(pOh)+' → '+esc(cOh)+' 생'; relColor = '#50b080'; }
+            else if (geukMap[cOh] === pOh) { relType = '상극'; relLabel = esc(cOh)+' → '+esc(pOh)+' 극'; relColor = '#e85a5a'; }
+            else if (geukMap[pOh] === cOh) { relType = '상극'; relLabel = esc(pOh)+' → '+esc(cOh)+' 극'; relColor = '#e85a5a'; }
+        }
 
-        // 연결
+        var svgW=300, svgH=220, cx1=80, cx2=220, cy=90, r=44;
+        var svg = '<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;max-width:320px;display:block;margin:0 auto;">';
+
+        // 글로우 배경
+        svg += '<defs>';
+        svg += '<radialGradient id="glow1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="'+cColor+'" stop-opacity="0.15"/><stop offset="100%" stop-color="'+cColor+'" stop-opacity="0"/></radialGradient>';
+        svg += '<radialGradient id="glow2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="'+pColor+'" stop-opacity="0.15"/><stop offset="100%" stop-color="'+pColor+'" stop-opacity="0"/></radialGradient>';
+        svg += '<linearGradient id="connGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="'+cColor+'" stop-opacity="0.6"/><stop offset="50%" stop-color="'+relColor+'" stop-opacity="0.9"/><stop offset="100%" stop-color="'+pColor+'" stop-opacity="0.6"/></linearGradient>';
+        svg += '</defs>';
+
+        // 글로우 원
+        svg += '<circle cx="'+cx1+'" cy="'+cy+'" r="'+r*1.6+'" fill="url(#glow1)"/>';
+        svg += '<circle cx="'+cx2+'" cy="'+cy+'" r="'+r*1.6+'" fill="url(#glow2)"/>';
+
+        // 연결 그라데이션 밴드
+        svg += '<rect x="'+(cx1+r+2)+'" y="'+(cy-3)+'" width="'+(cx2-cx1-r*2-4)+'" height="6" rx="3" fill="url(#connGrad)" opacity="0.7"/>';
+
+        // 연결 위 화살표 파티클
+        for (var p=0;p<5;p++) {
+            var px = cx1+r+10+(cx2-cx1-r*2-20)*(p/4);
+            svg += '<circle cx="'+px.toFixed(1)+'" cy="'+cy+'" r="1.5" fill="'+relColor+'" opacity="'+(0.3+p*0.15)+'"><animate attributeName="opacity" values="0.2;0.8;0.2" dur="'+(1.5+p*0.3)+'s" repeatCount="indefinite"/></circle>';
+        }
+
+        // 메인 원 (이중 링)
+        svg += '<circle cx="'+cx1+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+cColor+'" stroke-width="1.5" opacity="0.3"/>';
+        svg += '<circle cx="'+cx1+'" cy="'+cy+'" r="'+(r-6)+'" fill="none" stroke="'+cColor+'" stroke-width="2" opacity="0.7"/>';
+        svg += '<circle cx="'+cx2+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+pColor+'" stroke-width="1.5" opacity="0.3"/>';
+        svg += '<circle cx="'+cx2+'" cy="'+cy+'" r="'+(r-6)+'" fill="none" stroke="'+pColor+'" stroke-width="2" opacity="0.7"/>';
+
+        // 천간 글자
+        svg += '<text x="'+cx1+'" y="'+(cy-2)+'" text-anchor="middle" dominant-baseline="middle" fill="'+cColor+'" font-size="28" font-family="Noto Serif KR,serif" opacity="0.9">'+esc(cDM)+'</text>';
+        svg += '<text x="'+cx2+'" y="'+(cy-2)+'" text-anchor="middle" dominant-baseline="middle" fill="'+pColor+'" font-size="28" font-family="Noto Serif KR,serif" opacity="0.9">'+esc(pDM)+'</text>';
+
+        // 오행 라벨 (원 아래)
+        svg += '<text x="'+cx1+'" y="'+(cy+r-8)+'" text-anchor="middle" fill="'+cColor+'" font-size="9" opacity="0.6">'+(OHENG_LABELS[cOh]||'')+'</text>';
+        svg += '<text x="'+cx2+'" y="'+(cy+r-8)+'" text-anchor="middle" fill="'+pColor+'" font-size="9" opacity="0.6">'+(OHENG_LABELS[pOh]||'')+'</text>';
+
+        // 이름
+        svg += '<text x="'+cx1+'" y="'+(cy+r+18)+'" text-anchor="middle" fill="'+cColor+'" font-size="10" opacity="0.8">'+esc(names.client)+'</text>';
+        svg += '<text x="'+cx2+'" y="'+(cy+r+18)+'" text-anchor="middle" fill="'+pColor+'" font-size="10" opacity="0.8">'+esc(names.partner)+'</text>';
+
+        // 관계 뱃지 (중앙)
         var midX = (cx1+cx2)/2;
-        svg += '<line x1="'+(cx1+r+4)+'" y1="'+cy+'" x2="'+(cx2-r-4)+'" y2="'+cy+'" stroke="#c9a96e" stroke-width="1" stroke-dasharray="6 3" opacity="0.5"/>';
+        svg += '<rect x="'+(midX-30)+'" y="'+(cy+30)+'" width="60" height="24" rx="12" fill="rgba(0,0,0,0.4)" stroke="'+relColor+'" stroke-width="1" opacity="0.9"/>';
+        svg += '<text x="'+midX+'" y="'+(cy+44)+'" text-anchor="middle" dominant-baseline="middle" fill="'+relColor+'" font-size="10" font-weight="bold">'+relType+'</text>';
 
-        // 오행 관계 레이블
-        var ohRel = cOh + ' ↔ ' + pOh;
-        svg += '<rect x="'+(midX-32)+'" y="'+(cy-11)+'" width="64" height="22" rx="11" fill="rgba(201,169,110,0.12)" stroke="#c9a96e" stroke-width="0.5"/>';
-        svg += '<text x="'+midX+'" y="'+(cy+2)+'" text-anchor="middle" dominant-baseline="middle" fill="#c9a96e" font-size="9">'+esc(ohRel)+'</text>';
+        // 관계 설명 (하단)
+        if (relLabel) {
+            svg += '<text x="'+midX+'" y="'+(cy+70)+'" text-anchor="middle" fill="var(--text-ghost,#666)" font-size="9">'+relLabel+'</text>';
+        }
 
         svg += '</svg>';
-        container.innerHTML = '<div style="text-align:center;padding:12px 0;"><div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:12px;">DAY MASTER INTERACTION</div>'+svg+'</div>';
+
+        container.innerHTML = '<div style="text-align:center;padding:16px 0;"><div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:14px;">DAY MASTER INTERACTION</div>'+svg+'</div>';
         observeSlot(container);
     }
 
     /* ═══════════════════════════════════
-       CH2 – 합충형 관계 맵 (지지 관계)
+       CH2 – 끌림의 구조 (지지 관계 업그레이드)
        ═══════════════════════════════════ */
     function renderCH2(container, db) {
+        var names = getNames(db);
         var cDb = db.client||db, pDb = db.partner||{};
         var cRels = cDb.earthlyBranchRelations || [];
         var pRels = pDb.earthlyBranchRelations || [];
 
-        var typeColors = {'합':'#50b080','충':'#e85a5a','형':'#e8a85a','파':'#8a5ae8','해':'#5a8ae8','반합(삼합)':'#50b080'};
-        var items = [];
+        var typeInfo = {
+            '합':     {color:'#50b080', icon:'⊕', desc:'서로 끌리는 힘'},
+            '충':     {color:'#e85a5a', icon:'⊗', desc:'부딪히는 긴장'},
+            '형':     {color:'#e8a85a', icon:'△', desc:'자극과 성장'},
+            '파':     {color:'#8a5ae8', icon:'◇', desc:'균열과 변화'},
+            '해':     {color:'#5a8ae8', icon:'○', desc:'소모와 약화'},
+            '반합(삼합)':{color:'#50b080', icon:'◎', desc:'부분적 조화'}
+        };
 
+        var items = [];
         function addItems(rels, who) {
             rels.forEach(function(r) {
-                items.push({type: r.type||r.name||'?', desc: r.pair||(r.members?r.members.join(', '):''), who: who, toward: r.toward||r.name||''});
+                var t = r.type||r.name||'?';
+                items.push({type:t, pair:r.pair||(r.members?r.members.join(' · '):''), who:who, toward:r.toward||''});
             });
         }
-        addItems(cRels, '본인');
-        addItems(pRels, '상대');
+        addItems(cRels, names.client);
+        addItems(pRels, names.partner);
 
         if (!items.length) { container.innerHTML=''; return; }
 
-        var html = '<div style="text-align:center;padding:12px 0;">';
-        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:16px;">EARTHLY BRANCH RELATIONS</div>';
-        html += '<div style="max-width:300px;margin:0 auto;text-align:left;">';
-
-        items.slice(0,8).forEach(function(it) {
-            var color = typeColors[it.type] || '#c9a96e';
-            html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.03);">';
-            html += '<div style="min-width:36px;height:22px;border-radius:11px;background:'+color+'22;border:1px solid '+color+'44;display:flex;align-items:center;justify-content:center;font-size:10px;color:'+color+';">'+esc(it.type.replace('반합(삼합)','반합'))+'</div>';
-            html += '<div style="flex:1;font-size:11px;color:var(--text-dim);">'+esc(it.desc)+'</div>';
-            if (it.toward) html += '<div style="font-size:9px;color:var(--text-ghost);">→'+esc(it.toward)+'</div>';
-            html += '</div>';
+        // 합/충/형 카운트
+        var counts = {};
+        items.forEach(function(it) {
+            var k = it.type.replace('반합(삼합)','반합');
+            counts[k] = (counts[k]||0) + 1;
         });
 
+        var html = '<div style="text-align:center;padding:16px 0;">';
+        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;">ATTRACTION STRUCTURE</div>';
+
+        // 상단 요약 뱃지
+        html += '<div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">';
+        Object.keys(counts).forEach(function(k) {
+            var info = typeInfo[k] || typeInfo['합'];
+            html += '<div style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;background:'+info.color+'11;border:1px solid '+info.color+'33;">';
+            html += '<span style="font-size:13px;">'+info.icon+'</span>';
+            html += '<span style="font-size:11px;color:'+info.color+';font-weight:bold;">'+esc(k)+'</span>';
+            html += '<span style="font-size:10px;color:var(--text-ghost);margin-left:2px;">×'+counts[k]+'</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        // 상세 카드
+        html += '<div style="max-width:320px;margin:0 auto;">';
+        items.slice(0,8).forEach(function(it) {
+            var info = typeInfo[it.type] || typeInfo[it.type.replace('반합(삼합)','반합')] || {color:'#c9a96e',icon:'◆',desc:''};
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid '+info.color+'22;backdrop-filter:blur(4px);">';
+
+            // 아이콘 서클
+            html += '<div style="width:38px;height:38px;border-radius:50%;background:'+info.color+'15;border:1.5px solid '+info.color+'44;display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
+            html += '<span style="font-size:16px;color:'+info.color+';">'+info.icon+'</span></div>';
+
+            // 내용
+            html += '<div style="flex:1;text-align:left;">';
+            html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">';
+            html += '<span style="font-size:12px;color:'+info.color+';font-weight:bold;">'+esc(it.type.replace('반합(삼합)','반합'))+'</span>';
+            html += '<span style="font-size:10px;color:var(--text-ghost);">'+esc(info.desc)+'</span></div>';
+            html += '<div style="font-size:11px;color:var(--text-dim);">'+esc(it.pair)+'</div>';
+            if (it.toward) html += '<div style="font-size:9px;color:var(--text-ghost);margin-top:2px;">→ '+esc(it.toward)+'</div>';
+            html += '</div></div>';
+        });
         html += '</div></div>';
+
         container.innerHTML = html;
         observeSlot(container);
     }
 
     /* ═══════════════════════════════════
-       CH3 – 십성 크로스 비교
+       CH3_simple – 십성 성향 비교 (직관적)
        ═══════════════════════════════════ */
-    function renderCH3(container, db) {
+    function renderCH3_simple(container, db) {
         var names = getNames(db);
         var cDb = db.client||db, pDb = db.partner||{};
         var cGroups = getSipseongGroups(cDb);
         var pGroups = getSipseongGroups(pDb);
-        var cats = ['비겁','식상','재성','관성','인성'];
-        var catColors = ['#c9a96e','#e8815a','#50b080','#5a8ae8','#b05ac9'];
 
-        var html = '<div style="text-align:center;padding:12px 0;">';
-        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:16px;">SIPSEONG CROSS MATRIX</div>';
-        html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:320px;margin:0 auto;">';
+        var cats = [
+            {key:'비겁', label:'자아·독립',  desc:'나를 지키려는 힘',    icon:'◎', color:'#c9a96e'},
+            {key:'식상', label:'표현·창의',  desc:'감정을 드러내는 힘',  icon:'✧', color:'#e8815a'},
+            {key:'재성', label:'현실·재물',  desc:'현실을 다루는 힘',    icon:'◇', color:'#50b080'},
+            {key:'관성', label:'책임·권위',  desc:'질서를 세우는 힘',    icon:'□', color:'#5a8ae8'},
+            {key:'인성', label:'학습·지혜',  desc:'받아들이는 힘',       icon:'○', color:'#b05ac9'}
+        ];
 
-        cats.forEach(function(cat,i) {
-            var cVal = Number(cGroups[cat])||0, pVal = Number(pGroups[cat])||0;
+        var html = '<div style="text-align:center;padding:16px 0;">';
+        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;">PERSONALITY COMPARE</div>';
+        html += '<div style="max-width:320px;margin:0 auto;">';
+
+        // 이름 헤더
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:0 28px;">';
+        html += '<div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#c9a96e;opacity:0.7;"></div><span style="font-size:11px;color:#c9a96e;">'+esc(names.client)+'</span></div>';
+        html += '<div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;color:#6eaac9;">'+esc(names.partner)+'</span><div style="width:10px;height:10px;border-radius:50%;background:#6eaac9;opacity:0.7;"></div></div>';
+        html += '</div>';
+
+        cats.forEach(function(cat) {
+            var cVal = Number(cGroups[cat.key])||0;
+            var pVal = Number(pGroups[cat.key])||0;
             var maxVal = Math.max(cVal, pVal, 1);
-            html += '<div style="text-align:center;">';
-            html += '<div style="font-size:9px;color:'+catColors[i]+';margin-bottom:6px;">'+esc(cat)+'</div>';
-            html += '<div style="height:60px;display:flex;align-items:flex-end;justify-content:center;gap:3px;">';
-            html += '<div style="width:10px;height:'+Math.max(4,(cVal/maxVal)*50)+'px;background:#c9a96e;border-radius:2px 2px 0 0;opacity:0.8;"></div>';
-            html += '<div style="width:10px;height:'+Math.max(4,(pVal/maxVal)*50)+'px;background:#6eaac9;border-radius:2px 2px 0 0;opacity:0.8;"></div>';
+            var cPct = Math.round((cVal/maxVal)*100);
+            var pPct = Math.round((pVal/maxVal)*100);
+
+            // 누가 강한지 판별
+            var diff = cVal - pVal;
+            var diffLabel = '';
+            if (Math.abs(diff) >= 2) {
+                diffLabel = diff > 0 ? esc(names.client)+' 강세' : esc(names.partner)+' 강세';
+            } else {
+                diffLabel = '비슷';
+            }
+
+            html += '<div style="margin-bottom:18px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,'+cat.color+'08,transparent);border:1px solid '+cat.color+'15;">';
+
+            // 제목줄
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+            html += '<div style="display:flex;align-items:center;gap:6px;">';
+            html += '<span style="font-size:14px;color:'+cat.color+';">'+cat.icon+'</span>';
+            html += '<span style="font-size:12px;color:'+cat.color+';font-weight:bold;">'+esc(cat.label)+'</span></div>';
+            html += '<span style="font-size:9px;color:var(--text-ghost);padding:2px 8px;border-radius:8px;background:rgba(255,255,255,0.04);">'+diffLabel+'</span>';
             html += '</div>';
-            html += '<div style="font-size:8px;color:var(--text-ghost);margin-top:4px;">'+cVal+' / '+pVal+'</div></div>';
+
+            // 설명
+            html += '<div style="font-size:9px;color:var(--text-ghost);margin-bottom:10px;">'+esc(cat.desc)+'</div>';
+
+            // 양방향 바
+            html += '<div style="display:flex;align-items:center;gap:6px;">';
+            html += '<div style="width:22px;text-align:right;font-size:10px;color:#c9a96e;font-weight:bold;">'+cVal+'</div>';
+            html += '<div style="flex:1;height:12px;background:rgba(201,169,110,0.06);border-radius:6px;overflow:hidden;direction:rtl;">';
+            html += '<div style="width:'+cPct+'%;height:100%;background:linear-gradient(to left,'+cat.color+','+cat.color+'44);border-radius:6px;transition:width 1s ease;"></div></div>';
+            html += '<div style="width:8px;height:8px;background:'+cat.color+';border-radius:50%;opacity:0.4;flex-shrink:0;"></div>';
+            html += '<div style="flex:1;height:12px;background:rgba(110,170,201,0.06);border-radius:6px;overflow:hidden;">';
+            html += '<div style="width:'+pPct+'%;height:100%;background:linear-gradient(to right,'+cat.color+'44,'+cat.color+');border-radius:6px;transition:width 1s ease;"></div></div>';
+            html += '<div style="width:22px;text-align:left;font-size:10px;color:#6eaac9;font-weight:bold;">'+pVal+'</div>';
+            html += '</div></div>';
         });
 
-        html += '</div>';
-        html += '<div style="display:flex;justify-content:center;gap:16px;margin-top:12px;font-size:9px;">';
-        html += '<div style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;background:#c9a96e;border-radius:1px;"></div><span style="color:var(--text-dim);">'+esc(names.client)+'</span></div>';
-        html += '<div style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;background:#6eaac9;border-radius:1px;"></div><span style="color:var(--text-dim);">'+esc(names.partner)+'</span></div></div>';
-        html += '</div>';
+        html += '</div></div>';
         container.innerHTML = html;
         observeSlot(container);
     }
@@ -347,27 +469,84 @@ var ChartVisualCouple = (function () {
     }
 
     /* ═══════════════════════════════════
-       CH6 – 감정 소통 파장
+       CH6 – 감정·소통 파장 (업그레이드)
        ═══════════════════════════════════ */
     function renderCH6(container, db) {
         var names = getNames(db);
-        var svgW=300, svgH=120;
+        var cDb = db.client||db, pDb = db.partner||{};
+        var cGroups = getSipseongGroups(cDb);
+        var pGroups = getSipseongGroups(pDb);
+
+        // 소통 관련 수치: 식상(표현), 인성(수용), 관성(통제)
+        var dims = [
+            {label:'표현력', key:'식상', desc:'감정을 말로 꺼내는 정도'},
+            {label:'수용력', key:'인성', desc:'상대 말을 받아들이는 정도'},
+            {label:'통제력', key:'관성', desc:'감정을 조절하는 정도'},
+            {label:'공감력', key:'비겁', desc:'같은 눈높이로 느끼는 정도'}
+        ];
+
+        // 파장 SVG
+        var svgW=300, svgH=100;
         var svg = '<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;max-width:320px;display:block;margin:0 auto;">';
-        var p1='M 0 60', p2='M 0 60';
+
+        svg += '<defs>';
+        svg += '<linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a96e" stop-opacity="0"/><stop offset="50%" stop-color="#c9a96e" stop-opacity="0.7"/><stop offset="100%" stop-color="#c9a96e" stop-opacity="0"/></linearGradient>';
+        svg += '<linearGradient id="waveGrad2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6eaac9" stop-opacity="0"/><stop offset="50%" stop-color="#6eaac9" stop-opacity="0.7"/><stop offset="100%" stop-color="#6eaac9" stop-opacity="0"/></linearGradient>';
+        svg += '</defs>';
+
+        // 중앙선
+        svg += '<line x1="0" y1="50" x2="'+svgW+'" y2="50" stroke="rgba(201,169,110,0.06)" stroke-width="0.5"/>';
+
+        // 식상 수치로 파장 주파수 결정, 인성으로 진폭
+        var cFreq = 3 + (Number(cGroups['식상'])||2) * 0.5;
+        var pFreq = 3 + (Number(pGroups['식상'])||2) * 0.5;
+        var cAmp = 12 + (Number(cGroups['인성'])||2) * 3;
+        var pAmp = 12 + (Number(pGroups['인성'])||2) * 3;
+
+        var p1='M 0 50', p2='M 0 50';
         for (var x=0;x<=svgW;x+=2) {
-            p1 += ' L '+x+' '+(60+25*Math.sin((x/svgW)*Math.PI*4)).toFixed(1);
-            p2 += ' L '+x+' '+(60+25*Math.sin((x/svgW)*Math.PI*4+1.2)).toFixed(1);
+            p1 += ' L '+x+' '+(50+cAmp*Math.sin((x/svgW)*Math.PI*cFreq)).toFixed(1);
+            p2 += ' L '+x+' '+(50+pAmp*Math.sin((x/svgW)*Math.PI*pFreq+1.0)).toFixed(1);
         }
-        svg += '<path d="'+p1+'" fill="none" stroke="#c9a96e" stroke-width="2" opacity="0.7"/>';
-        svg += '<path d="'+p2+'" fill="none" stroke="#6eaac9" stroke-width="2" opacity="0.7"/>';
+        svg += '<path d="'+p1+'" fill="none" stroke="url(#waveGrad1)" stroke-width="2.5"/>';
+        svg += '<path d="'+p2+'" fill="none" stroke="url(#waveGrad2)" stroke-width="2.5"/>';
+
+        // 공명 포인트 (파장이 교차하는 곳)
+        for (var cx2=0;cx2<=svgW;cx2+=10) {
+            var y1 = 50+cAmp*Math.sin((cx2/svgW)*Math.PI*cFreq);
+            var y2 = 50+pAmp*Math.sin((cx2/svgW)*Math.PI*pFreq+1.0);
+            if (Math.abs(y1-y2) < 4) {
+                svg += '<circle cx="'+cx2+'" cy="'+((y1+y2)/2).toFixed(1)+'" r="3" fill="rgba(255,255,255,0.15)" stroke="rgba(201,169,110,0.3)" stroke-width="0.5"><animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite"/></circle>';
+            }
+        }
         svg += '</svg>';
 
-        var html = '<div style="text-align:center;padding:12px 0;">';
-        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:12px;">EMOTION & COMMUNICATION</div>'+svg;
-        html += '<div style="display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:9px;">';
-        html += '<div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:2px;background:#c9a96e;"></div><span style="color:var(--text-dim);">'+esc(names.client)+'</span></div>';
-        html += '<div style="display:flex;align-items:center;gap:3px;"><div style="width:12px;height:2px;background:#6eaac9;"></div><span style="color:var(--text-dim);">'+esc(names.partner)+'</span></div></div>';
-        html += '</div>';
+        // 범례
+        var legend = '<div style="display:flex;justify-content:center;gap:20px;margin-top:8px;font-size:9px;">';
+        legend += '<div style="display:flex;align-items:center;gap:4px;"><div style="width:14px;height:2.5px;background:#c9a96e;border-radius:2px;"></div><span style="color:var(--text-dim);">'+esc(names.client)+'</span></div>';
+        legend += '<div style="display:flex;align-items:center;gap:4px;"><div style="width:14px;height:2.5px;background:#6eaac9;border-radius:2px;"></div><span style="color:var(--text-dim);">'+esc(names.partner)+'</span></div>';
+        legend += '<div style="display:flex;align-items:center;gap:4px;"><div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(201,169,110,0.3);"></div><span style="color:var(--text-ghost);">공명 지점</span></div></div>';
+
+        var html = '<div style="text-align:center;padding:16px 0;">';
+        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:14px;">EMOTION & COMMUNICATION</div>';
+        html += svg + legend;
+
+        // 소통 능력 비교 카드
+        html += '<div style="max-width:320px;margin:18px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+        dims.forEach(function(dim) {
+            var cVal = Number(cGroups[dim.key])||0;
+            var pVal = Number(pGroups[dim.key])||0;
+            html += '<div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(201,169,110,0.08);">';
+            html += '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;font-weight:bold;">'+esc(dim.label)+'</div>';
+            html += '<div style="font-size:8px;color:var(--text-ghost);margin-bottom:8px;">'+esc(dim.desc)+'</div>';
+            html += '<div style="display:flex;justify-content:space-between;align-items:flex-end;">';
+            html += '<div style="text-align:center;"><div style="font-size:16px;color:#c9a96e;font-weight:bold;">'+cVal+'</div><div style="font-size:8px;color:var(--text-ghost);">'+esc(names.client)+'</div></div>';
+            html += '<div style="font-size:10px;color:var(--text-ghost);">vs</div>';
+            html += '<div style="text-align:center;"><div style="font-size:16px;color:#6eaac9;font-weight:bold;">'+pVal+'</div><div style="font-size:8px;color:var(--text-ghost);">'+esc(names.partner)+'</div></div>';
+            html += '</div></div>';
+        });
+        html += '</div></div>';
+
         container.innerHTML = html;
         observeSlot(container);
     }
