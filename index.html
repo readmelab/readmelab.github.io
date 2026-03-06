@@ -698,6 +698,31 @@
 .cv-sinsal-name { font-size: 11px; color: var(--text-primary); font-weight: 500; margin-bottom: 2px; }
 .cv-sinsal-desc { font-size: 9px; color: var(--text-dim); }
 
+        /* 문단 사이 중간 포인트 마커 */
+.chapter-midpoint-marker {
+    text-align: center;
+    margin: 32px auto;
+    position: relative;
+}
+.chapter-midpoint-marker::before {
+    content: '◆';
+    color: var(--gold, #c9a96e);
+    font-size: 8px;
+    opacity: 0.4;
+    letter-spacing: 12px;
+}
+.chapter-midpoint-marker::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold, #c9a96e), transparent);
+    margin: 8px auto 0;
+    opacity: 0.2;
+}
+
+        
+
         /* ══════════════════════════════════════
    8. 프리미엄 효과
    ══════════════════════════════════════ */
@@ -1430,22 +1455,42 @@ var CHAPTER_TITLES_DEFAULT = [
         var html = '';
         var inParagraph = false;
         var i = 0;
+        var pCount = 0;         // 문단 카운터
+        var hasBox = false;     // 박스/인용 있었는지
+        var pendingParagraphs = []; // 문단 임시 저장
 
         while (i < lines.length) {
             var line = lines[i].trim();
 
-            // 빈 줄: 문단 닫기
             if (line === '') {
-                if (inParagraph) { html += '</p>'; inParagraph = false; }
+                if (inParagraph) {
+                    html += '</p>';
+                    inParagraph = false;
+                    pCount++;
+
+                    // ★ 2문단 연속 후 강조 박스 자동 삽입
+                    if (pCount >= 2 && !hasBox) {
+                        // 다음 줄들을 미리 확인 — 이미 박스나 인용이 오면 스킵
+                        var nextNonEmpty = '';
+                        for (var j = i + 1; j < lines.length; j++) {
+                            if (lines[j].trim() !== '') { nextNonEmpty = lines[j].trim(); break; }
+                        }
+                        var nextIsBoxOrQuote = (nextNonEmpty.indexOf('>>>') === 0 || (nextNonEmpty.charAt(0) === '>' && nextNonEmpty.charAt(1) !== '>'));
+                        if (!nextIsBoxOrQuote && nextNonEmpty !== '') {
+                            html += '<div class="chapter-midpoint-marker"></div>';
+                            pCount = 0;
+                        }
+                    }
+                    hasBox = false;
+                }
                 i++;
                 continue;
             }
 
             // >>> 박스 >>>
             if (line.indexOf('>>>') === 0) {
-                if (inParagraph) { html += '</p>'; inParagraph = false; }
+                if (inParagraph) { html += '</p>'; inParagraph = false; pCount++; }
                 var boxContent = line.replace(/^>>>/, '').replace(/>>>$/, '').trim();
-                // 여러 줄 박스 지원
                 while (i + 1 < lines.length && lines[i + 1].trim() !== '' && lines[i + 1].trim().indexOf('>>>') !== 0) {
                     i++;
                     var nextLine = lines[i].trim();
@@ -1458,16 +1503,20 @@ var CHAPTER_TITLES_DEFAULT = [
                 }
                 boxContent = applyInlineStyles(boxContent);
                 html += '<div class="chapter-box">' + boxContent + '</div>';
+                pCount = 0;
+                hasBox = true;
                 i++;
                 continue;
             }
 
             // > 인용구
             if (line.charAt(0) === '>' && line.charAt(1) !== '>') {
-                if (inParagraph) { html += '</p>'; inParagraph = false; }
+                if (inParagraph) { html += '</p>'; inParagraph = false; pCount++; }
                 var quoteText = line.substring(1).trim();
                 quoteText = applyInlineStyles(quoteText);
                 html += '<div class="highlight-quote"><div class="highlight-quote-text">"' + quoteText + '"</div></div>';
+                pCount = 0;
+                hasBox = true;
                 i++;
                 continue;
             }
@@ -1487,10 +1536,43 @@ var CHAPTER_TITLES_DEFAULT = [
     }
 
     function applyInlineStyles(text) {
-        // **볼드** → <strong>
+        // 1) 기존: **볼드** → <strong>
         text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        // *이탤릭* → <em> (볼드 처리 후)
+
+        // 2) ★ 자동 볼드 강화 — 이미 <strong> 안에 있으면 스킵
+        //    체감 키워드, 감정 표현, 핵심 패턴에 자동 강조
+        var boldPatterns = [
+            // 감정·체감 표현
+            /(?<!<strong[^>]*>)(외로[움운울]|불안[감한해]?|답답[한함해]?|소모[감적]?|지치[는고]|힘[든들]|두려[움운]|초조[한함해]?)/g,
+            /(?<!<strong[^>]*>)(뜨거[운움]|차가[운움]|따뜻[한함]|편안[한함해]?|안정[감적]?)/g,
+            // 관계 표현
+            /(?<!<strong[^>]*>)(끌림|밀어내[는기]|충돌|갈등|보완|의지|신뢰|배신|집착|거리[감두])/g,
+            // 핵심 구조 표현
+            /(?<!<strong[^>]*>)(패턴|구조|본질|핵심|근본|원인|이유|비밀|진짜)/g,
+            // 강조 부사/형용사
+            /(?<!<strong[^>]*>)(절대|반드시|가장|결국|사실[은상]?|오히려|특히|바로\s?이)/g,
+            // 직접 대화체 강조
+            /(?<!<strong[^>]*>)(당신[은의이]?|[가-힣]+님[은의이]?의?\s?(?:사주|운명|에너지|마음|감정|관계))/g,
+            // 사주 해석 핵심
+            /(?<!<strong[^>]*>)(용신|기신|상생|상극|충|합|형)/g,
+            // 시간 전환
+            /(?<!<strong[^>]*>)(지금|현재|앞으로|이\s?시기|올해|내년|2026|2027|2028)/g
+        ];
+
+        boldPatterns.forEach(function(pattern) {
+            text = text.replace(pattern, function(match) {
+                // 이미 태그 안에 있으면 스킵
+                return '<strong>' + match + '</strong>';
+            });
+        });
+
+        // 3) 중복 <strong> 정리: <strong><strong>x</strong></strong> → <strong>x</strong>
+        text = text.replace(/<strong>\s*<strong>/g, '<strong>');
+        text = text.replace(/<\/strong>\s*<\/strong>/g, '</strong>');
+
+        // 4) 기존: *이탤릭* → <em>
         text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
         return text;
     }
         
