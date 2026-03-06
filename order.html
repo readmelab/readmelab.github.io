@@ -232,7 +232,7 @@ function requestPayment(){
         orderId: orderId,
         orderName: orderName,
         customerName: '나를읽다 고객',
-        successUrl: window.location.origin + '/order-success.html?product=' + productCode + (appliedCoupon ? '&coupon=' + appliedCoupon.code : ''),
+        successUrl: window.location.origin + (productCode.startsWith('W_') ? '/form-w.html' : '/form.html') + '?code=' + orderId,
         failUrl: window.location.origin + '/order-fail.html'
     }).catch(function(error){
         document.getElementById('loadingOverlay').classList.remove('show');
