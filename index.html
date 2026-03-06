@@ -2503,8 +2503,13 @@ if (idx < 10) {
 
         // ★ 이모지도 서버 데이터 우선
         if (idx < chapters.length - 1) {
-            var CHAPTER_EMOJI_DEFAULT = ["🌌", "🔄", "🔮", "📅", "💕", "💰", "💪", "🌊", "📆", "✉️"];
-            var emoji = ch.emoji || (idx < CHAPTER_EMOJI_DEFAULT.length ? CHAPTER_EMOJI_DEFAULT[idx] : '✦');
+            var CHAPTER_EMOJI_DEFAULT = ["🌌", "✨", "🧬", "📅", "💕", "💰", "🏥", "🌊", "📆", "✉️"];
+var CHAPTER_EMOJI_COUPLE = ["☯️", "⚡", "🔄", "🎭", "⚖️", "💬", "💎", "🌊", "💯", "✉️"];
+var isCouple = !!(reportData && reportData.dashboard && reportData.dashboard.client && reportData.dashboard.partner);
+
+            var emojiArr = isCouple ? CHAPTER_EMOJI_COUPLE : CHAPTER_EMOJI_DEFAULT;
+var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
+
             var divider = document.createElement('div');
             divider.className = 'chapter-divider';
             divider.innerHTML =
