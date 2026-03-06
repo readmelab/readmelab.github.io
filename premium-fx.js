@@ -1,25 +1,52 @@
 /**
  * premium-fx.js — 프리미엄 시각 효과
+ * 개인: 금빛 / 궁합: 분홍-보라 (자동 분기)
  */
 (function() {
 
+  function isCouple() {
+    try {
+      var rd = window.reportData;
+      return !!(rd && rd.dashboard && rd.dashboard.client && rd.dashboard.partner);
+    } catch(e) { return false; }
+  }
+
   // ═══════════════════════════════════
-  // 1. 금빛 파티클 배경
+  // 1. 파티클 배경 (ID 유지: goldParticles)
   // ═══════════════════════════════════
   function initParticles() {
     if (document.getElementById('goldParticles')) return;
     var container = document.createElement('div');
-    container.id = 'goldParticles';
+    container.id = 'goldParticles';  // ★ 기존 ID 그대로 유지
     document.body.appendChild(container);
+
+    var couple = isCouple();
+
+    var goldColors = [
+      'rgba(201,169,110,0.6)',
+      'rgba(201,169,110,0.4)',
+      'rgba(255,215,0,0.3)'
+    ];
+    var pinkColors = [
+      'rgba(199,91,138,0.6)',
+      'rgba(232,138,175,0.5)',
+      'rgba(180,100,200,0.4)',
+      'rgba(201,168,76,0.3)'
+    ];
+
+    var colors = couple ? pinkColors : goldColors;
 
     for (var i = 0; i < 15; i++) {
       var p = document.createElement('div');
-      p.className = 'gp';
+      p.className = 'gp';  // ★ 기존 클래스 그대로 유지
       var size = 2 + Math.random() * 3;
+      var color = colors[Math.floor(Math.random() * colors.length)];
       p.style.cssText =
         'width:' + size + 'px;height:' + size + 'px;' +
         'left:' + (Math.random() * 100) + '%;' +
         'bottom:-10px;' +
+        'background:' + color + ';' +
+        'box-shadow:0 0 ' + (4 + Math.random() * 6) + 'px ' + color + ';' +
         'animation-duration:' + (14 + Math.random() * 16) + 's;' +
         'animation-delay:-' + (Math.random() * 20) + 's;';
       container.appendChild(p);
@@ -81,7 +108,7 @@
   }
 
   // ═══════════════════════════════════
-  // 4. 파티클 표시/숨김 (MutationObserver 제거)
+  // 4. 파티클 표시/숨김
   // ═══════════════════════════════════
   function checkParticles() {
     var container = document.getElementById('goldParticles');
@@ -101,8 +128,6 @@
     initParticles();
     initTextReveal();
     initDividerAnim();
-
-    // MutationObserver 대신 단순 폴링 (3초마다, 가벼움)
     setInterval(checkParticles, 3000);
     checkParticles();
   }
