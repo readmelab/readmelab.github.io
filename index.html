@@ -1565,13 +1565,13 @@ function parseChapterBody(rawBody) {
     return html;
 }
 
-function applyInlineStyles(text) {
-    // **볼드** → <strong>
-    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    // *이탤릭* → <em> (볼드 처리 후)
-    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    return text;
-}
+    function applyInlineStyles(text) {
+        // **볼드** → <strong>
+        text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // *이탤릭* → <em> (볼드 처리 후)
+        text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        return text;
+    }
 
     function applyInlineStyles(text) {
         // 1) 기존: **볼드** → <strong>
