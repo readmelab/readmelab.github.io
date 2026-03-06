@@ -1333,12 +1333,19 @@ var CHAPTER_TITLES_DEFAULT = [
     var audioFileIds = {};
     var playerIntervals = {};
     var bgmType = null;
-    var bgmPreloaded = false;
-    var pendingBgmPlay = false;
     var fontStep = 1;
     var fontScales = [0.88, 1, 1.15];
     var currentView = 'cert';
     var tocOpen = false;
+
+    // ── 배경음악 (BGM) ──
+    var BGM_FILE_IDS = {
+        N: '1i241LaTRBNnqo8txRf8Utpc4bYLOHqnl',
+        W: '1GbPp1Ov80_eTile2iuttPGwqfTLrvk7v'
+    };
+    var bgmAudio = null;
+    var bgmReady = false;
+    var pendingBgmPlay = false;
 
     // URL 파라미터
     var urlParams = new URLSearchParams(window.location.search);
@@ -1573,46 +1580,7 @@ function parseChapterBody(rawBody) {
         return text;
     }
 
-    function applyInlineStyles(text) {
-        // 1) 기존: **볼드** → <strong>
-        text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-        // 2) ★ 자동 볼드 강화 — 이미 <strong> 안에 있으면 스킵
-        //    체감 키워드, 감정 표현, 핵심 패턴에 자동 강조
-        var boldPatterns = [
-            // 감정·체감 표현
-            /(?<!<strong[^>]*>)(외로[움운울]|불안[감한해]?|답답[한함해]?|소모[감적]?|지치[는고]|힘[든들]|두려[움운]|초조[한함해]?)/g,
-            /(?<!<strong[^>]*>)(뜨거[운움]|차가[운움]|따뜻[한함]|편안[한함해]?|안정[감적]?)/g,
-            // 관계 표현
-            /(?<!<strong[^>]*>)(끌림|밀어내[는기]|충돌|갈등|보완|의지|신뢰|배신|집착|거리[감두])/g,
-            // 핵심 구조 표현
-            /(?<!<strong[^>]*>)(패턴|구조|본질|핵심|근본|원인|이유|비밀|진짜)/g,
-            // 강조 부사/형용사
-            /(?<!<strong[^>]*>)(절대|반드시|가장|결국|사실[은상]?|오히려|특히|바로\s?이)/g,
-            // 직접 대화체 강조
-            /(?<!<strong[^>]*>)(당신[은의이]?|[가-힣]+님[은의이]?의?\s?(?:사주|운명|에너지|마음|감정|관계))/g,
-            // 사주 해석 핵심
-            /(?<!<strong[^>]*>)(용신|기신|상생|상극|충|합|형)/g,
-            // 시간 전환
-            /(?<!<strong[^>]*>)(지금|현재|앞으로|이\s?시기|올해|내년|2026|2027|2028)/g
-        ];
-
-        boldPatterns.forEach(function(pattern) {
-            text = text.replace(pattern, function(match) {
-                // 이미 태그 안에 있으면 스킵
-                return '<strong>' + match + '</strong>';
-            });
-        });
-
-        // 3) 중복 <strong> 정리: <strong><strong>x</strong></strong> → <strong>x</strong>
-        text = text.replace(/<strong>\s*<strong>/g, '<strong>');
-        text = text.replace(/<\/strong>\s*<\/strong>/g, '</strong>');
-
-        // 4) 기존: *이탤릭* → <em>
-        text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-
-        return text;
-    }
         
     /* ══════════════════════════════════════
        2. 인트로 & 진입
@@ -1621,10 +1589,16 @@ function parseChapterBody(rawBody) {
         var d = certData;
         var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
         if (isCouple) { showCoupleIntro(d); } else { showSingleIntro(d); }
+
+        // 테마송 프리로드 (버튼용, 자동재생 아님)
         if (d.themeLink) {
             var fid = extractFileId(d.themeLink);
-            if (fid) { audioFileIds['theme'] = fid; preloadBgm(fid); }
+            if (fid) { audioFileIds['theme'] = fid; preloadThemeSong(fid); }
         }
+
+        // BGM 프리로드 (자동재생용)
+        var bgmKey = isCouple ? 'W' : 'N';
+        preloadBgm(BGM_FILE_IDS[bgmKey]);
     }
 
     function showSingleIntro(d) {
@@ -2000,7 +1974,10 @@ function showCoupleIntro(d) {
         var d = certData;
         var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
 
-        if (bgmPreloaded && audioPlayers['theme']) { startBgm(); } else { pendingBgmPlay = true; }
+                // BGM 자동재생 (8초 딜레이)
+        setTimeout(function() {
+            if (bgmReady && bgmAudio) { startBgm(); } else { pendingBgmPlay = true; }
+        }, 8000);
 
         document.getElementById('clientName').textContent = d.name;
         document.getElementById('productTag').textContent = d.product || d.productCode || '';
@@ -3050,57 +3027,85 @@ function renderOutro(isCouple) {
                 if (data.error || !data.audioBase64) { console.error('BGM preload error'); return; }
                 var audio = new Audio();
                 audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
-                audio.volume = 0.5;
+                audio.volume = 0.3;
                 audio.preload = 'auto';
-                audioPlayers['theme'] = audio;
-                audioLoaded['theme'] = true;
-                bgmPreloaded = true;
-                audio.addEventListener('loadedmetadata', function() {
-                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
-                });
+                audio.loop = true;
+                bgmAudio = audio;
+                bgmReady = true;
                 audio.addEventListener('ended', function() {
-                    if (bgmType === 'theme') { audio.currentTime = 0; audio.play().catch(function(){}); }
-                    else {
-                        document.getElementById('bgmBar').classList.remove('active');
-                        document.getElementById('themePlayBtn').textContent = '▶';
-                        document.getElementById('btnTheme').classList.remove('playing');
-                        bgmType = null;
-                    }
+                    audio.currentTime = 0;
+                    audio.play().catch(function(){});
                 });
                 if (pendingBgmPlay) { pendingBgmPlay = false; startBgm(); }
             })
             .catch(function(err) { console.error('BGM preload fetch error:', err); });
     }
 
+    function preloadThemeSong(fileId) {
+        fetch(GAS_URL + '?audio=' + fileId)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.error || !data.audioBase64) { console.error('Theme preload error'); return; }
+                var audio = new Audio();
+                audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                audio.volume = 0.8;
+                audio.preload = 'auto';
+                audioPlayers['theme'] = audio;
+                audioLoaded['theme'] = true;
+                audio.addEventListener('loadedmetadata', function() {
+                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
+                });
+                audio.addEventListener('ended', function() {
+                    document.getElementById('bgmBar').classList.remove('active');
+                    document.getElementById('themePlayBtn').textContent = '▶';
+                    document.getElementById('btnTheme').classList.remove('playing');
+                    bgmType = null;
+                    // 테마송 끝나면 BGM 다시 재생
+                    if (bgmAudio) { bgmAudio.volume = 0.3; bgmAudio.play().catch(function(){}); bgmType = 'bgm'; 
+                        document.getElementById('bgmBar').classList.add('active');
+                        document.getElementById('bgmBtn').textContent = '⏸';
+                        document.getElementById('bgmTitle').textContent = '♪ 배경음악';
+                        document.getElementById('bgmSub').textContent = '재생 중';
+                    }
+                });
+            })
+            .catch(function(err) { console.error('Theme preload fetch error:', err); });
+    }
+        
     function startBgm() {
-        var audio = audioPlayers['theme'];
-        if (!audio) return;
-        audio.volume = 0.5;
-        audio.currentTime = 0;
-        audio.loop = true;
-        audio.play().then(function() {
-            bgmType = 'theme';
-            audioLoaded['theme'] = true;
+        if (!bgmAudio) return;
+        bgmAudio.volume = 0.3;
+        bgmAudio.currentTime = 0;
+        bgmAudio.loop = true;
+        bgmAudio.play().then(function() {
+            bgmType = 'bgm';
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
-            document.getElementById('bgmTitle').textContent = '♪ ' + (certData.themeName || '맞춤형 음원');
-            document.getElementById('bgmSub').textContent = '배경음악 재생 중';
-            document.getElementById('btnTheme').classList.add('playing');
-            startProgressUpdate('theme');
-            if (audio.duration) { document.getElementById('themeDuration').textContent = formatTime(audio.duration); }
-            else { audio.addEventListener('loadedmetadata', function() { document.getElementById('themeDuration').textContent = formatTime(audio.duration); }); }
+            document.getElementById('bgmTitle').textContent = '♪ 배경음악';
+            document.getElementById('bgmSub').textContent = '재생 중';
         }).catch(function(e) {
             console.log('BGM autoplay blocked:', e);
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '▶';
             document.getElementById('bgmSub').textContent = '터치하여 재생';
-            bgmType = 'theme';
+            bgmType = 'bgm';
         });
     }
 
     function toggleBgm() {
-        if (!bgmType || !audioPlayers[bgmType]) return;
-        playPause(bgmType);
+        if (bgmType === 'bgm' && bgmAudio) {
+            if (bgmAudio.paused) {
+                bgmAudio.play(); 
+                document.getElementById('bgmBtn').textContent = '⏸';
+                document.getElementById('bgmSub').textContent = '재생 중';
+            } else {
+                bgmAudio.pause();
+                document.getElementById('bgmBtn').textContent = '▶';
+                document.getElementById('bgmSub').textContent = '일시정지';
+            }
+        } else if (bgmType && audioPlayers[bgmType]) {
+            playPause(bgmType);
+        }
     }
 
     function togglePlayer(type) {
@@ -3156,13 +3161,14 @@ function renderOutro(isCouple) {
 
     document.addEventListener('DOMContentLoaded', function() {
         var bgmBtn = document.getElementById('bgmBtn');
-        if (bgmBtn) { bgmBtn.addEventListener('click', function() { if (!bgmType || !audioPlayers[bgmType]) return; playPause(bgmType); }); }
+        if (bgmBtn) { bgmBtn.addEventListener('click', function() { toggleBgm(); }); }
     });
 
     function playPause(type) {
         var audio = audioPlayers[type];
         if (!audio) { loadAudio(type); return; }
         if (audio.paused) {
+            // 다른 오디오 플레이어 정지
             ['theme','voice','healing'].forEach(function(t) {
                 if (t !== type && audioPlayers[t] && !audioPlayers[t].paused) {
                     audioPlayers[t].pause();
@@ -3171,7 +3177,11 @@ function renderOutro(isCouple) {
                     clearInterval(playerIntervals[t]);
                 }
             });
-            if (type === 'theme') audio.loop = true;
+            // 테마송 재생 시 BGM 페이드아웃
+            if (type === 'theme' && bgmAudio && !bgmAudio.paused) {
+                fadeBgmOut();
+            }
+            if (type === 'theme') audio.loop = false;
             audio.play().catch(function(){});
             document.getElementById(type + 'PlayBtn').textContent = '⏸';
             document.getElementById('btn' + capitalize(type)).classList.add('playing');
@@ -3189,9 +3199,50 @@ function renderOutro(isCouple) {
             clearInterval(playerIntervals[type]);
             document.getElementById('bgmBtn').textContent = '▶';
             document.getElementById('bgmSub').textContent = '일시정지';
+            // 테마송 일시정지 시 BGM 복귀
+            if (type === 'theme' && bgmAudio) {
+                fadeBgmIn();
+            }
         }
     }
 
+    function fadeBgmOut() {
+        if (!bgmAudio) return;
+        var vol = bgmAudio.volume;
+        var fade = setInterval(function() {
+            vol -= 0.03;
+            if (vol <= 0) {
+                vol = 0;
+                bgmAudio.volume = 0;
+                bgmAudio.pause();
+                clearInterval(fade);
+            } else {
+                bgmAudio.volume = vol;
+            }
+        }, 50);
+    }
+
+    function fadeBgmIn() {
+        if (!bgmAudio) return;
+        bgmAudio.volume = 0;
+        bgmAudio.play().then(function() {
+            var vol = 0;
+            var fade = setInterval(function() {
+                vol += 0.03;
+                if (vol >= 0.3) {
+                    bgmAudio.volume = 0.3;
+                    clearInterval(fade);
+                    bgmType = 'bgm';
+                    document.getElementById('bgmTitle').textContent = '♪ 배경음악';
+                    document.getElementById('bgmSub').textContent = '재생 중';
+                    document.getElementById('bgmBtn').textContent = '⏸';
+                } else {
+                    bgmAudio.volume = vol;
+                }
+            }, 50);
+        }).catch(function(){});
+    }
+        
     function seek(type) {
         var audio = audioPlayers[type];
         var slider = document.getElementById(type + 'Progress');
