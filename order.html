@@ -223,25 +223,15 @@ function applyCoupon(){
 // ═══ 결제 요청 ═══
 function requestPayment(){
     var orderId = 'RML-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
-    var orderName = product.name + ' — 나를읽다 연구소';
+    var formPage = productCode.startsWith('W_') ? '/form-w.html' : '/form.html';
+    var targetUrl = window.location.origin + formPage + '?code=' + orderId;
 
     document.getElementById('loadingOverlay').classList.add('show');
 
-    tossPayments.requestPayment('카드', {
-        amount: currentPrice,
-        orderId: orderId,
-        orderName: orderName,
-        customerName: '나를읽다 고객',
-        successUrl: window.location.origin + (productCode.startsWith('W_') ? '/form-w.html' : '/form.html') + '?code=' + orderId,
-        failUrl: window.location.origin + '/order-fail.html'
-    }).catch(function(error){
-        document.getElementById('loadingOverlay').classList.remove('show');
-        if(error.code === 'USER_CANCEL'){
-            // 사용자가 결제창을 닫은 경우
-        } else {
-            alert('결제 중 오류가 발생했습니다: ' + error.message);
-        }
-    });
+    // 테스트 모드: 1.5초 후 폼으로 이동 (실결제 연동 시 토스 결제창으로 교체)
+    setTimeout(function(){
+        window.location.href = targetUrl;
+    }, 1500);
 }
 </script>
 
