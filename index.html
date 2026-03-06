@@ -1695,7 +1695,7 @@ setTimeout(function(){
 
 function showCoupleIntro(d) {
     var name1 = d.name || '';
-    var name2 = d.name2 || '';
+    var name2 = d.name2 || (reportData && reportData.meta && reportData.meta.partnerName) || (reportData && reportData.dashboard && reportData.dashboard.partner && reportData.dashboard.partner.name) || '';
     var oneLiner = d.soreLine || (reportData && reportData.oneLiner) || '';
 
     var baseColor = '#C75B8A';
