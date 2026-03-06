@@ -1,6 +1,9 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/landing.html" },
     { "source": "/certificate", "destination": "/index.html" }
+  ],
+  "routes": [
+    { "src": "^/$", "dest": "/landing.html" },
+    { "src": "^/certificate(.*)", "dest": "/index.html" }
   ]
 }
