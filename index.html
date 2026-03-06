@@ -721,6 +721,34 @@
     opacity: 0.2;
 }
 
+
+   /* 챕터 서머리 */
+.chapter-summary {
+    text-align: center;
+    font-size: calc(var(--font-size-base, 14px) * 0.85);
+    color: var(--gold, #c9a96e);
+    opacity: 0.7;
+    margin: -8px 0 24px 0;
+    padding: 0 20px;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+/* 볼드 강조 */
+.chapter-body strong,
+.chapter-body b {
+    color: var(--accent, var(--gold, #c9a96e));
+    font-weight: 600;
+}
+
+/* 이탤릭 강조 */
+.chapter-body em {
+    color: var(--text-primary, #eee);
+    opacity: 0.85;
+    font-style: italic;
+}
+     
         
 
         /* ══════════════════════════════════════
@@ -1449,91 +1477,101 @@ var CHAPTER_TITLES_DEFAULT = [
     /* ══════════════════════════════════════
        1-2. 챕터 본문 서식 파싱
        ══════════════════════════════════════ */
-    function parseChapterBody(rawBody) {
-        if (!rawBody) return '';
-        var lines = rawBody.split('\n');
-        var html = '';
-        var inParagraph = false;
-        var i = 0;
-        var pCount = 0;         // 문단 카운터
-        var hasBox = false;     // 박스/인용 있었는지
-        var pendingParagraphs = []; // 문단 임시 저장
+function parseChapterBody(rawBody) {
+    if (!rawBody) return '';
+    var lines = rawBody.split('\n');
+    var html = '';
+    var inParagraph = false;
+    var pCount = 0;
+    var i = 0;
 
-        while (i < lines.length) {
-            var line = lines[i].trim();
+    while (i < lines.length) {
+        var line = lines[i].trim();
 
-            if (line === '') {
-                if (inParagraph) {
-                    html += '</p>';
-                    inParagraph = false;
-                    pCount++;
-
-                    // ★ 2문단 연속 후 강조 박스 자동 삽입
-                    if (pCount >= 2 && !hasBox) {
-                        // 다음 줄들을 미리 확인 — 이미 박스나 인용이 오면 스킵
-                        var nextNonEmpty = '';
-                        for (var j = i + 1; j < lines.length; j++) {
-                            if (lines[j].trim() !== '') { nextNonEmpty = lines[j].trim(); break; }
-                        }
-                        var nextIsBoxOrQuote = (nextNonEmpty.indexOf('>>>') === 0 || (nextNonEmpty.charAt(0) === '>' && nextNonEmpty.charAt(1) !== '>'));
-                        if (!nextIsBoxOrQuote && nextNonEmpty !== '') {
-                            html += '<div class="chapter-midpoint-marker"></div>';
-                            pCount = 0;
-                        }
+        // 빈 줄: 문단 닫기
+        if (line === '') {
+            if (inParagraph) {
+                html += '</p>';
+                inParagraph = false;
+                pCount++;
+                // 2문단마다 중간 마커
+                if (pCount > 0 && pCount % 2 === 0) {
+                    // 다음 줄이 박스/인용구가 아닌 경우에만
+                    var nextLine = (i + 1 < lines.length) ? lines[i + 1].trim() : '';
+                    if (nextLine !== '' && nextLine.indexOf('>>>') !== 0 && nextLine.charAt(0) !== '>') {
+                        html += '<div class="chapter-midpoint-marker"></div>';
                     }
-                    hasBox = false;
                 }
-                i++;
-                continue;
-            }
-
-            // >>> 박스 >>>
-            if (line.indexOf('>>>') === 0) {
-                if (inParagraph) { html += '</p>'; inParagraph = false; pCount++; }
-                var boxContent = line.replace(/^>>>/, '').replace(/>>>$/, '').trim();
-                while (i + 1 < lines.length && lines[i + 1].trim() !== '' && lines[i + 1].trim().indexOf('>>>') !== 0) {
-                    i++;
-                    var nextLine = lines[i].trim();
-                    if (nextLine.indexOf('>>>') === 0) {
-                        nextLine = nextLine.replace(/>>>$/, '').trim();
-                        boxContent += '<br>' + nextLine;
-                        break;
-                    }
-                    boxContent += '<br>' + nextLine;
-                }
-                boxContent = applyInlineStyles(boxContent);
-                html += '<div class="chapter-box">' + boxContent + '</div>';
-                pCount = 0;
-                hasBox = true;
-                i++;
-                continue;
-            }
-
-            // > 인용구
-            if (line.charAt(0) === '>' && line.charAt(1) !== '>') {
-                if (inParagraph) { html += '</p>'; inParagraph = false; pCount++; }
-                var quoteText = line.substring(1).trim();
-                quoteText = applyInlineStyles(quoteText);
-                html += '<div class="highlight-quote"><div class="highlight-quote-text">"' + quoteText + '"</div></div>';
-                pCount = 0;
-                hasBox = true;
-                i++;
-                continue;
-            }
-
-            // 일반 텍스트
-            var styledLine = applyInlineStyles(line);
-            if (!inParagraph) {
-                html += '<p>' + styledLine;
-                inParagraph = true;
-            } else {
-                html += '<br>' + styledLine;
             }
             i++;
+            continue;
         }
-        if (inParagraph) { html += '</p>'; }
-        return html;
+
+        // [summary] 태그 → 챕터 서머리 블록
+        if (line.indexOf('[summary]') === 0) {
+            if (inParagraph) { html += '</p>'; inParagraph = false; }
+            var summaryText = line.replace(/^\[summary\]\s*/, '').trim();
+            if (summaryText) {
+                summaryText = applyInlineStyles(summaryText);
+                html += '<div class="chapter-summary">' + summaryText + '</div>';
+            }
+            i++;
+            continue;
+        }
+
+        // >>> 박스 >>>
+        if (line.indexOf('>>>') === 0) {
+            if (inParagraph) { html += '</p>'; inParagraph = false; pCount++; }
+            var boxContent = line.replace(/^>>>/, '').replace(/>>>$/, '').trim();
+            while (i + 1 < lines.length && lines[i + 1].trim() !== '' && lines[i + 1].trim().indexOf('>>>') !== 0) {
+                i++;
+                var nextLine = lines[i].trim();
+                if (nextLine.indexOf('>>>') === 0) {
+                    nextLine = nextLine.replace(/>>>$/, '').trim();
+                    boxContent += '<br>' + nextLine;
+                    break;
+                }
+                boxContent += '<br>' + nextLine;
+            }
+            boxContent = applyInlineStyles(boxContent);
+            html += '<div class="chapter-box">' + boxContent + '</div>';
+            pCount = 0; // 박스 후 카운트 리셋
+            i++;
+            continue;
+        }
+
+        // > 인용구
+        if (line.charAt(0) === '>' && line.charAt(1) !== '>') {
+            if (inParagraph) { html += '</p>'; inParagraph = false; pCount++; }
+            var quoteText = line.substring(1).trim();
+            quoteText = applyInlineStyles(quoteText);
+            html += '<div class="highlight-quote"><div class="highlight-quote-text">"' + quoteText + '"</div></div>';
+            pCount = 0; // 인용구 후 카운트 리셋
+            i++;
+            continue;
+        }
+
+        // 일반 텍스트
+        var styledLine = applyInlineStyles(line);
+        if (!inParagraph) {
+            html += '<p>' + styledLine;
+            inParagraph = true;
+        } else {
+            html += '<br>' + styledLine;
+        }
+        i++;
     }
+    if (inParagraph) { html += '</p>'; }
+    return html;
+}
+
+function applyInlineStyles(text) {
+    // **볼드** → <strong>
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // *이탤릭* → <em> (볼드 처리 후)
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return text;
+}
 
     function applyInlineStyles(text) {
         // 1) 기존: **볼드** → <strong>
