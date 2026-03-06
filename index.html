@@ -2125,8 +2125,13 @@ function renderReport() {
     // ★ 오행 차트: 궁합이면 2인 비교
     var ohengData = reportData.oheng || db.ohengDistribution || null;
     if (isCouple) {
-        var partnerOheng = reportData.partnerOheng || (db._partner && db._partner.ohengDistribution) || null;
-        if (ohengData) { renderOhengChartCouple(ohengData, partnerOheng, db, db._partner, db._cross); }
+    var partnerOheng = null;
+    if (db._partner && db._partner.ohengDistribution) {
+        partnerOheng = db._partner.ohengDistribution;
+    } else if (reportData.partnerOheng) {
+        partnerOheng = reportData.partnerOheng.distribution || reportData.partnerOheng;
+    }
+    if (ohengData) { renderOhengChartCouple(ohengData, partnerOheng, db, db._partner, db._cross); }
     } else {
         if (ohengData) { renderOhengChart(ohengData, db); }
     }
