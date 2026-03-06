@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>나를읽다 연구소 | 주문하기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<style>
+:root{--gold:#d4a853;--gold-light:#e8c97a;--gold-dark:#b8912a;--bg:#0a0a0f;--bg2:#12121a;--t1:#f0e6d3;--t2:#a09880;--t3:#6a6455;--border:rgba(212,168,83,.15);--red:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);line-height:1.7;min-height:100vh;min-height:100dvh}
+.serif{font-family:'Noto Serif KR',serif}
+
+.container{max-width:480px;margin:0 auto;padding:24px 20px 40px}
+.back-link{display:inline-block;color:var(--t3);font-size:.82rem;text-decoration:none;margin-bottom:24px}
+.back-link:hover{color:var(--gold)}
+
+/* ── Order Summary ── */
+.order-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px 24px;margin-bottom:24px}
+.order-label{font-size:.6rem;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;font-weight:500}
+.order-product{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.order-emoji{font-size:2.2rem}
+.order-info h2{font-family:'Noto Serif KR',serif;font-size:1.15rem;font-weight:700}
+.order-info span{font-size:.78rem;color:var(--t3);font-weight:300}
+.order-divider{height:1px;background:var(--border);margin:16px 0}
+.order-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.order-row .label{font-size:.85rem;color:var(--t2);font-weight:300}
+.order-row .value{font-size:.85rem;color:var(--t2)}
+.order-row .value.strike{text-decoration:line-through;color:var(--t3)}
+.order-row.total .label{font-size:1rem;font-weight:500;color:var(--t1)}
+.order-row.total .value{font-family:'Noto Serif KR',serif;font-size:1.4rem;font-weight:900;color:var(--gold-light)}
+.discount-tag{display:inline-block;background:rgba(239,68,68,.12);color:var(--red);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:8px}
+
+/* ── Coupon ── */
+.coupon-area{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:24px}
+.coupon-title{font-size:.85rem;color:var(--t1);font-weight:500;margin-bottom:12px}
+.coupon-row{display:flex;gap:8px}
+.coupon-input{flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.03);color:var(--t1);font-size:.88rem;font-family:'Noto Sans KR',sans-serif;outline:none}
+.coupon-input::placeholder{color:var(--t3)}
+.coupon-input:focus{border-color:var(--gold)}
+.coupon-btn{padding:12px 20px;border:none;border-radius:10px;background:rgba(212,168,83,.15);color:var(--gold);font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap}
+.coupon-btn:hover{background:rgba(212,168,83,.25)}
+.coupon-msg{font-size:.78rem;margin-top:8px;font-weight:300}
+.coupon-msg.success{color:#22c55e}
+.coupon-msg.error{color:var(--red)}
+
+/* ── Pay Button ── */
+.pay-btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:1.05rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all .3s;box-shadow:0 8px 32px rgba(212,168,83,.25)}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,168,83,.35)}
+.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+.pay-note{text-align:center;font-size:.72rem;color:var(--t3);margin-top:12px;font-weight:300;line-height:1.6}
+
+/* ── Security Badge ── */
+.security{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;padding:14px;border-radius:10px;background:rgba(255,255,255,.02)}
+.security span{font-size:.75rem;color:var(--t3);font-weight:300}
+
+/* ── Loading Overlay ── */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,15,.9);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.loading-overlay.show{display:flex}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:.92rem;color:var(--t2);font-weight:300}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <a href="/" class="back-link">← 돌아가기</a>
+
+    <div class="order-card">
+        <div class="order-label">Order Summary</div>
+        <div class="order-product">
+            <div class="order-emoji" id="productEmoji">📖</div>
+            <div class="order-info">
+                <h2 id="productName">나를 읽다</h2>
+                <span id="productSub">사주×MBTI 종합 리포트</span>
+            </div>
+        </div>
+        <div class="order-divider"></div>
+        <div class="order-row">
+            <span class="label">정가</span>
+            <span class="value strike" id="originalPrice">59,000원</span>
+        </div>
+        <div class="order-row">
+            <span class="label">할인 <span class="discount-tag" id="discountTag">49% OFF</span></span>
+            <span class="value" style="color:var(--red)" id="discountAmount">-29,100원</span>
+        </div>
+        <div class="order-row" id="couponRow" style="display:none">
+            <span class="label">쿠폰 할인</span>
+            <span class="value" style="color:#22c55e" id="couponAmount">-0원</span>
+        </div>
+        <div class="order-divider"></div>
+        <div class="order-row total">
+            <span class="label">결제 금액</span>
+            <span class="value" id="finalPrice">29,900원</span>
+        </div>
+    </div>
+
+    <!-- 쿠폰 -->
+    <div class="coupon-area">
+        <div class="coupon-title">쿠폰 코드가 있으신가요?</div>
+        <div class="coupon-row">
+            <input type="text" class="coupon-input" id="couponInput" placeholder="쿠폰 코드 입력">
+            <button class="coupon-btn" onclick="applyCoupon()">적용</button>
+        </div>
+        <div class="coupon-msg" id="couponMsg"></div>
+    </div>
+
+    <!-- 결제 버튼 -->
+    <button class="pay-btn" id="payBtn" onclick="requestPayment()">
+        결제하기
+    </button>
+    <div class="pay-note">
+        결제 완료 후 정보 입력 페이지로 이동합니다.<br>
+        카드, 카카오페이, 네이버페이 등 간편결제 가능
+    </div>
+
+    <div class="security">
+        <span>🔒</span>
+        <span>토스페이먼츠 보안 결제 | SSL 암호화 적용</span>
+    </div>
+</div>
+
+<!-- 로딩 -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">결제를 처리하고 있습니다...</div>
+</div>
+
+<script>
+// ═══ 상품 데이터 ═══
+var PRODUCTS = {
+    N_READ:   { name:'나를 읽다',   sub:'사주×MBTI 종합 리포트',               emoji:'📖', original:59000,  price:29900, discount:49 },
+    N_LISTEN: { name:'나를 듣다',   sub:'프리미엄 리포트 + 당신을 위한 노래',  emoji:'🎧', original:79000,  price:39800, discount:50 },
+    W_READ:   { name:'우리를 읽다', sub:'궁합×MBTI 종합 리포트',               emoji:'💑', original:99000,  price:49700, discount:50 },
+    W_LISTEN: { name:'우리를 듣다', sub:'궁합 프리미엄 + 두 사람을 위한 노래', emoji:'💝', original:129000, price:59600, discount:54 }
+};
+
+// ═══ 쿠폰 데이터 (나중에 GAS로 이동) ═══
+var COUPONS = {
+    'BETA50':    { type:'percent', value:50,   label:'베타 50% 할인',  maxUse:100 },
+    'FRIEND30':  { type:'percent', value:30,   label:'친구 30% 할인',  maxUse:50 },
+    'WELCOME':   { type:'amount',  value:5000, label:'5,000원 할인',   maxUse:200 },
+    'READMELAB': { type:'percent', value:100,  label:'무료 체험',      maxUse:10 }
+};
+
+// ═══ 상태 ═══
+var params = new URLSearchParams(window.location.search);
+var productCode = params.get('product') || 'N_READ';
+var product = PRODUCTS[productCode] || PRODUCTS['N_READ'];
+var currentPrice = product.price;
+var appliedCoupon = null;
+
+// ═══ 토스페이먼츠 ═══
+var clientKey = 'test_ck_Ba5PzR0ArnyMGNmqmxWzVvmYnNeD';
+var tossPayments = TossPayments(clientKey);
+
+// ═══ 초기 렌더링 ═══
+(function init(){
+    document.getElementById('productEmoji').textContent = product.emoji;
+    document.getElementById('productName').textContent = product.name;
+    document.getElementById('productSub').textContent = product.sub;
+    document.getElementById('originalPrice').textContent = product.original.toLocaleString() + '원';
+    document.getElementById('discountTag').textContent = product.discount + '% OFF';
+    document.getElementById('discountAmount').textContent = '-' + (product.original - product.price).toLocaleString() + '원';
+    document.getElementById('finalPrice').textContent = product.price.toLocaleString() + '원';
+
+    // URL에 쿠폰 파라미터가 있으면 자동 적용
+    var couponParam = params.get('coupon');
+    if(couponParam){
+        document.getElementById('couponInput').value = couponParam;
+        applyCoupon();
+    }
+})();
+
+// ═══ 쿠폰 적용 ═══
+function applyCoupon(){
+    var code = document.getElementById('couponInput').value.trim().toUpperCase();
+    var msg = document.getElementById('couponMsg');
+    var coupon = COUPONS[code];
+
+    if(!code){
+        msg.className = 'coupon-msg error';
+        msg.textContent = '쿠폰 코드를 입력해 주세요.';
+        return;
+    }
+
+    if(!coupon){
+        msg.className = 'coupon-msg error';
+        msg.textContent = '유효하지 않은 쿠폰 코드입니다.';
+        return;
+    }
+
+    var discountAmount = 0;
+    if(coupon.type === 'percent'){
+        discountAmount = Math.floor(product.price * coupon.value / 100);
+    } else {
+        discountAmount = coupon.value;
+    }
+
+    // 최소 결제금액 100원 (토스 최소)
+    currentPrice = Math.max(100, product.price - discountAmount);
+    appliedCoupon = { code: code, discount: discountAmount };
+
+    // UI 업데이트
+    document.getElementById('couponRow').style.display = 'flex';
+    document.getElementById('couponAmount').textContent = '-' + discountAmount.toLocaleString() + '원';
+    document.getElementById('finalPrice').textContent = currentPrice.toLocaleString() + '원';
+
+    msg.className = 'coupon-msg success';
+    msg.textContent = '✓ ' + coupon.label + ' 쿠폰이 적용되었습니다!';
+
+    // 100% 할인일 경우
+    if(currentPrice <= 100){
+        document.getElementById('payBtn').textContent = '무료로 시작하기';
+    }
+}
+
+// ═══ 결제 요청 ═══
+function requestPayment(){
+    var orderId = 'RML-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+    var orderName = product.name + ' — 나를읽다 연구소';
+
+    document.getElementById('loadingOverlay').classList.add('show');
+
+    tossPayments.requestPayment('카드', {
+        amount: currentPrice,
+        orderId: orderId,
+        orderName: orderName,
+        customerName: '나를읽다 고객',
+        successUrl: window.location.origin + '/order-success.html?product=' + productCode + (appliedCoupon ? '&coupon=' + appliedCoupon.code : ''),
+        failUrl: window.location.origin + '/order-fail.html'
+    }).catch(function(error){
+        document.getElementById('loadingOverlay').classList.remove('show');
+        if(error.code === 'USER_CANCEL'){
+            // 사용자가 결제창을 닫은 경우
+        } else {
+            alert('결제 중 오류가 발생했습니다: ' + error.message);
+        }
+    });
+}
+</script>
+
+</body>
+</html>
