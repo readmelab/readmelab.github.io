@@ -664,8 +664,9 @@ var ChartVisualCouple = (function () {
         observeSlot(container);
     }
 
+
     /* ═══════════════════════════════════
-       CH9 – 2026 월별 관계 가이드
+       CH9 – 2026 월별 관계 가이드 (직관적)
        ═══════════════════════════════════ */
     function renderCH9(container, db) {
         var names = getNames(db);
@@ -675,40 +676,94 @@ var ChartVisualCouple = (function () {
 
         if (!cMonthly.length && !pMonthly.length) { container.innerHTML=''; return; }
 
-        var months = cMonthly.length ? cMonthly : pMonthly;
+        // 십성 → 일상 언어 + 색상 + 한줄 설명
+        var sipMap = {
+            '비견':  {label:'함께하기', color:'#c9a96e', icon:'◎', tip:'서로 동등한 위치, 경쟁과 자극'},
+            '겁재':  {label:'주도하기', color:'#d4a04a', icon:'◉', tip:'적극적으로 나서되 욕심은 줄이기'},
+            '식신':  {label:'즐기기',   color:'#e8815a', icon:'✧', tip:'여유롭고 편안한 시간, 맛집 추천'},
+            '상관':  {label:'표현하기', color:'#e06040', icon:'✦', tip:'솔직해지는 시기, 말조심 필요'},
+            '편재':  {label:'활동하기', color:'#50b080', icon:'◇', tip:'함께 움직이면 좋은 결과, 소비주의'},
+            '정재':  {label:'안정하기', color:'#3d9060', icon:'◆', tip:'꾸준히 쌓아가는 시기, 저축 추천'},
+            '편관':  {label:'긴장하기', color:'#5a8ae8', icon:'□', tip:'외부 압력, 서로 의지하면 극복'},
+            '정관':  {label:'책임지기', color:'#4070c8', icon:'■', tip:'규칙적인 생활, 약속을 지키기'},
+            '편인':  {label:'배우기',   color:'#b05ac9', icon:'○', tip:'새로운 관점, 취미 공유 추천'},
+            '정인':  {label:'돌보기',   color:'#9040b0', icon:'●', tip:'서로 챙기는 시기, 따뜻한 대화'}
+        };
 
-        var html = '<div style="padding:12px 0;">';
-        html += '<div style="text-align:center;font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:16px;">2026 MONTHLY GUIDE</div>';
+        // 월 운세 등급 계산 (십성 조합으로)
+        function getGrade(cSip, pSip) {
+            var good = ['식신','정재','정인','정관'];
+            var warn = ['상관','겁재','편관'];
+            var cG = good.indexOf(cSip) >= 0 ? 1 : (warn.indexOf(cSip) >= 0 ? -1 : 0);
+            var pG = good.indexOf(pSip) >= 0 ? 1 : (warn.indexOf(pSip) >= 0 ? -1 : 0);
+            var score = cG + pG;
+            if (score >= 2) return {label:'좋음', color:'#50b080', bg:'#50b08015'};
+            if (score >= 1) return {label:'무난', color:'#c9a96e', bg:'#c9a96e15'};
+            if (score >= 0) return {label:'보통', color:'#8a8a7a', bg:'#8a8a7a10'};
+            return {label:'주의', color:'#e85a5a', bg:'#e85a5a15'};
+        }
+
+        // 두 십성 조합 조언
+        function getCombinedTip(cSip, pSip) {
+            var cInfo = sipMap[cSip], pInfo = sipMap[pSip];
+            if (!cInfo && !pInfo) return '서로의 페이스를 존중하세요';
+            if (!cInfo) return pInfo.tip;
+            if (!pInfo) return cInfo.tip;
+
+            // 특수 조합
+            if ((cSip==='상관'&&pSip==='편관')||(cSip==='편관'&&pSip==='상관')) return '의견 충돌 가능, 한발 양보하기';
+            if ((cSip==='식신'&&pSip==='식신')) return '함께 맛있는 것 먹으러! 최고의 데이트 시기';
+            if ((cSip==='정인'&&pSip==='정인')) return '서로 보살피는 따뜻한 시기';
+            if ((cSip==='겁재'&&pSip==='겁재')) return '경쟁심 주의, 각자 영역 존중';
+            if ((cSip==='정재'||cSip==='편재')&&(pSip==='정재'||pSip==='편재')) return '재물운 좋은 시기, 함께 계획 세우기';
+
+            return cInfo.tip;
+        }
+
+        var months = cMonthly.length >= pMonthly.length ? cMonthly : pMonthly;
+
+        var html = '<div style="padding:16px 0;">';
+        html += '<div style="text-align:center;font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;">2026 RELATIONSHIP CALENDAR</div>';
 
         months.forEach(function(m, i) {
             var pm = pMonthly[i] || {};
             var cSip = m.sipseong || '—';
             var pSip = pm.sipseong || '—';
-            var cUns = m.unsung || '—';
-            var pUns = pm.unsung || '—';
             var monthNum = m.month || (i+1);
+            var cInfo = sipMap[cSip] || {label:cSip, color:'#8a8a7a', icon:'·'};
+            var pInfo = sipMap[pSip] || {label:pSip, color:'#8a8a7a', icon:'·'};
+            var grade = getGrade(cSip, pSip);
+            var tip = getCombinedTip(cSip, pSip);
 
-            html += '<div style="display:flex;gap:12px;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(201,169,110,0.06);">';
+            html += '<div style="display:flex;gap:10px;align-items:stretch;margin-bottom:8px;padding:12px;border-radius:12px;background:'+grade.bg+';border:1px solid '+grade.color+'22;">';
 
-            // 월 라벨
-            html += '<div style="min-width:32px;text-align:center;"><div style="font-size:16px;color:var(--gold);font-family:\'Noto Serif KR\',serif;">'+monthNum+'</div><div style="font-size:8px;color:var(--text-ghost);">월</div></div>';
-
-            // 클라이언트
-            html += '<div style="flex:1;text-align:center;">';
-            html += '<div style="font-size:9px;color:#c9a96e;margin-bottom:2px;">'+esc(names.client)+'</div>';
-            html += '<div style="font-size:11px;color:var(--text-dim);">'+esc(cSip)+'</div>';
-            html += '<div style="font-size:8px;color:var(--text-ghost);">'+esc(cUns)+'</div></div>';
-
-            // 구분
-            html += '<div style="width:1px;height:30px;background:rgba(201,169,110,0.1);"></div>';
-
-            // 파트너
-            html += '<div style="flex:1;text-align:center;">';
-            html += '<div style="font-size:9px;color:#6eaac9;margin-bottom:2px;">'+esc(names.partner)+'</div>';
-            html += '<div style="font-size:11px;color:var(--text-dim);">'+esc(pSip)+'</div>';
-            html += '<div style="font-size:8px;color:var(--text-ghost);">'+esc(pUns)+'</div></div>';
-
+            // 월 + 등급
+            html += '<div style="min-width:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;">';
+            html += '<div style="font-size:18px;color:var(--gold,#c9a96e);font-family:\'Noto Serif KR\',serif;font-weight:bold;">'+monthNum+'</div>';
+            html += '<div style="font-size:7px;color:var(--text-ghost);margin-bottom:4px;">월</div>';
+            html += '<div style="font-size:8px;color:'+grade.color+';padding:2px 6px;border-radius:6px;background:'+grade.color+'20;font-weight:bold;">'+grade.label+'</div>';
             html += '</div>';
+
+            // 두 사람 상태
+            html += '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;">';
+
+            // 이름 + 키워드
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+            html += '<div style="display:flex;align-items:center;gap:4px;">';
+            html += '<span style="font-size:11px;color:'+cInfo.color+';">'+cInfo.icon+'</span>';
+            html += '<span style="font-size:10px;color:#c9a96e;">'+esc(names.client)+'</span>';
+            html += '<span style="font-size:11px;color:'+cInfo.color+';font-weight:bold;">'+esc(cInfo.label)+'</span>';
+            html += '</div>';
+            html += '<div style="display:flex;align-items:center;gap:4px;">';
+            html += '<span style="font-size:10px;color:#6eaac9;">'+esc(names.partner)+'</span>';
+            html += '<span style="font-size:11px;color:'+pInfo.color+';font-weight:bold;">'+esc(pInfo.label)+'</span>';
+            html += '<span style="font-size:11px;color:'+pInfo.color+';">'+pInfo.icon+'</span>';
+            html += '</div></div>';
+
+            // 한줄 조언
+            html += '<div style="font-size:9px;color:var(--text-ghost);padding-top:4px;border-top:1px solid rgba(255,255,255,0.04);">'+esc(tip)+'</div>';
+
+            html += '</div></div>';
         });
 
         html += '</div>';
@@ -716,57 +771,7 @@ var ChartVisualCouple = (function () {
         observeSlot(container);
     }
 
-    /* ═══════════════════════════════════
-       CH3_simple – 십성 간소화 (직관적 성향 비교)
-       ═══════════════════════════════════ */
-    function renderCH3_simple(container, db) {
-        var names = getNames(db);
-        var cDb = db.client||db, pDb = db.partner||{};
-        var cGroups = getSipseongGroups(cDb);
-        var pGroups = getSipseongGroups(pDb);
 
-        var cats = [
-            {key:'비겁', label:'자아·독립', icon:'◎', color:'#c9a96e'},
-            {key:'식상', label:'표현·창의', icon:'✧', color:'#e8815a'},
-            {key:'재성', label:'현실·재물', icon:'◇', color:'#50b080'},
-            {key:'관성', label:'책임·권위', icon:'□', color:'#5a8ae8'},
-            {key:'인성', label:'학습·지혜', icon:'○', color:'#b05ac9'}
-        ];
-
-        var html = '<div style="text-align:center;padding:16px 0;">';
-        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;">PERSONALITY COMPARE</div>';
-        html += '<div style="max-width:300px;margin:0 auto;">';
-
-        html += '<div style="display:flex;justify-content:space-between;margin-bottom:14px;padding:0 4px;">';
-        html += '<span style="font-size:10px;color:#c9a96e;">'+esc(names.client)+'</span>';
-        html += '<span style="font-size:10px;color:#6eaac9;">'+esc(names.partner)+'</span></div>';
-
-        cats.forEach(function(cat) {
-            var cVal = Number(cGroups[cat.key])||0;
-            var pVal = Number(pGroups[cat.key])||0;
-            var maxVal = Math.max(cVal, pVal, 1);
-            var cPct = Math.round((cVal/maxVal)*100);
-            var pPct = Math.round((pVal/maxVal)*100);
-
-            html += '<div style="margin-bottom:16px;">';
-            html += '<div style="text-align:center;margin-bottom:6px;">';
-            html += '<span style="font-size:11px;color:'+cat.color+';letter-spacing:1px;">'+cat.icon+' '+esc(cat.label)+'</span></div>';
-
-            html += '<div style="display:flex;align-items:center;gap:6px;">';
-            html += '<div style="width:24px;text-align:right;font-size:9px;color:#c9a96e;">'+cVal+'</div>';
-            html += '<div style="flex:1;height:10px;background:rgba(201,169,110,0.08);border-radius:5px;overflow:hidden;direction:rtl;">';
-            html += '<div style="width:'+cPct+'%;height:100%;background:linear-gradient(to left,#c9a96e,rgba(201,169,110,0.3));border-radius:5px;transition:width 0.8s ease;"></div></div>';
-            html += '<div style="width:6px;height:6px;background:'+cat.color+';border-radius:50%;opacity:0.5;flex-shrink:0;"></div>';
-            html += '<div style="flex:1;height:10px;background:rgba(110,170,201,0.08);border-radius:5px;overflow:hidden;">';
-            html += '<div style="width:'+pPct+'%;height:100%;background:linear-gradient(to right,rgba(110,170,201,0.3),#6eaac9);border-radius:5px;transition:width 0.8s ease;"></div></div>';
-            html += '<div style="width:24px;text-align:left;font-size:9px;color:#6eaac9;">'+pVal+'</div>';
-            html += '</div></div>';
-        });
-
-        html += '</div></div>';
-        container.innerHTML = html;
-        observeSlot(container);
-    }
 
     /* ═══════════════════════════════════
        insertVisual – 챕터 라우터 (제목 기반 자동 매칭)
@@ -777,43 +782,34 @@ var ChartVisualCouple = (function () {
 
         var chapters = (window.reportData && window.reportData.chapters) || [];
         var ch = chapters[idx];
-        var title = (ch && (ch.title || ch.chapterTitle) || '').toLowerCase();
+        var title = (ch && (ch.title || ch.chapterTitle) || '');
+        var tLower = title.toLowerCase();
 
-        if (/총론|개요|overview|종합/.test(title)) {
-            renderCH0(container, dashboard);
-        } else if (/끌림|attraction|이끌|매력/.test(title)) {
-            renderCH2(container, dashboard);
-        } else if (/일간|day.?master|데이|상호작용|interaction/.test(title)) {
-            renderCH1(container, dashboard);
-        } else if (/십성|sipseong|성향|성격/.test(title)) {
-            renderCH3_simple(container, dashboard);
-        } else if (/오행|oheng|균형|밸런스|balance/.test(title)) {
-            renderCH4(container, dashboard);
-        } else if (/용신|yongshin|보완/.test(title)) {
-            renderCH5(container, dashboard);
-        } else if (/소통|감정|communication|emotion/.test(title)) {
-            renderCH6(container, dashboard);
-        } else if (/재물|가치|wealth|values|돈|재정/.test(title)) {
-            renderCH7(container, dashboard);
-        } else if (/대운|운세|luck.?cycle|타임라인/.test(title)) {
-            renderCH8(container, dashboard);
-        } else if (/월별|monthly|2026|가이드/.test(title)) {
-            renderCH9(container, dashboard);
-        } else {
-            // 폴백: idx 기반
-            switch(idx) {
-                case 0: renderCH0(container, dashboard); break;
-                case 1: renderCH2(container, dashboard); break;
-                case 2: renderCH1(container, dashboard); break;
-                case 3: renderCH3_simple(container, dashboard); break;
-                case 4: renderCH4(container, dashboard); break;
-                case 5: renderCH5(container, dashboard); break;
-                case 6: renderCH6(container, dashboard); break;
-                case 7: renderCH7(container, dashboard); break;
-                case 8: renderCH8(container, dashboard); break;
-                case 9: renderCH9(container, dashboard); break;
-            }
+        // 편지 챕터 → 비주얼 없음
+        if (/편지|letter/.test(tLower)) {
+            return;
         }
+
+        if (/에너지.?구조|총론|개요|overview|종합/.test(tLower)) {
+            renderCH0(container, dashboard);
+        } else if (/끌림|attraction|이끌|매력/.test(tLower)) {
+            renderCH2(container, dashboard);
+        } else if (/일상|온도|day.?master|데이|상호작용|interaction/.test(tLower)) {
+            renderCH1(container, dashboard);
+        } else if (/오행|oheng|균형|밸런스|balance/.test(tLower)) {
+            renderCH4(container, dashboard);
+        } else if (/용신|yongshin|보완|교환/.test(tLower)) {
+            renderCH5(container, dashboard);
+        } else if (/소통|어긋|감정|communication|emotion/.test(tLower)) {
+            renderCH6(container, dashboard);
+        } else if (/사랑|재물|가치|wealth|values|돈|재정|흐름/.test(tLower)) {
+            renderCH7(container, dashboard);
+        } else if (/대운|운세|luck.?cycle|타임라인/.test(tLower)) {
+            renderCH8(container, dashboard);
+        } else if (/월별|monthly|2026|가이드/.test(tLower)) {
+            renderCH9(container, dashboard);
+        }
+        // 매칭 안되면 비주얼 없음 (폴백 제거 → 잘못된 매칭 방지)
     }
 
     return { insertVisual: insertVisual };
