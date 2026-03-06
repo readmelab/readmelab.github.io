@@ -1885,20 +1885,27 @@ function showCoupleIntro(d) {
         document.getElementById('clientName').textContent = d.name;
         document.getElementById('productTag').textContent = d.product || d.productCode || '';
 
-        if (isCouple && d.name2) {
-            document.getElementById('nameDivider').style.display = 'flex';
-            document.getElementById('clientName2').style.display = 'block';
-            document.getElementById('clientName2').textContent = d.name2;
-            document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
-            document.getElementById('honorific').textContent = '두 분의 궁합 분석이 완성되었습니다';
-        } else {
-            document.getElementById('honorific').textContent = d.name + '님의 운명 분석이 완성되었습니다';
-        }
+var partnerName = d.name2 || (reportData && reportData.meta && reportData.meta.partnerName) || (reportData && reportData.dashboard && reportData.dashboard.partner && reportData.dashboard.partner.name) || '';
 
-        if (reportData) {
-            var reportName = (reportData.meta && reportData.meta.name) || d.name || '';
-            document.getElementById('btnReport').classList.add('active');
-            document.getElementById('btnReportText').textContent = reportName + '_사주리포트';
+if (isCouple && partnerName) {
+    document.getElementById('nameDivider').style.display = 'flex';
+    document.getElementById('clientName2').style.display = 'block';
+    document.getElementById('clientName2').textContent = partnerName;
+    document.getElementById('certTitle').textContent = '운 명 궁 합 보 증 서';
+    document.getElementById('honorific').textContent = d.name + ' & ' + partnerName + '님의 궁합 분석이 완성되었습니다';
+} else {
+    document.getElementById('honorific').textContent = d.name + '님의 운명 분석이 완성되었습니다';
+}
+
+if (reportData) {
+    var reportName = (reportData.meta && reportData.meta.name) || d.name || '';
+    document.getElementById('btnReport').classList.add('active');
+    if (isCouple && partnerName) {
+        document.getElementById('btnReportText').textContent = reportName + ' & ' + partnerName + ' 궁합리포트';
+    } else {
+        document.getElementById('btnReportText').textContent = reportName + ' 사주리포트 읽기';
+    }
+
             document.getElementById('fontControls').classList.add('visible');
             renderReport();
         }
