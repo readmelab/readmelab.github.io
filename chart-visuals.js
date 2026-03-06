@@ -356,8 +356,11 @@ var ChartVisuals = (function() {
     var pyeonJae = detail['편재']||0, jeongJae = detail['정재']||0;
     var pyeonGwan = detail['편관']||0, jeongGwan = detail['정관']||0;
 
-    var rawWealth = jaeTotal * 18 + 15;
-    var wealthScore = normalizeScore(rawWealth, 15, 100);
+    // ── 연애 점수 계산 (55~95) ──
+    var jaeTotal = jae;
+    var gwanTotal = gwan;
+    var rawLove = (jaeTotal + gwanTotal) * 12 + 20;
+    var loveScore = normalizeScore(rawLove, 20, 100);
     var fillPct = loveScore / 100;
 
     var W = 300, H = 260;
@@ -378,8 +381,9 @@ var ChartVisuals = (function() {
 
     svg += '<path d="M150,200 C150,200 60,150 60,100 C60,70 90,50 120,60 C135,65 145,78 150,90 C155,78 165,65 180,60 C210,50 240,70 240,100 C240,150 150,200 150,200 Z" fill="none" stroke="rgba(255,107,157,0.2)" stroke-width="1"><animate attributeName="stroke-width" values="1;2;1" dur="2s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values="0.2;0.05;0.2" dur="2s" repeatCount="indefinite"/></path>';
 
-    svg += '<text x="150" y="120" text-anchor="middle" fill="#FF6B9D" font-size="28" font-weight="700" opacity="0">'+loveScore+'%<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1s" fill="freeze"/></text>';
-    svg += '<text x="150" y="140" text-anchor="middle" fill="rgba(255,107,157,0.6)" font-size="9" opacity="0">연애 에너지<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.2s" fill="freeze"/></text>';
+    svg += '<text x="150" y="115" text-anchor="middle" fill="#FF6B9D" font-size="32" font-weight="700" opacity="0">'+loveScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1s" fill="freeze"/></text>';
+    svg += '<text x="150" y="135" text-anchor="middle" fill="rgba(255,107,157,0.5)" font-size="10" opacity="0">/ 100점<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
+    svg += '<text x="150" y="155" text-anchor="middle" fill="rgba(255,107,157,0.6)" font-size="9" opacity="0">연애 에너지<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.2s" fill="freeze"/></text>';
 
     var tagY = 222;
     svg += '<rect x="30" y="'+(tagY-12)+'" width="110" height="24" rx="12" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.4s" fill="freeze"/></rect>';
@@ -398,6 +402,7 @@ var ChartVisuals = (function() {
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
   }
+
 
   // ═══════════════════════════════════
   // 관계운 — 사람 연결 네트워크
@@ -438,7 +443,10 @@ var ChartVisuals = (function() {
     var detail = (counts && counts.detail) || {};
     var pyeonJae = detail['편재']||0, jeongJae = detail['정재']||0;
     var jaeTotal = pyeonJae + jeongJae;
-    var wealthScore = Math.min(100, Math.round(jaeTotal * 18 + 15));
+
+    // ── 재물 점수 (55~95) ──
+    var rawWealth = jaeTotal * 18 + 15;
+    var wealthScore = normalizeScore(rawWealth, 15, 100);
 
     var tendency = '균형형', tendencyColor = '#c9a84c';
     if (pyeonJae > jeongJae + 1) { tendency = '투자·도전형'; tendencyColor = '#FF9800'; }
@@ -479,6 +487,7 @@ var ChartVisuals = (function() {
     container.appendChild(el);
     observeSlot(el);
   }
+
 
   // ═══════════════════════════════════
   // 건강운 — 오행 인체 매핑
@@ -687,7 +696,6 @@ var ChartVisuals = (function() {
       monthly.forEach(function(m) {
         var rawScore = UNSUNG_SCORE[m.unsung] || 50;
         scores.push(normalizeScore(rawScore, 15, 95));
-        scores.push(score);
         labels.push(m.label || (m.month+'월'));
       });
     } else {
