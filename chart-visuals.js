@@ -408,25 +408,44 @@ var ChartVisuals = (function() {
   // 관계운 — 사람 연결 네트워크
   // ═══════════════════════════════════
   function renderRelationship(container, db) {
+    var counts = db.sipseongCounts;
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
     el.innerHTML = '<div class="cv-section-label">관 계 운</div>';
-    var svg = '<svg viewBox="0 0 300 130" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
 
-    var nodes = [{x:150,y:50,label:'나',color:'#c9a84c',r:20},{x:60,y:45,label:'가족',color:'#4CAF50',r:14},{x:240,y:45,label:'직장',color:'#2196F3',r:14},{x:80,y:110,label:'친구',color:'#FF9800',r:14},{x:220,y:110,label:'연인',color:'#F44336',r:14}];
+    var groups = (counts && counts.groups) || {};
+    var bigup = groups['비겁']||0;
+    var insung = groups['인성']||0;
+    var gwansung = groups['관성']||0;
+    var siksung = groups['식상']||0;
+    var rawRel = (bigup * 8 + insung * 10 + gwansung * 7 + siksung * 9) + 15;
+    var relScore = normalizeScore(rawRel, 15, 100);
+
+    var svg = '<svg viewBox="0 0 300 220" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
+
+    // 점수 표시
+    svg += '<text x="150" y="30" text-anchor="middle" fill="#c9a84c" font-size="32" font-weight="700" opacity="0">'+relScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.3s" fill="freeze"/></text>';
+    svg += '<text x="150" y="46" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">/ 100점<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.4s" fill="freeze"/></text>';
+
+    // 네트워크 다이어그램
+    var nodes = [{x:150,y:100,label:'나',color:'#c9a84c',r:20},{x:60,y:95,label:'가족',color:'#4CAF50',r:14},{x:240,y:95,label:'직장',color:'#2196F3',r:14},{x:80,y:170,label:'친구',color:'#FF9800',r:14},{x:220,y:170,label:'연인',color:'#F44336',r:14}];
 
     for(var i=1;i<nodes.length;i++){
-      svg+='<line x1="150" y1="50" x2="'+nodes[i].x+'" y2="'+nodes[i].y+'" stroke="rgba(201,168,76,0.15)" stroke-width="0.5" stroke-dasharray="4,3" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="'+(i*0.1)+'s" fill="freeze"/></line>';
+      svg+='<line x1="150" y1="100" x2="'+nodes[i].x+'" y2="'+nodes[i].y+'" stroke="rgba(201,168,76,0.15)" stroke-width="0.5" stroke-dasharray="4,3" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="'+(0.5+i*0.1)+'s" fill="freeze"/></line>';
     }
 
     nodes.forEach(function(n,i){
-      var d = i*0.12;
+      var d = 0.5+i*0.12;
       svg+='<circle cx="'+n.x+'" cy="'+n.y+'" r="0" fill="'+n.color+'" opacity="'+(i===0?'0.15':'0.1')+'"><animate attributeName="r" from="0" to="'+n.r+'" dur="0.5s" begin="'+d+'s" fill="freeze"/></circle>';
       svg+='<circle cx="'+n.x+'" cy="'+n.y+'" r="0" fill="none" stroke="'+n.color+'" stroke-width="'+(i===0?'1.5':'0.8')+'" opacity="0.5"><animate attributeName="r" from="0" to="'+n.r+'" dur="0.5s" begin="'+d+'s" fill="freeze"/></circle>';
       svg+='<text x="'+n.x+'" y="'+(n.y+4)+'" text-anchor="middle" fill="'+n.color+'" font-size="'+(i===0?'11':'9')+'" font-weight="'+(i===0?'700':'500')+'" opacity="0">'+n.label+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(d+0.2)+'s" fill="freeze"/></text>';
     });
 
-    if(nodes[0]){svg+='<circle cx="150" cy="50" r="20" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"><animate attributeName="r" values="20;26;20" dur="2.5s" repeatCount="indefinite"/></circle>';}
+    if(nodes[0]){svg+='<circle cx="150" cy="100" r="20" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"><animate attributeName="r" values="20;26;20" dur="2.5s" repeatCount="indefinite"/></circle>';}
+
+    // 하단 세부 수치
+    svg += '<text x="75" y="210" text-anchor="middle" fill="#4CAF50" font-size="8" opacity="0">비겁 '+bigup+' · 인성 '+insung+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.2s" fill="freeze"/></text>';
+    svg += '<text x="225" y="210" text-anchor="middle" fill="#2196F3" font-size="8" opacity="0">관성 '+gwansung+' · 식상 '+siksung+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.3s" fill="freeze"/></text>';
 
     svg += '</svg>';
     el.innerHTML += svg; container.appendChild(el); observeSlot(el);
@@ -497,27 +516,64 @@ var ChartVisuals = (function() {
     var el = document.createElement('div');
     el.className = 'cv-pillars-anim';
     el.innerHTML = '<div class="cv-section-label">건 강 · 오 행</div>';
-    var svg = '<svg viewBox="0 0 300 150" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
 
+    // 건강 점수 계산: 오행 균형도 기반
+    var keys = ['목','화','토','금','수'];
+    var values = [];
+    var total = 0;
+    keys.forEach(function(k) {
+      var v = 0;
+      if (oheng && oheng[k]) v = typeof oheng[k] === 'object' ? (oheng[k].count || 0) : Number(oheng[k]) || 0;
+      values.push(v);
+      total += v;
+    });
+    if (total === 0) { values = [1,1,1,1,1]; total = 5; }
+
+    // 균형도: 5개 오행이 균등할수록 높음 (최대 = 각 20%)
+    var idealPct = 20;
+    var deviation = 0;
+    values.forEach(function(v) {
+      var pct = (v / total) * 100;
+      deviation += Math.abs(pct - idealPct);
+    });
+    // deviation 0 = 완벽 균형, 160 = 최악
+    var rawHealth = 100 - deviation;
+    var healthScore = normalizeScore(rawHealth, -60, 100);
+    var zeroCount = values.filter(function(v){return v===0;}).length;
+
+    var svg = '<svg viewBox="0 0 300 240" width="100%" style="max-width:360px;display:block;margin:0 auto;">';
+
+    // 점수 표시
+    var scoreColor = healthScore >= 80 ? '#4CAF50' : healthScore >= 65 ? '#c9a84c' : '#FF9800';
+    svg += '<text x="150" y="30" text-anchor="middle" fill="'+scoreColor+'" font-size="32" font-weight="700" opacity="0">'+healthScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.3s" fill="freeze"/></text>';
+    svg += '<text x="150" y="46" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">/ 100점<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.4s" fill="freeze"/></text>';
+
+    if (zeroCount > 0) {
+      svg += '<text x="150" y="60" text-anchor="middle" fill="#FF9800" font-size="8" opacity="0">⚠ 부족 오행 '+zeroCount+'개 — 해당 장기 주의<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.5s" fill="freeze"/></text>';
+    } else {
+      svg += '<text x="150" y="60" text-anchor="middle" fill="#4CAF50" font-size="8" opacity="0">오행 균형 양호<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.5s" fill="freeze"/></text>';
+    }
+
+    // 오행 인체 매핑
     var organs = [
-      {name:'간·담',oheng:'목',x:60,y:45,icon:'🌿'},
-      {name:'심장',oheng:'화',x:150,y:30,icon:'❤️'},
-      {name:'비위',oheng:'토',x:240,y:45,icon:'🟡'},
-      {name:'폐·대장',oheng:'금',x:90,y:110,icon:'🫁'},
-      {name:'신장',oheng:'수',x:210,y:110,icon:'💧'}
+      {name:'간·담',oheng:'목',x:60,y:110,icon:'🌿'},
+      {name:'심장',oheng:'화',x:150,y:95,icon:'❤️'},
+      {name:'비위',oheng:'토',x:240,y:110,icon:'🟡'},
+      {name:'폐·대장',oheng:'금',x:90,y:185,icon:'🫁'},
+      {name:'신장',oheng:'수',x:210,y:185,icon:'💧'}
     ];
 
     organs.forEach(function(o,i){
-      var count = 0;
-      if(oheng && oheng[o.oheng]) count = typeof oheng[o.oheng]==='object' ? (oheng[o.oheng].count||0) : Number(oheng[o.oheng])||0;
+      var count = values[i];
       var r = 16 + count * 6;
       var color = OHENG_COLORS[o.oheng];
-      var d = i * 0.12;
-      var alertClass = (count === 0) ? ' opacity="0.3"' : '';
+      var d = 0.6 + i * 0.12;
 
-      svg+='<circle cx="'+o.x+'" cy="'+o.y+'" r="0" fill="'+color+'" opacity="'+(count===0?'0.05':'0.12')+'"'+alertClass+'><animate attributeName="r" from="0" to="'+r+'" dur="0.5s" begin="'+d+'s" fill="freeze"/></circle>';
+      svg+='<circle cx="'+o.x+'" cy="'+o.y+'" r="0" fill="'+color+'" opacity="'+(count===0?'0.05':'0.12')+'"><animate attributeName="r" from="0" to="'+r+'" dur="0.5s" begin="'+d+'s" fill="freeze"/></circle>';
       svg+='<text x="'+o.x+'" y="'+(o.y-2)+'" text-anchor="middle" font-size="16" opacity="0">'+o.icon+'<animate attributeName="opacity" from="0" to="'+(count===0?'0.3':'1')+'" dur="0.3s" begin="'+(d+0.2)+'s" fill="freeze"/></text>';
       svg+='<text x="'+o.x+'" y="'+(o.y+16)+'" text-anchor="middle" fill="'+(count===0?'#ff6b6b':color)+'" font-size="8" font-weight="500" opacity="0">'+o.name+(count===0?' ⚠':'')+'<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(d+0.3)+'s" fill="freeze"/></text>';
+      // 오행 수치
+      svg+='<text x="'+o.x+'" y="'+(o.y+26)+'" text-anchor="middle" fill="#6a6050" font-size="7" opacity="0">'+o.oheng+' '+count+'개<animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="'+(d+0.4)+'s" fill="freeze"/></text>';
     });
 
     svg += '</svg>';
