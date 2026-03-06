@@ -467,8 +467,8 @@ var ChartVisuals = (function() {
     svg += '<text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="28" font-weight="700" opacity="0">'+wealthScore+'<animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.8s" fill="freeze"/></text>';
     svg += '<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="#6a6050" font-size="9" opacity="0">/ 100점<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.9s" fill="freeze"/></text>';
 
-    svg += '<rect x="'+(cx-35)+'" y="'+(cy+28)+'" width="70" height="18" rx="9" fill="rgba(201,168,76,0.04)" stroke="'+tendencyColor+'" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></rect>';
-    svg += '<text x="'+cx+'" y="'+(cy+41)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="9" font-weight="600" opacity="0">'+tendency+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
+    svg += '<rect x="'+(cx-35)+'" y="'+(cy+48)+'" width="70" height="18" rx="9" fill="rgba(201,168,76,0.04)" stroke="'+tendencyColor+'" stroke-width="0.5" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1s" fill="freeze"/></rect>';
+    svg += '<text x="'+cx+'" y="'+(cy+61)+'" text-anchor="middle" fill="'+tendencyColor+'" font-size="9" font-weight="600" opacity="0">'+tendency+'<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.1s" fill="freeze"/></text>';
 
     var barY = 210, totalW = 180, barX = 60;
     var pjW = jaeTotal > 0 ? Math.max(20, Math.round(totalW * pyeonJae / jaeTotal)) : totalW / 2;
