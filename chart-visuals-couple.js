@@ -538,23 +538,102 @@ var ChartVisualCouple = (function () {
     }
 
     /* ═══════════════════════════════════
-       insertVisual – 챕터 라우터
+       CH3_simple – 십성 간소화 (직관적 성향 비교)
+       ═══════════════════════════════════ */
+    function renderCH3_simple(container, db) {
+        var names = getNames(db);
+        var cDb = db.client||db, pDb = db.partner||{};
+        var cGroups = getSipseongGroups(cDb);
+        var pGroups = getSipseongGroups(pDb);
+
+        var cats = [
+            {key:'비겁', label:'자아·독립', icon:'◎', color:'#c9a96e'},
+            {key:'식상', label:'표현·창의', icon:'✧', color:'#e8815a'},
+            {key:'재성', label:'현실·재물', icon:'◇', color:'#50b080'},
+            {key:'관성', label:'책임·권위', icon:'□', color:'#5a8ae8'},
+            {key:'인성', label:'학습·지혜', icon:'○', color:'#b05ac9'}
+        ];
+
+        var html = '<div style="text-align:center;padding:16px 0;">';
+        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;">PERSONALITY COMPARE</div>';
+        html += '<div style="max-width:300px;margin:0 auto;">';
+
+        html += '<div style="display:flex;justify-content:space-between;margin-bottom:14px;padding:0 4px;">';
+        html += '<span style="font-size:10px;color:#c9a96e;">'+esc(names.client)+'</span>';
+        html += '<span style="font-size:10px;color:#6eaac9;">'+esc(names.partner)+'</span></div>';
+
+        cats.forEach(function(cat) {
+            var cVal = Number(cGroups[cat.key])||0;
+            var pVal = Number(pGroups[cat.key])||0;
+            var maxVal = Math.max(cVal, pVal, 1);
+            var cPct = Math.round((cVal/maxVal)*100);
+            var pPct = Math.round((pVal/maxVal)*100);
+
+            html += '<div style="margin-bottom:16px;">';
+            html += '<div style="text-align:center;margin-bottom:6px;">';
+            html += '<span style="font-size:11px;color:'+cat.color+';letter-spacing:1px;">'+cat.icon+' '+esc(cat.label)+'</span></div>';
+
+            html += '<div style="display:flex;align-items:center;gap:6px;">';
+            html += '<div style="width:24px;text-align:right;font-size:9px;color:#c9a96e;">'+cVal+'</div>';
+            html += '<div style="flex:1;height:10px;background:rgba(201,169,110,0.08);border-radius:5px;overflow:hidden;direction:rtl;">';
+            html += '<div style="width:'+cPct+'%;height:100%;background:linear-gradient(to left,#c9a96e,rgba(201,169,110,0.3));border-radius:5px;transition:width 0.8s ease;"></div></div>';
+            html += '<div style="width:6px;height:6px;background:'+cat.color+';border-radius:50%;opacity:0.5;flex-shrink:0;"></div>';
+            html += '<div style="flex:1;height:10px;background:rgba(110,170,201,0.08);border-radius:5px;overflow:hidden;">';
+            html += '<div style="width:'+pPct+'%;height:100%;background:linear-gradient(to right,rgba(110,170,201,0.3),#6eaac9);border-radius:5px;transition:width 0.8s ease;"></div></div>';
+            html += '<div style="width:24px;text-align:left;font-size:9px;color:#6eaac9;">'+pVal+'</div>';
+            html += '</div></div>';
+        });
+
+        html += '</div></div>';
+        container.innerHTML = html;
+        observeSlot(container);
+    }
+
+    /* ═══════════════════════════════════
+       insertVisual – 챕터 라우터 (제목 기반 자동 매칭)
        ═══════════════════════════════════ */
     function insertVisual(idx, container, dashboard) {
         if (!container || !dashboard) return;
         if (!(dashboard.client && dashboard.partner)) return;
 
-        switch(idx) {
-            case 0: renderCH0(container, dashboard); break;
-            case 1: renderCH1(container, dashboard); break;
-            case 2: renderCH2(container, dashboard); break;
-            case 3: renderCH3(container, dashboard); break;
-            case 4: renderCH4(container, dashboard); break;
-            case 5: renderCH5(container, dashboard); break;
-            case 6: renderCH6(container, dashboard); break;
-            case 7: renderCH7(container, dashboard); break;
-            case 8: renderCH8(container, dashboard); break;
-            case 9: renderCH9(container, dashboard); break;
+        var chapters = (window.reportData && window.reportData.chapters) || [];
+        var ch = chapters[idx];
+        var title = (ch && (ch.title || ch.chapterTitle) || '').toLowerCase();
+
+        if (/총론|개요|overview|종합/.test(title)) {
+            renderCH0(container, dashboard);
+        } else if (/끌림|attraction|이끌|매력/.test(title)) {
+            renderCH2(container, dashboard);
+        } else if (/일간|day.?master|데이|상호작용|interaction/.test(title)) {
+            renderCH1(container, dashboard);
+        } else if (/십성|sipseong|성향|성격/.test(title)) {
+            renderCH3_simple(container, dashboard);
+        } else if (/오행|oheng|균형|밸런스|balance/.test(title)) {
+            renderCH4(container, dashboard);
+        } else if (/용신|yongshin|보완/.test(title)) {
+            renderCH5(container, dashboard);
+        } else if (/소통|감정|communication|emotion/.test(title)) {
+            renderCH6(container, dashboard);
+        } else if (/재물|가치|wealth|values|돈|재정/.test(title)) {
+            renderCH7(container, dashboard);
+        } else if (/대운|운세|luck.?cycle|타임라인/.test(title)) {
+            renderCH8(container, dashboard);
+        } else if (/월별|monthly|2026|가이드/.test(title)) {
+            renderCH9(container, dashboard);
+        } else {
+            // 폴백: idx 기반
+            switch(idx) {
+                case 0: renderCH0(container, dashboard); break;
+                case 1: renderCH2(container, dashboard); break;
+                case 2: renderCH1(container, dashboard); break;
+                case 3: renderCH3_simple(container, dashboard); break;
+                case 4: renderCH4(container, dashboard); break;
+                case 5: renderCH5(container, dashboard); break;
+                case 6: renderCH6(container, dashboard); break;
+                case 7: renderCH7(container, dashboard); break;
+                case 8: renderCH8(container, dashboard); break;
+                case 9: renderCH9(container, dashboard); break;
+            }
         }
     }
 
