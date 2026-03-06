@@ -218,82 +218,156 @@ var ChartVisualCouple = (function () {
         observeSlot(container);
     }
 
-    /* ═══════════════════════════════════
-       CH2 – 끌림의 구조 (지지 관계 업그레이드)
-       ═══════════════════════════════════ */
-    function renderCH2(container, db) {
-        var names = getNames(db);
-        var cDb = db.client||db, pDb = db.partner||{};
-        var cRels = cDb.earthlyBranchRelations || [];
-        var pRels = pDb.earthlyBranchRelations || [];
+/* ═══════════════════════════════════
+   CH2 – 끌림의 구조 (Attraction Structure)
+   한눈에 보는 요약형
+   ═══════════════════════════════════ */
+function renderCH2(container, dashboard) {
+    var c = dashboard.client;
+    var p = dashboard.partner;
+    if (!c.jiji || !p.jiji) return;
 
-        var typeInfo = {
-            '합':     {color:'#50b080', icon:'⊕', desc:'서로 끌리는 힘'},
-            '충':     {color:'#e85a5a', icon:'⊗', desc:'부딪히는 긴장'},
-            '형':     {color:'#e8a85a', icon:'△', desc:'자극과 성장'},
-            '파':     {color:'#8a5ae8', icon:'◇', desc:'균열과 변화'},
-            '해':     {color:'#5a8ae8', icon:'○', desc:'소모와 약화'},
-            '반합(삼합)':{color:'#50b080', icon:'◎', desc:'부분적 조화'}
-        };
+    var cName = c.name || '나';
+    var pName = p.name || '상대';
 
-        var items = [];
-        function addItems(rels, who) {
-            rels.forEach(function(r) {
-                var t = r.type||r.name||'?';
-                items.push({type:t, pair:r.pair||(r.members?r.members.join(' · '):''), who:who, toward:r.toward||''});
-            });
+    /* 지지 관계 추출 */
+    var rels = [];
+    try {
+        var branches = dashboard.jijiRelations || dashboard.branchRelations || [];
+        if (branches.length) {
+            branches.forEach(function(r) { rels.push(r); });
         }
-        addItems(cRels, names.client);
-        addItems(pRels, names.partner);
+    } catch(e) {}
 
-        if (!items.length) { container.innerHTML=''; return; }
+    /* 관계 유형별 설명 (사주 모르는 사람용) */
+    var typeInfo = {
+        '합':   { icon: '🤝', color: '#50b080', label: '합', meaning: '서로 자연스럽게 끌리는 에너지', nature: 'good' },
+        '반합': { icon: '💫', color: '#7ec8a0', label: '반합', meaning: '은근한 끌림과 친밀감', nature: 'good' },
+        '삼합': { icon: '✨', color: '#50b080', label: '삼합', meaning: '깊고 안정적인 조화', nature: 'good' },
+        '방합': { icon: '🌊', color: '#6ab090', label: '방합', meaning: '같은 방향의 에너지 공유', nature: 'good' },
+        '충':   { icon: '⚡', color: '#e85a5a', label: '충', meaning: '강한 자극, 긴장감', nature: 'warn' },
+        '형':   { icon: '🔥', color: '#e8815a', label: '형', meaning: '마찰과 자극이 성장을 만듦', nature: 'warn' },
+        '파':   { icon: '💔', color: '#c97a5a', label: '파', meaning: '균열과 변화의 신호', nature: 'warn' },
+        '해':   { icon: '🌀', color: '#a08050', label: '해', meaning: '소모와 해체, 느슨해짐', nature: 'neutral' },
+        '원진': { icon: '😤', color: '#c95a7a', label: '원진', meaning: '미묘한 불편함과 거리감', nature: 'warn' },
+        '귀문': { icon: '👻', color: '#8a6aaa', label: '귀문', meaning: '설명 안 되는 묘한 감정', nature: 'neutral' }
+    };
 
-        // 합/충/형 카운트
-        var counts = {};
-        items.forEach(function(it) {
-            var k = it.type.replace('반합(삼합)','반합');
-            counts[k] = (counts[k]||0) + 1;
-        });
+    /* 관계 카운트 */
+    var counts = {};
+    rels.forEach(function(r) {
+        var t = r.type || r.relType || '';
+        if (!counts[t]) counts[t] = { count: 0, info: typeInfo[t] || { icon: '◆', color: '#888', label: t, meaning: '', nature: 'neutral' } };
+        counts[t].count++;
+    });
 
-        var html = '<div style="text-align:center;padding:16px 0;">';
-        html += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:20px;">ATTRACTION STRUCTURE</div>';
+    /* 좋은/주의 관계 분류 */
+    var goodRels = [];
+    var warnRels = [];
+    var neutralRels = [];
+    Object.keys(counts).forEach(function(k) {
+        var item = counts[k];
+        if (item.info.nature === 'good') goodRels.push(item);
+        else if (item.info.nature === 'warn') warnRels.push(item);
+        else neutralRels.push(item);
+    });
 
-        // 상단 요약 뱃지
-        html += '<div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">';
-        Object.keys(counts).forEach(function(k) {
-            var info = typeInfo[k] || typeInfo['합'];
-            html += '<div style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;background:'+info.color+'11;border:1px solid '+info.color+'33;">';
-            html += '<span style="font-size:13px;">'+info.icon+'</span>';
-            html += '<span style="font-size:11px;color:'+info.color+';font-weight:bold;">'+esc(k)+'</span>';
-            html += '<span style="font-size:10px;color:var(--text-ghost);margin-left:2px;">×'+counts[k]+'</span>';
-            html += '</div>';
-        });
-        html += '</div>';
+    var totalGood = 0, totalWarn = 0, totalNeutral = 0;
+    goodRels.forEach(function(g) { totalGood += g.count; });
+    warnRels.forEach(function(w) { totalWarn += w.count; });
+    neutralRels.forEach(function(n) { totalNeutral += n.count; });
+    var total = totalGood + totalWarn + totalNeutral || 1;
 
-        // 상세 카드
-        html += '<div style="max-width:320px;margin:0 auto;">';
-        items.slice(0,8).forEach(function(it) {
-            var info = typeInfo[it.type] || typeInfo[it.type.replace('반합(삼합)','반합')] || {color:'#c9a96e',icon:'◆',desc:''};
-            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid '+info.color+'22;backdrop-filter:blur(4px);">';
+    var harmonyPct = Math.round((totalGood / total) * 100);
+    var tensionPct = Math.round((totalWarn / total) * 100);
 
-            // 아이콘 서클
-            html += '<div style="width:38px;height:38px;border-radius:50%;background:'+info.color+'15;border:1.5px solid '+info.color+'44;display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
-            html += '<span style="font-size:16px;color:'+info.color+';">'+info.icon+'</span></div>';
-
-            // 내용
-            html += '<div style="flex:1;text-align:left;">';
-            html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">';
-            html += '<span style="font-size:12px;color:'+info.color+';font-weight:bold;">'+esc(it.type.replace('반합(삼합)','반합'))+'</span>';
-            html += '<span style="font-size:10px;color:var(--text-ghost);">'+esc(info.desc)+'</span></div>';
-            html += '<div style="font-size:11px;color:var(--text-dim);">'+esc(it.pair)+'</div>';
-            if (it.toward) html += '<div style="font-size:9px;color:var(--text-ghost);margin-top:2px;">→ '+esc(it.toward)+'</div>';
-            html += '</div></div>';
-        });
-        html += '</div></div>';
-
-        container.innerHTML = html;
-        observeSlot(container);
+    /* 전체 판정 */
+    var verdict, verdictColor, verdictIcon;
+    if (harmonyPct >= 60) {
+        verdict = '자연스럽게 끌리는 관계';
+        verdictColor = '#50b080';
+        verdictIcon = '💕';
+    } else if (harmonyPct >= 40) {
+        verdict = '끌림과 자극이 공존하는 관계';
+        verdictColor = '#c9a96e';
+        verdictIcon = '🔮';
+    } else {
+        verdict = '강한 자극이 만드는 특별한 인연';
+        verdictColor = '#e8815a';
+        verdictIcon = '🔥';
     }
+
+    /* HTML 구성 */
+    var html = '';
+    html += '<div style="padding:20px 16px;font-family:inherit;">';
+
+    /* ── 상단: 두 사람 + 판정 ── */
+    html += '<div style="text-align:center;margin-bottom:24px;">';
+    html += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px;">';
+    html += '<div style="background:rgba(80,176,128,0.1);border:1px solid rgba(80,176,128,0.3);border-radius:12px;padding:10px 18px;">';
+    html += '<div style="font-size:14px;font-weight:600;color:var(--text-primary,#eee);">' + cName + '</div>';
+    html += '</div>';
+    html += '<div style="font-size:20px;">💞</div>';
+    html += '<div style="background:rgba(199,91,138,0.1);border:1px solid rgba(199,91,138,0.3);border-radius:12px;padding:10px 18px;">';
+    html += '<div style="font-size:14px;font-weight:600;color:var(--text-primary,#eee);">' + pName + '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    /* 판정 뱃지 */
+    html += '<div style="display:inline-block;background:rgba(0,0,0,0.3);border:1px solid ' + verdictColor + '40;border-radius:20px;padding:8px 20px;">';
+    html += '<span style="font-size:16px;margin-right:6px;">' + verdictIcon + '</span>';
+    html += '<span style="font-size:13px;color:' + verdictColor + ';font-weight:600;">' + verdict + '</span>';
+    html += '</div>';
+    html += '</div>';
+
+    /* ── 중단: 끌림 vs 자극 게이지 ── */
+    html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;margin-bottom:20px;">';
+    html += '<div style="display:flex;justify-content:space-between;margin-bottom:10px;">';
+    html += '<span style="font-size:11px;color:#50b080;">💚 끌림 ' + harmonyPct + '%</span>';
+    html += '<span style="font-size:11px;color:#e8815a;">🔥 자극 ' + tensionPct + '%</span>';
+    html += '</div>';
+
+    /* 바 */
+    html += '<div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;display:flex;">';
+    if (harmonyPct > 0) html += '<div style="width:' + harmonyPct + '%;background:linear-gradient(90deg,#50b080,#7ec8a0);border-radius:4px 0 0 4px;transition:width 1s;"></div>';
+    if (neutralRels.length > 0) {
+        var neutPct = 100 - harmonyPct - tensionPct;
+        html += '<div style="width:' + neutPct + '%;background:rgba(160,128,80,0.4);"></div>';
+    }
+    if (tensionPct > 0) html += '<div style="width:' + tensionPct + '%;background:linear-gradient(90deg,#e8815a,#e85a5a);border-radius:0 4px 4px 0;transition:width 1s;"></div>';
+    html += '</div>';
+
+    html += '<div style="text-align:center;margin-top:8px;font-size:10px;color:var(--text-dim,#888);">두 사람의 사주에서 발견된 에너지 관계 비율</div>';
+    html += '</div>';
+
+    /* ── 하단: 관계 요소 요약 카드 ── */
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+
+    var allTypes = Object.keys(counts);
+    allTypes.sort(function(a, b) { return counts[b].count - counts[a].count; });
+
+    allTypes.forEach(function(k) {
+        var item = counts[k];
+        var info = item.info;
+        var bgAlpha = info.nature === 'good' ? '0.08' : (info.nature === 'warn' ? '0.06' : '0.04');
+        html += '<div style="background:rgba(255,255,255,' + bgAlpha + ');border:1px solid ' + info.color + '30;border-radius:10px;padding:12px;text-align:center;">';
+        html += '<div style="font-size:20px;margin-bottom:4px;">' + info.icon + '</div>';
+        html += '<div style="font-size:12px;font-weight:600;color:' + info.color + ';margin-bottom:2px;">' + info.label + ' ×' + item.count + '</div>';
+        html += '<div style="font-size:10px;color:var(--text-dim,#999);line-height:1.4;">' + info.meaning + '</div>';
+        html += '</div>';
+    });
+
+    html += '</div>';
+
+    /* ── 한줄 설명 ── */
+    html += '<div style="text-align:center;margin-top:16px;padding:10px;font-size:11px;color:var(--text-dim,#888);line-height:1.6;">';
+    html += '💡 <em>합(合)은 자연스러운 끌림, 충(沖)은 강한 자극을 의미합니다.<br>좋고 나쁨이 아니라, 두 사람이 만나면 어떤 에너지가 흐르는지를 보여줍니다.</em>';
+    html += '</div>';
+
+    html += '</div>';
+
+    container.innerHTML = html;
+}
 
     /* ═══════════════════════════════════
        CH3_simple – 십성 성향 비교 (직관적)
