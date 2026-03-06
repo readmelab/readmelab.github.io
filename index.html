@@ -1655,34 +1655,34 @@ var CHAPTER_TITLES_DEFAULT = [
         var hasOneLiner = oneLiner ? true : false;
         var baseDelay = 200;
 
-        setTimeout(function(){
-            els[0].style.transition='opacity 1.5s ease'; els[0].style.opacity='1';
-            setTimeout(function(){ els[1].style.transition='opacity 1.2s ease'; els[1].style.opacity='1'; },600);
-            setTimeout(function(){ var ln=overlay.querySelector('.si-name-line'); ln.style.opacity='1'; ln.style.width='80px'; },1200);
-            setTimeout(function(){
-                overlay.querySelector('.si-pillars').style.transition='opacity 0.4s';
-                overlay.querySelector('.si-pillars').style.opacity='1';
-                overlay.querySelectorAll('.si-pillar').forEach(function(el){
-                    var dd=parseInt(el.getAttribute('data-delay'))||0;
-                    setTimeout(function(){ el.style.transition='opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1)'; el.style.opacity='1'; el.style.transform='translateY(0)'; },dd);
-                });
-            },1800);
-            setTimeout(function(){
-                overlay.querySelector('.si-divider').style.opacity='1';
-                overlay.querySelector('.si-line-l').style.width='60px';
-                overlay.querySelector('.si-line-r').style.width='60px';
-                setTimeout(function(){ var dm=overlay.querySelector('.si-diamond'); dm.style.opacity='1'; dm.style.transform='rotate(45deg) scale(1)'; },400);
-            },3000);
-            setTimeout(function(){ els[2].style.transition='opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1)'; els[2].style.opacity='1'; els[2].style.transform='translateY(0)'; },3600);
-            setTimeout(function(){ els[3].style.transition='opacity 0.6s ease, transform 0.6s ease'; els[3].style.opacity='1'; els[3].style.transform='translateY(0)'; },4200);
-            setTimeout(function(){ els[4].style.transition='opacity 1s ease'; els[4].style.opacity='1'; },4800);
-            if (hasOneLiner) {
-                setTimeout(function(){ els[5].style.transition='opacity 1.2s ease'; els[5].style.opacity='1'; },5400);
-                setTimeout(function(){ overlay.querySelector('.si-btn-wrap').style.transition='opacity 1s ease'; overlay.querySelector('.si-btn-wrap').style.opacity='1'; },6200);
-            } else {
-                setTimeout(function(){ overlay.querySelector('.si-btn-wrap').style.transition='opacity 1s ease'; overlay.querySelector('.si-btn-wrap').style.opacity='1'; },5400);
-            }
-        }, baseDelay);
+setTimeout(function(){
+    els[0].style.transition='opacity 0.5s ease'; els[0].style.opacity='1';
+    setTimeout(function(){ els[1].style.transition='opacity 0.4s ease'; els[1].style.opacity='1'; },200);
+    setTimeout(function(){ var ln=overlay.querySelector('.si-name-line'); ln.style.opacity='1'; ln.style.width='80px'; },400);
+    setTimeout(function(){
+        overlay.querySelector('.si-pillars').style.transition='opacity 0.3s';
+        overlay.querySelector('.si-pillars').style.opacity='1';
+        overlay.querySelectorAll('.si-pillar').forEach(function(el){
+            var dd=parseInt(el.getAttribute('data-delay'))||0;
+            setTimeout(function(){ el.style.transition='opacity 0.4s ease, transform 0.4s cubic-bezier(0.25,1,0.5,1)'; el.style.opacity='1'; el.style.transform='translateY(0)'; },dd/2);
+        });
+    },600);
+    setTimeout(function(){
+        overlay.querySelector('.si-divider').style.opacity='1';
+        overlay.querySelector('.si-line-l').style.width='60px';
+        overlay.querySelector('.si-line-r').style.width='60px';
+        setTimeout(function(){ var dm=overlay.querySelector('.si-diamond'); dm.style.opacity='1'; dm.style.transform='rotate(45deg) scale(1)'; },150);
+    },1000);
+    setTimeout(function(){ els[2].style.transition='opacity 0.4s ease, transform 0.4s cubic-bezier(0.25,1,0.5,1)'; els[2].style.opacity='1'; els[2].style.transform='translateY(0)'; },1300);
+    setTimeout(function(){ els[3].style.transition='opacity 0.3s ease, transform 0.3s ease'; els[3].style.opacity='1'; els[3].style.transform='translateY(0)'; },1600);
+    setTimeout(function(){ els[4].style.transition='opacity 0.4s ease'; els[4].style.opacity='1'; },1900);
+    if (hasOneLiner) {
+        setTimeout(function(){ els[5].style.transition='opacity 0.5s ease'; els[5].style.opacity='1'; },2200);
+        setTimeout(function(){ overlay.querySelector('.si-btn-wrap').style.transition='opacity 0.5s ease'; overlay.querySelector('.si-btn-wrap').style.opacity='1'; },2600);
+    } else {
+        setTimeout(function(){ overlay.querySelector('.si-btn-wrap').style.transition='opacity 0.5s ease'; overlay.querySelector('.si-btn-wrap').style.opacity='1'; },2200);
+    }
+}, baseDelay);
 
         overlay.addEventListener('click', function(e){
             if(e.target.closest('.si-btn')){
@@ -1693,14 +1693,181 @@ var CHAPTER_TITLES_DEFAULT = [
         });
     }
 
-    function showCoupleIntro(d) {
-        var nameText = d.name;
-        if (d.name2) nameText += ' & ' + d.name2;
-        document.getElementById('introTitle').textContent = nameText + '님의 궁합 분석이 완성되었습니다';
-        if (d.soreLine) { document.getElementById('introSore').innerHTML = '"' + d.soreLine.replace(/\//g, '<br>') + '"'; }
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('intro').style.display = 'flex';
+function showCoupleIntro(d) {
+    var name1 = d.name || '';
+    var name2 = d.name2 || '';
+    var oneLiner = d.soreLine || (reportData && reportData.oneLiner) || '';
+
+    var baseColor = '#C75B8A';
+    var glowColor = '#E88AAF';
+    var accentColor = '#c9a84c';
+
+    document.getElementById('loading').style.display = 'none';
+    var oldIntro = document.getElementById('intro');
+    if (oldIntro) oldIntro.style.display = 'none';
+
+    var overlay = document.createElement('div');
+    overlay.id = 'couple-intro-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:linear-gradient(170deg,#06060e 0%,#0a0a14 40%,#080812 100%);overflow-y:auto;font-family:"Noto Serif KR",serif;';
+
+    var css = document.createElement('style');
+    css.id = 'couple-intro-css';
+    css.textContent =
+        '@keyframes ci-rise{0%{transform:translateY(0) translateX(0);opacity:0}8%{opacity:0.5}92%{opacity:0.15}100%{transform:translateY(-110vh) translateX(25px);opacity:0}}' +
+        '@keyframes ci-fall{0%{transform:translateY(0);opacity:0}6%{opacity:0.8}100%{transform:translateY(110vh);opacity:0}}' +
+        '@keyframes ci-nebula{0%,100%{opacity:0.2;transform:translate(-50%,-50%) scale(1) rotate(0deg)}50%{opacity:0.35;transform:translate(-50%,-50%) scale(1.1) rotate(180deg)}}' +
+        '@keyframes ci-corner-breathe{0%,100%{opacity:0.15}50%{opacity:0.4}}' +
+        '@keyframes ci-breathe{0%,100%{opacity:0.75}50%{opacity:1}}' +
+        '@keyframes ci-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}' +
+        '@keyframes ci-btn-glow{0%,100%{box-shadow:0 0 12px '+baseColor+'20,0 0 30px '+baseColor+'08}50%{box-shadow:0 0 20px '+glowColor+'35,0 0 50px '+baseColor+'15,0 0 80px '+baseColor+'05}}' +
+        '@keyframes ci-shimmer{0%{left:-120%}100%{left:220%}}' +
+        '@keyframes ci-btn-dust{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-20px) scale(0);opacity:0}}' +
+        '@keyframes ci-seal-spin{0%{transform:rotate(0deg);opacity:0.08}50%{opacity:0.15}100%{transform:rotate(360deg);opacity:0.08}}' +
+        '@keyframes ci-and-pulse{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.6;transform:scale(1.1)}}' +
+        '@keyframes ci-heart-beat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}}' +
+        '@keyframes ci-line-extend{0%{width:0}100%{width:50px}}' +
+        '.ci-btn{transition:transform 0.4s cubic-bezier(0.25,1,0.5,1),box-shadow 0.4s,border-color 0.4s}' +
+        '.ci-btn:hover{transform:scale(1.03)!important;box-shadow:0 0 35px '+glowColor+'50,0 0 70px '+baseColor+'20!important;border-color:'+glowColor+'90!important}' +
+        '.ci-btn:active{transform:scale(0.98)!important}';
+    document.head.appendChild(css);
+
+    /* ── 배경 ── */
+    var bg = '';
+    bg += '<div style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;">';
+    bg += '<div style="position:absolute;top:35%;left:35%;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,'+baseColor+'08 0%,'+baseColor+'03 40%,transparent 70%);animation:ci-nebula 30s linear infinite;"></div>';
+    bg += '<div style="position:absolute;top:55%;left:60%;width:400px;height:400px;border-radius:50%;background:radial-gradient(ellipse,'+accentColor+'05 0%,transparent 65%);animation:ci-nebula 40s 8s linear infinite reverse;"></div>';
+    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">';
+    for (var i = 0; i < 12; i++) {
+        var x = Math.random()*100, sz = Math.random()*1.5+0.5, dur = Math.random()*20+15, delay = Math.random()*15;
+        bg += '<div style="position:absolute;left:'+x+'%;bottom:-3%;width:'+sz+'px;height:'+sz+'px;background:'+glowColor+';border-radius:50%;box-shadow:0 0 '+(sz*2)+'px '+glowColor+'30;animation:ci-rise '+dur+'s '+delay+'s linear infinite;"></div>';
     }
+    bg += '</div>';
+    bg += '<div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">';
+    for (var j = 0; j < 6; j++) {
+        var sx = Math.random()*100, ssz = Math.random()*1+0.3, sdur = Math.random()*18+12, sdelay = Math.random()*12;
+        bg += '<div style="position:absolute;left:'+sx+'%;top:-2%;width:'+ssz+'px;height:'+ssz+'px;background:rgba(255,255,255,0.6);border-radius:50%;animation:ci-fall '+sdur+'s '+sdelay+'s linear infinite;"></div>';
+    }
+    bg += '</div>';
+    var cs = 'position:absolute;pointer-events:none;animation:ci-corner-breathe 7s ease-in-out infinite;';
+    bg += '<div style="'+cs+'top:14px;left:14px;width:35px;height:35px;border-top:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:3px 0 0 0;"></div>';
+    bg += '<div style="'+cs+'top:14px;right:14px;width:35px;height:35px;border-top:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 3px 0 0;animation-delay:1.8s;"></div>';
+    bg += '<div style="'+cs+'bottom:14px;left:14px;width:35px;height:35px;border-bottom:1px solid '+baseColor+'18;border-left:1px solid '+baseColor+'18;border-radius:0 0 0 3px;animation-delay:3.5s;"></div>';
+    bg += '<div style="'+cs+'bottom:14px;right:14px;width:35px;height:35px;border-bottom:1px solid '+baseColor+'18;border-right:1px solid '+baseColor+'18;border-radius:0 0 3px 0;animation-delay:5.2s;"></div>';
+    bg += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border:1px solid '+baseColor+'06;border-radius:50%;animation:ci-seal-spin 60s linear infinite;pointer-events:none;"></div>';
+    bg += '</div>';
+
+    /* ── 콘텐츠 ── */
+    var h = '';
+
+    /* 브랜드 */
+    h += '<div class="ci-el" style="opacity:0;color:rgba(255,255,255,0.18);font-size:9px;letter-spacing:8px;margin-bottom:28px;font-weight:300;">나 를 읽 다</div>';
+
+    /* 내담자 이름 */
+    h += '<div class="ci-el" style="opacity:0;margin-bottom:4px;"><div style="font-size:28px;font-weight:700;color:rgba(255,255,255,0.92);letter-spacing:6px;">'+name1+'</div></div>';
+
+    /* & 구분선 */
+    h += '<div class="ci-and-wrap" style="opacity:0;display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0;">';
+    h += '<div class="ci-line-l" style="width:0;height:1px;background:linear-gradient(90deg,transparent,'+baseColor+'40);transition:width 1.8s cubic-bezier(0.4,0,0.2,1);"></div>';
+    h += '<div style="color:'+glowColor+';font-size:16px;font-weight:300;font-style:italic;animation:ci-and-pulse 4s ease-in-out infinite;">&</div>';
+    h += '<div class="ci-line-r" style="width:0;height:1px;background:linear-gradient(270deg,transparent,'+baseColor+'40);transition:width 1.8s cubic-bezier(0.4,0,0.2,1);"></div>';
+    h += '</div>';
+
+    /* 상대방 이름 */
+    h += '<div class="ci-el" style="opacity:0;margin-bottom:20px;"><div style="font-size:28px;font-weight:700;color:rgba(255,255,255,0.92);letter-spacing:6px;">'+name2+'</div></div>';
+
+    /* 구분 다이아몬드 */
+    h += '<div class="ci-divider" style="opacity:0;display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 16px;">';
+    h += '<div class="ci-div-l" style="width:0;height:1px;background:linear-gradient(90deg,transparent,'+accentColor+'35);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
+    h += '<div class="ci-diamond" style="opacity:0;transform:rotate(45deg) scale(0);transition:all 1.2s cubic-bezier(0.34,1.56,0.64,1);width:5px;height:5px;background:'+accentColor+';box-shadow:0 0 8px '+accentColor+'50;"></div>';
+    h += '<div class="ci-div-r" style="width:0;height:1px;background:linear-gradient(270deg,transparent,'+accentColor+'35);transition:width 1.5s cubic-bezier(0.4,0,0.2,1);"></div>';
+    h += '</div>';
+
+    /* 궁합 리포트 타이틀 */
+    h += '<div class="ci-el" style="opacity:0;margin-bottom:6px;"><div style="font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:6px;font-weight:300;">궁 합 리 포 트</div></div>';
+
+    /* 사주 × MBTI */
+    h += '<div class="ci-el" style="opacity:0;margin-bottom:20px;">';
+    h += '<div style="display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border:1px solid '+accentColor+'25;border-radius:20px;background:'+accentColor+'05;animation:ci-float 8s ease-in-out infinite;">';
+    h += '<span style="color:'+accentColor+';font-size:12px;letter-spacing:3px;font-weight:400;">사주 × MBTI</span>';
+    h += '</div></div>';
+
+    /* 소름한줄 oneliner */
+    if (oneLiner) {
+        h += '<div class="ci-el" style="opacity:0;max-width:300px;text-align:center;margin-bottom:20px;">';
+        h += '<div style="color:'+baseColor+';font-size:14px;font-weight:400;line-height:1.8;letter-spacing:0.5px;font-style:italic;animation:ci-breathe 6s ease-in-out infinite;text-shadow:0 0 20px '+baseColor+'20;word-break:keep-all;overflow-wrap:break-word;">'+oneLiner+'</div>';
+        h += '</div>';
+    }
+
+    /* 열어보기 버튼 */
+    h += '<div class="ci-btn-wrap" style="opacity:0;position:relative;display:inline-block;margin-bottom:20px;">';
+    for (var bp = 0; bp < 3; bp++) {
+        var bx = 20+Math.random()*60, bd = Math.random()*4+2, bsz = Math.random()*2+1.5;
+        h += '<div style="position:absolute;bottom:100%;left:'+bx+'px;width:'+bsz+'px;height:'+bsz+'px;background:'+glowColor+';border-radius:50%;opacity:0;animation:ci-btn-dust 3s '+bd+'s ease-out infinite;pointer-events:none;"></div>';
+    }
+    h += '<div class="ci-btn" style="padding:12px 40px;border:1px solid '+baseColor+'30;border-radius:10px;color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;letter-spacing:4px;font-weight:400;background:linear-gradient(135deg,'+baseColor+'08,transparent);animation:ci-btn-glow 3.5s ease-in-out infinite;position:relative;overflow:hidden;">';
+    h += '<div style="position:absolute;top:0;left:-120%;width:35%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:ci-shimmer 5s 9s ease-in-out infinite;pointer-events:none;"></div>';
+    h += '<span style="position:relative;">열어보기</span>';
+    h += '</div></div>';
+
+    /* ── 조립 ── */
+    var content = document.createElement('div');
+    content.style.cssText = 'position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:100%;padding:24px 20px;';
+    content.innerHTML = h;
+
+    overlay.innerHTML = bg;
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+
+    /* ── 애니메이션 시퀀스 ── */
+    var els = overlay.querySelectorAll('.ci-el');
+    var hasOneLiner = oneLiner ? true : false;
+
+    setTimeout(function() {
+        els[0].style.transition = 'opacity 0.5s ease'; els[0].style.opacity = '1';
+        setTimeout(function() { els[1].style.transition = 'opacity 0.4s ease'; els[1].style.opacity = '1'; }, 200);
+        setTimeout(function() {
+            var andWrap = overlay.querySelector('.ci-and-wrap');
+            andWrap.style.transition = 'opacity 0.4s ease'; andWrap.style.opacity = '1';
+            overlay.querySelector('.ci-line-l').style.width = '50px';
+            overlay.querySelector('.ci-line-r').style.width = '50px';
+        }, 500);
+        setTimeout(function() { els[2].style.transition = 'opacity 0.4s ease'; els[2].style.opacity = '1'; }, 800);
+        setTimeout(function() {
+            var divider = overlay.querySelector('.ci-divider');
+            divider.style.transition = 'opacity 0.4s'; divider.style.opacity = '1';
+            overlay.querySelector('.ci-div-l').style.width = '50px';
+            overlay.querySelector('.ci-div-r').style.width = '50px';
+            setTimeout(function() {
+                var dm = overlay.querySelector('.ci-diamond');
+                dm.style.opacity = '1'; dm.style.transform = 'rotate(45deg) scale(1)';
+            }, 150);
+        }, 1100);
+        setTimeout(function() { els[3].style.transition = 'opacity 0.4s ease'; els[3].style.opacity = '1'; }, 1400);
+        setTimeout(function() { els[4].style.transition = 'opacity 0.4s ease'; els[4].style.opacity = '1'; }, 1700);
+        if (hasOneLiner) {
+            setTimeout(function() { els[5].style.transition = 'opacity 0.5s ease'; els[5].style.opacity = '1'; }, 2000);
+            setTimeout(function() {
+                overlay.querySelector('.ci-btn-wrap').style.transition = 'opacity 0.5s ease';
+                overlay.querySelector('.ci-btn-wrap').style.opacity = '1';
+            }, 2400);
+        } else {
+            setTimeout(function() {
+                overlay.querySelector('.ci-btn-wrap').style.transition = 'opacity 0.5s ease';
+                overlay.querySelector('.ci-btn-wrap').style.opacity = '1';
+            }, 2000);
+        }
+    }, 150);
+
+
+    /* ── 버튼 클릭 → 보증서 진입 ── */
+    overlay.addEventListener('click', function(e) {
+        if (e.target.closest('.ci-btn')) {
+            overlay.style.transition = 'opacity 1s ease';
+            overlay.style.opacity = '0';
+            setTimeout(function() { overlay.remove(); css.remove(); enterCertificate(); }, 1000);
+        }
+    });
+}
 
     function showError() {
         document.getElementById('loading').style.display = 'none';
