@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>나를읽다 연구소 | ReadMe Lab</title>
+<meta property="og:title" content="나를읽다 연구소 — 사주×MBTI 운명 리포트">
+<meta property="og:description" content="당신의 사주와 MBTI가 만나면, 세상에 단 하나뿐인 운명 보증서가 탄생합니다.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://readmelab.co.kr">
+<meta property="og:image" content="https://readmelab.co.kr/og-image.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root {
+    --gold: #d4a853;
+    --gold-light: #e8c97a;
+    --gold-dark: #b8912a;
+    --bg-deep: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a25;
+    --text-primary: #f0e6d3;
+    --text-secondary: #a09880;
+    --text-muted: #6a6455;
+    --accent-purple: #8b5cf6;
+    --accent-blue: #3b82f6;
+    --border-subtle: rgba(212,168,83,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+
+/* ── Hero Section ── */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(212,168,83,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.04) 0%, transparent 50%);
+    animation: heroGlow 15s ease-in-out infinite alternate;
+}
+
+@keyframes heroGlow {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(3deg) scale(1.05); }
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 680px; }
+
+.brand-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    color: var(--gold);
+    border: 1px solid var(--border-subtle);
+    padding: 8px 24px;
+    border-radius: 30px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.hero h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    font-weight: 300;
+    line-height: 1.9;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+}
+
+.scroll-indicator .arrow {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+}
+
+/* ── Section Common ── */
+section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 100px 20px;
+}
+
+.section-label {
+    font-size: 0.7rem;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.section-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.section-desc {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 560px;
+    margin: 0 auto 60px;
+    font-weight: 300;
+    line-height: 1.8;
+}
+
+/* ── Feature Cards ── */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 80px;
+}
+
+.feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 36px 28px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-4px);
+    border-color: rgba(212,168,83,0.3);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+}
+
+.feature-card h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+/* ── Product Cards ── */
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+}
+
+.product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 40px 28px 32px;
+    text-align: center;
+    position: relative;
+    transition: all 0.4s ease;
+    overflow: hidden;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.product-card:hover::before { opacity: 1; }
+
+.product-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(212,168,83,0.3);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.product-card.premium {
+    border-color: rgba(212,168,83,0.3);
+    background: linear-gradient(180deg, rgba(212,168,83,0.05), var(--bg-card));
+}
+
+.product-card.premium::before { opacity: 1; }
+
+.product-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: var(--bg-deep);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+
+.product-emoji { font-size: 2.8rem; margin-bottom: 20px; }
+
+.product-name {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.product-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.product-features {
+    text-align: left;
+    margin-bottom: 28px;
+    padding: 0 8px;
+}
+
+.product-features li {
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-weight: 300;
+}
+
+.product-features li::before {
+    content: '✦ ';
+    color: var(--gold);
+    font-size: 0.7rem;
+}
+
+.product-features li:last-child { border-bottom: none; }
+
+.price-area { margin-bottom: 24px; }
+
+.price-original {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    margin-bottom: 4px;
+}
+
+.price-current {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold-light);
+}
+
+.price-current .won {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 2px;
+}
+
+.discount-badge {
+    display: inline-block;
+    background: rgba(239,68,68,0.15);
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.btn-order {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+.btn-order.gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: var(--bg-deep);
+}
+
+.btn-order.gold:hover {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    transform: scale(1.02);
+    box-shadow: 0 8px 30px rgba(212,168,83,0.3);
+}
+
+.btn-order.outline {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--gold);
+}
+
+.btn-order.outline:hover {
+    background: rgba(212,168,83,0.08);
+    border-color: var(--gold);
+}
+
+/* ── How It Works ── */
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+    counter-reset: step;
+}
+
+.step {
+    text-align: center;
+    position: relative;
+    counter-increment: step;
+}
+
+.step::before {
+    content: counter(step);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px; height: 48px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.step h4 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.step p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.6;
+}
+
+/* ── FAQ ── */
+.faq-item {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 24px 0;
+}
+
+.faq-q {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.faq-q::before {
+    content: 'Q. ';
+    color: var(--gold);
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+}
+
+.faq-a {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.8;
+    padding-left: 24px;
+}
+
+/* ── Footer ── */
+footer {
+    text-align: center;
+    padding: 60px 20px;
+    border-top: 1px solid var(--border-subtle);
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.footer-brand {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+}
+
+.footer-info {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+    .products { grid-template-columns: 1fr; }
+    .features { grid-template-columns: 1fr; }
+    section { padding: 60px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ HERO ════════ -->
+<div class="hero">
+    <div class="hero-content">
+        <div class="brand-badge">나를읽다 연구소</div>
+        <h1>당신의 사주와 MBTI가 만나면,<br>세상에 단 하나뿐인<br>운명 보증서가 탄생합니다</h1>
+        <p class="hero-sub">
+            동양 철학의 사주명리학과 현대 심리학의 MBTI를 융합한<br>
+            AI 기반 초개인화 운명 분석 리포트
+        </p>
+    </div>
+    <div class="scroll-indicator">
+        <span>SCROLL</span>
+        <div class="arrow"></div>
+    </div>
+</div>
+
+<!-- ════════ FEATURES ════════ -->
+<section>
+    <div class="section-label">Why ReadMe Lab</div>
+    <h2 class="section-title">왜 다른 사주 서비스와 다른가요?</h2>
+    <p class="section-desc">복사+붙여넣기 식 운세가 아닙니다.<br>4개의 AI가 당신만을 위해 2분간 토론하고, 집필합니다.</p>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🔮</div>
+            <h3>사주 × MBTI 융합</h3>
+            <p>천간·지지·십성의 동양 명리와 MBTI 인지 기능을 교차 분석하여 한쪽만으로는 볼 수 없는 입체적 자아상을 그려냅니다.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>4중 AI 오케스트레이션</h3>
+            <p>GPT-4o, Claude, Gemini, DeepSeek — 네 개의 AI가 서로 검증하고 보완하며 가장 정확하고 풍부한 해석을 도출합니다.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📜</div>
+            <h3>세상에 단 하나뿐인 리포트</h3>
+            <p>같은 생년월일이라도 MBTI, 성별, 이름이 다르면 완전히 다른 리포트가 생성됩니다. 진정한 1:1 맞춤 분석입니다.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎵</div>
+            <h3>당신을 위한 노래</h3>
+            <p>프리미엄 플랜에서는 당신의 사주와 성격을 담은 세상에 하나뿐인 노래를 AI가 작곡하여 선물합니다.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ PRODUCTS ════════ -->
+<section id="products">
+    <div class="section-label">Plans</div>
+    <h2 class="section-title">나에게 맞는 리포트를 선택하세요</h2>
+    <p class="section-desc">모든 리포트는 결제 후 24시간 이내에 카카오톡으로 전달됩니다.</p>
+
+    <div class="products">
+
+        <!-- 나를 읽다 -->
+        <div class="product-card">
+            <div class="product-emoji">📖</div>
+            <div class="product-name">나를 읽다</div>
+            <div class="product-sub">사주×MBTI 종합 리포트</div>
+            <ul class="product-features">
+                <li>사주 원국 분석 (천간·지지·십성)</li>
+                <li>MBTI 융합 성격 해석</li>
+                <li>오행 균형 분석</li>
+                <li>용신·희신 가이드</li>
+                <li>대운·세운 흐름 리딩</li>
+                <li>맞춤 편지</li>
+            </ul>
+            <div class="price-area">
+                <div class="discount-badge">49% OFF</div>
+                <div class="price-original">59,000원</div>
+                <div class="price-current">29,900<span class="won">원</span></div>
+            </div>
+            <button class="btn-order outline" onclick="selectProduct('N_READ')">선택하기</button>
+        </div>
+
+        <!-- 나를 듣다 -->
+        <div class="product-card premium">
+            <div class="product-badge">PREMIUM</div>
+            <div class="product-emoji">🎧</div>
+            <div class="product-name">나를 듣다</div>
+            <div class="product-sub">프리미엄 리포트 + 당신을 위한 노래</div>
+            <ul class="product-features">
+                <li>「나를 읽다」 전체 포함</li>
+                <li>심층 성격·재능 분석</li>
+                <li>AI 작곡 — 당신을 위한 노래</li>
+                <li>가사 + 곡 해설 수록</li>
+                <li>고음질 MP3 다운로드</li>
+                <li>프리미엄 운명 보증서</li>
+            </ul>
+            <div class="price-area">
+                <div class="discount-badge">50% OFF</div>
+                <div class="price-original">79,000원</div>
+                <div class="price-current">39,800<span class="won">원</span></div>
+            </div>
+            <button class="btn-order gold" onclick="selectProduct('N_LISTEN')">선택하기</button>
+        </div>
+
+        <!-- 우리를 읽다 -->
+        <div class="product-card">
+            <div class="product-emoji">💑</div>
+            <div class="product-name">우리를 읽다</div>
+            <div class="product-sub">궁합×MBTI 종합 리포트</div>
+            <ul class="product-features">
+                <li>두 사람 각각의 사주 분석</li>
+                <li>MBTI 궁합 교차 해석</li>
+                <li>오행 밸런스 비교</li>
+                <li>관계 강점·주의점 분석</li>
+                <li>함께하는 대운 흐름</li>
+                <li>두 사람을 위한 편지</li>
+            </ul>
+            <div class="price-area">
+                <div class="discount-badge">50% OFF</div>
+                <div class="price-original">99,000원</div>
+                <div class="price-current">49,700<span class="won">원</span></div>
+            </div>
+            <button class="btn-order outline" onclick="selectProduct('W_READ')">선택하기</button>
+        </div>
+
+        <!-- 우리를 듣다 -->
+        <div class="product-card premium">
+            <div class="product-badge">PREMIUM</div>
+            <div class="product-emoji">💝</div>
+            <div class="product-name">우리를 듣다</div>
+            <div class="product-sub">궁합 프리미엄 + 두 사람을 위한 노래</div>
+            <ul class="product-features">
+                <li>「우리를 읽다」 전체 포함</li>
+                <li>심층 궁합·미래 시나리오 분석</li>
+                <li>AI 작곡 — 두 사람을 위한 노래</li>
+                <li>가사 + 곡 해설 수록</li>
+                <li>고음질 MP3 다운로드</li>
+                <li>프리미엄 운명 보증서</li>
+            </ul>
+            <div class="price-area">
+                <div class="discount-badge">54% OFF</div>
+                <div class="price-original">129,000원</div>
+                <div class="price-current">59,600<span class="won">원</span></div>
+            </div>
+            <button class="btn-order gold" onclick="selectProduct('W_LISTEN')">선택하기</button>
+        </div>
+
+    </div>
+</section>
+
+<!-- ════════ HOW IT WORKS ════════ -->
+<section>
+    <div class="section-label">Process</div>
+    <h2 class="section-title">어떻게 받나요?</h2>
+    <p class="section-desc">간단한 4단계로 세상에 하나뿐인 리포트를 받아보세요.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h4>상품 선택</h4>
+            <p>원하는 리포트를<br>선택합니다</p>
+        </div>
+        <div class="step">
+            <h4>결제</h4>
+            <p>카드, 카카오페이 등<br>간편하게 결제합니다</p>
+        </div>
+        <div class="step">
+            <h4>정보 입력</h4>
+            <p>이름, 생년월일시,<br>MBTI를 입력합니다</p>
+        </div>
+        <div class="step">
+            <h4>리포트 수령</h4>
+            <p>24시간 이내<br>카카오톡으로 전달됩니다</p>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ FAQ ════════ -->
+<section>
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">자주 묻는 질문</h2>
+    <div style="max-width:640px; margin:40px auto 0;">
+        <div class="faq-item">
+            <div class="faq-q">태어난 시간을 모르면 어떻게 하나요?</div>
+            <div class="faq-a">태어난 시간 없이도 분석이 가능합니다. 다만 시주(時柱)가 빠지므로 일부 해석의 깊이가 달라질 수 있습니다. 주문 시 "시간 모름"을 선택해 주세요.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">MBTI를 잘 모르겠어요.</div>
+            <div class="faq-a">정확한 MBTI를 모르셔도 괜찮습니다. 대략적으로 알고 계신 유형을 입력해 주시면 사주 분석과 교차 검증하여 보완합니다.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">리포트는 얼마나 걸려서 오나요?</div>
+            <div class="faq-a">결제 및 정보 제출 후 보통 수 시간 이내, 최대 24시간 이내에 카카오톡으로 보증서 링크를 보내드립니다.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">환불이 가능한가요?</div>
+            <div class="faq-a">리포트 생성 전이라면 전액 환불이 가능합니다. 리포트가 이미 생성·발송된 이후에는 디지털 콘텐츠 특성상 환불이 어렵습니다.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">궁합 리포트는 연인만 가능한가요?</div>
+            <div class="faq-a">아닙니다. 친구, 가족, 동료 등 어떤 관계든 두 사람의 궁합을 분석할 수 있습니다. 주문 시 관계 유형을 선택해 주세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+    <div class="footer-brand">나를읽다 연구소 — ReadMe Lab</div>
+    <div class="footer-info">
+        대표: [대표명] | 사업자등록번호: [000-00-00000]<br>
+        통신판매업신고: [제0000-서울XX-0000호]<br>
+        이메일: [contact@readmelab.co.kr]<br><br>
+        © 2025 ReadMe Lab. All rights reserved.
+    </div>
+</footer>
+
+<script>
+// ── 상품 선택 → 추후 결제 페이지로 연결 ──
+function selectProduct(code) {
+    // 추후 Toss Payments 연동 시:
+    // window.location.href = '/order.html?product=' + code;
+    
+    // 임시: 스마트스토어로 이동
+    var STORE_URL = 'https://smartstore.naver.com/readmelab';
+    alert('준비 중입니다. 스마트스토어로 이동합니다.');
+    window.location.href = STORE_URL;
+}
+</script>
+
+</body>
+</html>
