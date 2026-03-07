@@ -228,14 +228,35 @@ function applyCoupon(){
 function requestPayment(){
     var orderId = 'RML-' + productCode + '-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
     var formPage = productCode.startsWith('W') ? '/form-w.html' : '/form.html';
-    var targetUrl = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
 
     document.getElementById('loadingOverlay').classList.add('show');
 
-    // TODO: 심사 통과 후 아래 setTimeout을 tossPayments.requestPayment()로 교체
-    setTimeout(function(){
+    // GAS에 먼저 행 등록
+    var gasUrl = 'GAS_WEB_APP_URL_여기에'; // 기존 GAS 웹앱 URL
+    
+    fetch(gasUrl + '?action=register', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            orderId: orderId,
+            product: productCode,
+            productName: product.name,
+            price: currentPrice,
+            coupon: appliedCoupon ? appliedCoupon.code : '',
+            timestamp: new Date().toISOString()
+        })
+    })
+    .then(function(res){ return res.json() })
+    .then(function(data){
+        // 시트 등록 완료 → 웹폼으로 이동
+        var targetUrl = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
         window.location.href = targetUrl;
-    }, 1500);
+    })
+    .catch(function(){
+        // GAS 실패해도 웹폼으로 이동 (나중에 수동 매칭 가능)
+        var targetUrl = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
+        window.location.href = targetUrl;
+    });
 }
 </script>
 
