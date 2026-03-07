@@ -3085,7 +3085,6 @@ function preloadBgm(url) {
     audio.volume = 0.3;
     audio.preload = 'auto';
     audio.loop = true;
-    audio.crossOrigin = 'anonymous';
     bgmAudio = audio;
     audio.addEventListener('canplaythrough', function() {
         bgmReady = true;
