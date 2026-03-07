@@ -1339,11 +1339,11 @@ var CHAPTER_TITLES_DEFAULT = [
     var currentView = 'cert';
     var tocOpen = false;
 
-    // ── 배경음악 (BGM) ──
-    var BGM_FILE_IDS = {
-        N: '1i241LaTRBNnqo8txRf8Utpc4bYLOHqnl',
-        W: '1GbPp1Ov80_eTile2iuttPGwqfTLrvk7v'
-    };
+// ── 배경음악 (BGM) ── R2 CDN 직접 로딩
+var BGM_URLS = {
+    N: 'https://pub-9b4a7a6bda1144fba9428175fbc396a6.r2.dev/audio/%EC%9A%B4%EB%AA%85%EC%9D%98%20%EC%84%9C.MP3',
+    W: 'https://pub-9b4a7a6bda1144fba9428175fbc396a6.r2.dev/audio/%EC%9D%B8%EC%97%B0%EC%9D%98%20%EC%8B%A4.MP3'
+};
     var bgmAudio = null;
     var bgmReady = false;
     var pendingBgmPlay = false;
@@ -1599,7 +1599,7 @@ function parseChapterBody(rawBody) {
 
         // BGM 프리로드 (자동재생용)
         var bgmKey = isCouple ? 'W' : 'N';
-        preloadBgm(BGM_FILE_IDS[bgmKey]);
+        preloadBgm(BGM_URLS[bgmKey]);
     }
 
     function showSingleIntro(d) {
@@ -3079,26 +3079,23 @@ function renderOutro(isCouple) {
         setTimeout(function() { t.classList.remove('show'); }, 2500);
     }
 
-    function preloadBgm(fileId) {
-        fetch(GAS_URL + '?audio=' + fileId)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data.error || !data.audioBase64) { console.error('BGM preload error'); return; }
-                var audio = new Audio();
-                audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
-                audio.volume = 0.3;
-                audio.preload = 'auto';
-                audio.loop = true;
-                bgmAudio = audio;
-                bgmReady = true;
-                audio.addEventListener('ended', function() {
-                    audio.currentTime = 0;
-                    audio.play().catch(function(){});
-                });
-                if (pendingBgmPlay) { pendingBgmPlay = false; startBgm(); }
-            })
-            .catch(function(err) { console.error('BGM preload fetch error:', err); });
-    }
+function preloadBgm(url) {
+    var audio = new Audio();
+    audio.src = url;
+    audio.volume = 0.3;
+    audio.preload = 'auto';
+    audio.loop = true;
+    audio.crossOrigin = 'anonymous';
+    bgmAudio = audio;
+    audio.addEventListener('canplaythrough', function() {
+        bgmReady = true;
+        if (pendingBgmPlay) { pendingBgmPlay = false; startBgm(); }
+    }, { once: true });
+    audio.addEventListener('error', function(e) {
+        console.error('BGM load error:', e);
+    });
+    audio.load();
+}
 
     function preloadThemeSong(fileId) {
         fetch(GAS_URL + '?audio=' + fileId)
