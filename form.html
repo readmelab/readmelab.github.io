@@ -765,19 +765,25 @@
         var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
 
         // URL에서 관리코드 추출
-        var urlParams = new URLSearchParams(window.location.search);
-        var adminCode = urlParams.get('code') || '';
+var urlParams = new URLSearchParams(window.location.search);
+var adminCode = urlParams.get('code') || '';
+var productFromOrder = urlParams.get('product') || '';
 
         /* ═══════════════════════════════════════
            초기화
            ═══════════════════════════════════════ */
-        document.addEventListener('DOMContentLoaded', function() {
-            // 관리코드 없으면 에러
-            if (!adminCode) {
-                document.getElementById('formWrap').style.display = 'none';
-                document.getElementById('errorScreen').style.display = 'block';
-                return;
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    // 관리코드도 없고 상품코드도 없으면 에러
+    if (!adminCode && !productFromOrder) {
+        document.getElementById('formWrap').style.display = 'none';
+        document.getElementById('errorScreen').style.display = 'block';
+        return;
+    }
+    
+    // 관리코드 없으면 임시 코드 생성 (도메인 결제)
+    if (!adminCode) {
+        adminCode = 'DOMAIN-' + Date.now();
+    }
 
             // 년도 옵션 (2010 ~ 1940)
             var yearSelect = document.getElementById('birthYear');
@@ -908,11 +914,12 @@
 
             try {
                 // GAS에 데이터 전송
-                var payload = {
-                    type: 'WEB_FORM_SUBMIT',
-                    secret: 'naread2026secret',
-                    code: adminCode,
-                    name: name,
+var payload = {
+    type: 'WEB_FORM_SUBMIT',
+    secret: 'naread2026secret',
+    code: adminCode,
+    product: productFromOrder,
+    name: name,
                     gender: gender.value,
                     birthDate: birthDate,
                     calendarType: calType.value,
