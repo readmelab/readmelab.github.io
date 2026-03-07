@@ -394,53 +394,12 @@ body.intro-active{overflow:hidden}
 </head>
 <body>
 
- <!-- ═══ CINEMATIC INTRO ═══ -->
+<!-- ═══ CINEMATIC INTRO ═══ -->
 <div id="introOverlay">
-  <canvas id="introCanvas"></canvas>
-  <div id="introContent">
-    <div id="keywordLayer">
-      <span class="kw kw-east">陰</span>
-      <span class="kw kw-east">陽</span>
-      <span class="kw kw-east">적천수</span>
-      <span class="kw kw-east">자평진전</span>
-      <span class="kw kw-east">궁통보감</span>
-      <span class="kw kw-east">삼명통회</span>
-      <span class="kw kw-east">명리정종</span>
-      <span class="kw kw-east">연해자평</span>
-      <span class="kw kw-east">오행</span>
-      <span class="kw kw-east">天干</span>
-      <span class="kw kw-east">地支</span>
-      <span class="kw kw-east">用神</span>
-      <span class="kw kw-west">MBTI</span>
-      <span class="kw kw-west">Jung</span>
-      <span class="kw kw-west">Archetype</span>
-      <span class="kw kw-west">Big Five</span>
-      <span class="kw kw-west">Shadow</span>
-      <span class="kw kw-west">Persona</span>
-      <span class="kw kw-west">Individuation</span>
-      <span class="kw kw-west">Cognitive Fn</span>
-      <span class="kw kw-west">Erikson</span>
-      <span class="kw kw-west">Maslow</span>
-      <span class="kw kw-west">Flow State</span>
-      <span class="kw kw-west">Psyche</span>
-    </div>
-    <div id="reportShape">
-      <div id="reportGlow"></div>
-      <div id="reportDoc">
-        <div class="report-seal">印</div>
-        <div class="report-line"></div>
-        <div class="report-line short"></div>
-        <div class="report-line"></div>
-        <div class="report-line short"></div>
-        <div class="report-line"></div>
-        <div class="report-badge">運命保證書</div>
-      </div>
-    </div>
-    <div id="introTitle">
-      <div class="intro-line1">당신의 30년을 바꿀 3분</div>
-      <div class="intro-line2">이제 시작합니다</div>
-    </div>
-  </div>
+  <video id="introVideo" autoplay muted playsinline
+    style="width:100%;height:100%;object-fit:cover"
+    src="https://pub-9b4a7a6bda1144fba9428175fbc396a6.r2.dev/audio/Flow_delpmaspu_.mp4">
+  </video>
 </div>
    
 
@@ -1054,56 +1013,23 @@ function selectProduct(code){window.location.href='/order.html?product='+code}
     window.toggleBgm=function(){if(playing){audio.pause();playing=false;icon.textContent='🔇'}else{audio.play();playing=true;icon.textContent='🔊'}};
 })();
 </script> 
- <script>
-/* ═══ INTRO ANIMATION ═══ */
+<script>
+/* ═══ INTRO VIDEO ═══ */
 (function(){
   document.body.classList.add('intro-active');
+  var ov=document.getElementById('introOverlay');
+  var vid=document.getElementById('introVideo');
 
-  var c=document.getElementById('introCanvas');
-  var ctx=c.getContext('2d');
-  var W,H,particles=[];
-  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
-  resize();window.addEventListener('resize',resize);
-
-  for(var i=0;i<60;i++){
-    particles.push({
-      x:Math.random()*W,y:Math.random()*H,
-      r:Math.random()*1.5+.5,
-      dx:(Math.random()-.5)*.3,dy:(Math.random()-.5)*.3,
-      a:Math.random()*.5+.2
-    });
-  }
-  var done=false;
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    particles.forEach(function(p){
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle='rgba(212,168,83,'+p.a+')';
-      ctx.fill();
-      p.x+=p.dx;p.y+=p.dy;
-      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
-      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
-    });
-    if(!done)requestAnimationFrame(draw);
-  }
-  draw();
-
-  setTimeout(function(){
-    done=true;
+  function close(){
     document.body.classList.remove('intro-active');
-    var ov=document.getElementById('introOverlay');
-    if(ov)ov.style.display='none';
-  },7000);
+    ov.style.transition='opacity .8s';
+    ov.style.opacity='0';
+    setTimeout(function(){ov.style.display='none'},800);
+  }
 
-  document.getElementById('introOverlay').addEventListener('click',function(){
-    done=true;
-    document.body.classList.remove('intro-active');
-    this.style.transition='opacity .4s';
-    this.style.opacity='0';
-    var self=this;
-    setTimeout(function(){self.style.display='none'},400);
-  });
+  vid.addEventListener('ended',close);
+  ov.addEventListener('click',close);
+  setTimeout(close,10000);
 })();
 </script>
    
