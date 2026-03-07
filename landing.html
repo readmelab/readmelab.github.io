@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>나를읽다 연구소 | 운명 보증서</title>
+<title>나를읽다 연구소 | 사주×MBTI 운명 보증서</title>
+<meta name="description" content="사주명리학×MBTI 교차 분석으로 세상에 단 하나뿐인 운명 보증서를 만듭니다. 4개의 AI 분석 엔진이 교차 검증하고 집필하는 12,000자 초개인화 리포트.">
 <meta property="og:title" content="나를읽다 연구소 — 사주×MBTI 운명 보증서">
-<meta property="og:description" content="4명의 연구원이 1시간 토론하고 집필합니다. 세상에 단 하나뿐인 당신의 운명 리포트.">
+<meta property="og:description" content="4개의 AI 분석 엔진이 교차 검증하고 집필합니다. 세상에 단 하나뿐인 당신의 운명 리포트.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://readmelab.co.kr">
 <meta property="og:image" content="https://readmelab.co.kr/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" as="style">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
     --gold:#d4a853; --gold-light:#e8c97a; --gold-dark:#b8912a;
@@ -110,9 +112,12 @@ img{max-width:100%;display:block}
 /* ── FAQ ── */
 .faq-list{max-width:640px;margin:0 auto}
 .faq-item{border-bottom:1px solid var(--border);padding:22px 0}
-.faq-q{font-size:.92rem;color:var(--t1);font-weight:500;cursor:pointer}
-.faq-q::before{content:'Q. ';color:var(--gold);font-family:'Noto Serif KR',serif;font-weight:700}
-.faq-a{font-size:.84rem;color:var(--t2);font-weight:300;line-height:1.8;margin-top:10px;padding-left:22px}
+.faq-q{font-size:.92rem;color:var(--t1);font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q::before{content:'Q. ';color:var(--gold);font-family:'Noto Serif KR',serif;font-weight:700;flex-shrink:0}
+.faq-q::after{content:'＋';color:var(--t3);font-size:1.1rem;transition:transform .3s}
+.faq-q.open::after{transform:rotate(45deg);color:var(--gold)}
+.faq-a{font-size:.84rem;color:var(--t2);font-weight:300;line-height:1.8;margin-top:10px;padding-left:22px;display:none}
+.faq-a.open{display:block}
 
 /* ── FINAL CTA ── */
 .final-cta{text-align:center;padding:100px 24px;position:relative}
@@ -125,16 +130,86 @@ img{max-width:100%;display:block}
 footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);max-width:720px;margin:0 auto}
 .f-brand{font-family:'Noto Serif KR',serif;font-size:.95rem;color:var(--gold);margin-bottom:10px}
 .f-info{font-size:.68rem;color:var(--t3);line-height:1.9}
+.f-links{margin-top:12px;display:flex;justify-content:center;gap:16px}
+.f-links a{font-size:.68rem;color:var(--t3);text-decoration:underline;text-underline-offset:2px}
+.f-links a:hover{color:var(--gold)}
 
 /* ── FLOATING CTA ── */
 .float-cta{position:fixed;bottom:0;left:0;right:0;z-index:999;padding:12px 20px;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);transform:translateY(100%);transition:transform .4s ease;display:flex;justify-content:center}
 .float-cta.show{transform:translateY(0)}
 .float-cta a{display:block;width:100%;max-width:400px;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-size:.92rem;font-weight:700;border-radius:12px;text-align:center;text-decoration:none;letter-spacing:1px}
 
-/* ── COUNTER ── */
-.counter-bar{text-align:center;padding:14px 20px;background:rgba(212,168,83,.06);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.counter-bar p{font-size:.78rem;color:var(--t2);font-weight:300}
-.counter-bar strong{color:var(--gold-light);font-weight:700}
+/* ═══ REPORT PREVIEW (MOCKUP) ═══ */
+.preview-section{padding:80px 20px;background:linear-gradient(180deg,transparent,rgba(212,168,83,.03),transparent)}
+.preview-wrapper{max-width:400px;margin:0 auto;position:relative}
+.preview-phone{background:var(--bg2);border:2px solid rgba(212,168,83,.2);border-radius:32px;padding:16px 12px 20px;position:relative;box-shadow:0 20px 80px rgba(0,0,0,.5),0 0 60px rgba(212,168,83,.08)}
+.preview-phone::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:80px;height:4px;background:rgba(255,255,255,.08);border-radius:4px}
+.preview-screen{background:#0a0a14;border-radius:20px;overflow:hidden;max-height:520px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+.preview-screen::-webkit-scrollbar{display:none}
+.preview-inner{padding:24px 16px;text-align:center}
+
+/* 보증서 목업 */
+.mock-ornament{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px}
+.mock-ornament .m-line{height:1px;width:40px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.mock-ornament .m-dia{color:var(--gold);font-size:8px}
+.mock-brand{font-family:'Noto Serif KR',serif;font-size:10px;color:var(--gold);letter-spacing:5px;margin-bottom:6px}
+.mock-cert-title{font-family:'Noto Serif KR',serif;font-size:11px;color:var(--t3);letter-spacing:3px;margin-bottom:20px}
+.mock-name{font-family:'Noto Serif KR',serif;font-size:26px;font-weight:900;color:var(--gold);text-shadow:0 0 20px rgba(212,168,83,.3);margin-bottom:4px}
+.mock-honorific{font-size:12px;color:var(--t2);margin-bottom:16px}
+.mock-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(212,168,83,.3),var(--gold),rgba(212,168,83,.3),transparent);margin:16px 0}
+.mock-tag{display:inline-block;padding:3px 12px;border:1px solid rgba(212,168,83,.3);border-radius:16px;font-size:9px;color:var(--gold);letter-spacing:1px;margin-bottom:16px}
+
+/* 사주 팔자 목업 */
+.mock-pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0}
+.mock-pillar{text-align:center;padding:8px 4px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:8px}
+.mock-pillar-label{font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1px;margin-bottom:4px}
+.mock-pillar-gan{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;line-height:1.2}
+.mock-pillar-ji{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;line-height:1.2}
+.mock-pillar-sep{width:10px;height:1px;margin:3px auto;opacity:.3}
+
+/* 오행 목업 */
+.mock-oheng{margin:16px auto;text-align:center}
+.mock-oheng-title{font-family:'Noto Serif KR',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
+
+/* 챕터 목업 */
+.mock-chapter{text-align:left;margin:20px 0;padding-top:20px;border-top:1px solid rgba(212,168,83,.08)}
+.mock-ch-num{font-size:8px;color:rgba(212,168,83,.4);letter-spacing:3px;margin-bottom:6px}
+.mock-ch-title{font-family:'Noto Serif KR',serif;font-size:14px;color:var(--gold);font-weight:700;margin-bottom:8px}
+.mock-ch-body{font-size:11px;color:var(--t2);line-height:1.9;font-weight:300}
+.mock-ch-body strong{color:var(--gold);font-weight:500}
+.mock-highlight{position:relative;margin:16px -16px;padding:20px 16px;text-align:center;background:linear-gradient(180deg,transparent,rgba(212,168,83,.04),transparent)}
+.mock-highlight::before,.mock-highlight::after{content:'';display:block;width:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,168,83,.3),transparent);margin:0 auto}
+.mock-highlight::before{margin-bottom:12px}
+.mock-highlight::after{margin-top:12px}
+.mock-highlight-text{font-family:'Noto Serif KR',serif;font-size:13px;color:var(--gold-light);font-weight:700;line-height:1.8;letter-spacing:.3px}
+
+/* 편지 목업 */
+.mock-letter{background:linear-gradient(180deg,#1a1a28,transparent);border:1px solid rgba(212,168,83,.12);border-radius:10px;padding:20px 16px;margin:20px 0;position:relative}
+.mock-letter::after{content:'✉';position:absolute;top:10px;right:12px;font-size:14px;opacity:.12}
+.mock-letter-body{font-family:'Nanum Pen Script',cursive;font-size:15px;color:var(--t1);line-height:2.2}
+.mock-letter-body strong{color:var(--gold);font-weight:700}
+
+/* 오디오 목업 */
+.mock-audio{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid rgba(212,168,83,.15);border-radius:8px;margin:12px 0;background:rgba(212,168,83,.02)}
+.mock-audio-icon{width:36px;height:36px;border-radius:50%;border:1px solid rgba(212,168,83,.3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.mock-audio-info{flex:1;text-align:left}
+.mock-audio-title{font-size:11px;color:var(--t1);font-weight:500}
+.mock-audio-sub{font-size:9px;color:var(--t3)}
+.mock-audio-bar{width:100%;height:3px;background:rgba(212,168,83,.15);border-radius:2px;margin-top:4px;position:relative}
+.mock-audio-bar::before{content:'';position:absolute;left:0;top:0;width:35%;height:100%;background:var(--gold);border-radius:2px}
+
+/* 스크롤 힌트 */
+.preview-hint{text-align:center;margin-top:16px;font-size:.72rem;color:var(--t3);font-weight:300}
+
+/* 슬라이드 탭 */
+.preview-tabs{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
+.preview-tab{padding:6px 16px;border:1px solid var(--border);border-radius:20px;font-size:.72rem;color:var(--t3);cursor:pointer;transition:all .3s;background:transparent}
+.preview-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,83,.06)}
+.preview-slide{display:none}
+.preview-slide.active{display:block}
+
+/* ── PAYMENT INFO ── */
+.payment-info{text-align:center;font-size:.72rem;color:var(--t3);margin-top:16px;padding-top:16px;border-top:1px solid rgba(212,168,83,.08)}
 
 /* ── RESPONSIVE ── */
 @media(min-width:768px){
@@ -145,11 +220,6 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
 </head>
 <body>
 
-<!-- ═══ URGENCY BAR ═══ -->
-<div class="counter-bar">
-    <p>🔥 지금까지 <strong id="totalCount">2,847</strong>명이 자신의 운명 보증서를 받았습니다</p>
-</div>
-
 <!-- ═══ HERO ═══ -->
 <div class="hero">
     <div class="hero-content">
@@ -157,7 +227,7 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
         <h1>당신이 아직<br>자신을 모르는 이유,<br>사주를 읽지 않았기 때문입니다</h1>
         <p class="hero-sub">
             동양 철학 사주명리학 × 현대 심리학 MBTI<br>
-            4명의 전문 연구원이 2분간 교차 분석하고 집필하는<br>
+            4개의 AI 분석 엔진이 교차 검증하고 집필하는<br>
             세상에 단 하나뿐인 <strong style="color:var(--gold)">운명 보증서</strong>
         </p>
         <p class="hero-hook">같은 생년월일이라도, 당신의 리포트는 완전히 다릅니다.</p>
@@ -201,7 +271,172 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
 <div class="reveal">
     <div class="reveal-line"></div>
     <h2>그래서 저희 연구소가<br>2년간 연구했습니다</h2>
-    <p>사주명리학 전문가의 해석 로직과 MBTI 인지 기능 이론을 결합한<br>독자적인 분석 프레임워크. 4명의 연구원이 당신의 데이터를 교차 검증하고,<br>오직 당신만을 위한 리포트를 집필합니다.</p>
+    <p>사주명리학 전문가의 해석 로직과 MBTI 인지 기능 이론을 결합한<br>독자적인 분석 프레임워크. 4개의 AI 분석 엔진이 당신의 데이터를<br>교차 검증하고, 오직 당신만을 위한 리포트를 집필합니다.</p>
+</div>
+
+<!-- ═══ REPORT PREVIEW (핵심 추가 섹션) ═══ -->
+<div class="preview-section">
+    <div class="sec" style="padding-bottom:20px">
+        <div class="sec-label">Preview</div>
+        <h2 class="sec-title">실제 리포트는 이렇게 보입니다</h2>
+        <div class="sec-desc">스크롤해서 리포트 구성을 미리 확인해보세요.</div>
+    </div>
+
+    <div class="preview-wrapper">
+        <!-- 탭 -->
+        <div class="preview-tabs">
+            <div class="preview-tab active" onclick="switchPreview(0)">보증서</div>
+            <div class="preview-tab" onclick="switchPreview(1)">사주 분석</div>
+            <div class="preview-tab" onclick="switchPreview(2)">리포트 본문</div>
+            <div class="preview-tab" onclick="switchPreview(3)">편지 & 음원</div>
+        </div>
+
+        <div class="preview-phone">
+            <div class="preview-screen" id="previewScreen">
+
+                <!-- 슬라이드 0: 보증서 -->
+                <div class="preview-slide active" id="slide0">
+                    <div class="preview-inner">
+                        <div class="mock-ornament">
+                            <div class="m-line"></div><div class="m-dia">◆</div><div class="m-line"></div>
+                        </div>
+                        <div class="mock-brand">나 를 읽 다</div>
+                        <div class="mock-cert-title">운 명 공 명 보 증 서</div>
+                        <div class="mock-name">김하늘</div>
+                        <div class="mock-honorific">님의 운명 분석이 완성되었습니다</div>
+                        <div class="mock-tag">나를 듣다 · PREMIUM</div>
+                        <div class="mock-divider"></div>
+                        <div style="font-size:11px;color:var(--t2);line-height:1.8;font-weight:300;margin-bottom:16px">
+                            귀하의 사주 오행과 MBTI 심리 유형을<br>분석하여 조율된 맞춤형 솔루션입니다
+                        </div>
+                        <div style="font-family:'Noto Serif KR',serif;font-size:15px;color:var(--gold);line-height:2;letter-spacing:.5px;font-style:italic;text-shadow:0 0 20px rgba(212,168,83,.2)">
+                            "타오르는 마음을 다스리며<br>세상을 품는 사람"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 1: 사주 분석 -->
+                <div class="preview-slide" id="slide1">
+                    <div class="preview-inner" style="text-align:center">
+                        <div class="mock-oheng-title" style="font-family:'Noto Serif KR',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:16px">사 주 팔 자</div>
+                        <div class="mock-pillars">
+                            <div class="mock-pillar">
+                                <div class="mock-pillar-label">시주</div>
+                                <div class="mock-pillar-gan" style="color:#F44336">丁</div>
+                                <div class="mock-pillar-sep" style="background:#F44336"></div>
+                                <div class="mock-pillar-ji" style="color:#2196F3">亥</div>
+                            </div>
+                            <div class="mock-pillar">
+                                <div class="mock-pillar-label">일주</div>
+                                <div class="mock-pillar-gan" style="color:#F44336">丙</div>
+                                <div class="mock-pillar-sep" style="background:#F44336"></div>
+                                <div class="mock-pillar-ji" style="color:#FFC107">辰</div>
+                            </div>
+                            <div class="mock-pillar">
+                                <div class="mock-pillar-label">월주</div>
+                                <div class="mock-pillar-gan" style="color:#9E9E9E">庚</div>
+                                <div class="mock-pillar-sep" style="background:#9E9E9E"></div>
+                                <div class="mock-pillar-ji" style="color:#4CAF50">寅</div>
+                            </div>
+                            <div class="mock-pillar">
+                                <div class="mock-pillar-label">년주</div>
+                                <div class="mock-pillar-gan" style="color:#2196F3">壬</div>
+                                <div class="mock-pillar-sep" style="background:#2196F3"></div>
+                                <div class="mock-pillar-ji" style="color:#9E9E9E">申</div>
+                            </div>
+                        </div>
+                        <div style="display:inline-block;padding:4px 14px;border:1px solid rgba(212,168,83,.3);border-radius:16px;font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:20px">
+                            일간 <span style="color:#F44336;font-weight:700">丙</span> · 화
+                        </div>
+
+                        <div class="mock-divider"></div>
+                        <div style="font-family:'Noto Serif KR',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin:16px 0 12px">오 행 분 포</div>
+                        <!-- 오행 SVG 도넛 -->
+                        <svg viewBox="0 0 160 160" width="120" height="120" style="display:block;margin:0 auto 12px">
+                            <circle cx="80" cy="80" r="55" fill="none" stroke="#4CAF50" stroke-width="22" stroke-dasharray="69.1 276.5" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                            <circle cx="80" cy="80" r="55" fill="none" stroke="#F44336" stroke-width="22" stroke-dasharray="103.7 241.9" stroke-dashoffset="-69.1" transform="rotate(-90 80 80)"/>
+                            <circle cx="80" cy="80" r="55" fill="none" stroke="#FFC107" stroke-width="22" stroke-dasharray="51.8 293.8" stroke-dashoffset="-172.8" transform="rotate(-90 80 80)"/>
+                            <circle cx="80" cy="80" r="55" fill="none" stroke="#9E9E9E" stroke-width="22" stroke-dasharray="69.1 276.5" stroke-dashoffset="-224.6" transform="rotate(-90 80 80)"/>
+                            <circle cx="80" cy="80" r="55" fill="none" stroke="#2196F3" stroke-width="22" stroke-dasharray="51.8 293.8" stroke-dashoffset="-293.7" transform="rotate(-90 80 80)"/>
+                            <text x="80" y="76" text-anchor="middle" fill="#F44336" font-size="22" font-weight="700" font-family="Noto Serif KR,serif">화</text>
+                            <text x="80" y="94" text-anchor="middle" fill="#8a7a5a" font-size="10">주도 오행</text>
+                        </svg>
+                        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-size:10px;color:var(--t2)">
+                            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4CAF50;vertical-align:middle;margin-right:3px"></span>木 20%</span>
+                            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F44336;vertical-align:middle;margin-right:3px"></span>火 30%</span>
+                            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFC107;vertical-align:middle;margin-right:3px"></span>土 15%</span>
+                            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#9E9E9E;vertical-align:middle;margin-right:3px"></span>金 20%</span>
+                            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2196F3;vertical-align:middle;margin-right:3px"></span>水 15%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 2: 리포트 본문 -->
+                <div class="preview-slide" id="slide2">
+                    <div class="preview-inner" style="text-align:left">
+                        <div class="mock-chapter">
+                            <div class="mock-ch-num">CHAPTER 01</div>
+                            <div class="mock-ch-title">당신이라는 사람</div>
+                            <div class="mock-ch-body">
+                                <p>하늘님의 일간은 <strong>丙화(병화)</strong>입니다. 병화는 태양과 같은 존재 — 어디에 있든 자신만의 빛으로 주변을 밝히는 사람입니다.</p>
+                                <p>당신의 MBTI인 <strong>ENFP</strong>와 이 병화의 기운이 만나면, 단순한 외향성을 넘어서 <strong>사람들의 감정을 꿰뚫어 보는 직관</strong>이 됩니다.</p>
+                            </div>
+                        </div>
+
+                        <div class="mock-highlight">
+                            <div class="mock-highlight-text">"타오르는 열정 뒤에 숨겨진<br>당신의 진짜 마음은,<br>모두를 안아주고 싶은 따뜻함입니다"</div>
+                        </div>
+
+                        <div class="mock-chapter" style="border-top:none;padding-top:0">
+                            <div class="mock-ch-num">CHAPTER 05</div>
+                            <div class="mock-ch-title">사랑과 관계</div>
+                            <div class="mock-ch-body">
+                                <p>병화 일간에 <strong>정재(正財)</strong>가 자리한 당신은, 사랑에 있어 <strong>한 사람에게 깊이 몰입하는</strong> 유형입니다. 가벼운 만남보다는 영혼까지 나누는 관계를 원합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 3: 편지 & 음원 -->
+                <div class="preview-slide" id="slide3">
+                    <div class="preview-inner">
+                        <div class="mock-letter">
+                            <div class="mock-ch-num" style="text-align:center">CHAPTER 10</div>
+                            <div class="mock-ch-title" style="font-family:'Nanum Pen Script',cursive;font-size:18px;text-align:center;margin-bottom:12px">하늘님에게 쓰는 편지</div>
+                            <div class="mock-letter-body">
+                                <strong>하늘</strong>님에게,<br><br>
+                                당신은 자신이 얼마나 특별한 사람인지 아직 모르고 있을지도 모릅니다.<br><br>
+                                태양처럼 뜨겁게 빛나면서도, 달처럼 조용히 곁을 지키는 당신의 이중성은 <strong>약점이 아니라 가장 큰 매력</strong>입니다.<br><br>
+                                세상이 당신에게 요구하는 것들에 지칠 때, 이 편지를 다시 꺼내 읽어주세요.
+                            </div>
+                        </div>
+
+                        <div style="margin-top:20px">
+                            <div style="font-family:'Noto Serif KR',serif;font-size:10px;color:var(--gold);letter-spacing:3px;text-align:center;margin-bottom:12px">당신을 위한 노래</div>
+                            <div class="mock-audio">
+                                <div class="mock-audio-icon">🎵</div>
+                                <div class="mock-audio-info">
+                                    <div class="mock-audio-title">태양의 편지</div>
+                                    <div class="mock-audio-sub">하늘님의 사주를 담은 곡</div>
+                                    <div class="mock-audio-bar"></div>
+                                </div>
+                            </div>
+                            <div class="mock-audio">
+                                <div class="mock-audio-icon">🎧</div>
+                                <div class="mock-audio-info">
+                                    <div class="mock-audio-title">음성 해설 리포트</div>
+                                    <div class="mock-audio-sub">AI 내레이터가 읽어주는 당신의 이야기</div>
+                                    <div class="mock-audio-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="preview-hint">↑ 탭을 눌러 리포트 구성을 확인하세요</div>
+    </div>
 </div>
 
 <!-- ═══ WHY DIFFERENT ═══ -->
@@ -221,7 +456,7 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
             <div style="font-size:.7rem;letter-spacing:3px;color:var(--gold);margin-bottom:8px;font-weight:700">✦ 나를읽다 연구소</div>
             <div style="font-size:.85rem;color:var(--t2);font-weight:300;line-height:1.8">
                 사주 + MBTI + 성별 + 이름까지 교차 분석<br>
-                4명의 연구원이 토론·검증 → 세상에 하나뿐인 리포트 집필<br>
+                4개의 AI 분석 엔진이 토론·검증 → 세상에 하나뿐인 리포트 집필<br>
                 구체적 조언, 실행 가능한 가이드, 감동적인 맞춤 편지까지
             </div>
         </div>
@@ -312,7 +547,7 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
             <div class="proc-num"></div>
             <div class="proc-body">
                 <h4>카카오톡으로 수령</h4>
-                <p>연구소에서 분석·집필 후 24시간 이내에 보증서 링크를 보내드립니다.</p>
+                <p>AI 분석 엔진이 정밀 분석 후, 수 시간 이내에 보증서 링크를 보내드립니다.</p>
             </div>
         </div>
     </div>
@@ -325,8 +560,6 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
     <div class="sec-desc">모든 리포트는 카카오톡으로 전달됩니다.</div>
 
     <div class="products">
-
-        <!-- 나를 읽다 -->
         <div class="product-card">
             <div class="p-top">
                 <div class="p-emoji">📖</div>
@@ -343,14 +576,13 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
                 <li>맞춤 편지</li>
             </ul>
             <div class="p-price">
-                <span class="p-discount">49% OFF</span>
+                <span class="p-discount">오픈 기념가</span>
                 <span class="p-original">59,000원</span>
                 <span class="p-current">29,900<small>원</small></span>
             </div>
-            <button class="p-btn outline" onclick="selectProduct('N_READ',29900)">선택하기</button>
+            <button class="p-btn outline" onclick="selectProduct('N1',29900)">선택하기</button>
         </div>
 
-        <!-- 나를 듣다 -->
         <div class="product-card premium">
             <div class="p-badge">PREMIUM</div>
             <div class="p-top">
@@ -368,15 +600,14 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
                 <li>프리미엄 운명 보증서</li>
             </ul>
             <div class="p-price">
-                <span class="p-discount">50% OFF</span>
+                <span class="p-discount">오픈 기념가</span>
                 <span class="p-original">79,000원</span>
                 <span class="p-current">39,800<small>원</small></span>
             </div>
-            <button class="p-btn gold" onclick="selectProduct('N_LISTEN',39800)">선택하기</button>
-            <div class="p-note">🔥 가장 인기 있는 선택</div>
+            <button class="p-btn gold" onclick="selectProduct('N2',39800)">선택하기</button>
+            <div class="p-note">가장 많이 선택하는 상품</div>
         </div>
 
-        <!-- 우리를 읽다 -->
         <div class="product-card">
             <div class="p-top">
                 <div class="p-emoji">💑</div>
@@ -393,14 +624,13 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
                 <li>두 사람을 위한 편지</li>
             </ul>
             <div class="p-price">
-                <span class="p-discount">50% OFF</span>
+                <span class="p-discount">오픈 기념가</span>
                 <span class="p-original">99,000원</span>
                 <span class="p-current">49,700<small>원</small></span>
             </div>
-            <button class="p-btn outline" onclick="selectProduct('W_READ',49700)">선택하기</button>
+            <button class="p-btn outline" onclick="selectProduct('W1',49700)">선택하기</button>
         </div>
 
-        <!-- 우리를 듣다 -->
         <div class="product-card premium">
             <div class="p-badge">PREMIUM</div>
             <div class="p-top">
@@ -418,23 +648,15 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
                 <li>프리미엄 운명 보증서</li>
             </ul>
             <div class="p-price">
-                <span class="p-discount">54% OFF</span>
+                <span class="p-discount">오픈 기념가</span>
                 <span class="p-original">129,000원</span>
                 <span class="p-current">59,600<small>원</small></span>
             </div>
-            <button class="p-btn gold" onclick="selectProduct('W_LISTEN',59600)">선택하기</button>
+            <button class="p-btn gold" onclick="selectProduct('W2',59600)">선택하기</button>
         </div>
-
     </div>
-</div>
 
-<!-- ═══ GUARANTEE ═══ -->
-<div class="sec">
-    <div class="guarantee">
-        <div class="guarantee-icon">🛡️</div>
-        <h3>만족하지 못하면, 전액 환불해 드립니다</h3>
-        <p>리포트 생성 전이라면 100% 환불을 보장합니다.<br>그만큼 저희 분석에 자신이 있습니다.</p>
-    </div>
+    <div class="payment-info">카카오페이 · 신용카드 · 계좌이체 가능</div>
 </div>
 
 <!-- ═══ FAQ ═══ -->
@@ -444,24 +666,32 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
 
     <div class="faq-list">
         <div class="faq-item">
-            <div class="faq-q">태어난 시간을 모르면 어떻게 하나요?</div>
+            <div class="faq-q" onclick="toggleFaq(this)"><span>리포트는 AI가 만드는 건가요?</span></div>
+            <div class="faq-a">네, 사주 원국은 전통 명리학 알고리즘으로 정밀 계산하고, 4개의 AI 분석 엔진이 교차 검증·토론한 뒤 리포트를 생성합니다. 동일한 입력이라도 매번 분석 결과가 달라 세상에 같은 리포트는 존재하지 않습니다. 연구소가 2년간 개발한 독자적 프레임워크가 품질을 보장합니다.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)"><span>태어난 시간을 모르면 어떻게 하나요?</span></div>
             <div class="faq-a">시간 없이도 분석이 가능합니다. 다만 시주(時柱)가 빠지므로 일부 해석의 깊이가 달라질 수 있습니다. 주문 시 "시간 모름"을 선택해 주세요.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">MBTI를 잘 모르겠어요.</div>
+            <div class="faq-q" onclick="toggleFaq(this)"><span>MBTI를 잘 모르겠어요.</span></div>
             <div class="faq-a">대략적인 유형만 알아도 괜찮습니다. 사주 분석과 교차 검증하여 보완하기 때문에 큰 차이가 나지 않습니다.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">리포트는 얼마나 걸려서 오나요?</div>
-            <div class="faq-a">정보 제출 후 보통 수 시간 이내, 최대 24시간 이내에 카카오톡으로 보증서 링크를 보내드립니다.</div>
+            <div class="faq-q" onclick="toggleFaq(this)"><span>리포트는 얼마나 걸려서 오나요?</span></div>
+            <div class="faq-a">정보 제출 후 AI가 정밀 분석을 진행하며, 보통 수 시간 이내에 카카오톡으로 보증서 링크를 보내드립니다. 주문이 몰리는 경우 최대 24시간이 소요될 수 있습니다.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">궁합 리포트는 연인만 가능한가요?</div>
+            <div class="faq-q" onclick="toggleFaq(this)"><span>궁합 리포트는 연인만 가능한가요?</span></div>
             <div class="faq-a">아닙니다. 친구, 가족, 동료 등 어떤 관계든 분석할 수 있습니다. 주문 시 관계 유형을 선택해 주세요.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q">'당신을 위한 노래'는 정말 저만을 위한 곡인가요?</div>
-            <div class="faq-a">네, 당신의 사주와 성격 분석을 기반으로 곡과 가사가 만들어집니다. 세상에 동일한 곡은 존재하지 않습니다.</div>
+            <div class="faq-q" onclick="toggleFaq(this)"><span>'당신을 위한 노래'는 정말 저만을 위한 곡인가요?</span></div>
+            <div class="faq-a">네, 당신의 사주와 성격 분석을 기반으로 곡과 가사가 만들어집니다. 세상에 동일한 곡은 존재하지 않으며, MP3로 다운로드하여 언제든 들을 수 있습니다.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)"><span>환불은 어떻게 하나요?</span></div>
+            <div class="faq-a">리포트 생성 전이라면 전액 환불이 가능합니다. readmelab.info@gmail.com으로 문의해 주세요. 자세한 내용은 하단의 환불정책을 확인하시기 바랍니다.</div>
         </div>
     </div>
 </div>
@@ -477,9 +707,14 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
 <footer>
     <div class="f-brand">나를읽다 연구소 — ReadMe Lab</div>
     <div class="f-info">
-        대표: [오동훈] | 사업자등록번호: [347-12-03156]<br>
-        문의: abkomp400@gmail.com<br><br>
-        © 2026 ReadMe Lab. All rights reserved.
+        대표: 오동훈 | 사업자등록번호: 347-12-03156<br>
+        문의: readmelab.info@gmail.com<br><br>
+        © 2025 ReadMe Lab. All rights reserved.
+    </div>
+    <div class="f-links">
+        <a href="/terms.html">이용약관</a>
+        <a href="/privacy.html">개인정보처리방침</a>
+        <a href="/refund.html">환불정책</a>
     </div>
 </footer>
 
@@ -489,32 +724,38 @@ footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);ma
 </div>
 
 <script>
-// ── Floating CTA: show after scrolling past hero ──
+/* ── Floating CTA ── */
 (function(){
-    var fc = document.getElementById('floatCta');
-    var shown = false;
-    window.addEventListener('scroll', function(){
-        var y = window.scrollY || window.pageYOffset;
-        if(y > window.innerHeight * 0.8 && !shown){ fc.classList.add('show'); shown=true; }
-        if(y < window.innerHeight * 0.3 && shown){ fc.classList.remove('show'); shown=false; }
+    var fc=document.getElementById('floatCta');
+    var shown=false;
+    window.addEventListener('scroll',function(){
+        var y=window.scrollY||window.pageYOffset;
+        if(y>window.innerHeight*0.8&&!shown){fc.classList.add('show');shown=true;}
+        if(y<window.innerHeight*0.3&&shown){fc.classList.remove('show');shown=false;}
     });
 })();
 
-// ── Counter animation ──
-(function(){
-    var el = document.getElementById('totalCount');
-    var target = 2847;
-    var current = 2400;
-    var timer = setInterval(function(){
-        current += Math.floor(Math.random()*30)+10;
-        if(current >= target){ current = target; clearInterval(timer); }
-        el.textContent = current.toLocaleString();
-    }, 60);
-})();
+/* ── FAQ 아코디언 ── */
+function toggleFaq(el){
+    var a=el.nextElementSibling;
+    var isOpen=el.classList.contains('open');
+    // 모두 닫기
+    document.querySelectorAll('.faq-q').forEach(function(q){q.classList.remove('open');});
+    document.querySelectorAll('.faq-a').forEach(function(a){a.classList.remove('open');});
+    // 토글
+    if(!isOpen){el.classList.add('open');a.classList.add('open');}
+}
 
-// ── Product select ──
-function selectProduct(code, price){
-    window.location.href = '/order.html?product=' + code;
+/* ── 리포트 프리뷰 슬라이드 ── */
+function switchPreview(idx){
+    document.querySelectorAll('.preview-tab').forEach(function(t,i){t.classList.toggle('active',i===idx);});
+    document.querySelectorAll('.preview-slide').forEach(function(s,i){s.classList.toggle('active',i===idx);});
+    document.getElementById('previewScreen').scrollTop=0;
+}
+
+/* ── Product select → 백엔드 코드 매핑 완료 ── */
+function selectProduct(code,price){
+    window.location.href='https://smartstore.naver.com/readmelab/products/13142603279';
 }
 </script>
 
