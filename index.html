@@ -1975,10 +1975,8 @@ function showCoupleIntro(d) {
         var d = certData;
         var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
 
-                // BGM 자동재생 (8초 딜레이)
-        setTimeout(function() {
-            if (bgmReady && bgmAudio) { startBgm(); } else { pendingBgmPlay = true; }
-        }, 8000);
+// BGM 즉시 재생
+if (bgmReady && bgmAudio) { startBgm(); } else { pendingBgmPlay = true; }
 
         document.getElementById('clientName').textContent = d.name;
         document.getElementById('productTag').textContent = d.product || d.productCode || '';
