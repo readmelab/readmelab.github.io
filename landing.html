@@ -754,10 +754,73 @@ function switchPreview(idx){
 }
 
 /* ── Product select → 백엔드 코드 매핑 완료 ── */
-function selectProduct(code,price){
-    window.location.href='https://smartstore.naver.com/readmelab/products/13142603279';
+function selectProduct(code, price) {
+    window.location.href = '/order.html?product=' + code;
 }
 </script>
 
+<!-- ── BGM 자동재생 ── -->
+<audio id="landingBgm" loop preload="auto"
+       src="https://pub-9b4a7a6bda1144fba9428175fbc396a6.r2.dev/audio/ReadMeLab%20Atmosphere.mp3">
+</audio>
+
+<div id="bgmToggle" style="
+  position:fixed;bottom:90px;right:16px;z-index:9999;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(10,10,15,.85);border:1px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;backdrop-filter:blur(8px);
+  box-shadow:0 0 12px rgba(212,168,83,.15);
+  transition:all .3s ease;
+" onclick="toggleBgm()">
+  <span id="bgmIcon" style="font-size:18px;">🔇</span>
+</div>
+
+<script>
+(function(){
+  var audio = document.getElementById('landingBgm');
+  var icon  = document.getElementById('bgmIcon');
+  var playing = false;
+
+  audio.volume = 0.3;
+
+  /* 첫 터치/클릭 시 자동재생 시작 */
+  function startOnInteraction(){
+    if(!playing){
+      audio.play().then(function(){
+        playing = true;
+        icon.textContent = '🔊';
+      }).catch(function(){});
+    }
+    document.removeEventListener('click', startOnInteraction);
+    document.removeEventListener('touchstart', startOnInteraction);
+    document.removeEventListener('scroll', startOnInteraction);
+  }
+
+  document.addEventListener('click', startOnInteraction);
+  document.addEventListener('touchstart', startOnInteraction);
+  document.addEventListener('scroll', startOnInteraction);
+
+  /* 자동재생 시도 (일부 브라우저 허용) */
+  audio.play().then(function(){
+    playing = true;
+    icon.textContent = '🔊';
+  }).catch(function(){});
+
+  window.toggleBgm = function(){
+    if(playing){
+      audio.pause();
+      playing = false;
+      icon.textContent = '🔇';
+    } else {
+      audio.play();
+      playing = true;
+      icon.textContent = '🔊';
+    }
+  };
+})();
+</script>
+
+    
 </body>
 </html>
