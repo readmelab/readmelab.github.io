@@ -542,15 +542,20 @@
 
     <script>
         var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
-        var urlParams = new URLSearchParams(window.location.search);
-        var adminCode = urlParams.get('code') || '';
+var urlParams = new URLSearchParams(window.location.search);
+var adminCode = urlParams.get('code') || '';
+var productFromOrder = urlParams.get('product') || '';
 
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!adminCode) {
-                document.getElementById('formWrap').style.display = 'none';
-                document.getElementById('errorScreen').style.display = 'block';
-                return;
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    if (!adminCode && !productFromOrder) {
+        document.getElementById('formWrap').style.display = 'none';
+        document.getElementById('errorScreen').style.display = 'block';
+        return;
+    }
+    
+    if (!adminCode) {
+        adminCode = 'DOMAIN-' + Date.now();
+    }
 
             // 년/월/일 옵션 생성 함수
             function fillDateSelects(yearId, monthId, dayId) {
@@ -684,11 +689,12 @@
             btn.disabled = true;
 
             try {
-                var payload = {
-                    type: 'WEB_FORM_SUBMIT_W',
-                    secret: 'naread2026secret',
-                    code: adminCode,
-                    myName: myName,
+var payload = {
+    type: 'WEB_FORM_SUBMIT_W',
+    secret: 'naread2026secret',
+    code: adminCode,
+    product: productFromOrder,
+    myName: myName,
                     myGender: myGender.value,
                     myBirthDate: myBirthDate,
                     myCalendarType: myCalType.value,
