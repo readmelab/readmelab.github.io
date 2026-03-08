@@ -73,6 +73,23 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
     .coupon-input{padding:11px 12px;font-size:.82rem}
     .coupon-btn{padding:11px 14px;font-size:.78rem}
 }
+
+/* ── Upsell ── */
+.upsell-card{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.03));border:1px solid rgba(212,168,83,.25);border-radius:16px;padding:22px 24px;margin-bottom:24px;display:none}
+.upsell-card.show{display:block}
+.upsell-badge{display:inline-block;font-size:.6rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-weight:700}
+.upsell-title{font-family:'Noto Serif KR',serif;font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--t1)}
+.upsell-desc{font-size:.82rem;color:var(--t2);font-weight:300;margin-bottom:16px;line-height:1.6}
+.upsell-price{display:flex;align-items:baseline;gap:6px;margin-bottom:16px}
+.upsell-price .add{font-size:.82rem;color:var(--t2);font-weight:300}
+.upsell-price .amount{font-family:'Noto Serif KR',serif;font-size:1.2rem;font-weight:900;color:var(--gold-light)}
+.upsell-btns{display:flex;gap:10px}
+.upsell-yes{flex:1;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .3s}
+.upsell-yes:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(212,168,83,.3)}
+.upsell-no{flex-shrink:0;padding:14px 18px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;cursor:pointer;transition:all .3s}
+.upsell-no:hover{border-color:var(--t3)}
+
+    
 </style>
 </head>
 <body>
@@ -117,6 +134,22 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
             <button class="coupon-btn" onclick="applyCoupon()">적용</button>
         </div>
         <div class="coupon-msg" id="couponMsg"></div>
+    </div>
+
+        <!-- 업셀 (읽다→듣다 업그레이드) -->
+    <div class="upsell-card" id="upsellCard">
+        <div class="upsell-badge">✦ 특별 업그레이드</div>
+        <div class="upsell-title" id="upsellTitle">당신만을 위한 노래까지 받아보세요</div>
+        <div class="upsell-desc" id="upsellDesc">사주 분석을 바탕으로 AI가 작곡한 단 하나뿐인 노래를 추가로 받아보실 수 있습니다.</div>
+        <div class="upsell-price">
+            <span class="add">단</span>
+            <span class="amount">+9,900원</span>
+            <span class="add">추가</span>
+        </div>
+        <div class="upsell-btns">
+            <button class="upsell-yes" onclick="acceptUpsell()">🎵 노래도 함께 받기</button>
+            <button class="upsell-no" onclick="declineUpsell()">괜찮아요</button>
+        </div>
     </div>
 
     <!-- 결제 버튼 -->
@@ -185,6 +218,57 @@ var tossPayments = TossPayments(clientKey);
     }
 })();
 
+   // ═══ 업셀: 읽다 → 듣다 업그레이드 (9,900원) ═══
+var UPSELL_MAP = { N1:'N2', W1:'W2' }; // 읽다→듣다 매핑
+var upsellTarget = UPSELL_MAP[productCode] || null;
+
+(function initUpsell(){
+    if(!upsellTarget) return; // N2, W2는 이미 듣다 상품이므로 업셀 불필요
+    var card = document.getElementById('upsellCard');
+    card.classList.add('show');
+    if(productCode === 'W1'){
+        document.getElementById('upsellTitle').textContent = '두 사람만을 위한 노래까지 받아보세요';
+        document.getElementById('upsellDesc').textContent = '궁합 분석을 바탕으로 AI가 작곡한 두 사람만의 노래를 추가로 받아보실 수 있습니다.';
+    }
+})();
+
+function acceptUpsell(){
+    // 상품을 듣다로 교체
+    productCode = upsellTarget;
+    product = PRODUCTS[productCode];
+    currentPrice = product.price;
+    appliedCoupon = null;
+
+    // UI 갱신
+    document.getElementById('productEmoji').textContent = product.emoji;
+    document.getElementById('productName').textContent = product.name;
+    document.getElementById('productSub').textContent = product.sub;
+    document.getElementById('originalPrice').textContent = product.original.toLocaleString() + '원';
+    document.getElementById('discountTag').textContent = product.discount + '% OFF';
+    document.getElementById('discountAmount').textContent = '-' + (product.original - product.price).toLocaleString() + '원';
+    document.getElementById('finalPrice').textContent = product.price.toLocaleString() + '원';
+    document.getElementById('couponRow').style.display = 'none';
+    document.getElementById('couponMsg').textContent = '';
+    document.getElementById('couponInput').value = '';
+    document.getElementById('payBtn').textContent = product.price.toLocaleString() + '원 결제하기';
+
+    // 업셀 카드 숨기고 완료 표시
+    var card = document.getElementById('upsellCard');
+    card.innerHTML = '<div style="text-align:center;padding:8px 0;color:#22c55e;font-size:.88rem;font-weight:500">✓ 노래 업그레이드가 적용되었습니다!</div>';
+
+    // 쿠폰 재적용 가능하도록 리셋
+    var couponParam = params.get('coupon');
+    if(couponParam){
+        document.getElementById('couponInput').value = couponParam;
+        applyCoupon();
+    }
+}
+
+function declineUpsell(){
+    document.getElementById('upsellCard').style.display = 'none';
+}
+ 
+
 // ═══ 쿠폰 적용 ═══
 function applyCoupon(){
     var code = document.getElementById('couponInput').value.trim().toUpperCase();
@@ -231,13 +315,14 @@ function requestPayment(){
 
     document.getElementById('loadingOverlay').classList.add('show');
 
-    // GAS에 먼저 행 등록
-    var gasUrl = 'GAS_WEB_APP_URL_여기에'; // 기존 GAS 웹앱 URL
+    var gasUrl = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
     
-    fetch(gasUrl + '?action=register', {
+    fetch(gasUrl, {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: {'Content-Type':'text/plain'},
         body: JSON.stringify({
+            type: 'ORDER_REGISTER',
+            secret: 'naread2026secret',
             orderId: orderId,
             product: productCode,
             productName: product.name,
@@ -248,16 +333,12 @@ function requestPayment(){
     })
     .then(function(res){ return res.json() })
     .then(function(data){
-        // 시트 등록 완료 → 웹폼으로 이동
-        var targetUrl = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
-        window.location.href = targetUrl;
+        var code = (data && data.orderId) ? data.orderId : orderId;
+        window.location.href = window.location.origin + formPage + '?code=' + code + '&product=' + productCode;
     })
     .catch(function(){
-        // GAS 실패해도 웹폼으로 이동 (나중에 수동 매칭 가능)
-        var targetUrl = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
-        window.location.href = targetUrl;
+        window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
     });
-}
 </script>
 
 </body>
