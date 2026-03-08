@@ -1019,17 +1019,39 @@ function selectProduct(code){window.location.href='/order.html?product='+code}
   document.body.classList.add('intro-active');
   var ov=document.getElementById('introOverlay');
   var vid=document.getElementById('introVideo');
+  var closing=false;
 
   function close(){
-    document.body.classList.remove('intro-active');
-    ov.style.transition='opacity .8s';
-    ov.style.opacity='0';
-    setTimeout(function(){ov.style.display='none'},800);
+    if(closing) return;
+    closing=true;
+
+    // 1단계: 영상을 서서히 어둡게 (1.5초)
+    vid.style.transition='opacity 1.5s ease';
+    vid.style.opacity='0';
+
+    // 2단계: 오버레이 전체를 천천히 사라지게 (2초, 0.8초 후 시작)
+    setTimeout(function(){
+      ov.style.transition='opacity 1.2s ease';
+      ov.style.opacity='0';
+      document.body.classList.remove('intro-active');
+    }, 800);
+
+    // 3단계: 완전히 제거
+    setTimeout(function(){
+      ov.style.display='none';
+    }, 2200);
   }
 
-  vid.addEventListener('ended',close);
-  ov.addEventListener('click',close);
-  setTimeout(close,10000);
+  // 영상 끝나기 1.5초 전부터 페이드 시작
+  vid.addEventListener('timeupdate', function(){
+    if(vid.duration && vid.currentTime >= vid.duration - 1.5 && !closing){
+      close();
+    }
+  });
+
+  vid.addEventListener('ended', close);
+  ov.addEventListener('click', close);
+  setTimeout(close, 10000);
 })();
 </script>
    
