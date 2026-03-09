@@ -134,15 +134,30 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
     <!-- ── 업셀 (읽다→듣다 업그레이드) ── -->
     <div class="upsell-card" id="upsellCard">
         <div class="upsell-badge">✦ 특별 업그레이드</div>
-        <div class="upsell-title" id="upsellTitle">당신만을 위한 노래까지 받아보세요</div>
-        <div class="upsell-desc" id="upsellDesc">사주 분석을 바탕으로 AI가 작곡한 단 하나뿐인 노래를 추가로 받아보실 수 있습니다.</div>
-        <div class="upsell-price">
-            <span class="add">단</span>
-            <span class="amount">+9,900원</span>
-            <span class="add">추가</span>
+        <div class="upsell-title" id="upsellTitle">+9,900원이면 완전히 달라집니다</div>
+        <div class="upsell-desc" id="upsellDesc"></div>
+        <div style="margin-bottom:18px">
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+                <span style="font-size:1.1rem;flex-shrink:0">🎵</span>
+                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65">당신의 사주를 담아 작곡한 <strong style="color:var(--t1)">세상에 단 하나뿐인 노래</strong> (MP3 다운로드)</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+                <span style="font-size:1.1rem;flex-shrink:0">🔮</span>
+                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65"><strong style="color:var(--gold)">Deep Oracle · 심층 질의 3회</strong> — 분석가에게 직접 질문하세요</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+                <span style="font-size:1.1rem;flex-shrink:0">🎧</span>
+                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65">음성 해설 리포트 + 힐링 명상 음원</span>
+            </div>
+        </div>
+        <div style="text-align:center;margin-bottom:16px;padding:10px;border-radius:10px;background:rgba(212,168,83,0.04);border:1px solid rgba(212,168,83,0.1)">
+            <span style="font-size:.75rem;color:var(--t3)">질문권만 따로 추가하면</span>
+            <span style="font-size:.75rem;color:var(--red);font-weight:700;text-decoration:line-through;margin:0 4px">9,900원</span>
+            <span style="font-size:.75rem;color:var(--t3)">→ 지금 업그레이드하면</span>
+            <span style="font-size:.82rem;color:var(--gold);font-weight:700"> 노래+질문+음원 모두 포함</span>
         </div>
         <div class="upsell-btns">
-            <button class="upsell-yes" onclick="acceptUpsell()">🎵 노래도 함께 받기</button>
+            <button class="upsell-yes" onclick="acceptUpsell()">🎵 +9,900원 업그레이드</button>
             <button class="upsell-no" onclick="declineUpsell()">괜찮아요</button>
         </div>
     </div>
@@ -277,6 +292,19 @@ function applyCoupon() {
 function initUpsell() {
     var upsellCode = UPSELL_MAP[productCode];
     if (!upsellCode) return;
+
+    var isCouple = (productCode === 'W1');
+    var titleEl = document.getElementById('upsellTitle');
+    var descEl  = document.getElementById('upsellDesc');
+
+    if (isCouple) {
+        titleEl.textContent = '+9,900원이면 완전히 달라집니다';
+        descEl.textContent  = '두 분의 궁합을 담은 노래와 심층 질의까지 함께 받으세요.';
+    } else {
+        titleEl.textContent = '+9,900원이면 완전히 달라집니다';
+        descEl.textContent  = '당신만의 노래와 분석가 직통 질의까지 함께 받으세요.';
+    }
+
     document.getElementById('upsellCard').style.display = 'block';
 }
 
