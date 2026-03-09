@@ -1221,6 +1221,333 @@
                 </div>
             </div><!-- /reportView -->
 
+<!-- ══════════════════════════════════════
+     심층 분석 Q&A (Deep Oracle)
+     ══════════════════════════════════════ -->
+<div id="oracleSection" style="display:none; margin-top:40px;">
+    
+    <!-- 상단 장식 -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;">
+        <div style="height:1px;width:40px;background:linear-gradient(90deg,transparent,var(--gold-dim));"></div>
+        <div style="font-size:8px;color:var(--gold);opacity:0.5;">◆</div>
+        <div style="height:1px;width:40px;background:linear-gradient(90deg,var(--gold-dim),transparent);"></div>
+    </div>
+
+    <!-- 타이틀 -->
+    <div style="text-align:center;margin-bottom:8px;">
+        <div style="font-family:'Noto Serif KR',serif;font-size:10px;color:var(--text-dim);letter-spacing:6px;margin-bottom:12px;">DEEP ORACLE</div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:18px;color:var(--gold);font-weight:700;letter-spacing:2px;margin-bottom:8px;">심 층 분 석</div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.8;">
+            당신의 리포트를 작성한 수석 분석가에게<br>직접 질문할 수 있습니다
+        </div>
+    </div>
+
+    <!-- 남은 횟수 -->
+    <div id="oracleCredits" style="text-align:center;margin:20px 0;">
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border:1px solid var(--gold-dim);border-radius:20px;background:rgba(201,168,76,0.03);">
+            <span style="font-size:11px;color:var(--text-muted);">남은 질문</span>
+            <span id="oracleRemaining" style="font-family:'Noto Serif KR',serif;font-size:18px;color:var(--gold);font-weight:700;">-</span>
+            <span style="font-size:11px;color:var(--text-muted);">회</span>
+        </div>
+    </div>
+
+    <!-- 대화 영역 -->
+    <div id="oracleConversation" style="margin-bottom:24px;"></div>
+
+    <!-- 입력 영역 -->
+    <div id="oracleInputArea" style="margin-bottom:16px;">
+        <div style="position:relative;">
+            <textarea id="oracleInput" placeholder="운명에 대해 물어보세요..." maxlength="500" style="
+                width:100%;min-height:80px;max-height:160px;padding:16px 18px;
+                border:1px solid var(--gold-dim);border-radius:10px;
+                background:var(--bg-card);color:var(--text-primary);
+                font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.7;
+                resize:vertical;outline:none;transition:border-color 0.3s;
+            " onfocus="this.style.borderColor='var(--gold-mid)'" onblur="this.style.borderColor='var(--gold-dim)'"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <span id="oracleCharCount" style="font-size:10px;color:var(--text-ghost);">0 / 500</span>
+                <button id="oracleSendBtn" onclick="sendOracleQuestion()" style="
+                    padding:10px 28px;border:1px solid var(--gold-dim);border-radius:8px;
+                    background:linear-gradient(135deg,rgba(201,168,76,0.08),transparent);
+                    color:var(--gold);font-family:'Noto Serif KR',serif;font-size:13px;
+                    letter-spacing:2px;cursor:pointer;transition:all 0.3s;
+                ">질문하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 소진 시 연장 안내 -->
+    <div id="oracleExhausted" style="display:none;text-align:center;padding:32px 20px;border:1px solid var(--gold-dim);border-radius:12px;background:linear-gradient(135deg,rgba(201,168,76,0.03),transparent);">
+        <div style="font-size:24px;margin-bottom:16px;opacity:0.6;">◆</div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:15px;color:var(--gold);margin-bottom:12px;line-height:1.8;">
+            기본 분석이 모두 끝났습니다
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.8;margin-bottom:20px;">
+            더 깊은 심연의 문을 열고 싶으시다면<br>
+            수석 분석가와의 심층 대화를<br>
+            3회 연장할 수 있습니다
+        </div>
+        <button id="oracleExtendBtn" onclick="extendOracle()" style="
+            padding:12px 32px;border:1px solid var(--gold-dim);border-radius:8px;
+            background:linear-gradient(135deg,rgba(201,168,76,0.06),transparent);
+            color:var(--gold);font-family:'Noto Serif KR',serif;font-size:13px;
+            letter-spacing:2px;cursor:pointer;transition:all 0.3s;
+        ">심층 신탁 연장 · 9,900원</button>
+    </div>
+
+</div><!-- /oracleSection -->
+
+<script>
+/* ══════════════════════════════════════
+   Deep Oracle — 심층 분석 Q&A
+   ══════════════════════════════════════ */
+var oracleState = {
+    certCode: '',
+    remaining: 0,
+    loading: false,
+    initialized: false
+};
+
+// ── 초기화: 보증서 진입 시 호출 ──
+function initOracle(certCode, productCode) {
+    oracleState.certCode = certCode;
+    
+    // 상품별 질문권 확인 (N2/W2: 3회, N1/W1: 1회)
+    var section = document.getElementById('oracleSection');
+    if (!section) return;
+    
+    // GAS에서 남은 횟수 조회
+    fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+            type: 'CHAT',
+            certCode: certCode,
+            question: '__CHECK_CREDITS__'
+        })
+    })
+    .then(function(r) { return r.json().catch(function() { return {}; }); })
+    .then(function(data) {
+        // __CHECK_CREDITS__는 실제 질문이 아니므로 에러가 나도 remaining 확인
+        if (data.remaining !== undefined) {
+            oracleState.remaining = data.remaining;
+        } else if (data.error === 'no_credits') {
+            oracleState.remaining = 0;
+        } else {
+            // 초기값: 상품 기반 추정
+            oracleState.remaining = (productCode === 'N2' || productCode === 'W2') ? 3 : 1;
+        }
+        showOracle();
+    })
+    .catch(function() {
+        oracleState.remaining = (productCode === 'N2' || productCode === 'W2') ? 3 : 1;
+        showOracle();
+    });
+}
+
+function showOracle() {
+    var section = document.getElementById('oracleSection');
+    section.style.display = 'block';
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    
+    setTimeout(function() {
+        section.style.opacity = '1';
+        section.style.transform = 'translateY(0)';
+    }, 100);
+    
+    updateOracleUI();
+    oracleState.initialized = true;
+}
+
+function updateOracleUI() {
+    document.getElementById('oracleRemaining').textContent = oracleState.remaining;
+    
+    if (oracleState.remaining <= 0) {
+        document.getElementById('oracleInputArea').style.display = 'none';
+        document.getElementById('oracleExhausted').style.display = 'block';
+    } else {
+        document.getElementById('oracleInputArea').style.display = 'block';
+        document.getElementById('oracleExhausted').style.display = 'none';
+    }
+}
+
+// ── 글자 수 카운트 ──
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('oracleInput');
+    if (input) {
+        input.addEventListener('input', function() {
+            var count = this.value.length;
+            document.getElementById('oracleCharCount').textContent = count + ' / 500';
+        });
+    }
+});
+
+// ── 질문 전송 ──
+function sendOracleQuestion() {
+    if (oracleState.loading) return;
+    
+    var input = document.getElementById('oracleInput');
+    var question = (input.value || '').trim();
+    
+    if (!question) {
+        showToast('질문을 입력해주세요');
+        return;
+    }
+    
+    if (question.length > 500) {
+        showToast('500자 이내로 입력해주세요');
+        return;
+    }
+    
+    if (oracleState.remaining <= 0) {
+        updateOracleUI();
+        return;
+    }
+    
+    oracleState.loading = true;
+    
+    // 질문 카드 추가
+    appendOracleCard('question', question);
+    input.value = '';
+    document.getElementById('oracleCharCount').textContent = '0 / 500';
+    
+    // 로딩 카드 추가
+    var loadingId = 'oracle-loading-' + Date.now();
+    appendOracleLoading(loadingId);
+    
+    // 버튼 비활성화
+    var sendBtn = document.getElementById('oracleSendBtn');
+    sendBtn.textContent = '분석 중...';
+    sendBtn.style.opacity = '0.5';
+    sendBtn.style.pointerEvents = 'none';
+    
+    // GAS 호출
+    fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+            type: 'CHAT',
+            certCode: oracleState.certCode,
+            question: question
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        // 로딩 카드 제거
+        var loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        
+        if (data.success && data.answer) {
+            appendOracleCard('answer', data.answer);
+            oracleState.remaining = data.remaining;
+        } else if (data.error === 'no_credits') {
+            appendOracleCard('answer', '질문 횟수가 모두 소진되었습니다.');
+            oracleState.remaining = 0;
+        } else {
+            appendOracleCard('answer', '잠시 후 다시 시도해주세요.');
+        }
+        
+        updateOracleUI();
+        oracleState.loading = false;
+        sendBtn.textContent = '질문하기';
+        sendBtn.style.opacity = '1';
+        sendBtn.style.pointerEvents = 'auto';
+    })
+    .catch(function(err) {
+        var loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        
+        appendOracleCard('answer', '연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        oracleState.loading = false;
+        sendBtn.textContent = '질문하기';
+        sendBtn.style.opacity = '1';
+        sendBtn.style.pointerEvents = 'auto';
+    });
+}
+
+// ── 대화 카드 렌더링 ──
+function appendOracleCard(type, text) {
+    var container = document.getElementById('oracleConversation');
+    var card = document.createElement('div');
+    
+    if (type === 'question') {
+        card.style.cssText = 'text-align:right;margin-bottom:20px;opacity:0;transform:translateY(10px);transition:opacity 0.5s,transform 0.5s;';
+        card.innerHTML =
+            '<div style="display:inline-block;max-width:85%;text-align:left;padding:14px 18px;' +
+            'border:1px solid rgba(201,168,76,0.15);border-radius:12px 12px 2px 12px;' +
+            'background:rgba(201,168,76,0.04);font-size:13px;color:var(--text-primary);line-height:1.8;word-break:keep-all;">' +
+            escapeHtml(text) + '</div>';
+    } else {
+        card.style.cssText = 'text-align:left;margin-bottom:24px;opacity:0;transform:translateY(10px);transition:opacity 0.5s,transform 0.5s;';
+        
+        var formattedText = text.replace(/\n/g, '<br>');
+        
+        card.innerHTML =
+            '<div style="display:flex;align-items:flex-start;gap:12px;">' +
+                '<div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;' +
+                'border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;' +
+                'font-size:14px;background:rgba(201,168,76,0.03);">◆</div>' +
+                '<div style="flex:1;padding:16px 18px;border:1px solid rgba(201,168,76,0.1);' +
+                'border-radius:2px 12px 12px 12px;background:linear-gradient(135deg,var(--bg-card),var(--bg-card-alt));' +
+                'font-size:13px;color:var(--text-primary);line-height:2.0;word-break:keep-all;' +
+                'font-family:\'Noto Serif KR\',serif;letter-spacing:0.3px;">' +
+                formattedText + '</div>' +
+            '</div>';
+    }
+    
+    container.appendChild(card);
+    
+    setTimeout(function() {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 50);
+    
+    // 스크롤
+    setTimeout(function() {
+        card.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 300);
+}
+
+function appendOracleLoading(id) {
+    var container = document.getElementById('oracleConversation');
+    var card = document.createElement('div');
+    card.id = id;
+    card.style.cssText = 'text-align:left;margin-bottom:24px;';
+    card.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:12px;">' +
+            '<div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;' +
+            'border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;' +
+            'font-size:14px;background:rgba(201,168,76,0.03);animation:si-breathe 2s ease-in-out infinite;">◆</div>' +
+            '<div style="padding:16px 18px;border:1px solid rgba(201,168,76,0.08);' +
+            'border-radius:2px 12px 12px 12px;background:var(--bg-card);">' +
+                '<div style="display:flex;gap:6px;align-items:center;">' +
+                    '<div style="width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.4;animation:si-breathe 1.5s 0s ease-in-out infinite;"></div>' +
+                    '<div style="width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.4;animation:si-breathe 1.5s 0.3s ease-in-out infinite;"></div>' +
+                    '<div style="width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.4;animation:si-breathe 1.5s 0.6s ease-in-out infinite;"></div>' +
+                    '<span style="font-size:11px;color:var(--text-dim);margin-left:8px;">분석 중...</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    container.appendChild(card);
+}
+
+// ── 연장 결제 ──
+function extendOracle() {
+    // 추후 결제 페이지 연결
+    showToast('심층 신탁 연장 기능은 준비 중입니다');
+}
+
+// ── si-breathe 애니메이션 (이미 있으면 무시) ──
+if (!document.getElementById('oracle-keyframes')) {
+    var style = document.createElement('style');
+    style.id = 'oracle-keyframes';
+    style.textContent = '@keyframes oracle-dot-pulse{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.8;transform:scale(1.2)}}';
+    document.head.appendChild(style);
+}
+</script>
+            
             <!-- ── 공유 ── -->
             <div class="share-section">
                 <div class="share-title">이 분석, 마음에 드셨나요?</div>
@@ -2007,6 +2334,11 @@ if (reportData) {
         }
 
         activateAudioButtons();
+
+                // ── Deep Oracle 초기화 ──
+        var productCode = d.productCode || '';
+        var code = new URLSearchParams(window.location.search).get('c') || '';
+        initOracle(code, productCode);
 
         intro.classList.add('fade-out');
         setTimeout(function() {
