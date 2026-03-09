@@ -308,9 +308,17 @@ async function requestPayment() {
     var btn = document.getElementById('payBtn');
     btn.disabled = true;
 
-    var orderId  = 'RML-' + productCode + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+    // ── 관리코드 형식으로 orderId 생성 (기존 GAS 시스템과 호환) ──
+    var prefix = productCode.charAt(0); // N 또는 W
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var randomPart = '';
+    for (var i = 0; i < 8; i++) {
+        randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    var orderId = prefix + '-' + randomPart; // 예: N-A7K2M9PQ
+
     var formPage = (productCode === 'W1' || productCode === 'W2') ? '/form-w.html' : '/form.html';
-    var origin   = window.location.origin;
+    var origin = window.location.origin;
 
     // ── 무료 쿠폰 (금액 ≤ 100원) → 결제 생략, GAS 직접 등록 ──
     if (currentPrice <= 100) {
@@ -319,11 +327,9 @@ async function requestPayment() {
         try {
             await fetch(GAS_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({
                     type: 'ORDER_REGISTER',
-                    secret: 'naread2026secret',
                     orderId: orderId,
                     product: productCode,
                     productName: product.name,
@@ -333,21 +339,26 @@ async function requestPayment() {
                 })
             });
         } catch (e) {
-            console.warn('GAS 등록 요청 전송 (no-cors):', e);
+            console.warn('GAS 등록 요청:', e);
         }
 
-        window.location.href = origin + formPage + '?code=' + orderId + '&product=' + productCode;
+        // 2초 대기 후 폼으로 이동 (GAS 처리 시간 확보)
+        setTimeout(function() {
+            window.location.href = origin + formPage + '?code=' + orderId + '&product=' + productCode;
+        }, 2000);
         return;
     }
 
     // ── 유료 결제 → 토스 결제창(팝업) 호출 ──
     var successUrl = origin + '/payment-success.html'
-        + '?formPage=' + encodeURIComponent(formPage)
-        + '&product=' + productCode
-        + '&coupon=' + (appliedCoupon || '')
-        + '&productName=' + encodeURIComponent(product.name);
+        + '?orderId=' + encodeURIComponent(orderId)
+        + '&formPage=' + encodeURIComponent(formPage)
+        + '&product=' + encodeURIComponent(productCode)
+        + '&coupon=' + encodeURIComponent(appliedCoupon || '')
+        + '&productName=' + encodeURIComponent(product.name)
+        + '&price=' + currentPrice;
 
-    var failUrl = origin + '/payment-fail.html';
+    var failUrl = origin + '/payment-fail.html?orderId=' + encodeURIComponent(orderId);
 
     try {
         await payment.requestPayment({
