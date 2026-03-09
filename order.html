@@ -339,7 +339,25 @@ function requestPayment(){
     .catch(function(){
         window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
     });
+}
 </script>
 
+ <!-- ═══ FOOTER ═══ -->
+<footer style="text-align:center;padding:48px 20px 32px;border-top:1px solid rgba(212,168,83,.15);max-width:480px;margin:0 auto">
+    <div style="font-family:'Noto Serif KR',serif;font-size:.82rem;color:var(--gold);letter-spacing:2px;margin-bottom:10px">나를읽다 연구소</div>
+    <div style="font-size:.65rem;color:var(--t3);line-height:2">
+        상호: 나를읽다연구소 | 대표: 오동훈<br>
+        사업자등록번호: 347-12-03156<br>
+        통신판매업: 제2026-부산서구-0040호<br>
+        소재지: 부산광역시 서구 대영로38번길 11, 103동 1601호<br>
+        이메일: abkomp400@gmail.com | 전화: 010-9847-1152<br>
+        © 2026 나를읽다연구소. All rights reserved.
+    </div>
+    <div style="margin-top:12px;display:flex;justify-content:center;gap:16px">
+        <a href="/refund.html" style="font-size:.65rem;color:var(--t3);text-decoration:underline;text-underline-offset:3px">환불정책</a>
+        <a href="/privacy.html" style="font-size:.65rem;color:var(--t3);text-decoration:underline;text-underline-offset:3px">개인정보처리방침</a>
+    </div>
+</footer>   
+    
 </body>
 </html>
