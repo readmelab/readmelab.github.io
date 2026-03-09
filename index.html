@@ -3276,30 +3276,54 @@ var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
     });
 
     // ── 테마송 카드 (편지 뒤) ──
+    // ── 테마송 카드 (편지 뒤) ──
     if (certData.themeLink) {
         var isCouple = !!(reportData && reportData.dashboard && reportData.dashboard.client && reportData.dashboard.partner);
         var songTitle = certData.themeName || '당신을 위한 노래';
         var songDesc = certData.themeDesc || '';
-        var cardTitle = isCouple ? '두 사람을 위한 노래' : '당신을 위한 노래';
+        var cardTitle = isCouple ? '두 사람을 위한 노래' : '당신만을 위한 노래';
 
         var songCard = document.createElement('div');
         songCard.className = 'chapter-card visible';
-        songCard.style.textAlign = 'center';
-        songCard.style.padding = '48px 20px';
+        songCard.style.cssText = 'text-align:center;padding:48px 20px;';
+        songCard.id = 'reportSongCard';
+
         songCard.innerHTML =
             '<div style="font-size:32px;margin-bottom:16px;opacity:0.7;">🎵</div>' +
             '<div style="font-family:\'Noto Serif KR\',serif;font-size:11px;color:var(--text-dim);letter-spacing:4px;margin-bottom:12px;">' + escapeHtml(cardTitle) + '</div>' +
-            '<div style="font-family:\'Noto Serif KR\',serif;font-size:18px;color:var(--gold);font-weight:700;margin-bottom:8px;">' + escapeHtml(songTitle) + '</div>' +
-            (songDesc ? '<div style="font-size:13px;color:var(--text-secondary);line-height:1.9;margin-bottom:24px;padding:0 16px;word-break:keep-all;white-space:pre-wrap;">' + escapeHtml(songDesc) + '</div>' : '') +
+            '<div style="font-family:\'Noto Serif KR\',serif;font-size:18px;color:var(--gold);font-weight:700;margin-bottom:24px;">' + escapeHtml(songTitle) + '</div>' +
+
+            // 재생 버튼
             '<button id="reportThemeBtn" style="display:inline-flex;align-items:center;gap:8px;padding:14px 36px;border:1px solid var(--gold-dim);border-radius:8px;background:linear-gradient(135deg,rgba(201,168,76,0.08),transparent);color:var(--gold);font-family:\'Noto Serif KR\',serif;font-size:14px;letter-spacing:2px;cursor:pointer;transition:all 0.3s;" onclick="playThemeFromReport()">' +
-            '<span>▶</span> <span>노래 듣기</span></button>';
+            '<span>▶</span> <span>노래 듣기</span></button>' +
+
+            // 재생 중 표시 (처음엔 숨김)
+            '<div id="reportSongPlaying" style="display:none;margin-top:20px;">' +
+                '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;">' +
+                    '<div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:si-breathe 1.5s 0s ease-in-out infinite;"></div>' +
+                    '<div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:si-breathe 1.5s 0.3s ease-in-out infinite;"></div>' +
+                    '<div style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:si-breathe 1.5s 0.6s ease-in-out infinite;"></div>' +
+                    '<span style="font-size:12px;color:var(--gold);margin-left:6px;letter-spacing:1px;">재생 중</span>' +
+                '</div>' +
+            '</div>' +
+
+            // 곡 설명 + 가사 (처음엔 숨김)
+            '<div id="reportSongDetails" style="display:none;margin-top:24px;text-align:left;">' +
+                '<div style="width:40px;height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent);margin:0 auto 24px;"></div>' +
+                (songDesc ? '<div style="font-size:13px;color:var(--text-secondary);line-height:1.9;padding:0 16px;word-break:keep-all;white-space:pre-wrap;">' + escapeHtml(songDesc) + '</div>' : '') +
+            '</div>';
+
         container.appendChild(songCard);
     }
+
 }
 
     function playThemeFromReport() {
         var btn = document.getElementById('reportThemeBtn');
+        var playingEl = document.getElementById('reportSongPlaying');
+        var detailsEl = document.getElementById('reportSongDetails');
         if (!btn) return;
+
         var audio = audioPlayers['theme'];
         if (!audio) {
             btn.innerHTML = '<span class="mini-spinner" style="display:inline-block;width:14px;height:14px;border:2px solid var(--gold-dim);border-top:2px solid var(--gold);border-radius:50%;animation:spin 1s linear infinite;"></span> <span>로딩 중...</span>';
@@ -3312,10 +3336,22 @@ var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
             }, 500);
             return;
         }
+
         if (audio.paused) {
             if (bgmAudio && !bgmAudio.paused) { fadeBgmOut(); }
             audio.play().catch(function(){});
             btn.innerHTML = '<span>⏸</span> <span>일시정지</span>';
+            if (playingEl) playingEl.style.display = 'block';
+            if (detailsEl) {
+                detailsEl.style.display = 'block';
+                detailsEl.style.opacity = '0';
+                detailsEl.style.transform = 'translateY(10px)';
+                detailsEl.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                setTimeout(function() {
+                    detailsEl.style.opacity = '1';
+                    detailsEl.style.transform = 'translateY(0)';
+                }, 100);
+            }
             bgmType = 'theme';
             document.getElementById('bgmBar').classList.add('active');
             document.getElementById('bgmBtn').textContent = '⏸';
@@ -3325,6 +3361,7 @@ var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
         } else {
             audio.pause();
             btn.innerHTML = '<span>▶</span> <span>노래 듣기</span>';
+            if (playingEl) playingEl.style.display = 'none';
             if (bgmAudio) { fadeBgmIn(); }
         }
     }
@@ -3642,10 +3679,23 @@ function preloadBgm(url) {
                 document.getElementById('btn' + capitalize(t)).classList.remove('expanded');
             }
         });
-        if (isOpen) { wrap.classList.remove('open'); btn.classList.remove('expanded'); }
-        else { wrap.classList.add('open'); btn.classList.add('expanded'); if (!audioLoaded[type]) { loadAudio(type); } }
+        if (isOpen) {
+            wrap.classList.remove('open');
+            btn.classList.remove('expanded');
+        } else {
+            wrap.classList.add('open');
+            btn.classList.add('expanded');
+            if (!audioLoaded[type]) {
+                loadAudio(type);
+            }
+            // 열면서 바로 재생
+            setTimeout(function() {
+                if (audioPlayers[type] && audioPlayers[type].paused) {
+                    playPause(type);
+                }
+            }, 500);
+        }
     }
-
     function loadAudio(type) {
         var linkMap = { theme: certData.themeLink, voice: certData.voiceLink, healing: certData.healingLink };
         var rawUrl = linkMap[type];
