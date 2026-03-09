@@ -89,6 +89,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 .upsell-no{flex-shrink:0;padding:14px 18px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;cursor:pointer;transition:all .3s}
 .upsell-no:hover{border-color:var(--t3)}
 
+/* ── Payment Widget ── */
+#payment-widget-wrap{margin-bottom:24px}
+#payment-method{min-height:200px}
+#agreement{min-height:50px}
+
+
     
 </style>
 </head>
@@ -152,6 +158,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
         </div>
     </div>
 
+    <!-- 결제위젯 영역 -->
+    <div id="payment-widget-wrap">
+        <div id="payment-method"></div>
+        <div id="agreement"></div>
+    </div>
+
     <!-- 결제 버튼 -->
     <button class="pay-btn" id="payBtn" onclick="requestPayment()">
         결제하기
@@ -174,7 +186,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 </div>
 
 <script>
-// ═══ 상품 데이터 (GAS 백엔드 코드와 통일: N1, N2, W1, W2) ═══
+// ═══ 상품 데이터 ═══
 var PRODUCTS = {
     N1: { name:'나를 읽다',   sub:'사주×MBTI 종합 리포트',               emoji:'📖', original:59000,  price:29900, discount:49 },
     N2: { name:'나를 듣다',   sub:'프리미엄 리포트 + 당신을 위한 노래',  emoji:'🎧', original:79000,  price:39800, discount:50 },
@@ -182,7 +194,7 @@ var PRODUCTS = {
     W2: { name:'우리를 듣다', sub:'궁합 프리미엄 + 두 사람을 위한 노래', emoji:'💝', original:129000, price:59600, discount:54 }
 };
 
-// ═══ 쿠폰 데이터 (테스트용 — 실서비스 시 서버 검증으로 이동) ═══
+// ═══ 쿠폰 데이터 ═══
 var COUPONS = {
     'BETA50':    { type:'percent', value:50,   label:'베타 50% 할인',  maxUse:100 },
     'FRIEND30':  { type:'percent', value:30,   label:'친구 30% 할인',  maxUse:50 },
@@ -197,9 +209,40 @@ var product = PRODUCTS[productCode] || PRODUCTS['N1'];
 var currentPrice = product.price;
 var appliedCoupon = null;
 
-// ═══ 토스페이먼츠 (테스트 키 — 심사 통과 후 live_ 키로 교체) ═══
+// ═══ 토스페이먼츠 결제위젯 초기화 ═══
 var clientKey = 'test_ck_Ba5PzR0ArnyMGNmqmxWzVvmYnNeD';
-var tossPayments = TossPayments(clientKey);
+var customerKey = 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2,8);
+var tossWidgets = TossPayments(clientKey).widgets({ customerKey: customerKey });
+var paymentMethodWidget = null;
+var agreementWidget = null;
+
+// ═══ 결제위젯 렌더링 ═══
+(async function renderWidget(){
+    try {
+        await tossWidgets.setAmount({ currency:'KRW', value: currentPrice });
+
+        paymentMethodWidget = tossWidgets.renderPaymentMethods({
+            selector:'#payment-method',
+            variantKey:'DEFAULT'
+        });
+
+        agreementWidget = tossWidgets.renderAgreement({
+            selector:'#agreement',
+            variantKey:'AGREEMENT'
+        });
+    } catch(e) {
+        console.log('위젯 렌더링 오류:', e);
+    }
+})();
+
+// ═══ 위젯 금액 업데이트 함수 ═══
+async function updateWidgetAmount(newAmount){
+    try {
+        await tossWidgets.setAmount({ currency:'KRW', value: newAmount });
+    } catch(e) {
+        console.log('금액 업데이트 오류:', e);
+    }
+}
 
 // ═══ 초기 렌더링 ═══
 (function init(){
@@ -218,12 +261,12 @@ var tossPayments = TossPayments(clientKey);
     }
 })();
 
-   // ═══ 업셀: 읽다 → 듣다 업그레이드 (9,900원) ═══
-var UPSELL_MAP = { N1:'N2', W1:'W2' }; // 읽다→듣다 매핑
+// ═══ 업셀: 읽다 → 듣다 업그레이드 ═══
+var UPSELL_MAP = { N1:'N2', W1:'W2' };
 var upsellTarget = UPSELL_MAP[productCode] || null;
 
 (function initUpsell(){
-    if(!upsellTarget) return; // N2, W2는 이미 듣다 상품이므로 업셀 불필요
+    if(!upsellTarget) return;
     var card = document.getElementById('upsellCard');
     card.classList.add('show');
     if(productCode === 'W1'){
@@ -233,13 +276,11 @@ var upsellTarget = UPSELL_MAP[productCode] || null;
 })();
 
 function acceptUpsell(){
-    // 상품을 듣다로 교체
     productCode = upsellTarget;
     product = PRODUCTS[productCode];
     currentPrice = product.price;
     appliedCoupon = null;
 
-    // UI 갱신
     document.getElementById('productEmoji').textContent = product.emoji;
     document.getElementById('productName').textContent = product.name;
     document.getElementById('productSub').textContent = product.sub;
@@ -252,11 +293,12 @@ function acceptUpsell(){
     document.getElementById('couponInput').value = '';
     document.getElementById('payBtn').textContent = product.price.toLocaleString() + '원 결제하기';
 
-    // 업셀 카드 숨기고 완료 표시
     var card = document.getElementById('upsellCard');
     card.innerHTML = '<div style="text-align:center;padding:8px 0;color:#22c55e;font-size:.88rem;font-weight:500">✓ 노래 업그레이드가 적용되었습니다!</div>';
 
-    // 쿠폰 재적용 가능하도록 리셋
+    // 위젯 금액 업데이트
+    updateWidgetAmount(currentPrice);
+
     var couponParam = params.get('coupon');
     if(couponParam){
         document.getElementById('couponInput').value = couponParam;
@@ -267,7 +309,6 @@ function acceptUpsell(){
 function declineUpsell(){
     document.getElementById('upsellCard').style.display = 'none';
 }
- 
 
 // ═══ 쿠폰 적용 ═══
 function applyCoupon(){
@@ -303,42 +344,62 @@ function applyCoupon(){
     msg.className = 'coupon-msg success';
     msg.textContent = '✓ ' + coupon.label + ' 쿠폰이 적용되었습니다!';
 
+    // 위젯 금액 업데이트
+    updateWidgetAmount(currentPrice);
+
     if(currentPrice <= 100){
         document.getElementById('payBtn').textContent = '무료로 시작하기';
+        // 무료일 때 위젯 숨기기
+        document.getElementById('payment-widget-wrap').style.display = 'none';
     }
 }
 
-// ═══ 결제 요청 (테스트: 폼 이동 / 심사 통과 후: 토스 결제창) ═══
-function requestPayment(){
+// ═══ 결제 요청 — 토스 결제위젯 사용 ═══
+async function requestPayment(){
     var orderId = 'RML-' + productCode + '-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
     var formPage = productCode.startsWith('W') ? '/form-w.html' : '/form.html';
+    var successUrl = window.location.origin + '/payment-success.html?formPage=' + encodeURIComponent(formPage) + '&product=' + productCode;
+    var failUrl = window.location.origin + '/payment-fail.html';
 
-    document.getElementById('loadingOverlay').classList.add('show');
-
-    var gasUrl = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
-    
-    fetch(gasUrl, {
-        method: 'POST',
-        headers: {'Content-Type':'text/plain'},
-        body: JSON.stringify({
-            type: 'ORDER_REGISTER',
-            secret: 'naread2026secret',
-            orderId: orderId,
-            product: productCode,
-            productName: product.name,
-            price: currentPrice,
-            coupon: appliedCoupon ? appliedCoupon.code : '',
-            timestamp: new Date().toISOString()
+    // 무료 쿠폰(100원 이하)일 때 → 결제 없이 바로 폼으로 이동
+    if(currentPrice <= 100){
+        document.getElementById('loadingOverlay').classList.add('show');
+        var gasUrl = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
+        fetch(gasUrl, {
+            method:'POST',
+            headers:{'Content-Type':'text/plain'},
+            body: JSON.stringify({
+                type:'ORDER_REGISTER',
+                secret:'naread2026secret',
+                orderId: orderId,
+                product: productCode,
+                productName: product.name,
+                price: currentPrice,
+                coupon: appliedCoupon ? appliedCoupon.code : '',
+                timestamp: new Date().toISOString()
+            })
         })
-    })
-    .then(function(res){ return res.json() })
-    .then(function(data){
-        var code = (data && data.orderId) ? data.orderId : orderId;
-        window.location.href = window.location.origin + formPage + '?code=' + code + '&product=' + productCode;
-    })
-    .catch(function(){
-        window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
-    });
+        .then(function(){ window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode; })
+        .catch(function(){ window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode; });
+        return;
+    }
+
+    // 유료 결제 → 토스 결제위젯 실행
+    try {
+        await tossWidgets.requestPayment({
+            orderId: orderId,
+            orderName: product.name,
+            successUrl: successUrl,
+            failUrl: failUrl
+        });
+    } catch(e) {
+        if(e.code === 'USER_CANCEL'){
+            // 사용자가 결제 취소
+            return;
+        }
+        alert('결제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        console.log('결제 오류:', e);
+    }
 }
 </script>
 
