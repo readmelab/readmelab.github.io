@@ -11,53 +11,83 @@ body{font-family:'Noto Sans KR',sans-serif;background:#0a0a0f;color:#f0e6d3;disp
 .icon{font-size:3rem;margin-bottom:20px}
 h1{font-size:1.2rem;margin-bottom:12px;color:#e8c97a}
 p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
+.order-code{display:inline-block;background:rgba(212,168,83,.1);border:1px solid rgba(212,168,83,.25);border-radius:10px;padding:10px 20px;font-family:monospace;font-size:1.1rem;color:#e8c97a;letter-spacing:2px;margin-bottom:20px}
 .spinner{width:32px;height:32px;border:3px solid rgba(212,168,83,.15);border-top-color:#d4a853;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
+.status{font-size:.78rem;color:#6a6455;margin-top:8px}
 </style>
 </head>
 <body>
 <div class="wrap">
     <div class="icon">✅</div>
     <h1>결제가 완료되었습니다</h1>
-    <p>잠시 후 정보 입력 페이지로 이동합니다...</p>
+    <div class="order-code" id="orderCodeDisplay">주문코드 로딩...</div>
+    <p>위 코드는 자동으로 연동됩니다.<br>잠시 후 정보 입력 페이지로 이동합니다.</p>
     <div class="spinner"></div>
+    <div class="status" id="statusText">주문 등록 중...</div>
 </div>
 <script>
 (function(){
     var params = new URLSearchParams(window.location.search);
-    var orderId = params.get('orderId');
-    var paymentKey = params.get('paymentKey');
-    var amount = params.get('amount');
-    var formPage = params.get('formPage') || '/form.html';
-    var productCode = params.get('product') || 'N1';
 
-    // GAS에 주문 등록
+    // ── URL에서 파라미터 추출 ──
+    // 토스가 붙여주는 것: paymentKey, orderId, amount
+    // order.html에서 붙인 것: formPage, product, coupon, productName, price
+    var orderId     = params.get('orderId') || '';
+    var paymentKey  = params.get('paymentKey') || '';
+    var amount      = params.get('amount') || params.get('price') || '0';
+    var formPage    = params.get('formPage') || '/form.html';
+    var productCode = params.get('product') || 'N1';
+    var coupon      = params.get('coupon') || '';
+    var productName = params.get('productName') || '';
+
+    // 주문코드 표시
+    document.getElementById('orderCodeDisplay').textContent = orderId;
+
+    // ── GAS에 주문 등록 ──
     var gasUrl = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
 
+    var statusEl = document.getElementById('statusText');
+
     fetch(gasUrl, {
-        method:'POST',
-        headers:{'Content-Type':'text/plain'},
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
-            type:'ORDER_REGISTER',
-            secret:'naread2026secret',
+            type: 'ORDER_REGISTER',
             orderId: orderId,
             product: productCode,
-            productName: '',
+            productName: productName,
             price: parseInt(amount) || 0,
             paymentKey: paymentKey,
-            coupon:'',
+            coupon: coupon,
             timestamp: new Date().toISOString()
         })
     })
-    .then(function(){ redirect(); })
-    .catch(function(){ redirect(); });
+    .then(function(res) {
+        return res.json().catch(function() { return {}; });
+    })
+    .then(function(data) {
+        console.log('GAS 응답:', data);
+        if (data.success) {
+            statusEl.textContent = '✅ 주문 등록 완료! 이동 중...';
+        } else {
+            statusEl.textContent = '⚠️ 등록 처리 중... 이동합니다.';
+        }
+        setTimeout(redirect, 1500);
+    })
+    .catch(function(err) {
+        console.warn('GAS 등록 오류:', err);
+        statusEl.textContent = '이동 중...';
+        setTimeout(redirect, 1500);
+    });
 
-    function redirect(){
-        window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
+    function redirect() {
+        var target = window.location.origin + formPage + '?code=' + encodeURIComponent(orderId) + '&product=' + encodeURIComponent(productCode);
+        window.location.href = target;
     }
 
-    // 안전장치: 5초 후 강제 이동
-    setTimeout(redirect, 5000);
+    // 안전장치: 8초 후 강제 이동
+    setTimeout(redirect, 8000);
 })();
 </script>
 </body>
