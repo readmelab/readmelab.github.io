@@ -3549,34 +3549,51 @@ function preloadBgm(url) {
 }
 
     function preloadThemeSong(fileId) {
-        fetch(GAS_URL + '?audio=' + fileId)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data.error || !data.audioBase64) { console.error('Theme preload error'); return; }
-                var audio = new Audio();
-                audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
-                audio.volume = 0.8;
-                audio.preload = 'auto';
-                audioPlayers['theme'] = audio;
-                audioLoaded['theme'] = true;
-                audio.addEventListener('loadedmetadata', function() {
-                    document.getElementById('themeDuration').textContent = formatTime(audio.duration);
-                });
-                audio.addEventListener('ended', function() {
-                    document.getElementById('bgmBar').classList.remove('active');
-                    document.getElementById('themePlayBtn').textContent = '▶';
-                    document.getElementById('btnTheme').classList.remove('playing');
-                    bgmType = null;
-                    // 테마송 끝나면 BGM 다시 재생
-                    if (bgmAudio) { bgmAudio.volume = 0.3; bgmAudio.play().catch(function(){}); bgmType = 'bgm'; 
-                        document.getElementById('bgmBar').classList.add('active');
-                        document.getElementById('bgmBtn').textContent = '⏸';
-                        document.getElementById('bgmTitle').textContent = '♪ 배경음악';
-                        document.getElementById('bgmSub').textContent = '재생 중';
-                    }
-                });
-            })
-            .catch(function(err) { console.error('Theme preload fetch error:', err); });
+        var rawUrl = certData.themeLink || '';
+        var isDirectUrl = rawUrl.startsWith('http') && !rawUrl.includes('drive.google.com');
+
+        if (isDirectUrl) {
+            var audio = new Audio();
+            audio.src = rawUrl;
+            audio.volume = 0.8;
+            audio.preload = 'auto';
+            audio.crossOrigin = 'anonymous';
+            audioPlayers['theme'] = audio;
+            audioLoaded['theme'] = true;
+            audio.addEventListener('loadedmetadata', function() {
+                document.getElementById('themeDuration').textContent = formatTime(audio.duration);
+            });
+            audio.addEventListener('ended', function() {
+                document.getElementById('bgmBar').classList.remove('active');
+                document.getElementById('themePlayBtn').textContent = '▶';
+                document.getElementById('btnTheme').classList.remove('playing');
+                bgmType = null;
+                if (bgmAudio) { fadeBgmIn(); }
+            });
+        } else {
+            fetch(GAS_URL + '?audio=' + fileId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.error || !data.audioBase64) { return; }
+                    var audio = new Audio();
+                    audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                    audio.volume = 0.8;
+                    audio.preload = 'auto';
+                    audioPlayers['theme'] = audio;
+                    audioLoaded['theme'] = true;
+                    audio.addEventListener('loadedmetadata', function() {
+                        document.getElementById('themeDuration').textContent = formatTime(audio.duration);
+                    });
+                    audio.addEventListener('ended', function() {
+                        document.getElementById('bgmBar').classList.remove('active');
+                        document.getElementById('themePlayBtn').textContent = '▶';
+                        document.getElementById('btnTheme').classList.remove('playing');
+                        bgmType = null;
+                        if (bgmAudio) { fadeBgmIn(); }
+                    });
+                })
+                .catch(function(err) { console.error('Theme preload error:', err); });
+        }
     }
         
     function startBgm() {
@@ -3633,37 +3650,88 @@ function preloadBgm(url) {
         var linkMap = { theme: certData.themeLink, voice: certData.voiceLink, healing: certData.healingLink };
         var rawUrl = linkMap[type];
         if (!rawUrl) return;
-        var fileId = extractFileId(rawUrl);
-        if (!fileId) return;
-        audioFileIds[type] = fileId;
+
         var loadingEl = document.getElementById(type + 'Loading');
         if (loadingEl) loadingEl.style.display = 'block';
-        if (type === 'theme' && audioLoaded['theme'] && audioPlayers['theme']) {
+
+        // 이미 로딩된 경우
+        if (audioLoaded[type] && audioPlayers[type]) {
             if (loadingEl) loadingEl.style.display = 'none';
-            playPause('theme');
+            playPause(type);
             return;
         }
-        fetch(GAS_URL + '?audio=' + fileId)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
+
+        // R2 URL 또는 일반 URL인지 확인
+        var isDirectUrl = rawUrl.startsWith('http') && !rawUrl.includes('drive.google.com');
+        
+        if (isDirectUrl) {
+            // R2 등 직접 URL → Audio 요소에 바로 연결
+            var audio = new Audio();
+            audio.src = rawUrl;
+            audio.preload = 'auto';
+            audio.crossOrigin = 'anonymous';
+            audioPlayers[type] = audio;
+            audioLoaded[type] = true;
+
+            audio.addEventListener('canplaythrough', function() {
                 if (loadingEl) loadingEl.style.display = 'none';
-                if (data.error || !data.audioBase64) { showToast('음원을 불러올 수 없습니다'); return; }
-                var audio = new Audio();
-                audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
-                audio.preload = 'auto';
-                audioPlayers[type] = audio;
-                audioLoaded[type] = true;
-                audio.addEventListener('loadedmetadata', function() { document.getElementById(type + 'Duration').textContent = formatTime(audio.duration); });
-                audio.addEventListener('ended', function() {
-                    document.getElementById(type + 'PlayBtn').textContent = '▶';
-                    document.getElementById('btn' + capitalize(type)).classList.remove('playing');
-                    clearInterval(playerIntervals[type]);
-                    if (bgmType === type) { document.getElementById('bgmBtn').textContent = '▶'; document.getElementById('bgmSub').textContent = '재생 완료'; var bgmProgress = document.getElementById('bgmProgress'); if (bgmProgress) bgmProgress.value = 0; }
-                });
-                var dlLink = document.getElementById(type + 'Download');
-                if (dlLink) { dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64; dlLink.download = (data.fileName || type + '_audio') + '.mp3'; }
-            })
-            .catch(function(err) { if (loadingEl) loadingEl.style.display = 'none'; showToast('음원 로딩 실패'); console.error('loadAudio error:', err); });
+            }, { once: true });
+
+            audio.addEventListener('loadedmetadata', function() {
+                document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('ended', function() {
+                document.getElementById(type + 'PlayBtn').textContent = '▶';
+                document.getElementById('btn' + capitalize(type)).classList.remove('playing');
+                clearInterval(playerIntervals[type]);
+                if (bgmType === type) {
+                    document.getElementById('bgmBtn').textContent = '▶';
+                    document.getElementById('bgmSub').textContent = '재생 완료';
+                    var bgmProgress = document.getElementById('bgmProgress');
+                    if (bgmProgress) bgmProgress.value = 0;
+                }
+                if (type === 'theme' && bgmAudio) { fadeBgmIn(); }
+            });
+
+            audio.addEventListener('error', function() {
+                if (loadingEl) loadingEl.style.display = 'none';
+                showToast('음원을 불러올 수 없습니다');
+            });
+
+            var dlLink = document.getElementById(type + 'Download');
+            if (dlLink) { dlLink.href = rawUrl; dlLink.download = (certData[type + 'Name'] || type) + '.mp3'; }
+
+            audio.load();
+        } else {
+            // Google Drive → 기존 GAS 프록시 방식
+            var fileId = extractFileId(rawUrl);
+            if (!fileId) { if (loadingEl) loadingEl.style.display = 'none'; return; }
+            audioFileIds[type] = fileId;
+
+            fetch(GAS_URL + '?audio=' + fileId)
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    if (data.error || !data.audioBase64) { showToast('음원을 불러올 수 없습니다'); return; }
+                    var audio = new Audio();
+                    audio.src = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64;
+                    audio.preload = 'auto';
+                    audioPlayers[type] = audio;
+                    audioLoaded[type] = true;
+                    audio.addEventListener('loadedmetadata', function() { document.getElementById(type + 'Duration').textContent = formatTime(audio.duration); });
+                    audio.addEventListener('ended', function() {
+                        document.getElementById(type + 'PlayBtn').textContent = '▶';
+                        document.getElementById('btn' + capitalize(type)).classList.remove('playing');
+                        clearInterval(playerIntervals[type]);
+                        if (bgmType === type) { document.getElementById('bgmBtn').textContent = '▶'; document.getElementById('bgmSub').textContent = '재생 완료'; }
+                        if (type === 'theme' && bgmAudio) { fadeBgmIn(); }
+                    });
+                    var dlLink = document.getElementById(type + 'Download');
+                    if (dlLink) { dlLink.href = 'data:' + (data.mimeType || 'audio/mpeg') + ';base64,' + data.audioBase64; dlLink.download = (data.fileName || type + '_audio') + '.mp3'; }
+                })
+                .catch(function(err) { if (loadingEl) loadingEl.style.display = 'none'; showToast('음원 로딩 실패'); });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
