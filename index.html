@@ -1472,6 +1472,10 @@ function sendOracleQuestion() {
     }
     
     oracleState.loading = true;
+
+    // 첫 질문 시 가이드 숨김
+    var guide = document.getElementById('oracleGuide');
+    if (guide) guide.style.display = 'none';
     
     // 질문 카드 추가
     appendOracleCard('question', question);
