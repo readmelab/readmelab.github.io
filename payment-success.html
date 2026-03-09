@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나를읽다 연구소 | 결제 완료</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#0a0a0f;color:#f0e6d3;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px}
+.wrap{max-width:400px}
+.icon{font-size:3rem;margin-bottom:20px}
+h1{font-size:1.2rem;margin-bottom:12px;color:#e8c97a}
+p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
+.spinner{width:32px;height:32px;border:3px solid rgba(212,168,83,.15);border-top-color:#d4a853;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="icon">✅</div>
+    <h1>결제가 완료되었습니다</h1>
+    <p>잠시 후 정보 입력 페이지로 이동합니다...</p>
+    <div class="spinner"></div>
+</div>
+<script>
+(function(){
+    var params = new URLSearchParams(window.location.search);
+    var orderId = params.get('orderId');
+    var paymentKey = params.get('paymentKey');
+    var amount = params.get('amount');
+    var formPage = params.get('formPage') || '/form.html';
+    var productCode = params.get('product') || 'N1';
+
+    // GAS에 주문 등록
+    var gasUrl = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
+
+    fetch(gasUrl, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({
+            type:'ORDER_REGISTER',
+            secret:'naread2026secret',
+            orderId: orderId,
+            product: productCode,
+            productName: '',
+            price: parseInt(amount) || 0,
+            paymentKey: paymentKey,
+            coupon:'',
+            timestamp: new Date().toISOString()
+        })
+    })
+    .then(function(){ redirect(); })
+    .catch(function(){ redirect(); });
+
+    function redirect(){
+        window.location.href = window.location.origin + formPage + '?code=' + orderId + '&product=' + productCode;
+    }
+
+    // 안전장치: 5초 후 강제 이동
+    setTimeout(redirect, 5000);
+})();
+</script>
+</body>
+</html>
