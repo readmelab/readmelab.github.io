@@ -1377,11 +1377,9 @@ var oracleState = {
 function initOracle(certCode, productCode) {
     oracleState.certCode = certCode;
     
-    // 상품별 질문권 확인 (N2/W2: 3회, N1/W1: 1회)
     var section = document.getElementById('oracleSection');
     if (!section) return;
     
-    // GAS에서 남은 횟수 조회
     fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
@@ -1393,22 +1391,49 @@ function initOracle(certCode, productCode) {
     })
     .then(function(r) { return r.json().catch(function() { return {}; }); })
     .then(function(data) {
-        // __CHECK_CREDITS__는 실제 질문이 아니므로 에러가 나도 remaining 확인
         if (data.remaining !== undefined) {
             oracleState.remaining = data.remaining;
         } else if (data.error === 'no_credits') {
             oracleState.remaining = 0;
         } else {
-            // 초기값: 상품 기반 추정
             oracleState.remaining = (productCode === 'N2' || productCode === 'W2') ? 3 : 1;
         }
         showOracle();
+        // 기존 대화 복원
+        if (data.chatLog) {
+            restoreChatLog(data.chatLog);
+        }
     })
     .catch(function() {
         oracleState.remaining = (productCode === 'N2' || productCode === 'W2') ? 3 : 1;
         showOracle();
     });
 }
+
+function restoreChatLog(logText) {
+    if (!logText) return;
+    var entries = logText.split('---');
+    for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i].trim();
+        if (!entry) continue;
+        var lines = entry.split('\n');
+        var q = '', a = '';
+        for (var j = 0; j < lines.length; j++) {
+            var line = lines[j].trim();
+            if (line.match(/^\[Q\d+\]/)) {
+                q = line.replace(/^\[Q\d+\]\s*/, '');
+            } else if (line.match(/^\[A\d+\]/)) {
+                a = line.replace(/^\[A\d+\]\s*/, '');
+            }
+        }
+        if (q) appendOracleCard('question', q);
+        if (a) appendOracleCard('answer', a);
+    }
+    var guide = document.getElementById('oracleGuide');
+    if (guide && entries.length > 0) guide.style.display = 'none';
+}
+
+    
 
 function showOracle() {
     var section = document.getElementById('oracleSection');
