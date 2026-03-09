@@ -65,15 +65,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:.92rem;color:var(--t2);font-weight:300}
 
-/* ── 모바일 대응 ── */
-@media (max-width:480px){
-    .container{padding:20px 16px 36px}
-    .order-card{padding:24px 18px}
-    .coupon-area{padding:18px 16px}
-    .coupon-input{padding:11px 12px;font-size:.82rem}
-    .coupon-btn{padding:11px 14px;font-size:.78rem}
-}
-
 /* ── Upsell ── */
 .upsell-card{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.03));border:1px solid rgba(212,168,83,.25);border-radius:16px;padding:22px 24px;margin-bottom:24px;display:none}
 .upsell-card.show{display:block}
@@ -94,8 +85,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 #payment-method{min-height:200px}
 #agreement{min-height:50px}
 
-
-    
+/* ── 모바일 대응 ── */
+@media (max-width:480px){
+    .container{padding:20px 16px 36px}
+    .order-card{padding:24px 18px}
+    .coupon-area{padding:18px 16px}
+    .coupon-input{padding:11px 12px;font-size:.82rem}
+    .coupon-btn{padding:11px 14px;font-size:.78rem}
+}
 </style>
 </head>
 <body>
@@ -103,6 +100,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 <div class="container">
     <a href="/" class="back-link">← 돌아가기</a>
 
+    <!-- ── 주문 요약 ── -->
     <div class="order-card">
         <div class="order-label">Order Summary</div>
         <div class="order-product">
@@ -132,7 +130,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
         </div>
     </div>
 
-    <!-- 쿠폰 -->
+    <!-- ── 쿠폰 ── -->
     <div class="coupon-area">
         <div class="coupon-title">쿠폰 코드가 있으신가요?</div>
         <div class="coupon-row">
@@ -142,7 +140,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
         <div class="coupon-msg" id="couponMsg"></div>
     </div>
 
-        <!-- 업셀 (읽다→듣다 업그레이드) -->
+    <!-- ── 업셀 (읽다→듣다 업그레이드) ── -->
     <div class="upsell-card" id="upsellCard">
         <div class="upsell-badge">✦ 특별 업그레이드</div>
         <div class="upsell-title" id="upsellTitle">당신만을 위한 노래까지 받아보세요</div>
@@ -158,14 +156,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
         </div>
     </div>
 
-<!-- 결제위젯 영역 -->
-<div id="payment-widget-wrap" style="margin:24px 0; border-radius:12px; overflow:hidden;">
-    <div id="payment-method"></div>
-    <div id="agreement"></div>
-</div>
+    <!-- ── 결제위젯 영역 ── -->
+    <div id="payment-widget-wrap">
+        <div id="payment-method"></div>
+        <div id="agreement"></div>
+    </div>
 
-<!-- 결제 버튼 -->
-<button class="pay-btn" id="payBtn" onclick="requestPayment()">결제하기</button>
+    <!-- ── 결제 버튼 ── -->
+    <button class="pay-btn" id="payBtn" onclick="requestPayment()">결제하기</button>
+
     <div class="pay-note">
         결제 완료 후 정보 입력 페이지로 이동합니다.<br>
         카드, 카카오페이, 네이버페이 등 간편결제 가능
@@ -177,80 +176,102 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
     </div>
 </div>
 
-<!-- 로딩 -->
+<!-- ── 로딩 오버레이 ── -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text">결제를 처리하고 있습니다...</div>
 </div>
 
 <script>
-// ═══ 상품 정의 ═══
+// ═══════════════════════════════════════
+//  상품 정의
+// ═══════════════════════════════════════
 var PRODUCTS = {
     N1: { name:'나를 읽다', sub:'사주×MBTI 종합 리포트', emoji:'📖', original:59000, price:29900, discount:49 },
-    N2: { name:'나를 듣다', sub:'프리미엄 + 맞춤 음악', emoji:'🎵', original:79000, price:39800, discount:50 },
+    N2: { name:'나를 듣다', sub:'프리미엄 + 맞춤 음악',   emoji:'🎵', original:79000, price:39800, discount:50 },
     W1: { name:'우리를 읽다', sub:'궁합×MBTI 종합 리포트', emoji:'💕', original:99000, price:49700, discount:50 },
     W2: { name:'우리를 듣다', sub:'궁합 프리미엄 + 맞춤 음악', emoji:'🎶', original:129000, price:59600, discount:54 }
 };
 
-// ═══ 쿠폰 정의 ═══
+// ═══════════════════════════════════════
+//  쿠폰 정의
+// ═══════════════════════════════════════
 var COUPONS = {
-    BETA50:   { type:'percent', value:50, label:'베타 50% 할인', maxUse:100 },
-    FRIEND30: { type:'percent', value:30, label:'지인 30% 할인', maxUse:50 },
-    WELCOME:  { type:'amount',  value:5000, label:'웰컴 5,000원 할인', maxUse:200 },
-    READMELAB:{ type:'percent', value:100, label:'무료 체험 (100%)', maxUse:10 }
+    BETA50:    { type:'percent', value:50,  label:'베타 50% 할인',    maxUse:100 },
+    FRIEND30:  { type:'percent', value:30,  label:'지인 30% 할인',    maxUse:50 },
+    WELCOME:   { type:'amount',  value:5000,label:'웰컴 5,000원 할인', maxUse:200 },
+    READMELAB: { type:'percent', value:100, label:'무료 체험 (100%)',  maxUse:10 }
 };
 
-// ═══ 업셀 매핑 ═══
+// ═══════════════════════════════════════
+//  업셀 매핑
+// ═══════════════════════════════════════
 var UPSELL_MAP = { N1:'N2', W1:'W2' };
 
-// ═══ 상태 변수 ═══
-var params = new URLSearchParams(window.location.search);
+// ═══════════════════════════════════════
+//  상태 변수
+// ═══════════════════════════════════════
+var params      = new URLSearchParams(window.location.search);
 var productCode = params.get('product') || 'N1';
-var product = PRODUCTS[productCode] || PRODUCTS['N1'];
-var currentPrice = product.price;
+var product     = PRODUCTS[productCode] || PRODUCTS['N1'];
+var currentPrice  = product.price;
 var appliedCoupon = null;
 
-// ═══ 토스페이먼츠 V2 결제위젯 초기화 ═══
-var clientKey = 'test_gck_docs_Ovk5rk1EwkEbP0W23n07xlzm';
+// ═══════════════════════════════════════
+//  토스페이먼츠 V2 결제위젯 초기화
+// ═══════════════════════════════════════
+var clientKey   = 'test_gck_docs_Ovk5rk1EwkEbP0W23n07xlzm';
 var customerKey = 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
 
-// 1) TossPayments 초기화
 var tossPayments = TossPayments(clientKey);
-
-// 2) widgets 객체 생성
-var widgets = tossPayments.widgets({ customerKey: customerKey });
-
-// 위젯 렌더 완료 여부
-var widgetReady = false;
+var widgets      = tossPayments.widgets({ customerKey: customerKey });
+var widgetReady  = false;
 
 // GAS 엔드포인트
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
 
-// ═══ 위젯 렌더링 (async) ═══
+// ═══════════════════════════════════════
+//  UI 갱신 헬퍼
+// ═══════════════════════════════════════
+function refreshOrderUI() {
+    document.getElementById('productEmoji').textContent   = product.emoji;
+    document.getElementById('productName').textContent    = product.name;
+    document.getElementById('productSub').textContent     = product.sub;
+    document.getElementById('originalPrice').textContent  = product.original.toLocaleString() + '원';
+    document.getElementById('discountTag').textContent    = product.discount + '% OFF';
+    document.getElementById('discountAmount').textContent = '-' + (product.original - product.price).toLocaleString() + '원';
+    document.getElementById('finalPrice').textContent     = currentPrice.toLocaleString() + '원';
+    document.getElementById('payBtn').textContent         = currentPrice.toLocaleString() + '원 결제하기';
+}
+
+// ═══════════════════════════════════════
+//  위젯 렌더링
+// ═══════════════════════════════════════
 async function renderWidget() {
     try {
-        // 금액 설정 (renderPaymentMethods 전에 반드시 호출)
+        console.log('▶ 위젯 초기화 시작');
         await widgets.setAmount({ value: currentPrice, currency: 'KRW' });
+        console.log('▶ setAmount 완료');
 
-        // 결제수단 UI 렌더링
-        await widgets.renderPaymentMethods({ selector: '#payment-method', variantKey: 'DEFAULT' });
+        await widgets.renderPaymentMethods({ selector: '#payment-method' });
+        console.log('▶ renderPaymentMethods 완료');
 
-        // 약관 UI 렌더링
-        await widgets.renderAgreement({ selector: '#agreement', variantKey: 'DEFAULT' });
+        await widgets.renderAgreement({ selector: '#agreement' });
+        console.log('▶ renderAgreement 완료');
 
         widgetReady = true;
-        console.log('✅ 결제위젯 렌더링 완료');
+        console.log('✅ 결제위젯 렌더링 성공');
     } catch (e) {
         console.error('❌ 위젯 렌더링 실패:', e);
-        // 위젯 실패 시에도 주문은 가능하도록 (무료 쿠폰 등)
         widgetReady = false;
     }
 }
 
-// ═══ 금액 업데이트 (쿠폰/업셀 적용 시) ═══
+// ═══════════════════════════════════════
+//  위젯 금액 업데이트 (쿠폰/업셀 후)
+// ═══════════════════════════════════════
 async function updateWidgetAmount() {
     if (currentPrice <= 100) {
-        // 무료 또는 극소액 → 위젯 숨김
         document.getElementById('payment-widget-wrap').style.display = 'none';
         document.getElementById('payBtn').textContent = '무료 체험 시작하기';
     } else {
@@ -264,15 +285,25 @@ async function updateWidgetAmount() {
     }
 }
 
-// ═══ 쿠폰 적용 ═══
+// ═══════════════════════════════════════
+//  쿠폰 적용
+// ═══════════════════════════════════════
 function applyCoupon() {
-    var code = document.getElementById('couponInput').value.trim().toUpperCase();
+    var code  = document.getElementById('couponInput').value.trim().toUpperCase();
     var msgEl = document.getElementById('couponMsg');
 
-    if (!code) { msgEl.textContent = '쿠폰 코드를 입력하세요.'; msgEl.style.color = '#ff6b6b'; return; }
+    if (!code) {
+        msgEl.textContent = '쿠폰 코드를 입력하세요.';
+        msgEl.style.color = '#ff6b6b';
+        return;
+    }
 
     var coupon = COUPONS[code];
-    if (!coupon) { msgEl.textContent = '유효하지 않은 쿠폰입니다.'; msgEl.style.color = '#ff6b6b'; return; }
+    if (!coupon) {
+        msgEl.textContent = '유효하지 않은 쿠폰입니다.';
+        msgEl.style.color = '#ff6b6b';
+        return;
+    }
 
     appliedCoupon = code;
 
@@ -285,42 +316,39 @@ function applyCoupon() {
     msgEl.textContent = '✓ ' + coupon.label + ' 적용 완료!';
     msgEl.style.color = '#4ecdc4';
 
-    // 요약 가격 갱신
-    document.getElementById('summaryPrice').textContent = currentPrice.toLocaleString() + '원';
+    // 쿠폰 할인 행 표시
+    var couponDiscount = product.price - currentPrice;
+    document.getElementById('couponRow').style.display = 'flex';
+    document.getElementById('couponAmount').textContent = '-' + couponDiscount.toLocaleString() + '원';
+    document.getElementById('finalPrice').textContent = currentPrice.toLocaleString() + '원';
 
     updateWidgetAmount();
 }
 
-// ═══ 업셀 ═══
+// ═══════════════════════════════════════
+//  업셀
+// ═══════════════════════════════════════
 function initUpsell() {
     var upsellCode = UPSELL_MAP[productCode];
     if (!upsellCode) return;
-    var upsellProduct = PRODUCTS[upsellCode];
-    var card = document.getElementById('upsellCard');
-    if (!card) return;
-    card.style.display = 'block';
-    var nameEl = card.querySelector('.upsell-name');
-    var priceEl = card.querySelector('.upsell-price');
-    if (nameEl) nameEl.textContent = upsellProduct.emoji + ' ' + upsellProduct.name;
-    if (priceEl) priceEl.textContent = '+9,900원';
+    document.getElementById('upsellCard').style.display = 'block';
 }
 
 function acceptUpsell() {
     var upsellCode = UPSELL_MAP[productCode];
     if (!upsellCode) return;
-    productCode = upsellCode;
-    product = PRODUCTS[productCode];
-    currentPrice = product.price;
+
+    productCode   = upsellCode;
+    product       = PRODUCTS[productCode];
+    currentPrice  = product.price;
     appliedCoupon = null;
 
-    document.getElementById('summaryName').textContent = product.emoji + ' ' + product.name;
-    document.getElementById('summaryDesc').textContent = product.sub;
-    document.getElementById('summaryPrice').textContent = currentPrice.toLocaleString() + '원';
-    document.getElementById('upsellCard').style.display = 'none';
+    refreshOrderUI();
 
-    // 쿠폰 초기화
+    document.getElementById('upsellCard').style.display = 'none';
     document.getElementById('couponInput').value = '';
     document.getElementById('couponMsg').textContent = '';
+    document.getElementById('couponRow').style.display = 'none';
 
     updateWidgetAmount();
 }
@@ -329,14 +357,16 @@ function declineUpsell() {
     document.getElementById('upsellCard').style.display = 'none';
 }
 
-// ═══ 결제 요청 ═══
+// ═══════════════════════════════════════
+//  결제 요청
+// ═══════════════════════════════════════
 async function requestPayment() {
     var btn = document.getElementById('payBtn');
     btn.disabled = true;
 
-    var orderId = 'RML-' + productCode + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+    var orderId  = 'RML-' + productCode + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
     var formPage = (productCode === 'W1' || productCode === 'W2') ? '/form-w.html' : '/form.html';
-    var origin = window.location.origin;
+    var origin   = window.location.origin;
 
     // ── 무료 쿠폰 (금액 ≤ 100원) → 위젯 생략, GAS 직접 등록 ──
     if (currentPrice <= 100) {
@@ -362,7 +392,6 @@ async function requestPayment() {
             console.warn('GAS 등록 요청 전송 (no-cors):', e);
         }
 
-        // 폼 페이지로 이동
         window.location.href = origin + formPage + '?code=' + orderId + '&product=' + productCode;
         return;
     }
@@ -390,37 +419,22 @@ async function requestPayment() {
             failUrl: failUrl
         });
     } catch (e) {
-        // 사용자 결제 취소 등
         console.log('결제 요청 중단:', e);
         btn.disabled = false;
     }
 }
 
-// ═══ 페이지 초기화 ═══
+// ═══════════════════════════════════════
+//  페이지 초기화
+// ═══════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
-    // 주문 요약 표시
-    document.getElementById('summaryName').textContent = product.emoji + ' ' + product.name;
-    document.getElementById('summaryDesc').textContent = product.sub;
-    document.getElementById('summaryPrice').textContent = currentPrice.toLocaleString() + '원';
-
-    var origEl = document.getElementById('summaryOriginal');
-    if (origEl) origEl.textContent = product.original.toLocaleString() + '원';
-
-    var discEl = document.getElementById('summaryDiscount');
-    if (discEl) discEl.textContent = product.discount + '% OFF';
-
-    // 결제 버튼 초기 텍스트
-    document.getElementById('payBtn').textContent = currentPrice.toLocaleString() + '원 결제하기';
-
-    // 업셀 초기화
+    refreshOrderUI();
     initUpsell();
-
-    // 위젯 렌더링 시작
     renderWidget();
 });
 </script>
 
- <!-- ═══ FOOTER ═══ -->
+<!-- ═══ FOOTER ═══ -->
 <footer style="text-align:center;padding:48px 20px 32px;border-top:1px solid rgba(212,168,83,.15);max-width:480px;margin:0 auto">
     <div style="font-family:'Noto Serif KR',serif;font-size:.82rem;color:var(--gold);letter-spacing:2px;margin-bottom:10px">나를읽다 연구소</div>
     <div style="font-size:.65rem;color:var(--t3);line-height:2">
@@ -435,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <a href="/refund.html" style="font-size:.65rem;color:var(--t3);text-decoration:underline;text-underline-offset:3px">환불정책</a>
         <a href="/privacy.html" style="font-size:.65rem;color:var(--t3);text-decoration:underline;text-underline-offset:3px">개인정보처리방침</a>
     </div>
-</footer>   
-    
+</footer>
+
 </body>
 </html>
