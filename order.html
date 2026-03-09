@@ -44,8 +44,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 .coupon-btn{flex-shrink:0;padding:12px 16px;border:none;border-radius:10px;background:rgba(212,168,83,.15);color:var(--gold);font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap}
 .coupon-btn:hover{background:rgba(212,168,83,.25)}
 .coupon-msg{font-size:.78rem;margin-top:8px;font-weight:300}
-.coupon-msg.success{color:#22c55e}
-.coupon-msg.error{color:var(--red)}
 
 /* ── Pay Button ── */
 .pay-btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:1.05rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all .3s;box-shadow:0 8px 32px rgba(212,168,83,.25)}
@@ -60,14 +58,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 
 /* ── Loading Overlay ── */
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,15,.9);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:20px}
-.loading-overlay.show{display:flex}
 .loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:.92rem;color:var(--t2);font-weight:300}
 
 /* ── Upsell ── */
 .upsell-card{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.03));border:1px solid rgba(212,168,83,.25);border-radius:16px;padding:22px 24px;margin-bottom:24px;display:none}
-.upsell-card.show{display:block}
 .upsell-badge{display:inline-block;font-size:.6rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-weight:700}
 .upsell-title{font-family:'Noto Serif KR',serif;font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--t1)}
 .upsell-desc{font-size:.82rem;color:var(--t2);font-weight:300;margin-bottom:16px;line-height:1.6}
@@ -79,11 +75,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
 .upsell-yes:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(212,168,83,.3)}
 .upsell-no{flex-shrink:0;padding:14px 18px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;cursor:pointer;transition:all .3s}
 .upsell-no:hover{border-color:var(--t3)}
-
-/* ── Payment Widget ── */
-#payment-widget-wrap{margin-bottom:24px}
-#payment-method{min-height:200px}
-#agreement{min-height:50px}
 
 /* ── 모바일 대응 ── */
 @media (max-width:480px){
@@ -156,12 +147,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);
         </div>
     </div>
 
-    <!-- ── 결제위젯 영역 ── -->
-    <div id="payment-widget-wrap">
-        <div id="payment-method"></div>
-        <div id="agreement"></div>
-    </div>
-
     <!-- ── 결제 버튼 ── -->
     <button class="pay-btn" id="payBtn" onclick="requestPayment()">결제하기</button>
 
@@ -218,14 +203,12 @@ var currentPrice  = product.price;
 var appliedCoupon = null;
 
 // ═══════════════════════════════════════
-//  토스페이먼츠 V2 결제위젯 초기화
+//  토스페이먼츠 V2 결제창(팝업) 방식 초기화
+//  API 개별 연동 키 (test_ck_) 사용
 // ═══════════════════════════════════════
-var clientKey   = 'test_gck_docs_Ovk5rk1EwkEbP0W23n07xlzm';
-var customerKey = 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-
+var clientKey = 'test_ck_Ba5PzR0ArnyMGNmqmxWzVvmYnNeD';
 var tossPayments = TossPayments(clientKey);
-var widgets      = tossPayments.widgets({ customerKey: customerKey });
-var widgetReady  = false;
+var payment = tossPayments.payment({ customerKey: 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8) });
 
 // GAS 엔드포인트
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
@@ -242,47 +225,6 @@ function refreshOrderUI() {
     document.getElementById('discountAmount').textContent = '-' + (product.original - product.price).toLocaleString() + '원';
     document.getElementById('finalPrice').textContent     = currentPrice.toLocaleString() + '원';
     document.getElementById('payBtn').textContent         = currentPrice.toLocaleString() + '원 결제하기';
-}
-
-// ═══════════════════════════════════════
-//  위젯 렌더링
-// ═══════════════════════════════════════
-async function renderWidget() {
-    try {
-        console.log('▶ 위젯 초기화 시작');
-        await widgets.setAmount({ value: currentPrice, currency: 'KRW' });
-        console.log('▶ setAmount 완료');
-
-        await widgets.renderPaymentMethods({ selector: '#payment-method' });
-        console.log('▶ renderPaymentMethods 완료');
-
-        await widgets.renderAgreement({ selector: '#agreement' });
-        console.log('▶ renderAgreement 완료');
-
-        widgetReady = true;
-        console.log('✅ 결제위젯 렌더링 성공');
-    } catch (e) {
-        console.error('❌ 위젯 렌더링 실패:', e);
-        widgetReady = false;
-    }
-}
-
-// ═══════════════════════════════════════
-//  위젯 금액 업데이트 (쿠폰/업셀 후)
-// ═══════════════════════════════════════
-async function updateWidgetAmount() {
-    if (currentPrice <= 100) {
-        document.getElementById('payment-widget-wrap').style.display = 'none';
-        document.getElementById('payBtn').textContent = '무료 체험 시작하기';
-    } else {
-        document.getElementById('payment-widget-wrap').style.display = 'block';
-        document.getElementById('payBtn').textContent = currentPrice.toLocaleString() + '원 결제하기';
-        try {
-            await widgets.setAmount({ value: currentPrice, currency: 'KRW' });
-        } catch (e) {
-            console.error('금액 업데이트 실패:', e);
-        }
-    }
 }
 
 // ═══════════════════════════════════════
@@ -322,7 +264,11 @@ function applyCoupon() {
     document.getElementById('couponAmount').textContent = '-' + couponDiscount.toLocaleString() + '원';
     document.getElementById('finalPrice').textContent = currentPrice.toLocaleString() + '원';
 
-    updateWidgetAmount();
+    if (currentPrice <= 100) {
+        document.getElementById('payBtn').textContent = '무료 체험 시작하기';
+    } else {
+        document.getElementById('payBtn').textContent = currentPrice.toLocaleString() + '원 결제하기';
+    }
 }
 
 // ═══════════════════════════════════════
@@ -349,8 +295,6 @@ function acceptUpsell() {
     document.getElementById('couponInput').value = '';
     document.getElementById('couponMsg').textContent = '';
     document.getElementById('couponRow').style.display = 'none';
-
-    updateWidgetAmount();
 }
 
 function declineUpsell() {
@@ -358,7 +302,7 @@ function declineUpsell() {
 }
 
 // ═══════════════════════════════════════
-//  결제 요청
+//  결제 요청 (결제창 팝업 방식)
 // ═══════════════════════════════════════
 async function requestPayment() {
     var btn = document.getElementById('payBtn');
@@ -368,7 +312,7 @@ async function requestPayment() {
     var formPage = (productCode === 'W1' || productCode === 'W2') ? '/form-w.html' : '/form.html';
     var origin   = window.location.origin;
 
-    // ── 무료 쿠폰 (금액 ≤ 100원) → 위젯 생략, GAS 직접 등록 ──
+    // ── 무료 쿠폰 (금액 ≤ 100원) → 결제 생략, GAS 직접 등록 ──
     if (currentPrice <= 100) {
         document.getElementById('loadingOverlay').style.display = 'flex';
 
@@ -396,13 +340,7 @@ async function requestPayment() {
         return;
     }
 
-    // ── 유료 결제 → 토스 결제위젯 호출 ──
-    if (!widgetReady) {
-        alert('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-        btn.disabled = false;
-        return;
-    }
-
+    // ── 유료 결제 → 토스 결제창(팝업) 호출 ──
     var successUrl = origin + '/payment-success.html'
         + '?formPage=' + encodeURIComponent(formPage)
         + '&product=' + productCode
@@ -412,7 +350,9 @@ async function requestPayment() {
     var failUrl = origin + '/payment-fail.html';
 
     try {
-        await widgets.requestPayment({
+        await payment.requestPayment({
+            method: 'CARD',
+            amount: { value: currentPrice, currency: 'KRW' },
             orderId: orderId,
             orderName: product.name,
             successUrl: successUrl,
@@ -430,7 +370,7 @@ async function requestPayment() {
 document.addEventListener('DOMContentLoaded', function() {
     refreshOrderUI();
     initUpsell();
-    renderWidget();
+    console.log('✅ 주문 페이지 초기화 완료 (결제창 방식)');
 });
 </script>
 
