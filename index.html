@@ -3310,8 +3310,13 @@ var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
             // 곡 설명 + 가사 (처음엔 숨김)
             '<div id="reportSongDetails" style="display:none;margin-top:24px;text-align:left;">' +
                 '<div style="width:40px;height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent);margin:0 auto 24px;"></div>' +
-                (songDesc ? '<div style="font-size:13px;color:var(--text-secondary);line-height:1.9;padding:0 16px;word-break:keep-all;white-space:pre-wrap;">' + escapeHtml(songDesc) + '</div>' : '') +
-            '</div>';
+(songDesc ? '<div style="font-size:13px;color:var(--text-secondary);line-height:1.9;padding:0 16px;word-break:keep-all;white-space:pre-wrap;">' + escapeHtml(songDesc) + '</div>' : '') +
+'<div style="margin-top:24px;text-align:center;">' +
+    '<a id="themeDownloadBtn" href="' + escapeHtml(certData.themeLink) + '" download="' + escapeHtml((certData.themeName || '나를읽다_테마송').replace(/[\\/:*?"<>|]/g, '_')) + '.mp3" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border:1px solid rgba(201,168,76,0.15);border-radius:8px;background:transparent;color:var(--gold-dim);font-size:12px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:all 0.3s;">' +
+        '<span>↓</span> <span>곡 저장하기</span>' +
+    '</a>' +
+'</div>' +
+'</div>';
 
         container.appendChild(songCard);
     }
@@ -3600,13 +3605,7 @@ function preloadBgm(url) {
             audio.addEventListener('loadedmetadata', function() {
                 document.getElementById('themeDuration').textContent = formatTime(audio.duration);
             });
-            audio.addEventListener('ended', function() {
-                document.getElementById('bgmBar').classList.remove('active');
-                document.getElementById('themePlayBtn').textContent = '▶';
-                document.getElementById('btnTheme').classList.remove('playing');
-                bgmType = null;
-                if (bgmAudio) { fadeBgmIn(); }
-            });
+audio.loop = true;
         } else {
             fetch(GAS_URL + '?audio=' + fileId)
                 .then(function(r) { return r.json(); })
@@ -3720,6 +3719,7 @@ function preloadBgm(url) {
             audio.src = rawUrl;
             audio.preload = 'auto';
             audio.crossOrigin = 'anonymous';
+            if (type === 'theme') audio.loop = true;
             audioPlayers[type] = audio;
             audioLoaded[type] = true;
 
@@ -3731,26 +3731,31 @@ function preloadBgm(url) {
                 document.getElementById(type + 'Duration').textContent = formatTime(audio.duration);
             });
 
-            audio.addEventListener('ended', function() {
-                document.getElementById(type + 'PlayBtn').textContent = '▶';
-                document.getElementById('btn' + capitalize(type)).classList.remove('playing');
-                clearInterval(playerIntervals[type]);
-                if (bgmType === type) {
-                    document.getElementById('bgmBtn').textContent = '▶';
-                    document.getElementById('bgmSub').textContent = '재생 완료';
-                    var bgmProgress = document.getElementById('bgmProgress');
-                    if (bgmProgress) bgmProgress.value = 0;
-                }
-                if (type === 'theme' && bgmAudio) { fadeBgmIn(); }
-            });
+audio.addEventListener('ended', function() {
+    if (type === 'theme') return; // loop=true이므로 도달 안 함 (안전장치)
+    document.getElementById(type + 'PlayBtn').textContent = '▶';
+    document.getElementById('btn' + capitalize(type)).classList.remove('playing');
+    clearInterval(playerIntervals[type]);
+    if (bgmType === type) {
+        document.getElementById('bgmBtn').textContent = '▶';
+        document.getElementById('bgmSub').textContent = '재생 완료';
+        var bgmProgress = document.getElementById('bgmProgress');
+        if (bgmProgress) bgmProgress.value = 0;
+    }
+});
 
             audio.addEventListener('error', function() {
                 if (loadingEl) loadingEl.style.display = 'none';
                 showToast('음원을 불러올 수 없습니다');
             });
 
-            var dlLink = document.getElementById(type + 'Download');
-            if (dlLink) { dlLink.href = rawUrl; dlLink.download = (certData[type + 'Name'] || type) + '.mp3'; }
+var dlLink = document.getElementById(type + 'Download');
+if (dlLink) {
+    dlLink.href = rawUrl;
+    var songTitle = certData.themeName || certData[type + 'Name'] || '나를읽다_테마송';
+    dlLink.download = songTitle.replace(/[\\/:*?"<>|]/g, '_') + '.mp3';
+    dlLink.setAttribute('target', '_blank');
+}
 
             audio.load();
         } else {
@@ -3806,7 +3811,6 @@ function preloadBgm(url) {
             if (type === 'theme' && bgmAudio && !bgmAudio.paused) {
                 fadeBgmOut();
             }
-            if (type === 'theme') audio.loop = false;
             audio.play().catch(function(){});
             document.getElementById(type + 'PlayBtn').textContent = '⏸';
             document.getElementById('btn' + capitalize(type)).classList.add('playing');
