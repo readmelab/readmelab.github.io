@@ -1276,26 +1276,75 @@
         </div>
     </div>
 
-    <!-- 소진 시 연장 안내 -->
-    <div id="oracleExhausted" style="display:none;text-align:center;padding:32px 20px;border:1px solid var(--gold-dim);border-radius:12px;background:linear-gradient(135deg,rgba(201,168,76,0.03),transparent);">
-        <div style="font-size:24px;margin-bottom:16px;opacity:0.6;">◆</div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:15px;color:var(--gold);margin-bottom:12px;line-height:1.8;">
-            기본 분석이 모두 끝났습니다
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);line-height:1.8;margin-bottom:20px;">
-            더 깊은 심연의 문을 열고 싶으시다면<br>
-            수석 분석가와의 심층 대화를<br>
-            3회 연장할 수 있습니다
-        </div>
-        <button id="oracleExtendBtn" onclick="extendOracle()" style="
-            padding:12px 32px;border:1px solid var(--gold-dim);border-radius:8px;
-            background:linear-gradient(135deg,rgba(201,168,76,0.06),transparent);
-            color:var(--gold);font-family:'Noto Serif KR',serif;font-size:13px;
-            letter-spacing:2px;cursor:pointer;transition:all 0.3s;
-        ">심층 신탁 연장 · 9,900원</button>
+<!-- 소진 시 연장 안내 -->
+<div id="oracleExhausted" style="display:none; text-align:center; padding:44px 24px 40px;
+     border:1px solid rgba(201,168,76,0.1); border-radius:16px;
+     background:linear-gradient(180deg, rgba(201,168,76,0.04) 0%, rgba(15,14,12,0.98) 100%);">
+    
+    <!-- 닫힌 문 아이콘 -->
+    <div style="width:56px;height:56px;margin:0 auto 24px;border-radius:50%;
+         border:1px solid rgba(201,168,76,0.15);display:flex;align-items:center;
+         justify-content:center;background:rgba(201,168,76,0.02);
+         animation:si-breathe 4s ease-in-out infinite;">
+        <span style="font-size:20px;color:var(--gold);opacity:0.4;">◆</span>
     </div>
-
-</div><!-- /oracleSection -->
+    
+    <!-- 헤드카피 -->
+    <div style="font-family:'Noto Serif KR',serif; font-size:11px; color:var(--text-dim);
+         letter-spacing:5px; margin-bottom:16px;">SEALED</div>
+    <div style="font-family:'Noto Serif KR',serif; font-size:17px; color:var(--gold);
+         letter-spacing:3px; line-height:1.6; margin-bottom:20px;">
+        신탁의 문이 닫혔습니다
+    </div>
+    
+    <!-- 구분선 -->
+    <div style="width:48px;height:1px;margin:0 auto 24px;
+         background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);"></div>
+    
+    <!-- 스토리텔링 -->
+    <div style="font-family:'Noto Serif KR',serif; font-size:12.5px; color:var(--text-muted);
+         line-height:2.2; margin-bottom:12px; letter-spacing:0.3px; padding:0 8px;">
+        부여된 분석의 시간이 모두 지났습니다
+    </div>
+    
+    <div style="font-size:11.5px; color:var(--text-dim); line-height:2.0;
+         margin-bottom:32px; padding:0 16px;">
+        그러나 당신의 사주 원국에는<br>
+        아직 읽어드리지 못한 이야기가 남아 있습니다<br><br>
+        <span style="font-family:'Noto Serif KR',serif; color:var(--text-muted);">
+        진짜 족집게는 아무에게나 문을 열지 않습니다<br>
+        다만, 간절한 사람에게는 한 번 더 기회를 드립니다</span>
+    </div>
+    
+    <!-- 연장 안내 박스 -->
+    <div style="padding:20px 16px; margin:0 12px 28px; border:1px solid rgba(201,168,76,0.08);
+         border-radius:10px; background:rgba(201,168,76,0.015);">
+        <div style="font-family:'Noto Serif KR',serif; font-size:12px; color:var(--gold);
+             letter-spacing:1.5px; margin-bottom:8px;">심층 신탁 연장</div>
+        <div style="font-size:10.5px; color:var(--text-dim); line-height:1.8;">
+            수석 분석가와의 심층 대화 <span style="color:var(--gold);font-weight:600;">3회</span> 추가<br>
+            <span style="opacity:0.6;">· 동일한 분석가가 동일한 깊이로 답변합니다</span><br>
+            <span style="opacity:0.6;">· 연장은 1회만 가능합니다</span>
+        </div>
+    </div>
+    
+    <!-- 결제 버튼 -->
+    <button id="oracleExtendBtn" onclick="extendOracle()" style="
+        padding:15px 40px; border:1px solid rgba(201,168,76,0.2); border-radius:10px;
+        background:linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+        color:var(--gold); font-family:'Noto Serif KR',serif; font-size:14px;
+        letter-spacing:3px; cursor:pointer; transition:all 0.4s ease;
+        box-shadow:0 2px 16px rgba(201,168,76,0.05);
+    " onmouseover="this.style.background='linear-gradient(135deg,rgba(201,168,76,0.14),rgba(201,168,76,0.04))';this.style.boxShadow='0 4px 24px rgba(201,168,76,0.1)';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.background='linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.02))';this.style.boxShadow='0 2px 16px rgba(201,168,76,0.05)';this.style.transform='translateY(0)'">
+        9,900원
+    </button>
+    
+    <div style="font-size:9.5px; color:var(--text-ghost); margin-top:14px;
+         letter-spacing:0.5px; opacity:0.4;">
+        Deep Oracle Extension · 3 Sessions
+    </div>
+</div>
 
 <script>
 /* ══════════════════════════════════════
