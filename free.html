@@ -759,7 +759,7 @@ async function saveCard() {
     });
 
     const link = document.createElement('a');
-    link.download = '나의영혼카드_나를읽다.png';
+    link.download = document.getElementById('cardTitleKo').textContent + '_나를읽다.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch (err) {
