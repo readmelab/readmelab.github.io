@@ -3316,9 +3316,9 @@ var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
                 '<div style="width:40px;height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent);margin:0 auto 24px;"></div>' +
 (songDesc ? '<div style="font-size:13px;color:var(--text-secondary);line-height:1.9;padding:0 16px;word-break:keep-all;white-space:pre-wrap;">' + escapeHtml(songDesc) + '</div>' : '') +
 '<div style="margin-top:24px;text-align:center;">' +
-    '<a id="themeDownloadBtn" href="' + escapeHtml(certData.themeLink) + '" download="' + escapeHtml((certData.themeName || '나를읽다_테마송').replace(/[\\/:*?"<>|]/g, '_')) + '.mp3" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border:1px solid rgba(201,168,76,0.15);border-radius:8px;background:transparent;color:var(--gold-dim);font-size:12px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:all 0.3s;">' +
-        '<span>↓</span> <span>곡 저장하기</span>' +
-    '</a>' +
+'<a id="themeDownloadBtn" href="#" onclick="event.preventDefault(); downloadAudioFile(\'' + escapeHtml(certData.themeLink) + '\', \'' + escapeHtml((certData.themeName || '나를읽다_테마송').replace(/[\\/:*?"<>|]/g, '_')) + '.mp3\');" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border:1px solid rgba(201,168,76,0.15);border-radius:8px;background:transparent;color:var(--gold-dim);font-size:12px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:all 0.3s;">' +
+    '<span>↓</span> <span>곡 저장하기</span>' +
+'</a>' +
 '</div>' +
 '</div>';
 
@@ -3955,6 +3955,24 @@ if (dlLink) {
         if (!str) return '';
         return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+
+async function downloadAudioFile(url, filename) {
+  try {
+    var resp = await fetch(url);
+    var blob = await resp.blob();
+    var blobUrl = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename || '나를읽다_음원.mp3';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  } catch (e) {
+    window.open(url, '_blank');
+  }
+}
+        
 
     /* ══════════════════════════════════════
        10. 디자인설정 적용 (구글시트 연동)
