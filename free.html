@@ -665,7 +665,6 @@ async function getMyCard() {
   const year = document.getElementById('birthYear').value;
   const month = document.getElementById('birthMonth').value;
   const day = document.getElementById('birthDay').value;
-  const birthDate = `${year}-${month}-${day}`;
   const gender = document.getElementById('gender').value;
 
   if (!year || !month || !day || !selectedMbti) {
@@ -683,11 +682,12 @@ async function getMyCard() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        birthDate,
-        birthTime: '모름',
-        gender,
-        calendarType,
-        mbti: selectedMbti
+        birthYear: year,
+        birthMonth: month,
+        birthDay: day,
+        mbti: selectedMbti,
+        isLunar: calendarType === '음력',
+        gender: gender
       })
     });
 
