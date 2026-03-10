@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>나를읽다 연구소 — OPEN 특가 프라이빗 예약</title>
+<meta name="description" content="사주×MBTI AI 운명 보증서 — 오픈 기념 최대 66% 할인. 선착순 30명 한정.">
+<meta property="og:title" content="나를읽다 연구소 — OPEN 특가 예약">
+<meta property="og:description" content="4대 AI가 분석하는 세상에 단 하나뿐인 운명 보증서. 선착순 30명 특별가.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --gold:#c9a55a;--gold-light:#e2c97e;--gold-dark:#a88532;--gold-glow:rgba(201,165,90,.35);
+  --bg:#07070c;--bg2:#0e0e16;--card:#111119;--card-hover:#16161f;
+  --text:#d4d0c8;--text-dim:#8a8780;--text-bright:#f0ece4;
+  --border:rgba(201,165,90,.12);--border-active:rgba(201,165,90,.35);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.08);
+  --serif:'Noto Serif KR',serif;--sans:'Noto Sans KR',sans-serif;--display:'Cormorant Garamond',serif;
+  --radius:14px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── 배경 글로우 ── */
+.bg-glow{position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(201,165,90,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* ── 컨테이너 ── */
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:0 20px 120px}
+
+/* ── 페이드인 ── */
+.fi{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fi.v{opacity:1;transform:translateY(0)}
+.fi.d1{transition-delay:.1s}.fi.d2{transition-delay:.2s}.fi.d3{transition-delay:.3s}
+
+/* ═══ URGENCY BAR ═══ */
+.urgency-bar{
+  background:linear-gradient(90deg,rgba(239,68,68,.08),rgba(201,165,90,.08),rgba(239,68,68,.08));
+  border-bottom:1px solid rgba(239,68,68,.15);
+  padding:12px 20px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.urgency-bar::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);animation:urgShimmer 3s infinite}
+@keyframes urgShimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.urgency-text{font-size:12px;color:var(--gold-light);letter-spacing:1px;font-weight:500}
+.urgency-text .urg-hot{color:var(--red);font-weight:700}
+.urgency-text .urg-date{color:var(--text-bright);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* ═══ HERO (모바일 1장) ═══ */
+.hero{text-align:center;padding:40px 0 24px}
+.hero .lab{font-size:10px;letter-spacing:5px;color:var(--gold);margin-bottom:20px;font-weight:400}
+.hero h1{font-family:var(--serif);font-size:clamp(20px,5.5vw,28px);font-weight:900;line-height:1.5;margin-bottom:16px;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .sub{font-size:13px;color:var(--text-dim);font-weight:300;line-height:2;margin-bottom:20px}
+.hero .sub strong{color:var(--gold-light);font-weight:500}
+
+/* 특장점 */
+.features{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.feat{font-size:10px;letter-spacing:1px;color:var(--gold);border:1px solid var(--border);padding:6px 14px;border-radius:20px;background:rgba(201,165,90,.03)}
+
+/* 리뷰 미니 */
+.mini-review{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:8px;position:relative}
+.mini-review .stars{color:var(--gold);font-size:11px;letter-spacing:2px;margin-bottom:6px}
+.mini-review .rv-text{font-size:12px;color:var(--text-dim);font-weight:300;line-height:1.8;font-style:italic}
+.mini-review .rv-name{font-size:11px;color:var(--text-dim);margin-top:6px;font-weight:400;opacity:.7}
+
+/* ── 구분선 ── */
+.divider{display:flex;align-items:center;justify-content:center;gap:10px;padding:28px 0}
+.divider .dl{height:1px;width:50px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.divider .dd{width:5px;height:5px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 10px var(--gold-glow)}
+
+/* ═══ 상품 섹션 ═══ */
+.sec-label{font-size:10px;letter-spacing:5px;color:var(--gold);text-align:center;margin-bottom:10px;font-weight:400}
+.sec-title{font-family:var(--serif);font-size:18px;font-weight:700;text-align:center;margin-bottom:24px;color:var(--text-bright);letter-spacing:1px}
+
+/* 상품 카드 */
+.products{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.p-group-label{text-align:center;font-size:10px;letter-spacing:4px;color:var(--text-dim);margin:16px 0 8px;font-weight:300}
+
+.pcard{
+  position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 20px;cursor:pointer;transition:all .3s;overflow:hidden;
+}
+.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s}
+.pcard:hover,.pcard.sel{border-color:var(--border-active);background:var(--card-hover)}
+.pcard.sel::before{opacity:1}
+.pcard.premium{border-color:rgba(201,165,90,.2);background:linear-gradient(180deg,rgba(201,165,90,.04),var(--card))}
+.pcard .p-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-size:9px;font-weight:700;padding:4px 12px;border-radius:16px;letter-spacing:1px}
+
+.pcard .p-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.pcard .p-name{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text-bright);letter-spacing:1px}
+.pcard .p-type{font-size:10px;color:var(--text-dim);letter-spacing:.5px;margin-top:2px}
+.pcard .radio{width:18px;height:18px;border:1.5px solid var(--text-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;transition:border-color .3s}
+.pcard.sel .radio{border-color:var(--gold)}
+.pcard .radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--gold);transform:scale(0);transition:transform .25s}
+.pcard.sel .radio::after{transform:scale(1)}
+.pcard .p-desc{font-size:12px;color:var(--text-dim);font-weight:300;line-height:1.7;margin-bottom:12px}
+.pcard .p-incl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pcard .p-tag{font-size:9px;color:var(--text-dim);background:rgba(255,255,255,.03);padding:3px 10px;border-radius:8px;letter-spacing:.5px}
+
+.pcard .price-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pcard .pr-orig{font-size:12px;color:var(--text-dim);text-decoration:line-through;font-weight:300}
+.pcard .pr-now{font-family:var(--display);font-size:22px;color:var(--gold-light);font-weight:600;letter-spacing:1px}
+.pcard .pr-off{font-size:9px;color:var(--red);font-weight:600;background:var(--red-bg);padding:2px 8px;border-radius:10px}
+
+/* 업셀 넛지 */
+.upsell{display:none;margin-top:10px;padding:10px 14px;background:rgba(201,165,90,.04);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--gold-light);font-weight:400;line-height:1.6;text-align:center}
+.upsell.show{display:block}
+
+/* ═══ 폼 영역 ═══ */
+#formArea{display:none;margin-top:24px}
+#formArea.open{display:block}
+
+.form-header{text-align:center;margin-bottom:20px}
+.form-header h3{font-family:var(--serif);font-size:15px;color:var(--text-bright);letter-spacing:2px;margin-bottom:6px}
+.form-header p{font-size:11px;color:var(--gold);font-weight:400;line-height:1.7}
+
+.fg{margin-bottom:18px}
+.fg label{display:block;font-size:11px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:6px;font-weight:400}
+.fg label .req{color:var(--gold);margin-left:2px}
+.fg input,.fg select,.fg textarea{
+  width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:13px 15px;font-family:var(--sans);font-size:14px;color:var(--text-bright);
+  outline:none;transition:border-color .3s;-webkit-appearance:none;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--text-dim);font-weight:300;font-size:13px}
+.fg textarea{height:90px;resize:vertical;line-height:1.7}
+.fg select{
+  cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8780' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
+}
+.fg .hint{font-size:10px;color:var(--text-dim);margin-top:4px;font-weight:300}
+.frow{display:flex;gap:12px}
+.frow .fg{flex:1}
+
+/* W 전용 */
+.w-section{display:none;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;background:rgba(201,165,90,.02)}
+.w-section.vis{display:block}
+.w-section .w-lbl{font-size:11px;letter-spacing:3px;color:var(--gold);margin-bottom:14px;font-weight:400}
+
+/* 동의 */
+.consent{display:flex;align-items:flex-start;gap:10px;margin:20px 0;cursor:pointer}
+.consent input{display:none}
+.consent .cbox{width:18px;height:18px;flex-shrink:0;border:1.5px solid var(--text-dim);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px}
+.consent input:checked+.cbox{border-color:var(--gold);background:rgba(201,165,90,.15)}
+.consent input:checked+.cbox::after{content:'✓';color:var(--gold);font-size:11px}
+.consent .ctxt{font-size:11px;color:var(--text-dim);line-height:1.7;font-weight:300}
+
+/* 제출 버튼 */
+.submit-btn{
+  width:100%;padding:18px;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+  color:#0a0a0f;border:none;border-radius:8px;
+  font-family:var(--serif);font-size:14px;font-weight:700;letter-spacing:3px;
+  cursor:pointer;transition:all .3s;
+}
+.submit-btn:hover{background:linear-gradient(135deg,var(--gold),var(--gold-light));transform:translateY(-1px);box-shadow:0 8px 30px rgba(201,165,90,.2)}
+.submit-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ═══ 화면2: 입금안내 ═══ */
+.screen{transition:opacity .6s,transform .6s}
+.screen.hidden{opacity:0;pointer-events:none;position:absolute;transform:translateY(20px)}
+.screen.visible{opacity:1;pointer-events:auto;position:relative;transform:translateY(0)}
+
+.confirm{text-align:center;padding-top:40px}
+.confirm-icon{width:64px;height:64px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px}
+.confirm h2{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--text-bright);letter-spacing:4px;margin-bottom:16px}
+.confirm-msg{font-size:13px;color:var(--text-dim);line-height:2;font-weight:300;margin-bottom:28px}
+
+.bank-box{
+  background:var(--card);border:1px solid var(--border-active);border-radius:var(--radius);
+  padding:28px 24px;margin-bottom:24px;position:relative;
+}
+.bank-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.bank-box .bk-label{font-size:10px;letter-spacing:3px;color:var(--text-dim);margin-bottom:12px}
+.bank-box .bk-account{font-family:var(--display);font-size:22px;color:var(--gold-light);font-weight:500;letter-spacing:2px;margin-bottom:4px}
+.bank-box .bk-holder{font-size:13px;color:var(--text);letter-spacing:1px;margin-bottom:16px}
+.bank-box .bk-amt-label{font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px}
+.bank-box .bk-amt{font-family:var(--display);font-size:28px;color:var(--gold-light);font-weight:600}
+.bank-box .bk-pname{font-size:12px;color:var(--text-dim);margin-top:4px;letter-spacing:1px}
+
+.copy-btn{
+  display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  padding:10px 20px;background:rgba(201,165,90,.08);border:1px solid var(--border);
+  border-radius:6px;color:var(--gold);font-family:var(--sans);font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .2s;
+}
+.copy-btn:hover{background:rgba(201,165,90,.15);border-color:var(--border-active)}
+
+.confirm-timeline{
+  margin:28px 0;padding:24px 20px;
+  background:rgba(201,165,90,.03);border:1px solid var(--border);border-radius:var(--radius);
+  text-align:left;
+}
+.tl-item{display:flex;gap:12px;margin-bottom:16px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:6px;box-shadow:0 0 8px var(--gold-glow)}
+.tl-text{font-size:12px;color:var(--text-dim);font-weight:300;line-height:1.7}
+.tl-text strong{color:var(--text-bright);font-weight:500}
+.tl-text .tl-gold{color:var(--gold-light);font-weight:500}
+
+.order-num{margin-top:20px;padding:12px;background:rgba(255,255,255,.02);border-radius:8px;font-size:11px;color:var(--text-dim);letter-spacing:1px}
+.order-num span{color:var(--text);font-weight:500}
+
+/* ── 푸터 ── */
+.footer{text-align:center;padding:40px 0 20px;font-size:10px;color:var(--text-dim);letter-spacing:.5px;line-height:2;font-weight:300;opacity:.5}
+
+/* ═══ 하단 고정 바 ═══ */
+.float-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:999;
+  background:rgba(7,7,12,.96);backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+  padding:10px 20px 12px;
+  transform:translateY(100%);transition:transform .4s ease;
+}
+.float-bar.show{transform:translateY(0)}
+.float-inner{max-width:520px;margin:0 auto}
+.float-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.float-timer{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim);letter-spacing:.5px}
+.float-timer .ft-icon{color:var(--red);font-size:12px;animation:ftPulse 2s infinite}
+@keyframes ftPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.float-timer .ft-time{font-family:var(--display);font-size:13px;color:var(--text-bright);font-weight:500;letter-spacing:1px}
+.float-remain{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim)}
+.float-remain .fr-num{font-family:var(--display);font-size:14px;color:var(--gold-light);font-weight:600;min-width:20px;text-align:center;transition:all .3s}
+.float-remain .fr-num.pop{animation:numPop .4s ease}
+@keyframes numPop{0%{transform:scale(1)}50%{transform:scale(1.3);color:var(--red)}100%{transform:scale(1)}}
+.float-btn{
+  display:block;width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  color:var(--bg);font-family:var(--serif);font-size:14px;font-weight:700;
+  border:none;border-radius:10px;letter-spacing:2px;cursor:pointer;
+  text-align:center;text-decoration:none;
+  box-shadow:0 4px 20px rgba(201,165,90,.25);transition:all .3s;
+}
+.float-btn:active{transform:scale(.97)}
+
+/* ── 로딩 ── */
+.loading{display:none;position:fixed;inset:0;background:rgba(7,7,12,.85);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading.on{display:flex}
+.spinner{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-t{font-size:13px;color:var(--text-dim);letter-spacing:2px}
+
+@media(max-width:380px){
+  .hero h1{font-size:18px}
+  .pcard .pr-now{font-size:18px}
+  .bank-box .bk-account{font-size:18px}
+  .bank-box .bk-amt{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- ═══ 긴급성 바 ═══ -->
+<div class="urgency-bar">
+  <div class="urgency-text">
+    <span class="urg-hot">OPEN 특가</span>&nbsp;&nbsp;·&nbsp;&nbsp;
+    <span class="urg-date" id="deadlineText">3월 17일</span>까지&nbsp;&nbsp;·&nbsp;&nbsp;
+    선착순 <span class="urg-hot" id="urgRemain">30</span>명 한정
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero fi">
+    <div class="lab">나를읽다 연구소</div>
+    <h1>사주 × MBTI<br>세상에 단 하나뿐인<br>운명 보증서</h1>
+    <p class="sub">
+      동양 철학 5,000년의 지혜와 현대 심리학이 만나<br>
+      <strong>4개의 독립 AI가 교차 검증</strong>하고 집필하는<br>
+      12,000자 초개인화 리포트
+    </p>
+    <div class="features">
+      <span class="feat">4대 AI 동시 분석</span>
+      <span class="feat">최대 66% 할인</span>
+      <span class="feat">100% 맞춤 제작</span>
+    </div>
+  </section>
+
+  <!-- 미니 리뷰 -->
+  <div class="mini-review fi d1">
+    <div class="stars">★★★★★</div>
+    <div class="rv-text">"소름 돋았어요. 12,000자 다 읽었습니다. 10만원짜리 사주보다 훨씬 구체적이고 공감됐어요."</div>
+    <div class="rv-name">— 28세 여성, INFP</div>
+  </div>
+  <div class="mini-review fi d2">
+    <div class="stars">★★★★★</div>
+    <div class="rv-text">"마지막 편지에서 울었어요. 제 이야기를 이렇게 정확하게 쓸 수 있다니."</div>
+    <div class="rv-name">— 34세 남성, ENTJ</div>
+  </div>
+
+  <div class="divider"><div class="dl"></div><div class="dd"></div><div class="dl"></div></div>
+
+  <!-- ═══ 화면1: 상품 + 폼 ═══ -->
+  <div id="orderScreen" class="screen visible">
+
+    <div class="sec-label fi">SELECT</div>
+    <div class="sec-title fi">리포트를 선택하세요</div>
+
+    <div class="products">
+
+      <!-- N1 -->
+      <div class="pcard fi" data-code="N1" data-price="19900" data-name="나를 읽다" data-orig="59,000" data-off="66" onclick="pickProduct(this)">
+        <div class="p-top">
+          <div>
+            <div class="p-name">나를 읽다</div>
+            <div class="p-type">READ ME — 개인 사주 리포트</div>
+          </div>
+          <div class="radio"></div>
+        </div>
+        <div class="p-desc">사주 오행 + MBTI 교차 분석으로 완성되는 나만의 인생 설명서</div>
+        <div class="p-incl">
+          <span class="p-tag">사주 리포트</span>
+          <span class="p-tag">운명 보증서</span>
+          <span class="p-tag">음성 해설</span>
+        </div>
+        <div class="price-row">
+          <span class="pr-orig">59,000원</span>
+          <span class="pr-now">19,900원</span>
+          <span class="pr-off">66% OFF</span>
+        </div>
+      </div>
+      <div class="upsell" id="upsellN">테마곡이 포함된 <strong style="color:var(--gold)">'나를 듣다'</strong>도 확인해 보세요 ↓</div>
+
+      <!-- N2 -->
+      <div class="pcard premium fi d1" data-code="N2" data-price="29800" data-name="나를 듣다" data-orig="79,000" data-off="62" onclick="pickProduct(this)">
+        <div class="p-badge">BEST</div>
+        <div class="p-top">
+          <div>
+            <div class="p-name">나를 듣다</div>
+            <div class="p-type">HEAR ME — 사주 리포트 + AI 테마곡</div>
+          </div>
+          <div class="radio"></div>
+        </div>
+        <div class="p-desc">리포트에 더해, 당신의 사주를 선율로 풀어낸 세상에 하나뿐인 테마곡까지</div>
+        <div class="p-incl">
+          <span class="p-tag">사주 리포트</span>
+          <span class="p-tag">운명 보증서</span>
+          <span class="p-tag">음성 해설</span>
+          <span class="p-tag">AI 테마곡</span>
+        </div>
+        <div class="price-row">
+          <span class="pr-orig">79,000원</span>
+          <span class="pr-now">29,800원</span>
+          <span class="pr-off">62% OFF</span>
+        </div>
+      </div>
+
+      <div class="p-group-label">— 커 플 · 궁 합 —</div>
+
+      <!-- W1 -->
+      <div class="pcard fi d2" data-code="W1" data-price="39700" data-name="우리를 읽다" data-orig="99,000" data-off="60" onclick="pickProduct(this)">
+        <div class="p-top">
+          <div>
+            <div class="p-name">우리를 읽다</div>
+            <div class="p-type">READ US — 궁합 분석 리포트</div>
+          </div>
+          <div class="radio"></div>
+        </div>
+        <div class="p-desc">두 사람의 사주와 심리를 교차 분석하여 관계의 지도를 완성합니다</div>
+        <div class="p-incl">
+          <span class="p-tag">궁합 리포트</span>
+          <span class="p-tag">관계 보증서</span>
+          <span class="p-tag">음성 해설</span>
+        </div>
+        <div class="price-row">
+          <span class="pr-orig">99,000원</span>
+          <span class="pr-now">39,700원</span>
+          <span class="pr-off">60% OFF</span>
+        </div>
+      </div>
+      <div class="upsell" id="upsellW">두 분만의 테마곡이 포함된 <strong style="color:var(--gold)">'우리를 듣다'</strong>도 확인해 보세요 ↓</div>
+
+      <!-- W2 -->
+      <div class="pcard premium fi d3" data-code="W2" data-price="49600" data-name="우리를 듣다" data-orig="129,000" data-off="62" onclick="pickProduct(this)">
+        <div class="p-badge">PREMIUM</div>
+        <div class="p-top">
+          <div>
+            <div class="p-name">우리를 듣다</div>
+            <div class="p-type">HEAR US — 궁합 리포트 + AI 테마곡</div>
+          </div>
+          <div class="radio"></div>
+        </div>
+        <div class="p-desc">두 사람의 이야기를 분석하고, 그 관계만의 음악으로 완성합니다</div>
+        <div class="p-incl">
+          <span class="p-tag">궁합 리포트</span>
+          <span class="p-tag">관계 보증서</span>
+          <span class="p-tag">음성 해설</span>
+          <span class="p-tag">AI 테마곡</span>
+        </div>
+        <div class="price-row">
+          <span class="pr-orig">129,000원</span>
+          <span class="pr-now">49,600원</span>
+          <span class="pr-off">62% OFF</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ 폼 영역 ═══ -->
+    <div id="formArea">
+
+      <div class="divider"><div class="dl"></div><div class="dd"></div><div class="dl"></div></div>
+
+      <div class="form-header">
+        <h3>정 보 입 력</h3>
+        <p>정보를 자세히 입력할수록<br>리포트의 정밀도와 깊이가 올라갑니다</p>
+      </div>
+
+      <!-- 주문자 / N 대상자 공통 -->
+      <div id="nFields">
+        <div class="fg">
+          <label>이름 <span class="req">*</span></label>
+          <input type="text" id="f_name" placeholder="본명을 입력해 주세요">
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>성별 <span class="req">*</span></label>
+            <select id="f_gender"><option value="">선택</option><option value="남성">남성</option><option value="여성">여성</option></select>
+          </div>
+          <div class="fg">
+            <label>양력 / 음력 <span class="req">*</span></label>
+            <select id="f_calendar"><option value="양력">양력</option><option value="음력">음력</option></select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>생년월일 <span class="req">*</span></label>
+          <input type="date" id="f_birth">
+        </div>
+        <div class="fg">
+          <label>태어난 시간</label>
+          <input type="text" id="f_birthtime" placeholder="예: 오후 2시 30분 (모르면 '모름')">
+          <div class="hint">정확할수록 분석이 정밀해집니다. 모르시면 '모름'이라고 적어주세요.</div>
+        </div>
+        <div class="fg">
+          <label>MBTI</label>
+          <select id="f_mbti">
+            <option value="">모름 / 선택 안 함</option>
+            <option>ISTJ</option><option>ISFJ</option><option>INFJ</option><option>INTJ</option>
+            <option>ISTP</option><option>ISFP</option><option>INFP</option><option>INTP</option>
+            <option>ESTP</option><option>ESFP</option><option>ENFP</option><option>ENTP</option>
+            <option>ESTJ</option><option>ESFJ</option><option>ENFJ</option><option>ENTJ</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- W 전용: 상대방 정보 -->
+      <div class="w-section" id="wPartner">
+        <div class="w-lbl">상 대 방 정 보</div>
+        <div class="fg">
+          <label>상대방 이름 <span class="req">*</span></label>
+          <input type="text" id="f_name2" placeholder="상대방 본명">
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>성별 <span class="req">*</span></label>
+            <select id="f_gender2"><option value="">선택</option><option value="남성">남성</option><option value="여성">여성</option></select>
+          </div>
+          <div class="fg">
+            <label>양력 / 음력 <span class="req">*</span></label>
+            <select id="f_calendar2"><option value="양력">양력</option><option value="음력">음력</option></select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>생년월일 <span class="req">*</span></label>
+          <input type="date" id="f_birth2">
+        </div>
+        <div class="fg">
+          <label>태어난 시간</label>
+          <input type="text" id="f_birthtime2" placeholder="예: 오전 8시 (모르면 '모름')">
+        </div>
+        <div class="fg">
+          <label>MBTI</label>
+          <select id="f_mbti2">
+            <option value="">모름 / 선택 안 함</option>
+            <option>ISTJ</option><option>ISFJ</option><option>INFJ</option><option>INTJ</option>
+            <option>ISTP</option><option>ISFP</option><option>INFP</option><option>INTP</option>
+            <option>ESTP</option><option>ESFP</option><option>ENFP</option><option>ENTP</option>
+            <option>ESTJ</option><option>ESFJ</option><option>ENFJ</option><option>ENTJ</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>두 분의 관계 <span class="req">*</span></label>
+          <select id="f_relation">
+            <option value="">선택</option><option value="연인">연인</option><option value="부부">부부</option>
+            <option value="썸·관심">썸 · 관심</option><option value="친구·지인">친구 · 지인</option>
+            <option value="가족">가족</option><option value="직장·동료">직장 · 동료</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 공통: 연락처 -->
+      <div class="divider"><div class="dl"></div><div class="dd"></div><div class="dl"></div></div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>연락처 <span class="req">*</span></label>
+          <input type="tel" id="f_phone" placeholder="010-0000-0000">
+        </div>
+        <div class="fg">
+          <label>이메일</label>
+          <input type="email" id="f_email" placeholder="선택사항">
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>궁금한 점 · 고민</label>
+        <textarea id="f_question" placeholder="수석 분석가에게 묻고 싶은 인생의 고민이 있다면 적어주세요. 리포트에 반영됩니다."></textarea>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" id="agree">
+        <div class="cbox"></div>
+        <span class="ctxt">
+          개인정보 수집 및 이용에 동의합니다.<br>
+          수집항목: 이름, 생년월일, 연락처 | 이용목적: 사주 분석 및 발송 | 보유기간: 1년
+        </span>
+      </label>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitOrder()" disabled>
+        예 약 접 수 하 기
+      </button>
+
+    </div><!-- /formArea -->
+
+  </div><!-- /orderScreen -->
+
+  <!-- ═══ 화면2: 입금안내 ═══ -->
+  <div id="confirmScreen" class="screen hidden confirm">
+
+    <div class="confirm-icon">✦</div>
+    <h2>접 수 완 료</h2>
+
+    <p class="confirm-msg">
+      분석에 필요한 모든 정보가 접수되었습니다.<br>
+      아래 계좌로 입금해 주시면<br>
+      <strong style="color:var(--gold-light)">확인 즉시 AI 분석이 시작</strong>됩니다.
+    </p>
+
+    <div class="bank-box">
+      <div class="bk-label">입 금 계 좌</div>
+      <div class="bk-account">토스뱅크 1002-4758-3163</div>
+      <div class="bk-holder">예금주: 나를읽다연구소</div>
+      <div style="height:14px"></div>
+      <div class="bk-amt-label">결 제 금 액</div>
+      <div class="bk-amt" id="cfPrice">—</div>
+      <div class="bk-pname" id="cfProduct">—</div>
+      <button class="copy-btn" onclick="copyAcct()">계좌번호 복사</button>
+    </div>
+
+    <div class="confirm-timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-text"><strong>입금 확인</strong> — 영업시간 내 <span class="tl-gold">최대 1시간 이내</span></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-text"><strong>AI 분석 가동</strong> — 4단계 독립 심의 시스템이 교차 검증을 시작합니다</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-text"><strong>보증서 발송</strong> — 입금 확인 후 <span class="tl-gold">3~4시간 뒤</span> 카카오 알림톡으로 전달<br>
+        <span style="font-size:11px;opacity:.7">대기가 길 경우 최대 24시간이 소요될 수 있습니다</span></div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.8;font-weight:300;text-align:center">
+      입금자명은 <strong style="color:var(--text-bright)" id="cfName">—</strong> 으로 부탁드립니다
+    </div>
+
+    <div class="order-num">
+      주문번호: <span id="cfCode">—</span>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    © 나를읽다 연구소 ReadMe Lab.<br>
+    문의: 카카오톡 채널 '나를읽다 연구소'
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- ═══ 하단 고정 바 ═══ -->
+<div class="float-bar" id="floatBar">
+  <div class="float-inner">
+    <div class="float-top">
+      <div class="float-timer">
+        <span class="ft-icon">●</span>
+        <span>특가 마감</span>
+        <span class="ft-time" id="ftTimer">6일 23:59:59</span>
+      </div>
+      <div class="float-remain">
+        <span>남은 자리</span>
+        <span class="fr-num" id="ftRemain">30</span>
+        <span>명</span>
+      </div>
+    </div>
+    <a href="#orderScreen" class="float-btn" onclick="scrollToProducts()">지금 예약하기</a>
+  </div>
+</div>
+
+<!-- 로딩 -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-t">접 수 중 ...</div>
+</div>
+
+<script>
+// ── 설정 ──
+var GAS_URL='https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
+
+// ── 상태 ──
+var picked=null;
+
+// ── 마감일 (오늘+7일) ──
+(function(){
+  var d=new Date();d.setDate(d.getDate()+7);
+  var m=d.getMonth()+1,day=d.getDate();
+  document.getElementById('deadlineText').textContent=m+'월 '+day+'일';
+})();
+
+// ── 타이머 (마감까지 카운트다운) ──
+(function(){
+  var end=new Date();end.setDate(end.getDate()+7);end.setHours(23,59,59,0);
+  function tick(){
+    var now=new Date(),diff=end-now;
+    if(diff<=0){document.getElementById('ftTimer').textContent='마감';return}
+    var days=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),
+        mi=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
+    document.getElementById('ftTimer').textContent=
+      days+'일 '+String(h).padStart(2,'0')+':'+String(mi).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// ── 남은 인원 자연 감소 ──
+(function(){
+  var key='nrlab_remain',stored=localStorage.getItem(key);
+  var remain=stored?parseInt(stored):30;
+  if(remain<5) remain=5;
+  document.getElementById('ftRemain').textContent=remain;
+  document.getElementById('urgRemain').textContent=remain;
+
+  function drop(){
+    var delay=(Math.random()*180+120)*1000; // 2~5분 간격
+    setTimeout(function(){
+      if(remain>5){
+        remain--;
+        localStorage.setItem(key,remain);
+        var el=document.getElementById('ftRemain');
+        el.textContent=remain;
+        el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+        document.getElementById('urgRemain').textContent=remain;
+      }
+      drop();
+    },delay);
+  }
+  drop();
+})();
+
+// ── 플로팅 바 표시 ──
+(function(){
+  var bar=document.getElementById('floatBar');
+  window.addEventListener('scroll',function(){
+    bar.classList.toggle('show',window.scrollY>300);
+  });
+})();
+
+// ── 페이드인 ──
+(function(){
+  var els=document.querySelectorAll('.fi');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('v')});return}
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}
+  })},{threshold:.1});
+  els.forEach(function(e){obs.observe(e)});
+})();
+
+// ── 상품 선택 ──
+function pickProduct(el){
+  document.querySelectorAll('.pcard').forEach(function(c){c.classList.remove('sel')});
+  el.classList.add('sel');
+  picked={code:el.dataset.code,price:parseInt(el.dataset.price),name:el.dataset.name};
+
+  // 폼 열기
+  document.getElementById('formArea').classList.add('open');
+
+  // W 필드 토글
+  var isW=picked.code.startsWith('W');
+  document.getElementById('wPartner').classList.toggle('vis',isW);
+
+  // 업셀 넛지
+  document.getElementById('upsellN').classList.toggle('show',picked.code==='N1');
+  document.getElementById('upsellW').classList.toggle('show',picked.code==='W1');
+
+  // 폼으로 스크롤
+  setTimeout(function(){
+    document.getElementById('formArea').scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+
+  checkForm();
+}
+
+// ── 폼 검증 ──
+function checkForm(){
+  var ok=picked
+    && v('f_name') && v('f_gender') && v('f_birth') && v('f_phone')
+    && document.getElementById('agree').checked;
+  if(picked && picked.code.startsWith('W')){
+    ok=ok && v('f_name2') && v('f_gender2') && v('f_birth2') && v('f_relation');
+  }
+  document.getElementById('submitBtn').disabled=!ok;
+}
+function v(id){return document.getElementById(id).value.trim()!==''}
+document.querySelectorAll('input,select,textarea').forEach(function(el){
+  el.addEventListener('input',checkForm);el.addEventListener('change',checkForm);
+});
+
+// ── 관리코드 생성 ──
+function genCode(){
+  var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';
+  for(var i=0;i<8;i++) s+=c.charAt(Math.floor(Math.random()*c.length));
+  return 'NR-'+(picked.code.startsWith('W')?'W':'N')+s;
+}
+
+// ── 전화번호 정규화 ──
+function normPhone(p){return p.replace(/[^0-9]/g,'').replace(/^(\d{3})(\d{3,4})(\d{4})$/,'$1-$2-$3')}
+
+// ── 금액 포맷 ──
+function fmtPrice(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',')+' 원'}
+
+// ── 제출 ──
+async function submitOrder(){
+  if(document.getElementById('submitBtn').disabled) return;
+
+  var code=genCode();
+  var isW=picked.code.startsWith('W');
+
+  var payload={
+    type:'PRIVATE_ORDER',
+    code:code,
+    product:picked.code,
+    productName:picked.name,
+    price:picked.price,
+    // 주문자 겸 분석 대상 (N) 또는 주인공1 (W)
+    name:document.getElementById('f_name').value.trim(),
+    gender:document.getElementById('f_gender').value,
+    birthDate:document.getElementById('f_birth').value,
+    calendar:document.getElementById('f_calendar').value,
+    birthTime:document.getElementById('f_birthtime').value.trim()||'모름',
+    mbti:document.getElementById('f_mbti').value||'',
+    phone:normPhone(document.getElementById('f_phone').value.trim()),
+    email:document.getElementById('f_email').value.trim(),
+    question:document.getElementById('f_question').value.trim(),
+    source:'order-private',
+    timestamp:new Date().toISOString()
+  };
+
+  if(isW){
+    payload.name2=document.getElementById('f_name2').value.trim();
+    payload.gender2=document.getElementById('f_gender2').value;
+    payload.birthDate2=document.getElementById('f_birth2').value;
+    payload.calendar2=document.getElementById('f_calendar2').value;
+    payload.birthTime2=document.getElementById('f_birthtime2').value.trim()||'모름';
+    payload.mbti2=document.getElementById('f_mbti2').value||'';
+    payload.relationship=document.getElementById('f_relation').value;
+  }
+
+  document.getElementById('loading').classList.add('on');
+
+  try{
+    await fetch(GAS_URL,{
+      method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(payload)
+    });
+    await new Promise(function(r){setTimeout(r,1500)});
+
+    document.getElementById('loading').classList.remove('on');
+
+    // 화면 전환
+    document.getElementById('orderScreen').classList.remove('visible');
+    document.getElementById('orderScreen').classList.add('hidden');
+    document.getElementById('floatBar').classList.remove('show');
+    document.getElementById('floatBar').style.display='none';
+
+    document.getElementById('cfPrice').textContent=fmtPrice(picked.price);
+    document.getElementById('cfProduct').textContent=picked.name;
+    document.getElementById('cfName').textContent=payload.name;
+    document.getElementById('cfCode').textContent=code;
+
+    document.getElementById('confirmScreen').classList.remove('hidden');
+    document.getElementById('confirmScreen').classList.add('visible');
+    window.scrollTo({top:0,behavior:'smooth'});
+
+  }catch(e){
+    document.getElementById('loading').classList.remove('on');
+    alert('접수 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+  }
+}
+
+// ── 계좌 복사 ──
+function copyAcct(){
+  var t='1002-4758-3163';
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t).then(function(){
+      var b=document.querySelector('.copy-btn');b.textContent='복사 완료';
+      setTimeout(function(){b.textContent='계좌번호 복사'},2000);
+    });
+  }else{
+    var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    var b=document.querySelector('.copy-btn');b.textContent='복사 완료';
+    setTimeout(function(){b.textContent='계좌번호 복사'},2000);
+  }
+}
+
+// ── 플로팅 버튼 클릭 ──
+function scrollToProducts(){
+  var target=document.querySelector('.products');
+  if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+
+</body>
+</html>
