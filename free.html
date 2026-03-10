@@ -269,7 +269,7 @@
   .card-capture {
     position: relative;
     width: 100%;
-    aspect-ratio: 3/4;
+    aspect-ratio: 9/16;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
@@ -487,6 +487,31 @@
     color: var(--accent);
     text-decoration: none;
   }
+
+  .birth-selects {
+    display: flex;
+    gap: 8px;
+  }
+
+  .birth-selects select {
+    flex: 1;
+    padding: 14px 8px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+    text-align: center;
+  }
+
+  .birth-selects select:focus {
+    border-color: var(--accent);
+  }
+  
 </style>
 </head>
 <body>
@@ -504,7 +529,11 @@
 
     <div class="form-group">
       <label>생년월일</label>
-      <input type="date" id="birthDate" value="1990-01-01">
+      <div class="birth-selects">
+        <select id="birthYear"></select>
+        <select id="birthMonth"></select>
+        <select id="birthDay"></select>
+      </div>
     </div>
 
     <div class="calendar-toggle">
@@ -512,18 +541,12 @@
       <button type="button" data-cal="음력" onclick="setCalendar(this)">음력</button>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>성별</label>
-        <select id="gender">
-          <option value="남">남성</option>
-          <option value="여">여성</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>태어난 시간 (선택)</label>
-        <input type="time" id="birthTime" placeholder="모르면 비워두세요">
-      </div>
+    <div class="form-group">
+      <label>성별</label>
+      <select id="gender">
+        <option value="남">남성</option>
+        <option value="여">여성</option>
+      </select>
     </div>
 
     <div class="form-group">
@@ -639,16 +662,17 @@ function setMbti(btn) {
 // API 호출
 // ═══════════════════════════════════════════════════════════
 async function getMyCard() {
-  const birthDate = document.getElementById('birthDate').value;
+  const year = document.getElementById('birthYear').value;
+  const month = document.getElementById('birthMonth').value;
+  const day = document.getElementById('birthDay').value;
+  const birthDate = `${year}-${month}-${day}`;
   const gender = document.getElementById('gender').value;
-  const birthTime = document.getElementById('birthTime').value || '모름';
 
-  if (!birthDate || !selectedMbti) {
+  if (!year || !month || !day || !selectedMbti) {
     showError('생년월일과 MBTI를 모두 입력해주세요.');
     return;
   }
 
-  // UI 전환
   hideError();
   document.getElementById('formSection').style.display = 'none';
   document.getElementById('loadingSection').classList.add('show');
@@ -660,7 +684,7 @@ async function getMyCard() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         birthDate,
-        birthTime,
+        birthTime: '모름',
         gender,
         calendarType,
         mbti: selectedMbti
@@ -802,6 +826,46 @@ function showError(msg) {
 function hideError() {
   document.getElementById('errorMsg').classList.remove('show');
 }
+
+(function initBirthSelects() {
+  const yearEl = document.getElementById('birthYear');
+  const monthEl = document.getElementById('birthMonth');
+  const dayEl = document.getElementById('birthDay');
+  const currentYear = new Date().getFullYear();
+
+  yearEl.innerHTML = '<option value="">년</option>';
+  for (let y = currentYear; y >= 1940; y--) {
+    yearEl.innerHTML += `<option value="${y}">${y}년</option>`;
+  }
+
+  monthEl.innerHTML = '<option value="">월</option>';
+  for (let m = 1; m <= 12; m++) {
+    const mv = String(m).padStart(2, '0');
+    monthEl.innerHTML += `<option value="${mv}">${m}월</option>`;
+  }
+
+  function updateDays() {
+    const y = parseInt(yearEl.value) || 2000;
+    const m = parseInt(monthEl.value) || 1;
+    const maxDay = new Date(y, m, 0).getDate();
+    const prevDay = dayEl.value;
+
+    dayEl.innerHTML = '<option value="">일</option>';
+    for (let d = 1; d <= maxDay; d++) {
+      const dv = String(d).padStart(2, '0');
+      dayEl.innerHTML += `<option value="${dv}">${d}일</option>`;
+    }
+
+    if (parseInt(prevDay) <= maxDay) {
+      dayEl.value = prevDay;
+    }
+  }
+
+  yearEl.addEventListener('change', updateDays);
+  monthEl.addEventListener('change', updateDays);
+  updateDays();
+})();
+  
 </script>
 
 </body>
