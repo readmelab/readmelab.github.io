@@ -41,6 +41,196 @@
             --oheng-metal: #9E9E9E;
             --oheng-water: #2196F3;
         }
+
+/* ══════════════════════════════════════
+   라이트 모드
+   ══════════════════════════════════════ */
+body.light-mode {
+    --bg-deep: #F8F5EF;
+    --bg-card: #FFFFFF;
+    --bg-card-alt: #F3EFE7;
+    --gold: #8B7332;
+    --gold-dim: #8B733233;
+    --gold-mid: #8B733266;
+    --gold-bright: #6B5A28;
+    --text-primary: #2A2520;
+    --text-secondary: #5A5040;
+    --text-muted: #7A6E5A;
+    --text-dim: #9A8E7A;
+    --text-faint: #B0A590;
+    --text-ghost: #D0C8B8;
+    --highlight-bg: rgba(139, 115, 50, 0.06);
+    --highlight-border: rgba(139, 115, 50, 0.25);
+    --oheng-wood: #2E7D32;
+    --oheng-fire: #C62828;
+    --oheng-earth: #F9A825;
+    --oheng-metal: #616161;
+    --oheng-water: #1565C0;
+}
+
+/* 라이트 모드 배경 */
+body.light-mode {
+    background-color: var(--bg-deep);
+}
+
+/* 라이트 모드 카드 그림자 추가 */
+body.light-mode .chapter-card {
+    border-bottom-color: #E0D8C8;
+}
+body.light-mode .pillars-card,
+body.light-mode .oheng-card,
+body.light-mode .yongshin-card,
+body.light-mode .sipsung-card,
+body.light-mode .daeun-card,
+body.light-mode .seun-card,
+body.light-mode .emotion-curve-card,
+body.light-mode .action-plan-card {
+    background: #FFFFFF;
+    border-color: #E0D8C8;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* 라이트 모드 인용구 */
+body.light-mode .highlight-quote {
+    background: linear-gradient(180deg, transparent 0%, rgba(139,115,50,0.04) 20%, rgba(139,115,50,0.04) 80%, transparent 100%);
+}
+
+/* 라이트 모드 박스 */
+body.light-mode .chapter-box {
+    background: linear-gradient(135deg, rgba(139,115,50,0.04) 0%, rgba(139,115,50,0.02) 100%);
+    border-left-color: rgba(139,115,50,0.4);
+}
+
+/* 라이트 모드 버튼 */
+body.light-mode .btn {
+    background: linear-gradient(135deg, #F8F5EF, #F0EBE0);
+    border-color: #D0C8B8;
+    color: #3A3020;
+}
+body.light-mode .btn:hover {
+    background: linear-gradient(135deg, #F0EBE0, #E8E0D0);
+    border-color: #8B7332;
+}
+
+/* 라이트 모드 플레이어 */
+body.light-mode .player-wrap {
+    background: linear-gradient(135deg, #FFFFFF, #F8F5EF);
+    border-color: #E0D8C8;
+}
+body.light-mode .player-desc {
+    background: rgba(139,115,50,0.03);
+    border-left-color: #D0C8B8;
+    color: #5A5040;
+}
+
+/* 라이트 모드 BGM 바 */
+body.light-mode .bgm-bar {
+    background: linear-gradient(135deg, #FFFFFF, #F8F5EF);
+    border-top-color: #E0D8C8;
+}
+
+/* 라이트 모드 TOC 패널 */
+body.light-mode .toc-panel {
+    background: #FFFFFF;
+    border-color: #E0D8C8;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+}
+
+/* 라이트 모드 토스트 */
+body.light-mode .toast {
+    background: linear-gradient(135deg, #FFFFFF, #F8F5EF);
+    border-color: #8B7332;
+    color: #6B5A28;
+}
+
+/* 라이트 모드 공유 버튼 */
+body.light-mode .share-action-btn {
+    border-color: #E0D8C8;
+    color: #5A5040;
+}
+body.light-mode .share-action-btn:hover {
+    color: #8B7332;
+    border-color: #8B7332;
+}
+
+/* 라이트 모드 폰트 조절 버튼 */
+body.light-mode .font-btn {
+    background: #FFFFFF;
+    border-color: #D0C8B8;
+    color: #8B7332;
+}
+
+/* 라이트 모드 플로팅 버튼 */
+body.light-mode .toc-fab,
+body.light-mode .float-btn {
+    background: #FFFFFF;
+    border-color: #D0C8B8;
+    color: #8B7332;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+/* 라이트 모드 스크롤 바 */
+body.light-mode .scroll-progress {
+    background: linear-gradient(90deg, #8B7332, #6B5A28);
+}
+
+/* 라이트 모드 오버뷰 카드 */
+body.light-mode .overview-card {
+    background: #FFFFFF;
+    border-color: #E0D8C8;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+body.light-mode .overview-card:hover {
+    border-color: #8B7332;
+}
+
+/* 라이트 모드 보증서 */
+body.light-mode .client-name {
+    color: #6B5A28;
+    text-shadow: none;
+}
+body.light-mode .sore-line {
+    color: #6B5A28;
+    text-shadow: none;
+}
+
+/* 라이트 모드 편지 스타일 */
+body.light-mode .chapter-card.letter-style {
+    background: linear-gradient(180deg, #F8F5EF 0%, #FFFFFF00 100%);
+    border-color: rgba(139,115,50,0.2);
+}
+body.light-mode .chapter-card.letter-style::before {
+    background: repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 38px,
+        rgba(139,115,50,0.06) 38px,
+        rgba(139,115,50,0.06) 39px
+    );
+}
+
+/* 라이트 모드 Deep Oracle */
+body.light-mode #oracleSection {
+    color: #2A2520;
+}
+
+/* 라이트 모드 챕터 네비 */
+body.light-mode #chapterNav {
+    background: rgba(248,245,239,0.8);
+    border-color: #E0D8C8;
+}
+
+/* 라이트 모드 테마 토글 버튼 */
+.theme-toggle {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--gold-dim); background: var(--bg-card);
+    color: var(--gold); font-size: 15px;
+    cursor: pointer; transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center;
+}
+.theme-toggle:hover { border-color: var(--gold); }
+.theme-toggle:active { transform: scale(0.92); }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
@@ -940,10 +1130,11 @@
     <div class="container">
 
         <!-- ── 폰트 크기 조절 ── -->
-        <div class="font-controls" id="fontControls">
-            <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
-            <button class="font-btn" onclick="changeFontSize(1)">A+</button>
-        </div>
+<div class="font-controls" id="fontControls">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="다크/라이트 전환">🌙</button>
+    <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+    <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+</div>
 
         <!-- ── 로딩 ── -->
         <div class="loading" id="loading">
@@ -1759,6 +1950,32 @@ var CHAPTER_TITLES_DEFAULT = [
     var audioFileIds = {};
     var playerIntervals = {};
     var bgmType = null;
+
+/* ── 다크/라이트 모드 ── */
+var savedTheme = localStorage.getItem('naread_theme') || 'dark';
+if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+}
+
+function toggleTheme() {
+    var isLight = document.body.classList.toggle('light-mode');
+    var btn = document.getElementById('themeToggle');
+    btn.textContent = isLight ? '☀️' : '🌙';
+    btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
+    localStorage.setItem('naread_theme', isLight ? 'light' : 'dark');
+}
+
+(function syncThemeBtn() {
+    var btn = document.getElementById('themeToggle');
+    if (btn) {
+        var isLight = document.body.classList.contains('light-mode');
+        btn.textContent = isLight ? '☀️' : '🌙';
+        btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
+    } else {
+        setTimeout(syncThemeBtn, 100);
+    }
+})();
+        
     var fontStep = 1;
     var fontScales = [0.88, 1, 1.15];
     var currentView = 'cert';
