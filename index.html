@@ -316,7 +316,67 @@ body.light-mode #oracleConversation div {
     color: var(--text-primary);
 }
 
-        
+/* ── 라이트모드: SVG 차트 색상 강제 오버라이드 ── */
+
+/* 1) SVG 배경 rect – 검은색 → 크림색 */
+body.light-mode svg rect[fill="#0a0a14"],
+body.light-mode svg rect[fill="#12121f"],
+body.light-mode svg rect[fill="#0e0e1a"] {
+    fill: #F8F5EF !important;
+}
+
+/* 2) SVG 배경 circle – 검은색 → 크림색 */
+body.light-mode svg circle[fill="#0a0a14"],
+body.light-mode svg circle[fill="#12121f"] {
+    fill: #F8F5EF !important;
+}
+
+/* 3) SVG stroke – 검은색 테두리 → 밝은 갈색 */
+body.light-mode svg rect[stroke="#0a0a14"],
+body.light-mode svg circle[stroke="#0a0a14"],
+body.light-mode svg line[stroke="#0a0a14"],
+body.light-mode svg path[stroke="#0a0a14"] {
+    stroke: #D0C8B8 !important;
+}
+
+/* 4) SVG 텍스트 – 어두운 글자 → 진한 갈색 */
+body.light-mode svg text[fill="#6a6050"],
+body.light-mode svg text[fill="#5a5040"],
+body.light-mode svg text[fill="#3a3530"] {
+    fill: #5A5040 !important;
+}
+
+/* 5) SVG 텍스트 – 밝은 글자 → 진한색 */
+body.light-mode svg text[fill="#f5f0e8"],
+body.light-mode svg text[fill="#a09880"],
+body.light-mode svg text[fill="#8a7a5a"] {
+    fill: #2A2520 !important;
+}
+
+/* 6) SVG 선/격자 – 반투명 금색 선 → 더 진하게 */
+body.light-mode svg line[stroke="rgba(201,168,76,0.08)"],
+body.light-mode svg line[stroke="rgba(201,168,76,0.15)"] {
+    stroke: rgba(139,115,50,0.25) !important;
+}
+body.light-mode svg polygon[stroke="rgba(201,168,76,0.15)"] {
+    stroke: rgba(139,115,50,0.3) !important;
+}
+
+/* 7) 차트 컨테이너 배경/테두리 */
+body.light-mode .cv-pillars-anim,
+body.light-mode .cv-oheng-radar,
+body.light-mode .cv-sipseong-map,
+body.light-mode .cv-unsung-curve,
+body.light-mode .cv-sinsal-cards {
+    background: rgba(139,115,50,0.03) !important;
+    border-color: #D0C8B8 !important;
+}
+
+/* 8) 차트 섹션 라벨 */
+body.light-mode .cv-section-label {
+    color: #8B7332 !important;
+}       
+
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
