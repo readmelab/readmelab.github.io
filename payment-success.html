@@ -15,79 +15,118 @@ p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
 .spinner{width:32px;height:32px;border:3px solid rgba(212,168,83,.15);border-top-color:#d4a853;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .status{font-size:.78rem;color:#6a6455;margin-top:8px}
+.error-box{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:16px;margin-top:16px;font-size:.8rem;color:#ff8a8a;line-height:1.6}
+.retry-btn{display:none;margin-top:16px;padding:14px 40px;background:linear-gradient(135deg,#d4a853,#b8912a);color:#0a0a0f;font-size:.9rem;font-weight:700;border-radius:12px;text-decoration:none;letter-spacing:1px;border:none;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="wrap">
-    <div class="icon">✅</div>
-    <h1>결제가 완료되었습니다</h1>
+    <div class="icon" id="icon">⏳</div>
+    <h1 id="title">결제를 확인하고 있습니다</h1>
     <div class="order-code" id="orderCodeDisplay">주문코드 로딩...</div>
-    <p>위 코드는 자동으로 연동됩니다.<br>잠시 후 정보 입력 페이지로 이동합니다.</p>
-    <div class="spinner"></div>
-    <div class="status" id="statusText">주문 등록 중...</div>
+    <p id="desc">잠시만 기다려 주세요...</p>
+    <div class="spinner" id="spinner"></div>
+    <div class="status" id="statusText">토스페이먼츠 승인 처리 중...</div>
+    <div class="error-box" id="errorBox"></div>
+    <button class="retry-btn" id="retryBtn" onclick="history.back()">돌아가서 다시 시도</button>
 </div>
 <script>
 (function(){
     var params = new URLSearchParams(window.location.search);
 
-    // ── URL에서 파라미터 추출 ──
-    // 토스가 붙여주는 것: paymentKey, orderId, amount
-    // order.html에서 붙인 것: formPage, product, coupon, productName, price
-    var orderId     = params.get('orderId') || '';
+    // 토스가 붙여주는 파라미터
     var paymentKey  = params.get('paymentKey') || '';
-    var amount      = params.get('amount') || params.get('price') || '0';
+    var orderId     = params.get('orderId') || '';
+    var amount      = params.get('amount') || '0';
+
+    // order.html에서 successUrl에 붙인 파라미터
     var formPage    = params.get('formPage') || '/form.html';
     var productCode = params.get('product') || 'N1';
     var coupon      = params.get('coupon') || '';
     var productName = params.get('productName') || '';
 
-    // 주문코드 표시
-    document.getElementById('orderCodeDisplay').textContent = orderId;
+    document.getElementById('orderCodeDisplay').textContent = orderId || '—';
 
-    // ── GAS에 주문 등록 ──
     var gasUrl = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
-
     var statusEl = document.getElementById('statusText');
+
+    // 필수 파라미터 확인
+    if (!paymentKey || !orderId || !amount) {
+        showError('결제 정보가 올바르지 않습니다.', '필수 파라미터가 누락되었습니다. URL을 확인해 주세요.');
+        return;
+    }
+
+    // ── GAS에 승인 요청 (기존 ORDER_REGISTER 대신 TOSS_CONFIRM) ──
+    statusEl.textContent = '결제 승인 요청 중...';
 
     fetch(gasUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
-            type: 'ORDER_REGISTER',
+            type: 'TOSS_CONFIRM',
+            paymentKey: paymentKey,
             orderId: orderId,
+            amount: parseInt(amount) || 0,
             product: productCode,
             productName: productName,
-            price: parseInt(amount) || 0,
-            paymentKey: paymentKey,
             coupon: coupon,
             timestamp: new Date().toISOString()
         })
     })
-    .then(function(res) {
-        return res.json().catch(function() { return {}; });
-    })
-    .then(function(data) {
-        console.log('GAS 응답:', data);
+    .then(function(res) { return res.text(); })
+    .then(function(text) {
+        var data;
+        try { data = JSON.parse(text); } catch(e) { data = { success: false, message: '서버 응답 파싱 실패' }; }
+
         if (data.success) {
-            statusEl.textContent = '✅ 주문 등록 완료! 이동 중...';
+            showSuccess();
         } else {
-            statusEl.textContent = '⚠️ 등록 처리 중... 이동합니다.';
+            showError(
+                data.message || '결제 승인에 실패했습니다.',
+                data.detail || ''
+            );
         }
-        setTimeout(redirect, 1500);
     })
     .catch(function(err) {
-        console.warn('GAS 등록 오류:', err);
-        statusEl.textContent = '이동 중...';
-        setTimeout(redirect, 1500);
+        console.warn('GAS 통신 오류:', err);
+        statusEl.textContent = '⚠️ 응답 확인 실패 — 이동합니다...';
+        setTimeout(redirect, 3000);
     });
 
+    function showSuccess() {
+        document.getElementById('icon').textContent = '✅';
+        document.getElementById('title').textContent = '결제가 완료되었습니다';
+        document.getElementById('title').style.color = '#e8c97a';
+        document.getElementById('desc').textContent = '잠시 후 정보 입력 페이지로 이동합니다.';
+        statusEl.textContent = '✅ 주문 등록 완료! 이동 중...';
+        setTimeout(redirect, 1500);
+    }
+
+    function showError(message, detail) {
+        document.getElementById('icon').textContent = '⚠️';
+        document.getElementById('title').textContent = '결제 처리 중 문제가 발생했습니다';
+        document.getElementById('title').style.color = '#ef4444';
+        document.getElementById('desc').textContent = message;
+        document.getElementById('spinner').style.display = 'none';
+        statusEl.style.display = 'none';
+
+        if (detail) {
+            var errorBox = document.getElementById('errorBox');
+            errorBox.textContent = detail;
+            errorBox.style.display = 'block';
+        }
+        document.getElementById('retryBtn').style.display = 'inline-block';
+    }
+
     function redirect() {
-        var target = window.location.origin + formPage + '?code=' + encodeURIComponent(orderId) + '&product=' + encodeURIComponent(productCode);
+        var target = window.location.origin + formPage
+            + '?code=' + encodeURIComponent(orderId)
+            + '&product=' + encodeURIComponent(productCode);
         window.location.href = target;
     }
 
-    // 안전장치: 8초 후 강제 이동
-    setTimeout(redirect, 8000);
+    // 안전장치: 15초 후 강제 이동
+    setTimeout(redirect, 15000);
 })();
 </script>
 </body>
