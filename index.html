@@ -392,6 +392,7 @@ body {
     overflow-x: hidden;
     line-height: 1.8;
 }
+html.light-mode,
 body.light-mode {
     background-color: #F8F5EF !important;
     color: #2A2520 !important;
@@ -2106,10 +2107,12 @@ var CHAPTER_TITLES_DEFAULT = [
 var savedTheme = localStorage.getItem('naread_theme') || 'dark';
 if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
+    document.documentElement.classList.add('light-mode');
 }
 
 function toggleTheme() {
     var isLight = document.body.classList.toggle('light-mode');
+    document.documentElement.classList.toggle('light-mode', isLight);
     var btn = document.getElementById('themeToggle');
     btn.textContent = isLight ? '☀️' : '🌙';
     btn.title = isLight ? '다크 모드로 전환' : '라이트 모드로 전환';
