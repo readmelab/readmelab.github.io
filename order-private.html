@@ -226,6 +226,32 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
   .mbti-item label{padding:7px 0;font-size:11px}
   .relation-group{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ── 배지 위치 보정 ── */
+.pcard { position: relative; }
+
+.pcard .p-badge {
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+  z-index: 2;
+}
+
+.p-badge.best {
+  background: var(--gold);
+  color: #000;
+}
+
+.p-badge.premium {
+  background: linear-gradient(135deg, var(--gold), #f5e6c8);
+  color: #000;
+}
+  
 </style>
 </head>
 <body>
@@ -287,7 +313,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
       <div class="upsell" id="upsellN">&gt;&gt; 2배의 압도적 심층 분석리포트 + 추가 질문 3회 + 맞춤 음원 &gt;&gt; <strong style="color:var(--gold)">단돈 9,900원에 업그레이드!</strong> ↓</div>
 
 <div class="pcard premium fi d1" data-code="N2" data-price="29800" data-name="나를 듣다" onclick="pickProduct(this)">
-    <div class="p-badge">BEST</div>
+    <div class="p-badge best">BEST</div>
     <div class="p-top"><div><div class="p-name">나를 듣다</div><div class="p-type">HEAR ME — (사주×MBTI) 심층 리포트 + 개인 맞춤 음원</div></div><div class="radio"></div></div>
     <div class="p-desc">(사주×MBTI) 심층 리포트 + 심층 질문 3회 + 개인 맞춤 음원</div>
     <div class="p-incl"><span class="p-tag">2배 심층 리포트</span><span class="p-tag">개인화 편지</span><span class="p-tag">심층 질의 3회</span><span class="p-tag">맞춤 음원</span></div>
@@ -305,7 +331,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:
       <div class="upsell" id="upsellW">&gt;&gt; 2배의 압도적 심층 분석리포트 + 추가 질문 3회 + 두 분을 위한 맞춤 음원 &gt;&gt; <strong style="color:var(--gold)">단돈 9,900원에 업그레이드!</strong> ↓</div>
 
 <div class="pcard premium fi d3" data-code="W2" data-price="49800" data-name="우리를 듣다" onclick="pickProduct(this)">
-    <div class="p-badge">PREMIUM</div>
+    <div class="p-badge premium">PREMIUM</div>
     <div class="p-top"><div><div class="p-name">우리를 듣다</div><div class="p-type">HEAR US — (사주×MBTI) 심층 궁합 리포트 + 두 사람을 위한 음원</div></div><div class="radio"></div></div>
     <div class="p-desc">(사주×MBTI) 심층 궁합 리포트 + 심층 질문 3회 + 두 사람을 위한 맞춤 음원</div>
     <div class="p-incl"><span class="p-tag">2배 심층 궁합 리포트</span><span class="p-tag">개인화 편지 (2인)</span><span class="p-tag">심층 질의 3회</span><span class="p-tag">맞춤 음원</span></div>
