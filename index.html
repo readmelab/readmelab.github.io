@@ -230,6 +230,93 @@ body.light-mode #chapterNav {
 }
 .theme-toggle:hover { border-color: var(--gold); }
 .theme-toggle:active { transform: scale(0.92); }
+
+
+/* 라이트 모드 — chart-visuals SVG 하드코딩 색상 덮기 */
+body.light-mode .cv-pillars-anim svg rect[fill="#12121f"],
+body.light-mode .cv-pillars-anim svg rect[fill="#0a0a14"],
+body.light-mode .cv-unsung-curve svg circle[fill="#0a0a14"],
+body.light-mode .cv-pillars-anim svg circle[stroke="#0a0a14"] {
+    fill: #F8F5EF !important;
+    stroke: #E0D8C8 !important;
+}
+body.light-mode .cv-pillars-anim text[fill="#6a6050"],
+body.light-mode .cv-oheng-radar text[fill="#6a6050"],
+body.light-mode .cv-sipseong-map text[fill="#6a6050"],
+body.light-mode .cv-unsung-curve text[fill="#6a6050"],
+body.light-mode .cv-pillars-anim text[fill="#8a7a5a"],
+body.light-mode .cv-oheng-radar text[fill="#8a7a5a"],
+body.light-mode .cv-unsung-curve text[fill="#8a7a5a"] {
+    fill: #5A5040 !important;
+}
+body.light-mode .report-section {
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+}
+body.light-mode .chapter-card {
+    background: transparent;
+    color: var(--text-primary);
+}
+body.light-mode .chapter-body {
+    color: var(--text-primary);
+}
+body.light-mode .chapter-body strong,
+body.light-mode .chapter-body b {
+    color: var(--gold);
+}
+body.light-mode .chapter-title {
+    color: var(--gold);
+}
+body.light-mode .chapter-number {
+    color: var(--text-dim);
+}
+body.light-mode .chapter-bridge {
+    color: var(--text-dim);
+}
+body.light-mode .highlight-quote-text {
+    color: var(--gold-bright);
+    text-shadow: none;
+}
+body.light-mode .chapter-divider-dot {
+    background: var(--gold-mid);
+}
+body.light-mode .daeun-pillar {
+    color: var(--text-secondary);
+}
+body.light-mode .daeun-item.current .daeun-pillar {
+    color: var(--gold);
+}
+body.light-mode #reportOutro {
+    color: var(--text-primary);
+}
+body.light-mode #emotionCurveSvg circle[fill="#0a0a14"] {
+    fill: #F8F5EF !important;
+}
+body.light-mode .sore-line {
+    color: var(--gold);
+    text-shadow: none;
+}
+body.light-mode .print-btn {
+    border-color: #D0C8B8;
+    color: var(--gold);
+}
+body.light-mode .cv-pillars-anim,
+body.light-mode .cv-oheng-radar,
+body.light-mode .cv-sipseong-map,
+body.light-mode .cv-unsung-curve,
+body.light-mode .cv-sinsal-cards {
+    background: rgba(139,115,50,0.02) !important;
+    border-color: #E0D8C8 !important;
+}
+body.light-mode .cv-sinsal-card {
+    background: var(--bg-card) !important;
+    border-color: #E0D8C8 !important;
+}
+body.light-mode #oracleConversation div {
+    color: var(--text-primary);
+}
+
+        
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
