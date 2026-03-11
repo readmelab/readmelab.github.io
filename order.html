@@ -161,13 +161,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 <!-- Toss Payments SDK -->
 <script src="https://js.tosspayments.com/v2/standard"></script>
 
+<!-- Toss Payments SDK -->
+<script src="https://js.tosspayments.com/v2/standard"></script>
+
 <script>
 (function(){
 
     /* ============================================
        1. 라이브 / 테스트 전환 플래그
        ============================================ */
-    var IS_LIVE = false;  // ← 라이브 전환 시 true로 변경
+    var IS_LIVE = false;
 
     var KEYS = {
         test: 'test_gck_ex6BJGQOVDPnJWjkJENQVW4w2zNb',
@@ -183,10 +186,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        2. 상품 정의
        ============================================ */
     var PRODUCTS = {
-        N1: { name: '나를 읽다 — 기본 분석', code: 'N1', line: 'N', orig: 59000, price: 29900, form: '/form.html' },
-        N2: { name: '나를 읽다 — 심화 분석', code: 'N2', line: 'N', orig: 79000, price: 39800, form: '/form.html' },
-        W1: { name: '우리를 읽다 — 기본 궁합', code: 'W1', line: 'W', orig: 99000, price: 49700, form: '/form-w.html' },
-        W2: { name: '우리를 읽다 — 심화 궁합', code: 'W2', line: 'W', orig: 129000, price: 59600, form: '/form-w.html' }
+        'N1': { name: '\uB098\uB97C \uC77D\uB2E4 \u2014 \uAE30\uBCF8 \uBD84\uC11D', code: 'N1', line: 'N', orig: 59000, price: 29900, form: '/form.html' },
+        'N2': { name: '\uB098\uB97C \uC77D\uB2E4 \u2014 \uC2EC\uD654 \uBD84\uC11D', code: 'N2', line: 'N', orig: 79000, price: 39800, form: '/form.html' },
+        'W1': { name: '\uC6B0\uB9AC\uB97C \uC77D\uB2E4 \u2014 \uAE30\uBCF8 \uAD81\uD569', code: 'W1', line: 'W', orig: 99000, price: 49700, form: '/form-w.html' },
+        'W2': { name: '\uC6B0\uB9AC\uB97C \uC77D\uB2E4 \u2014 \uC2EC\uD654 \uAD81\uD569', code: 'W2', line: 'W', orig: 129000, price: 59600, form: '/form-w.html' }
     };
 
 
@@ -194,11 +197,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        3. 쿠폰 정의
        ============================================ */
     var COUPONS = {
-        'BETA50':    { type: 'percent', value: 50, label: '베타 테스터 50% 할인', maxUse: 100 },
-        'FRIEND30':  { type: 'percent', value: 30, label: '지인 추천 30% 할인', maxUse: 50 },
-        'WELCOME':   { type: 'amount',  value: 10000, label: '첫 주문 1만원 할인', maxUse: 200 },
-        'READMELAB': { type: 'percent', value: 100, label: '나를읽다 100% 쿠폰', maxUse: 10 },
-        'TEST100':   { type: 'percent', value: 100, label: '테스트 100% 할인', maxUse: 999 }
+        'BETA50':    { type: 'percent', value: 50, label: '\uBCA0\uD0C0 \uD14C\uC2A4\uD130 50% \uD560\uC778', maxUse: 100 },
+        'FRIEND30':  { type: 'percent', value: 30, label: '\uC9C0\uC778 \uCD94\uCC9C 30% \uD560\uC778', maxUse: 50 },
+        'WELCOME':   { type: 'amount',  value: 10000, label: '\uCCAB \uC8FC\uBB38 1\uB9CC\uC6D0 \uD560\uC778', maxUse: 200 },
+        'READMELAB': { type: 'percent', value: 100, label: '\uB098\uB97C\uC77D\uB2E4 100% \uCFE0\uD3F0', maxUse: 10 },
+        'TEST100':   { type: 'percent', value: 100, label: '\uD14C\uC2A4\uD2B8 100% \uD560\uC778', maxUse: 999 }
     };
 
 
@@ -206,8 +209,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        4. 업셀 매핑
        ============================================ */
     var UPSELL_MAP = {
-        N1: { to: 'N2', desc: '심화 분석으로 업그레이드하면 더 깊은 인생 리포트를 받을 수 있습니다.' },
-        W1: { to: 'W2', desc: '심화 궁합으로 업그레이드하면 두 분의 관계를 더 세밀하게 분석합니다.' }
+        'N1': { to: 'N2', desc: '\uC2EC\uD654 \uBD84\uC11D\uC73C\uB85C \uC5C5\uADF8\uB808\uC774\uB4DC\uD558\uBA74 \uB354 \uAE4A\uC740 \uC778\uC0DD \uB9AC\uD3EC\uD2B8\uB97C \uBC1B\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4.' },
+        'W1': { to: 'W2', desc: '\uC2EC\uD654 \uAD81\uD569\uC73C\uB85C \uC5C5\uADF8\uB808\uC774\uB4DC\uD558\uBA74 \uB450 \uBD84\uC758 \uAD00\uACC4\uB97C \uB354 \uC138\uBC00\uD558\uAC8C \uBD84\uC11D\uD569\uB2C8\uB2E4.' }
     };
 
 
@@ -215,17 +218,34 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        5. 상태 변수
        ============================================ */
     var params = new URLSearchParams(window.location.search);
-    var currentProduct = params.get('product') || 'N1';
+    var rawProduct = (params.get('product') || 'N1').toUpperCase().trim();
+    var currentProduct = PRODUCTS[rawProduct] ? rawProduct : 'N1';
     var appliedCoupon = null;
     var selectedMethod = 'CARD';
 
+    console.log('[order.html] product param:', rawProduct, '| using:', currentProduct);
+
 
     /* ============================================
-       6. Toss SDK 초기화
+       6. Toss SDK 초기화 (지연)
        ============================================ */
-    var tossPayments = TossPayments(clientKey);
+    var tossPayments = null;
+    var payment = null;
     var customerKey = 'CUST_' + Math.random().toString(36).substr(2, 12);
-    var payment = tossPayments.payment({ customerKey: customerKey });
+
+    function initToss() {
+        try {
+            if (typeof TossPayments !== 'undefined') {
+                tossPayments = TossPayments(clientKey);
+                payment = tossPayments.payment({ customerKey: customerKey });
+                console.log('[order.html] Toss SDK initialized');
+            } else {
+                console.warn('[order.html] TossPayments not loaded yet');
+            }
+        } catch(e) {
+            console.error('[order.html] Toss init error:', e);
+        }
+    }
 
 
     /* ============================================
@@ -233,11 +253,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        ============================================ */
     function refreshUI() {
         var p = PRODUCTS[currentProduct];
-        if (!p) { alert('잘못된 상품 코드입니다.'); return; }
+        console.log('[order.html] refreshUI | currentProduct:', currentProduct, '| found:', !!p);
+
+        if (!p) {
+            currentProduct = 'N1';
+            p = PRODUCTS['N1'];
+        }
 
         document.getElementById('productName').textContent = p.name;
-        document.getElementById('origPrice').textContent = p.orig.toLocaleString() + '원';
-        document.getElementById('salePrice').textContent = p.price.toLocaleString() + '원';
+        document.getElementById('origPrice').textContent = p.orig.toLocaleString() + '\uC6D0';
+        document.getElementById('salePrice').textContent = p.price.toLocaleString() + '\uC6D0';
 
         var finalAmount = p.price;
 
@@ -249,20 +274,19 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
                 finalAmount = Math.max(0, p.price - c.value);
             }
             document.getElementById('couponRow').style.display = 'flex';
-            document.getElementById('couponPrice').textContent = '-' + (p.price - finalAmount).toLocaleString() + '원';
+            document.getElementById('couponPrice').textContent = '-' + (p.price - finalAmount).toLocaleString() + '\uC6D0';
         } else {
             document.getElementById('couponRow').style.display = 'none';
         }
 
-        document.getElementById('finalPrice').textContent = finalAmount.toLocaleString() + '원';
-        document.getElementById('payAmount').textContent = finalAmount.toLocaleString() + '원';
+        document.getElementById('finalPrice').textContent = finalAmount.toLocaleString() + '\uC6D0';
+        document.getElementById('payAmount').textContent = finalAmount.toLocaleString() + '\uC6D0';
 
-        // 업셀
         var upsell = UPSELL_MAP[currentProduct];
         var upsellCard = document.getElementById('upsellCard');
         if (upsell) {
             var upProduct = PRODUCTS[upsell.to];
-            document.getElementById('upsellDesc').textContent = upsell.desc + ' (+' + (upProduct.price - p.price).toLocaleString() + '원)';
+            document.getElementById('upsellDesc').textContent = upsell.desc + ' (+' + (upProduct.price - p.price).toLocaleString() + '\uC6D0)';
             upsellCard.style.display = 'block';
         } else {
             upsellCard.style.display = 'none';
@@ -279,17 +303,17 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
         if (!code) {
             msgEl.className = 'coupon-msg error';
-            msgEl.textContent = '쿠폰 코드를 입력해 주세요.';
+            msgEl.textContent = '\uCFE0\uD3F0 \uCF54\uB4DC\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.';
             return;
         }
         if (!COUPONS[code]) {
             msgEl.className = 'coupon-msg error';
-            msgEl.textContent = '유효하지 않은 쿠폰입니다.';
+            msgEl.textContent = '\uC720\uD6A8\uD558\uC9C0 \uC54A\uC740 \uCFE0\uD3F0\uC785\uB2C8\uB2E4.';
             return;
         }
         appliedCoupon = code;
         msgEl.className = 'coupon-msg success';
-        msgEl.textContent = '✅ ' + COUPONS[code].label + ' 적용됨';
+        msgEl.textContent = '\u2705 ' + COUPONS[code].label + ' \uC801\uC6A9\uB428';
         refreshUI();
     };
 
@@ -324,7 +348,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        ============================================ */
     window.requestPayment = function() {
         var p = PRODUCTS[currentProduct];
-        if (!p) return;
+        if (!p) { alert('\uC0C1\uD488 \uC815\uBCF4\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.'); return; }
 
         var finalAmount = p.price;
         if (appliedCoupon) {
@@ -336,7 +360,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
             }
         }
 
-        // 주문 ID 생성
         var prefix = p.line === 'W' ? 'W-' : 'N-';
         var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         var random = '';
@@ -345,9 +368,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
         var formPage = p.form;
 
-        // ── 무료 쿠폰 (100% 할인) ──
+        // 무료 쿠폰
         if (finalAmount <= 100) {
-            document.getElementById('payBtn').textContent = '처리 중...';
+            document.getElementById('payBtn').textContent = '\uCC98\uB9AC \uC911...';
             document.getElementById('payBtn').disabled = true;
 
             fetch(GAS_URL, {
@@ -366,19 +389,24 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
             })
             .then(function(){ return new Promise(function(r){ setTimeout(r, 2000); }); })
             .then(function(){
-                window.location.href = formPage
-                    + '?code=' + encodeURIComponent(orderId)
-                    + '&product=' + encodeURIComponent(currentProduct);
+                window.location.href = formPage + '?code=' + encodeURIComponent(orderId) + '&product=' + encodeURIComponent(currentProduct);
             })
             .catch(function(){
-                window.location.href = formPage
-                    + '?code=' + encodeURIComponent(orderId)
-                    + '&product=' + encodeURIComponent(currentProduct);
+                window.location.href = formPage + '?code=' + encodeURIComponent(orderId) + '&product=' + encodeURIComponent(currentProduct);
             });
             return;
         }
 
-        // ── 유료 결제 ──
+        // Toss SDK 확인
+        if (!payment) {
+            initToss();
+            if (!payment) {
+                alert('\uACB0\uC81C \uBAA8\uB4C8\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4. \uC7A0\uC2DC \uD6C4 \uB2E4\uC2DC \uC2DC\uB3C4\uD574 \uC8FC\uC138\uC694.');
+                return;
+            }
+        }
+
+        // 유료 결제
         var baseUrl = window.location.origin;
         var successUrl = baseUrl + '/payment-success.html'
             + '?formPage=' + encodeURIComponent(formPage)
@@ -389,7 +417,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
         var failUrl = baseUrl + '/payment-fail.html';
 
-        // 결제 수단별 파라미터 구성
         var requestParams;
 
         if (selectedMethod === 'CARD') {
@@ -400,12 +427,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
                 orderName: p.name,
                 successUrl: successUrl,
                 failUrl: failUrl,
-                card: {
-                    useEscrow: false,
-                    flowMode: 'DEFAULT',
-                    useCardPoint: false,
-                    useAppCardOnly: false
-                }
+                card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false }
             };
         } else if (selectedMethod === 'TRANSFER') {
             requestParams = {
@@ -417,12 +439,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
                 failUrl: failUrl
             };
         } else {
-            // 간편결제: TOSSPAY, KAKAOPAY, NAVERPAY, SAMSUNGPAY
             var providerMap = {
-                'TOSSPAY': '토스페이',
-                'KAKAOPAY': '카카오페이',
-                'NAVERPAY': '네이버페이',
-                'SAMSUNGPAY': '삼성페이'
+                'TOSSPAY': '\uD1A0\uC2A4\uD398\uC774',
+                'KAKAOPAY': '\uCE74\uCE74\uC624\uD398\uC774',
+                'NAVERPAY': '\uB124\uC774\uBC84\uD398\uC774',
+                'SAMSUNGPAY': '\uC0BC\uC131\uD398\uC774'
             };
             requestParams = {
                 method: 'EASYPAY',
@@ -431,16 +452,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
                 orderName: p.name,
                 successUrl: successUrl,
                 failUrl: failUrl,
-                easyPay: {
-                    provider: providerMap[selectedMethod] || '토스페이'
-                }
+                easyPay: { provider: providerMap[selectedMethod] || '\uD1A0\uC2A4\uD398\uC774' }
             };
         }
+
+        console.log('[order.html] requestPayment:', requestParams);
 
         payment.requestPayment(requestParams)
             .catch(function(err) {
                 if (err.code === 'USER_CANCEL') return;
-                alert('결제 요청 중 오류가 발생했습니다: ' + (err.message || ''));
+                alert('\uACB0\uC81C \uC694\uCCAD \uC911 \uC624\uB958: ' + (err.message || ''));
             });
     };
 
@@ -449,9 +470,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
        12. 초기 실행
        ============================================ */
     refreshUI();
+    initToss();
 
 })();
 </script>
+
 
 </body>
 </html>
