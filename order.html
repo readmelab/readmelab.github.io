@@ -69,11 +69,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         <div class="coupon-msg" id="couponMsg"></div>
     </div>
 
-    <div class="upsell-card" id="upsellCard">
-        <h3>&#11014;&#65039; 업그레이드 추천</h3>
-        <p id="upsellDesc"></p>
-        <button class="upsell-btn" onclick="doUpsell()">업그레이드하기</button>
-    </div>
+<div class="upsell-card" id="upsellCard">
+    <h3 style="font-size:.9rem;margin-bottom:10px">&#11014;&#65039; 9,900원만 추가하면?</h3>
+    <p id="upsellDesc" style="font-size:.8rem;line-height:1.7"></p>
+    <button class="upsell-btn" onclick="doUpsell()">9,900원에 심화로 업그레이드</button>
+</div>
 
     <div class="info-note">
         결제 완료 후 운명 분석에 필요한 정보 입력 페이지로 이동합니다.<br>
@@ -99,12 +99,12 @@ var KEYS = {
     var clientKey = IS_LIVE ? KEYS.live : KEYS.test;
     var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
 
-    var PRODUCTS = {
-        'N1': { name: '\uB098\uB97C \uC77D\uB2E4 \u2014 \uAE30\uBCF8 \uBD84\uC11D', code: 'N1', line: 'N', orig: 59000, price: 29900, form: '/form.html' },
-        'N2': { name: '\uB098\uB97C \uC77D\uB2E4 \u2014 \uC2EC\uD654 \uBD84\uC11D', code: 'N2', line: 'N', orig: 79000, price: 39800, form: '/form.html' },
-        'W1': { name: '\uC6B0\uB9AC\uB97C \uC77D\uB2E4 \u2014 \uAE30\uBCF8 \uAD81\uD569', code: 'W1', line: 'W', orig: 99000, price: 49700, form: '/form-w.html' },
-        'W2': { name: '\uC6B0\uB9AC\uB97C \uC77D\uB2E4 \u2014 \uC2EC\uD654 \uAD81\uD569', code: 'W2', line: 'W', orig: 129000, price: 59600, form: '/form-w.html' }
-    };
+var PRODUCTS = {
+    'N1': { name: '나를 읽다 — 기본 분석', code: 'N1', line: 'N', orig: 19900, price: 19900, form: '/form.html' },
+    'N2': { name: '나를 듣다 — 심화 분석', code: 'N2', line: 'N', orig: 29800, price: 29800, form: '/form.html' },
+    'W1': { name: '우리를 읽다 — 기본 궁합', code: 'W1', line: 'W', orig: 39900, price: 39900, form: '/form-w.html' },
+    'W2': { name: '우리를 듣다 — 심화 궁합', code: 'W2', line: 'W', orig: 49800, price: 49800, form: '/form-w.html' }
+};
 
     var COUPONS = {
         'BETA50':    { type: 'percent', value: 50, label: '\uBCA0\uD0C0 \uD14C\uC2A4\uD130 50% \uD560\uC778', maxUse: 100 },
@@ -114,10 +114,10 @@ var KEYS = {
         'TEST100':   { type: 'percent', value: 100, label: '\uD14C\uC2A4\uD2B8 100% \uD560\uC778', maxUse: 999 }
     };
 
-    var UPSELL_MAP = {
-        'N1': { to: 'N2', desc: '\uC2EC\uD654 \uBD84\uC11D\uC73C\uB85C \uC5C5\uADF8\uB808\uC774\uB4DC\uD558\uBA74 \uB354 \uAE4A\uC740 \uC778\uC0DD \uB9AC\uD3EC\uD2B8\uB97C \uBC1B\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4.' },
-        'W1': { to: 'W2', desc: '\uC2EC\uD654 \uAD81\uD569\uC73C\uB85C \uC5C5\uADF8\uB808\uC774\uB4DC\uD558\uBA74 \uB450 \uBD84\uC758 \uAD00\uACC4\uB97C \uB354 \uC138\uBC00\uD558\uAC8C \uBD84\uC11D\uD569\uB2C8\uB2E4.' }
-    };
+var UPSELL_MAP = {
+    'N1': { to: 'N2', desc: '>> 2배의 압도적 심층 분석리포트 + 추가 질문 3회 + 맞춤 음원 >> 단돈 9,900원!' },
+    'W1': { to: 'W2', desc: '>> 2배의 압도적 심층 분석리포트 + 추가 질문 3회 + 두 분을 위한 맞춤 음원 >> 단돈 9,900원!' }
+};
 
     var params = new URLSearchParams(window.location.search);
     var rawProduct = (params.get('product') || 'N1').toUpperCase().trim();
@@ -143,9 +143,16 @@ var KEYS = {
     function refreshUI() {
         var p = PRODUCTS[currentProduct];
         if (!p) { currentProduct = 'N1'; p = PRODUCTS['N1']; }
-        document.getElementById('productName').textContent = p.name;
-        document.getElementById('origPrice').textContent = p.orig.toLocaleString() + '\uC6D0';
-        document.getElementById('salePrice').textContent = p.price.toLocaleString() + '\uC6D0';
+document.getElementById('productName').textContent = p.name;
+if (p.orig > p.price) {
+    document.getElementById('origPrice').textContent = p.orig.toLocaleString() + '\uC6D0';
+    document.getElementById('origPrice').parentElement.style.display = 'flex';
+    document.getElementById('salePrice').textContent = p.price.toLocaleString() + '\uC6D0';
+    document.getElementById('salePrice').parentElement.style.display = 'flex';
+} else {
+    document.getElementById('origPrice').parentElement.style.display = 'none';
+    document.getElementById('salePrice').parentElement.style.display = 'none';
+}
         var finalAmount = p.price;
         if (appliedCoupon) {
             var c = COUPONS[appliedCoupon];
@@ -157,14 +164,13 @@ var KEYS = {
         }
         document.getElementById('finalPrice').textContent = finalAmount.toLocaleString() + '\uC6D0';
         document.getElementById('payAmount').textContent = finalAmount.toLocaleString() + '\uC6D0';
-        var upsell = UPSELL_MAP[currentProduct];
-        if (upsell) {
-            var up = PRODUCTS[upsell.to];
-            document.getElementById('upsellDesc').textContent = upsell.desc + ' (+' + (up.price - p.price).toLocaleString() + '\uC6D0)';
-            document.getElementById('upsellCard').style.display = 'block';
-        } else {
-            document.getElementById('upsellCard').style.display = 'none';
-        }
+var upsell = UPSELL_MAP[currentProduct];
+if (upsell) {
+    document.getElementById('upsellDesc').textContent = upsell.desc;
+    document.getElementById('upsellCard').style.display = 'block';
+} else {
+    document.getElementById('upsellCard').style.display = 'none';
+}
     }
 
     window.applyCoupon = function() {
