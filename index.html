@@ -1820,6 +1820,7 @@ var BGM_URLS = {
             themeLink: cert.themeLink || d.themeLink || '',
             themeName: cert.themeName || d.themeName || '',
             themeDesc: (cert.themeDesc || d.themeDesc || '').trim(),
+            themeLyrics: (cert.themeLyrics || d.themeLyrics || '').trim(),
             voiceLink: cert.voiceLink || d.voiceLink || '',
             voiceName: cert.voiceName || d.voiceName || '',
             voiceDesc: (cert.voiceDesc || d.voiceDesc || '').trim(),
@@ -1832,6 +1833,7 @@ var BGM_URLS = {
                 certData.themeLink = certData.themeLink || d.audio.theme.url || '';
                 certData.themeName = certData.themeName || d.audio.theme.name || '';
                 certData.themeDesc = certData.themeDesc || d.audio.theme.description || d.audio.theme.desc || '';
+                certData.themeLyrics = certData.themeLyrics || d.audio.theme.lyrics || '';
                 if (!certData.themeLink && d.audio.theme.fileId) { certData.themeLink = 'https://drive.google.com/file/d/' + d.audio.theme.fileId + '/view'; }
             }
             if (d.audio.voice) {
@@ -3315,6 +3317,7 @@ var emoji = ch.emoji || (idx < emojiArr.length ? emojiArr[idx] : '✦');
             '<div id="reportSongDetails" style="display:none;margin-top:24px;text-align:left;">' +
                 '<div style="width:40px;height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent);margin:0 auto 24px;"></div>' +
 (songDesc ? '<div style="font-size:13px;color:var(--text-secondary);line-height:1.9;padding:0 16px;word-break:keep-all;white-space:pre-wrap;">' + escapeHtml(songDesc) + '</div>' : '') +
+(certData.themeLyrics ? '<div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.08);"><div style="font-size:10px;color:var(--text-dim);letter-spacing:4px;text-align:center;margin-bottom:16px;">LYRICS</div><div style="font-family:\'Noto Serif KR\',serif;font-size:13px;color:var(--text-secondary);line-height:2.2;text-align:center;white-space:pre-wrap;word-break:keep-all;padding:0 12px;font-style:italic;letter-spacing:0.3px;">' + escapeHtml(certData.themeLyrics) + '</div></div>' : '') +            
 '<div style="margin-top:24px;text-align:center;">' +
 '<a id="themeDownloadBtn" href="#" onclick="event.preventDefault(); downloadAudioFile(\'' + escapeHtml(certData.themeLink) + '\', \'' + escapeHtml((certData.themeName || '나를읽다_테마송').replace(/[\\/:*?"<>|]/g, '_')) + '.mp3\');" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border:1px solid rgba(201,168,76,0.15);border-radius:8px;background:transparent;color:var(--gold-dim);font-size:12px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:all 0.3s;">' +
     '<span>↓</span> <span>곡 저장하기</span>' +
@@ -3755,10 +3758,11 @@ audio.addEventListener('ended', function() {
 
 var dlLink = document.getElementById(type + 'Download');
 if (dlLink) {
-    dlLink.href = rawUrl;
-    var songTitle = certData.themeName || certData[type + 'Name'] || '나를읽다_테마송';
-    dlLink.download = songTitle.replace(/[\\/:*?"<>|]/g, '_') + '.mp3';
-    dlLink.setAttribute('target', '_blank');
+    var dlName = (certData.themeName || certData[type + 'Name'] || '나를읽다_테마송').replace(/[\\/:*?"<>|]/g, '_') + '.mp3';
+    dlLink.href = '#';
+    dlLink.removeAttribute('target');
+    dlLink.removeAttribute('download');
+    dlLink.onclick = function(e) { e.preventDefault(); downloadAudioFile(rawUrl, dlName); };
 }
 
             audio.load();
@@ -3887,7 +3891,8 @@ if (dlLink) {
         playerIntervals[type] = setInterval(function() {
             var audio = audioPlayers[type];
             if (!audio || audio.paused) { clearInterval(playerIntervals[type]); return; }
-            var pct = (audio.currentTime / audio.duration) * 100;
+            var pct = (audio.duration > 0) ? (audio.currentTime / audio.duration) * 100 : 0;
+if (!isFinite(pct)) pct = 0;
             document.getElementById(type + 'Progress').value = pct;
             document.getElementById(type + 'Current').textContent = formatTime(audio.currentTime);
             if (bgmType === type) {
