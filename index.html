@@ -2453,7 +2453,7 @@ if (reportData) {
 if (d.themeLink) {
     var isCouple = (d.product || '').indexOf('우리') !== -1 || (d.productCode || '').startsWith('W');
     document.getElementById('btnTheme').classList.add('active');
-    document.getElementById('btnThemeText').textContent = isCouple ? '두 사람을 위한 노래' : '당신을 위한 노래';
+    document.getElementById('btnThemeText').textContent = d.themeName || (isCouple ? '두 사람을 위한 노래' : '당신을 위한 노래');
             if (d.themeDesc) { document.getElementById('themeDesc').textContent = d.themeDesc; document.getElementById('themeDesc').style.display = 'block'; }
             document.getElementById('themeTitle').textContent = d.themeName || '맞춤형 음원';
         }
