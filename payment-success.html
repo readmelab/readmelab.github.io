@@ -43,7 +43,7 @@ p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
     var formPage    = params.get('formPage') || '/form.html';
     var productCode = params.get('product') || 'N1';
     var coupon      = params.get('coupon') || '';
-    var productName = params.get('productName') || '';
+    var certParam   = params.get('cert') || '';
 
     document.getElementById('orderCodeDisplay').textContent = orderId || '—';
 
@@ -70,6 +70,7 @@ p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
             product: productCode,
             productName: productName,
             coupon: coupon,
+            certCode: certParam,
             timestamp: new Date().toISOString()
         })
     })
@@ -97,7 +98,9 @@ p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
         document.getElementById('icon').textContent = '✅';
         document.getElementById('title').textContent = '결제가 완료되었습니다';
         document.getElementById('title').style.color = '#e8c97a';
-        document.getElementById('desc').textContent = '잠시 후 정보 입력 페이지로 이동합니다.';
+        document.getElementById('desc').textContent = productCode === 'EXT3'
+            ? 'Deep Oracle 질문 3회가 추가되었습니다. 보증서로 돌아갑니다.'
+            : '잠시 후 정보 입력 페이지로 이동합니다.';
         statusEl.textContent = '✅ 주문 등록 완료! 이동 중...';
         setTimeout(redirect, 1500);
     }
@@ -119,6 +122,10 @@ p{font-size:.85rem;color:#a09880;line-height:1.8;margin-bottom:24px}
     }
 
     function redirect() {
+        if (productCode === 'EXT3' && certParam) {
+            window.location.href = 'https://readmelab.co.kr/?c=' + encodeURIComponent(certParam);
+            return;
+        }
         var target = window.location.origin + formPage
             + '?code=' + encodeURIComponent(orderId)
             + '&product=' + encodeURIComponent(productCode);
