@@ -4,436 +4,454 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>나를읽다 연구소 | 주문하기</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://js.tosspayments.com/v2/standard"></script>
 <style>
-:root{--gold:#d4a853;--gold-light:#e8c97a;--gold-dark:#b8912a;--bg:#0a0a0f;--bg2:#12121a;--t1:#f0e6d3;--t2:#a09880;--t3:#6a6455;--border:rgba(212,168,83,.15);--red:#ef4444}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{font-size:16px}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);line-height:1.7;min-height:100vh;min-height:100dvh}
-.serif{font-family:'Noto Serif KR',serif}
+:root{--gold:#d4a853;--gold-light:#e8c97a;--bg:#0a0a0f;--card:#111118;--text:#f0e6d3;--sub:#a09880;--border:rgba(212,168,83,.15)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 120px}
+.top-bar{background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px}
+.top-bar a{color:var(--gold);text-decoration:none;font-size:1.2rem}
+.top-bar h1{font-size:.95rem;font-weight:700;color:var(--gold-light)}
+.container{max-width:480px;margin:0 auto;padding:24px 16px}
 
-.container{max-width:480px;margin:0 auto;padding:24px 20px 40px}
-.back-link{display:inline-block;color:var(--t3);font-size:.82rem;text-decoration:none;margin-bottom:24px}
-.back-link:hover{color:var(--gold)}
+/* 상품 요약 */
+.product-summary{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.product-summary .label{font-size:.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.product-summary .name{font-size:1.1rem;font-weight:700;margin-bottom:16px;line-height:1.5}
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);font-size:.85rem}
+.price-row .orig{text-decoration:line-through;color:#6a6455}
+.price-row .final{font-size:1.2rem;font-weight:900;color:var(--gold-light)}
 
-/* ── Order Summary ── */
-.order-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px 24px;margin-bottom:24px}
-.order-label{font-size:.6rem;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;font-weight:500}
-.order-product{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.order-emoji{font-size:2.2rem}
-.order-info h2{font-family:'Noto Serif KR',serif;font-size:1.15rem;font-weight:700}
-.order-info span{font-size:.78rem;color:var(--t3);font-weight:300}
-.order-divider{height:1px;background:var(--border);margin:16px 0}
-.order-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
-.order-row .label{font-size:.85rem;color:var(--t2);font-weight:300}
-.order-row .value{font-size:.85rem;color:var(--t2)}
-.order-row .value.strike{text-decoration:line-through;color:var(--t3)}
-.order-row.total .label{font-size:1rem;font-weight:500;color:var(--t1)}
-.order-row.total .value{font-family:'Noto Serif KR',serif;font-size:1.4rem;font-weight:900;color:var(--gold-light)}
-.discount-tag{display:inline-block;background:rgba(239,68,68,.12);color:var(--red);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:8px}
+/* 쿠폰 */
+.coupon-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.coupon-section h3{font-size:.85rem;margin-bottom:12px;color:var(--gold-light)}
+.coupon-row{display:flex;gap:8px}
+.coupon-row input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:.85rem;outline:none}
+.coupon-row input:focus{border-color:var(--gold)}
+.coupon-row button{padding:12px 20px;background:linear-gradient(135deg,var(--gold),#b8912a);color:var(--bg);font-weight:700;font-size:.8rem;border:none;border-radius:10px;cursor:pointer;white-space:nowrap}
+.coupon-msg{font-size:.75rem;margin-top:8px;min-height:1.2em}
+.coupon-msg.success{color:#4ade80}
+.coupon-msg.error{color:#f87171}
 
-/* ── Coupon ── */
-.coupon-area{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:24px}
-.coupon-title{font-size:.85rem;color:var(--t1);font-weight:500;margin-bottom:12px}
-.coupon-row{display:flex;gap:8px;width:100%}
-.coupon-input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.03);color:var(--t1);font-size:.85rem;font-family:'Noto Sans KR',sans-serif;outline:none}
-.coupon-input::placeholder{color:var(--t3)}
-.coupon-input:focus{border-color:var(--gold)}
-.coupon-btn{flex-shrink:0;padding:12px 16px;border:none;border-radius:10px;background:rgba(212,168,83,.15);color:var(--gold);font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap}
-.coupon-btn:hover{background:rgba(212,168,83,.25)}
-.coupon-msg{font-size:.78rem;margin-top:8px;font-weight:300}
+/* 업셀 */
+.upsell-card{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.02));border:1px solid rgba(212,168,83,.25);border-radius:16px;padding:20px;margin-bottom:16px;display:none}
+.upsell-card h3{font-size:.85rem;color:var(--gold-light);margin-bottom:8px}
+.upsell-card p{font-size:.78rem;color:var(--sub);line-height:1.6;margin-bottom:12px}
+.upsell-btn{width:100%;padding:12px;background:rgba(212,168,83,.12);border:1px solid rgba(212,168,83,.3);color:var(--gold-light);font-size:.82rem;font-weight:600;border-radius:10px;cursor:pointer}
 
-/* ── Pay Button ── */
-.pay-btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:1.05rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all .3s;box-shadow:0 8px 32px rgba(212,168,83,.25)}
-.pay-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,168,83,.35)}
-.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+/* 결제 수단 선택 */
+.method-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.method-section h3{font-size:.85rem;margin-bottom:14px;color:var(--gold-light)}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.method-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 8px;background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;font-size:.72rem;color:var(--sub);text-align:center}
+.method-item:hover{border-color:rgba(212,168,83,.4);background:rgba(212,168,83,.05)}
+.method-item.selected{border-color:var(--gold);background:rgba(212,168,83,.1);color:var(--gold-light)}
+.method-item .m-icon{font-size:1.3rem}
+.method-item .m-label{font-weight:500;line-height:1.3}
 
-.pay-note{text-align:center;font-size:.72rem;color:var(--t3);margin-top:12px;font-weight:300;line-height:1.6}
+/* 결제 버튼 */
+.pay-section{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:16px 20px;z-index:100}
+.pay-section .inner{max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.pay-total{font-size:.8rem;color:var(--sub)}
+.pay-total span{display:block;font-size:1.2rem;font-weight:900;color:var(--gold-light)}
+.pay-btn{padding:16px 36px;background:linear-gradient(135deg,var(--gold),#b8912a);color:var(--bg);font-size:.95rem;font-weight:800;border:none;border-radius:14px;cursor:pointer;letter-spacing:1px;transition:transform .2s}
+.pay-btn:active{transform:scale(.97)}
 
-/* ── Security Badge ── */
-.security{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;padding:14px;border-radius:10px;background:rgba(255,255,255,.02)}
-.security span{font-size:.75rem;color:var(--t3);font-weight:300}
-
-/* ── Loading Overlay ── */
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,15,.9);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:20px}
-.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:.92rem;color:var(--t2);font-weight:300}
-
-/* ── Upsell ── */
-.upsell-card{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.03));border:1px solid rgba(212,168,83,.25);border-radius:16px;padding:22px 24px;margin-bottom:24px;display:none}
-.upsell-badge{display:inline-block;font-size:.6rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-weight:700}
-.upsell-title{font-family:'Noto Serif KR',serif;font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--t1)}
-.upsell-desc{font-size:.82rem;color:var(--t2);font-weight:300;margin-bottom:16px;line-height:1.6}
-.upsell-price{display:flex;align-items:baseline;gap:6px;margin-bottom:16px}
-.upsell-price .add{font-size:.82rem;color:var(--t2);font-weight:300}
-.upsell-price .amount{font-family:'Noto Serif KR',serif;font-size:1.2rem;font-weight:900;color:var(--gold-light)}
-.upsell-btns{display:flex;gap:10px}
-.upsell-yes{flex:1;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .3s}
-.upsell-yes:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(212,168,83,.3)}
-.upsell-no{flex-shrink:0;padding:14px 18px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--t3);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;cursor:pointer;transition:all .3s}
-.upsell-no:hover{border-color:var(--t3)}
-
-/* ── 모바일 대응 ── */
-@media (max-width:480px){
-    .container{padding:20px 16px 36px}
-    .order-card{padding:24px 18px}
-    .coupon-area{padding:18px 16px}
-    .coupon-input{padding:11px 12px;font-size:.82rem}
-    .coupon-btn{padding:11px 14px;font-size:.78rem}
-}
+/* 안내 */
+.info-note{font-size:.7rem;color:#6a6455;line-height:1.8;text-align:center;margin-top:16px;padding:0 12px}
 </style>
 </head>
 <body>
 
-<div class="container">
-    <a href="/" class="back-link">← 돌아가기</a>
+<div class="top-bar">
+    <a href="/landing.html">←</a>
+    <h1>주문서</h1>
+</div>
 
-    <!-- ── 주문 요약 ── -->
-    <div class="order-card">
-        <div class="order-label">Order Summary</div>
-        <div class="order-product">
-            <div class="order-emoji" id="productEmoji">📖</div>
-            <div class="order-info">
-                <h2 id="productName">나를 읽다</h2>
-                <span id="productSub">사주×MBTI 종합 리포트</span>
-            </div>
+<div class="container">
+
+    <!-- 상품 요약 -->
+    <div class="product-summary">
+        <div class="label">선택 상품</div>
+        <div class="name" id="productName">상품 로딩 중...</div>
+        <div class="price-row">
+            <span>정가</span>
+            <span class="orig" id="origPrice">—</span>
         </div>
-        <div class="order-divider"></div>
-        <div class="order-row">
-            <span class="label">정가</span>
-            <span class="value strike" id="originalPrice">59,000원</span>
+        <div class="price-row">
+            <span>할인가</span>
+            <span class="final" id="salePrice">—</span>
         </div>
-        <div class="order-row">
-            <span class="label">할인 <span class="discount-tag" id="discountTag">49% OFF</span></span>
-            <span class="value" style="color:var(--red)" id="discountAmount">-29,100원</span>
+        <div class="price-row" id="couponRow" style="display:none">
+            <span>쿠폰 적용</span>
+            <span class="final" id="couponPrice" style="color:#4ade80">—</span>
         </div>
-        <div class="order-row" id="couponRow" style="display:none">
-            <span class="label">쿠폰 할인</span>
-            <span class="value" style="color:#22c55e" id="couponAmount">-0원</span>
-        </div>
-        <div class="order-divider"></div>
-        <div class="order-row total">
-            <span class="label">결제 금액</span>
-            <span class="value" id="finalPrice">29,900원</span>
+        <div class="price-row" style="border-top:1px solid rgba(212,168,83,.2);padding-top:12px;margin-top:8px">
+            <span style="font-weight:700">최종 결제금액</span>
+            <span class="final" id="finalPrice">—</span>
         </div>
     </div>
 
-    <!-- ── 쿠폰 ── -->
-    <div class="coupon-area">
-        <div class="coupon-title">쿠폰 코드가 있으신가요?</div>
+    <!-- 쿠폰 입력 -->
+    <div class="coupon-section">
+        <h3>🎫 할인 쿠폰</h3>
         <div class="coupon-row">
-            <input type="text" class="coupon-input" id="couponInput" placeholder="쿠폰 코드 입력">
-            <button class="coupon-btn" onclick="applyCoupon()">적용</button>
+            <input type="text" id="couponInput" placeholder="쿠폰 코드를 입력하세요" maxlength="20" autocomplete="off">
+            <button onclick="applyCoupon()">적용</button>
         </div>
         <div class="coupon-msg" id="couponMsg"></div>
     </div>
 
-    <!-- ── 업셀 (읽다→듣다 업그레이드) ── -->
+    <!-- 업셀 카드 -->
     <div class="upsell-card" id="upsellCard">
-        <div class="upsell-badge">✦ 특별 업그레이드</div>
-        <div class="upsell-title" id="upsellTitle">+9,900원이면 완전히 달라집니다</div>
-        <div class="upsell-desc" id="upsellDesc"></div>
-        <div style="margin-bottom:18px">
-            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-                <span style="font-size:1.1rem;flex-shrink:0">📖</span>
-                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65">12,000자 → <strong style="color:var(--t1)">15,000자+ 심층 강화 리포트</strong>로 업그레이드</span>
+        <h3>⬆️ 업그레이드 추천</h3>
+        <p id="upsellDesc"></p>
+        <button class="upsell-btn" id="upsellBtn" onclick="doUpsell()">업그레이드하기</button>
+    </div>
+
+    <!-- 결제 수단 선택 -->
+    <div class="method-section">
+        <h3>💳 결제 수단 선택</h3>
+        <div class="method-grid" id="methodGrid">
+            <div class="method-item selected" data-method="CARD" onclick="selectMethod(this)">
+                <span class="m-icon">💳</span>
+                <span class="m-label">신용·체크카드</span>
             </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-                <span style="font-size:1.1rem;flex-shrink:0">🎵</span>
-                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65" id="upsellSongText">당신의 사주를 담아 작곡한 <strong style="color:var(--t1)">세상에 단 하나뿐인 노래</strong> (MP3)</span>
+            <div class="method-item" data-method="TRANSFER" onclick="selectMethod(this)">
+                <span class="m-icon">🏦</span>
+                <span class="m-label">계좌이체</span>
             </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-                <span style="font-size:1.1rem;flex-shrink:0">🔮</span>
-                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65"><strong style="color:var(--gold)">Deep Oracle · 심층 질의 1회 → 3회</strong>로 확장</span>
+            <div class="method-item" data-method="TOSSPAY" onclick="selectMethod(this)">
+                <span class="m-icon">🔵</span>
+                <span class="m-label">토스페이</span>
             </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-                <span style="font-size:1.1rem;flex-shrink:0">📊</span>
-                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65">성격·재물·연애·건강·직업 <strong style="color:var(--t1)">심층 해석 추가</strong></span>
+            <div class="method-item" data-method="KAKAOPAY" onclick="selectMethod(this)">
+                <span class="m-icon">💬</span>
+                <span class="m-label">카카오페이</span>
             </div>
-            <div style="display:flex;align-items:flex-start;gap:10px">
-                <span style="font-size:1.1rem;flex-shrink:0">🗓️</span>
-                <span style="font-size:.82rem;color:var(--t2);font-weight:300;line-height:1.65">맞춤 행동 가이드 & <strong style="color:var(--t1)">월별 전략</strong> 포함</span>
+            <div class="method-item" data-method="NAVERPAY" onclick="selectMethod(this)">
+                <span class="m-icon">🟢</span>
+                <span class="m-label">네이버페이</span>
             </div>
-        </div>
-        <div style="text-align:center;margin-bottom:16px;padding:12px;border-radius:10px;background:rgba(212,168,83,0.04);border:1px solid rgba(212,168,83,0.1)">
-            <div style="font-size:.78rem;color:var(--t3);margin-bottom:4px">이 모든 것이 단 <strong style="color:var(--gold);font-size:.88rem">+9,900원</strong></div>
-            <div style="font-size:.7rem;color:var(--t3)">나중에 따로 추가하면 더 비쌉니다</div>
-        </div>
-        <div class="upsell-btns">
-            <button class="upsell-yes" onclick="acceptUpsell()">🎵 +9,900원 업그레이드</button>
-            <button class="upsell-no" onclick="declineUpsell()">괜찮아요</button>
+            <div class="method-item" data-method="SAMSUNGPAY" onclick="selectMethod(this)">
+                <span class="m-icon">📱</span>
+                <span class="m-label">삼성페이</span>
+            </div>
         </div>
     </div>
 
-    <!-- ── 결제 버튼 ── -->
-    <button class="pay-btn" id="payBtn" onclick="requestPayment()">결제하기</button>
-
-    <div class="pay-note">
-        결제 완료 후 정보 입력 페이지로 이동합니다.<br>
-        카드, 카카오페이, 네이버페이 등 간편결제 가능
+    <div class="info-note">
+        결제 완료 후 운명 분석에 필요한 정보 입력 페이지로 이동합니다.<br>
+        문의: abkomp400@gmail.com · 010-9847-1152
     </div>
 
-    <div class="security">
-        <span>🔒</span>
-        <span>토스페이먼츠 보안 결제 | SSL 암호화 적용</span>
+</div>
+
+<!-- 하단 결제 버튼 -->
+<div class="pay-section">
+    <div class="inner">
+        <div class="pay-total">
+            결제금액
+            <span id="payAmount">—</span>
+        </div>
+        <button class="pay-btn" id="payBtn" onclick="requestPayment()">결제하기</button>
     </div>
 </div>
 
-<!-- ── 로딩 오버레이 ── -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">결제를 처리하고 있습니다...</div>
-</div>
+<!-- Toss Payments SDK -->
+<script src="https://js.tosspayments.com/v2/standard"></script>
 
 <script>
-// ═══════════════════════════════════════
-//  상품 정의
-// ═══════════════════════════════════════
-var PRODUCTS = {
-    N1: { name:'나를 읽다', sub:'사주×MBTI 종합 리포트', emoji:'📖', original:59000, price:29900, discount:49 },
-    N2: { name:'나를 듣다', sub:'프리미엄 + 맞춤 음악',   emoji:'🎵', original:79000, price:39800, discount:50 },
-    W1: { name:'우리를 읽다', sub:'궁합×MBTI 종합 리포트', emoji:'💕', original:99000, price:49700, discount:50 },
-    W2: { name:'우리를 듣다', sub:'궁합 프리미엄 + 맞춤 음악', emoji:'🎶', original:129000, price:59600, discount:54 }
-};
+(function(){
 
-// ═══════════════════════════════════════
-//  쿠폰 정의
-// ═══════════════════════════════════════
-var COUPONS = {
-    BETA50:    { type:'percent', value:50,  label:'베타 50% 할인',    maxUse:100 },
-    FRIEND30:  { type:'percent', value:30,  label:'지인 30% 할인',    maxUse:50 },
-    WELCOME:   { type:'amount',  value:5000,label:'웰컴 5,000원 할인', maxUse:200 },
-    READMELAB: { type:'percent', value:100, label:'무료 체험 (100%)',  maxUse:10 }
-};
+    /* ============================================
+       1. 라이브 / 테스트 전환 플래그
+       ============================================ */
+    var IS_LIVE = false;  // ← 라이브 전환 시 true로 변경
 
-// ═══════════════════════════════════════
-//  업셀 매핑
-// ═══════════════════════════════════════
-var UPSELL_MAP = { N1:'N2', W1:'W2' };
+    var KEYS = {
+        test: 'test_gck_ex6BJGQOVDPnJWjkJENQVW4w2zNb',
+        live: 'live_gck_kYG57Eba3GKeDWE9OO1k3pWDOxmA'
+    };
 
-// ═══════════════════════════════════════
-//  상태 변수
-// ═══════════════════════════════════════
-var params      = new URLSearchParams(window.location.search);
-var productCode = params.get('product') || 'N1';
-var product     = PRODUCTS[productCode] || PRODUCTS['N1'];
-var currentPrice  = product.price;
-var appliedCoupon = null;
+    var clientKey = IS_LIVE ? KEYS.live : KEYS.test;
 
-// ═══════════════════════════════════════
-//  토스페이먼츠 V2 결제창(팝업) 방식 초기화
-//  API 개별 연동 키 (test_ck_) 사용
-// ═══════════════════════════════════════
-var clientKey = 'test_ck_Ba5PzR0ArnyMGNmqmxWzVvmYnNeD';
-var tossPayments = TossPayments(clientKey);
-var payment = tossPayments.payment({ customerKey: 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8) });
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
 
-// GAS 엔드포인트
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
 
-// ═══════════════════════════════════════
-//  UI 갱신 헬퍼
-// ═══════════════════════════════════════
-function refreshOrderUI() {
-    document.getElementById('productEmoji').textContent   = product.emoji;
-    document.getElementById('productName').textContent    = product.name;
-    document.getElementById('productSub').textContent     = product.sub;
-    document.getElementById('originalPrice').textContent  = product.original.toLocaleString() + '원';
-    document.getElementById('discountTag').textContent    = product.discount + '% OFF';
-    document.getElementById('discountAmount').textContent = '-' + (product.original - product.price).toLocaleString() + '원';
-    document.getElementById('finalPrice').textContent     = currentPrice.toLocaleString() + '원';
-    document.getElementById('payBtn').textContent         = currentPrice.toLocaleString() + '원 결제하기';
-}
+    /* ============================================
+       2. 상품 정의
+       ============================================ */
+    var PRODUCTS = {
+        N1: { name: '나를 읽다 — 기본 분석', code: 'N1', line: 'N', orig: 59000, price: 29900, form: '/form.html' },
+        N2: { name: '나를 읽다 — 심화 분석', code: 'N2', line: 'N', orig: 79000, price: 39800, form: '/form.html' },
+        W1: { name: '우리를 읽다 — 기본 궁합', code: 'W1', line: 'W', orig: 99000, price: 49700, form: '/form-w.html' },
+        W2: { name: '우리를 읽다 — 심화 궁합', code: 'W2', line: 'W', orig: 129000, price: 59600, form: '/form-w.html' }
+    };
 
-// ═══════════════════════════════════════
-//  쿠폰 적용
-// ═══════════════════════════════════════
-function applyCoupon() {
-    var code  = document.getElementById('couponInput').value.trim().toUpperCase();
-    var msgEl = document.getElementById('couponMsg');
 
-    if (!code) {
-        msgEl.textContent = '쿠폰 코드를 입력하세요.';
-        msgEl.style.color = '#ff6b6b';
-        return;
+    /* ============================================
+       3. 쿠폰 정의
+       ============================================ */
+    var COUPONS = {
+        'BETA50':    { type: 'percent', value: 50, label: '베타 테스터 50% 할인', maxUse: 100 },
+        'FRIEND30':  { type: 'percent', value: 30, label: '지인 추천 30% 할인', maxUse: 50 },
+        'WELCOME':   { type: 'amount',  value: 10000, label: '첫 주문 1만원 할인', maxUse: 200 },
+        'READMELAB': { type: 'percent', value: 100, label: '나를읽다 100% 쿠폰', maxUse: 10 },
+        'TEST100':   { type: 'percent', value: 100, label: '테스트 100% 할인', maxUse: 999 }
+    };
+
+
+    /* ============================================
+       4. 업셀 매핑
+       ============================================ */
+    var UPSELL_MAP = {
+        N1: { to: 'N2', desc: '심화 분석으로 업그레이드하면 더 깊은 인생 리포트를 받을 수 있습니다.' },
+        W1: { to: 'W2', desc: '심화 궁합으로 업그레이드하면 두 분의 관계를 더 세밀하게 분석합니다.' }
+    };
+
+
+    /* ============================================
+       5. 상태 변수
+       ============================================ */
+    var params = new URLSearchParams(window.location.search);
+    var currentProduct = params.get('product') || 'N1';
+    var appliedCoupon = null;
+    var selectedMethod = 'CARD';
+
+
+    /* ============================================
+       6. Toss SDK 초기화
+       ============================================ */
+    var tossPayments = TossPayments(clientKey);
+    var customerKey = 'CUST_' + Math.random().toString(36).substr(2, 12);
+    var payment = tossPayments.payment({ customerKey: customerKey });
+
+
+    /* ============================================
+       7. UI 갱신 함수
+       ============================================ */
+    function refreshUI() {
+        var p = PRODUCTS[currentProduct];
+        if (!p) { alert('잘못된 상품 코드입니다.'); return; }
+
+        document.getElementById('productName').textContent = p.name;
+        document.getElementById('origPrice').textContent = p.orig.toLocaleString() + '원';
+        document.getElementById('salePrice').textContent = p.price.toLocaleString() + '원';
+
+        var finalAmount = p.price;
+
+        if (appliedCoupon) {
+            var c = COUPONS[appliedCoupon];
+            if (c.type === 'percent') {
+                finalAmount = Math.round(p.price * (1 - c.value / 100));
+            } else {
+                finalAmount = Math.max(0, p.price - c.value);
+            }
+            document.getElementById('couponRow').style.display = 'flex';
+            document.getElementById('couponPrice').textContent = '-' + (p.price - finalAmount).toLocaleString() + '원';
+        } else {
+            document.getElementById('couponRow').style.display = 'none';
+        }
+
+        document.getElementById('finalPrice').textContent = finalAmount.toLocaleString() + '원';
+        document.getElementById('payAmount').textContent = finalAmount.toLocaleString() + '원';
+
+        // 업셀
+        var upsell = UPSELL_MAP[currentProduct];
+        var upsellCard = document.getElementById('upsellCard');
+        if (upsell) {
+            var upProduct = PRODUCTS[upsell.to];
+            document.getElementById('upsellDesc').textContent = upsell.desc + ' (+' + (upProduct.price - p.price).toLocaleString() + '원)';
+            upsellCard.style.display = 'block';
+        } else {
+            upsellCard.style.display = 'none';
+        }
     }
 
-    var coupon = COUPONS[code];
-    if (!coupon) {
-        msgEl.textContent = '유효하지 않은 쿠폰입니다.';
-        msgEl.style.color = '#ff6b6b';
-        return;
-    }
 
-    appliedCoupon = code;
+    /* ============================================
+       8. 쿠폰 적용
+       ============================================ */
+    window.applyCoupon = function() {
+        var code = document.getElementById('couponInput').value.trim().toUpperCase();
+        var msgEl = document.getElementById('couponMsg');
 
-    if (coupon.type === 'percent') {
-        currentPrice = Math.round(product.price * (1 - coupon.value / 100));
-    } else {
-        currentPrice = Math.max(0, product.price - coupon.value);
-    }
+        if (!code) {
+            msgEl.className = 'coupon-msg error';
+            msgEl.textContent = '쿠폰 코드를 입력해 주세요.';
+            return;
+        }
+        if (!COUPONS[code]) {
+            msgEl.className = 'coupon-msg error';
+            msgEl.textContent = '유효하지 않은 쿠폰입니다.';
+            return;
+        }
+        appliedCoupon = code;
+        msgEl.className = 'coupon-msg success';
+        msgEl.textContent = '✅ ' + COUPONS[code].label + ' 적용됨';
+        refreshUI();
+    };
 
-    msgEl.textContent = '✓ ' + coupon.label + ' 적용 완료!';
-    msgEl.style.color = '#4ecdc4';
 
-    // 쿠폰 할인 행 표시
-    var couponDiscount = product.price - currentPrice;
-    document.getElementById('couponRow').style.display = 'flex';
-    document.getElementById('couponAmount').textContent = '-' + couponDiscount.toLocaleString() + '원';
-    document.getElementById('finalPrice').textContent = currentPrice.toLocaleString() + '원';
+    /* ============================================
+       9. 업셀
+       ============================================ */
+    window.doUpsell = function() {
+        var upsell = UPSELL_MAP[currentProduct];
+        if (upsell) {
+            currentProduct = upsell.to;
+            refreshUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
 
-    if (currentPrice <= 100) {
-        document.getElementById('payBtn').textContent = '무료 체험 시작하기';
-    } else {
-        document.getElementById('payBtn').textContent = currentPrice.toLocaleString() + '원 결제하기';
-    }
-}
 
-// ═══════════════════════════════════════
-//  업셀
-// ═══════════════════════════════════════
-function initUpsell() {
-    var upsellCode = UPSELL_MAP[productCode];
-    if (!upsellCode) return;
+    /* ============================================
+       10. 결제 수단 선택
+       ============================================ */
+    window.selectMethod = function(el) {
+        document.querySelectorAll('.method-item').forEach(function(item) {
+            item.classList.remove('selected');
+        });
+        el.classList.add('selected');
+        selectedMethod = el.getAttribute('data-method');
+    };
 
-    var isCouple = (productCode === 'W1');
-    var descEl = document.getElementById('upsellDesc');
-    var songEl = document.getElementById('upsellSongText');
 
-    if (isCouple) {
-        descEl.textContent = '두 분의 궁합 리포트가 심층 분석으로 업그레이드됩니다.';
-        songEl.innerHTML = '두 분의 궁합을 담아 작곡한 <strong style="color:var(--t1)">세상에 단 하나뿐인 노래</strong> (MP3)';
-    } else {
-        descEl.textContent = '당신의 리포트가 심층 분석으로 업그레이드됩니다.';
-    }
+    /* ============================================
+       11. 결제 요청
+       ============================================ */
+    window.requestPayment = function() {
+        var p = PRODUCTS[currentProduct];
+        if (!p) return;
 
-    document.getElementById('upsellCard').style.display = 'block';
-}
+        var finalAmount = p.price;
+        if (appliedCoupon) {
+            var c = COUPONS[appliedCoupon];
+            if (c.type === 'percent') {
+                finalAmount = Math.round(p.price * (1 - c.value / 100));
+            } else {
+                finalAmount = Math.max(0, p.price - c.value);
+            }
+        }
 
-function acceptUpsell() {
-    var upsellCode = UPSELL_MAP[productCode];
-    if (!upsellCode) return;
+        // 주문 ID 생성
+        var prefix = p.line === 'W' ? 'W-' : 'N-';
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var random = '';
+        for (var i = 0; i < 8; i++) { random += chars.charAt(Math.floor(Math.random() * chars.length)); }
+        var orderId = prefix + random;
 
-    productCode   = upsellCode;
-    product       = PRODUCTS[productCode];
-    currentPrice  = product.price;
-    appliedCoupon = null;
+        var formPage = p.form;
 
-    refreshOrderUI();
+        // ── 무료 쿠폰 (100% 할인) ──
+        if (finalAmount <= 100) {
+            document.getElementById('payBtn').textContent = '처리 중...';
+            document.getElementById('payBtn').disabled = true;
 
-    document.getElementById('upsellCard').style.display = 'none';
-    document.getElementById('couponInput').value = '';
-    document.getElementById('couponMsg').textContent = '';
-    document.getElementById('couponRow').style.display = 'none';
-}
-
-function declineUpsell() {
-    document.getElementById('upsellCard').style.display = 'none';
-}
-
-// ═══════════════════════════════════════
-//  결제 요청 (결제창 팝업 방식)
-// ═══════════════════════════════════════
-async function requestPayment() {
-    var btn = document.getElementById('payBtn');
-    btn.disabled = true;
-
-    // ── 관리코드 형식으로 orderId 생성 (기존 GAS 시스템과 호환) ──
-    var prefix = productCode.charAt(0); // N 또는 W
-    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    var randomPart = '';
-    for (var i = 0; i < 8; i++) {
-        randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    var orderId = prefix + '-' + randomPart; // 예: N-A7K2M9PQ
-
-    var formPage = (productCode === 'W1' || productCode === 'W2') ? '/form-w.html' : '/form.html';
-    var origin = window.location.origin;
-
-    // ── 무료 쿠폰 (금액 ≤ 100원) → 결제 생략, GAS 직접 등록 ──
-    if (currentPrice <= 100) {
-        document.getElementById('loadingOverlay').style.display = 'flex';
-
-        try {
-            await fetch(GAS_URL, {
+            fetch(GAS_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({
                     type: 'ORDER_REGISTER',
                     orderId: orderId,
-                    product: productCode,
-                    productName: product.name,
-                    price: currentPrice,
+                    product: currentProduct,
+                    productName: p.name,
+                    price: 0,
+                    paymentKey: 'FREE_COUPON',
                     coupon: appliedCoupon || '',
                     timestamp: new Date().toISOString()
                 })
+            })
+            .then(function(){ return new Promise(function(r){ setTimeout(r, 2000); }); })
+            .then(function(){
+                window.location.href = formPage
+                    + '?code=' + encodeURIComponent(orderId)
+                    + '&product=' + encodeURIComponent(currentProduct);
+            })
+            .catch(function(){
+                window.location.href = formPage
+                    + '?code=' + encodeURIComponent(orderId)
+                    + '&product=' + encodeURIComponent(currentProduct);
             });
-        } catch (e) {
-            console.warn('GAS 등록 요청:', e);
+            return;
         }
 
-        // 2초 대기 후 폼으로 이동 (GAS 처리 시간 확보)
-        setTimeout(function() {
-            window.location.href = origin + formPage + '?code=' + orderId + '&product=' + productCode;
-        }, 2000);
-        return;
-    }
+        // ── 유료 결제 ──
+        var baseUrl = window.location.origin;
+        var successUrl = baseUrl + '/payment-success.html'
+            + '?formPage=' + encodeURIComponent(formPage)
+            + '&product=' + encodeURIComponent(currentProduct)
+            + '&coupon=' + encodeURIComponent(appliedCoupon || '')
+            + '&productName=' + encodeURIComponent(p.name)
+            + '&price=' + finalAmount;
 
-    // ── 유료 결제 → 토스 결제창(팝업) 호출 ──
-    var successUrl = origin + '/payment-success.html'
-        + '?orderId=' + encodeURIComponent(orderId)
-        + '&formPage=' + encodeURIComponent(formPage)
-        + '&product=' + encodeURIComponent(productCode)
-        + '&coupon=' + encodeURIComponent(appliedCoupon || '')
-        + '&productName=' + encodeURIComponent(product.name)
-        + '&price=' + currentPrice;
+        var failUrl = baseUrl + '/payment-fail.html';
 
-    var failUrl = origin + '/payment-fail.html?orderId=' + encodeURIComponent(orderId);
+        // 결제 수단별 파라미터 구성
+        var requestParams;
 
-    try {
-        await payment.requestPayment({
-            method: 'CARD',
-            amount: { value: currentPrice, currency: 'KRW' },
-            orderId: orderId,
-            orderName: product.name,
-            successUrl: successUrl,
-            failUrl: failUrl
-        });
-    } catch (e) {
-        console.log('결제 요청 중단:', e);
-        btn.disabled = false;
-    }
-}
+        if (selectedMethod === 'CARD') {
+            requestParams = {
+                method: 'CARD',
+                amount: { currency: 'KRW', value: finalAmount },
+                orderId: orderId,
+                orderName: p.name,
+                successUrl: successUrl,
+                failUrl: failUrl,
+                card: {
+                    useEscrow: false,
+                    flowMode: 'DEFAULT',
+                    useCardPoint: false,
+                    useAppCardOnly: false
+                }
+            };
+        } else if (selectedMethod === 'TRANSFER') {
+            requestParams = {
+                method: 'TRANSFER',
+                amount: { currency: 'KRW', value: finalAmount },
+                orderId: orderId,
+                orderName: p.name,
+                successUrl: successUrl,
+                failUrl: failUrl
+            };
+        } else {
+            // 간편결제: TOSSPAY, KAKAOPAY, NAVERPAY, SAMSUNGPAY
+            var providerMap = {
+                'TOSSPAY': '토스페이',
+                'KAKAOPAY': '카카오페이',
+                'NAVERPAY': '네이버페이',
+                'SAMSUNGPAY': '삼성페이'
+            };
+            requestParams = {
+                method: 'EASYPAY',
+                amount: { currency: 'KRW', value: finalAmount },
+                orderId: orderId,
+                orderName: p.name,
+                successUrl: successUrl,
+                failUrl: failUrl,
+                easyPay: {
+                    provider: providerMap[selectedMethod] || '토스페이'
+                }
+            };
+        }
 
-// ═══════════════════════════════════════
-//  페이지 초기화
-// ═══════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function() {
-    refreshOrderUI();
-    initUpsell();
-    console.log('✅ 주문 페이지 초기화 완료 (결제창 방식)');
-});
+        payment.requestPayment(requestParams)
+            .catch(function(err) {
+                if (err.code === 'USER_CANCEL') return;
+                alert('결제 요청 중 오류가 발생했습니다: ' + (err.message || ''));
+            });
+    };
+
+
+    /* ============================================
+       12. 초기 실행
+       ============================================ */
+    refreshUI();
+
+})();
 </script>
-
-<!-- ═══ FOOTER ═══ -->
-<footer style="text-align:center;padding:48px 20px 32px;border-top:1px solid rgba(212,168,83,.15);max-width:480px;margin:0 auto">
-    <div style="font-family:'Noto Serif KR',serif;font-size:.82rem;color:var(--gold);letter-spacing:2px;margin-bottom:10px">나를읽다 연구소</div>
-    <div style="font-size:.65rem;color:var(--t3);line-height:2">
-        상호: 나를읽다연구소 | 대표: 오동훈<br>
-        사업자등록번호: 347-12-03156<br>
-        통신판매업: 제2026-부산서구-0040호<br>
-        소재지: 부산광역시 서구 대영로38번길 11, 103동 1601호<br>
-        이메일: abkomp400@gmail.com | 전화: 010-9847-1152<br>
-        © 2026 나를읽다연구소. All rights reserved.
-    </div>
-    <div style="margin-top:12px;display:flex;justify-content:center;gap:16px">
-        <a href="/refund.html" style="font-size:.65rem;color:var(--t3);text-decoration:underline;text-underline-offset:3px">환불정책</a>
-        <a href="/privacy.html" style="font-size:.65rem;color:var(--t3);text-decoration:underline;text-underline-offset:3px">개인정보처리방침</a>
-    </div>
-</footer>
 
 </body>
 </html>
