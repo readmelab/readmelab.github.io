@@ -75,10 +75,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="upsell-btn" onclick="doUpsell()">9,900원에 심화로 업그레이드</button>
 </div>
 
-    <div class="info-note">
-        결제 완료 후 운명 분석에 필요한 정보 입력 페이지로 이동합니다.<br>
-        문의: abkomp400@gmail.com &middot; 010-9847-1152
-    </div>
+<div class="info-note" id="infoNote">
+    결제 완료 후 운명 분석에 필요한 정보 입력 페이지로 이동합니다.<br>
+    문의: abkomp400@gmail.com &middot; 010-9847-1152
+</div>
 </div>
 
 <div class="pay-section">
@@ -103,7 +103,8 @@ var PRODUCTS = {
     'N1': { name: '나를 읽다 — 기본 분석', code: 'N1', line: 'N', orig: 19900, price: 19900, form: '/form.html' },
     'N2': { name: '나를 듣다 — 심화 분석', code: 'N2', line: 'N', orig: 29800, price: 29800, form: '/form.html' },
     'W1': { name: '우리를 읽다 — 기본 궁합', code: 'W1', line: 'W', orig: 39900, price: 39900, form: '/form-w.html' },
-    'W2': { name: '우리를 듣다 — 심화 궁합', code: 'W2', line: 'W', orig: 49800, price: 49800, form: '/form-w.html' }
+    'W2': { name: '우리를 듣다 — 심화 궁합', code: 'W2', line: 'W', orig: 49800, price: 49800, form: '/form-w.html' },
+    'EXT3': { name: 'Deep Oracle 연장 — 3회', code: 'EXT3', line: 'X', orig: 4900, price: 4900, form: null }
 };
 
     var COUPONS = {
@@ -171,6 +172,14 @@ if (upsell) {
 } else {
     document.getElementById('upsellCard').style.display = 'none';
 }
+        var noteEl = document.getElementById('infoNote');
+        if (noteEl) {
+            if (currentProduct === 'EXT3') {
+                noteEl.innerHTML = '결제 완료 후 Deep Oracle 질문 3회가 즉시 추가됩니다.<br>보증서 페이지로 돌아가 질문해 주세요.<br>문의: abkomp400@gmail.com &middot; 010-9847-1152';
+            } else {
+                noteEl.innerHTML = '결제 완료 후 운명 분석에 필요한 정보 입력 페이지로 이동합니다.<br>문의: abkomp400@gmail.com &middot; 010-9847-1152';
+            }
+        }
     }
 
     window.applyCoupon = function() {
@@ -197,12 +206,48 @@ if (upsell) {
             var c = COUPONS[appliedCoupon];
             finalAmount = c.type === 'percent' ? Math.round(p.price * (1 - c.value / 100)) : Math.max(0, p.price - c.value);
         }
-        var prefix = p.line === 'W' ? 'W-' : 'N-';
+        var prefix = p.line === 'X' ? 'X-' : p.line === 'W' ? 'W-' : 'N-';
         var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         var rand = '';
         for (var i = 0; i < 8; i++) rand += chars.charAt(Math.floor(Math.random() * chars.length));
         var orderId = prefix + rand;
-        var formPage = p.form;
+var formPage = p.form;
+        var certParam = params.get('cert') || '';
+
+        if (!formPage) {
+            // EXT3 등 폼 없는 상품: 결제 후 바로 완료 처리
+            if (finalAmount <= 100) {
+                document.getElementById('payBtn').textContent = '\uCC98\uB9AC \uC911...';
+                document.getElementById('payBtn').disabled = true;
+                fetch(GAS_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ type: 'ORDER_REGISTER', orderId: orderId, product: currentProduct, productName: p.name, price: 0, paymentKey: 'FREE_COUPON', coupon: appliedCoupon || '', certCode: certParam, timestamp: new Date().toISOString() })
+                })
+                .then(function(){ window.location.href = '/payment-success.html?product=' + encodeURIComponent(currentProduct) + '&cert=' + encodeURIComponent(certParam) + '&price=0'; })
+                .catch(function(){ window.location.href = '/payment-success.html?product=' + encodeURIComponent(currentProduct) + '&cert=' + encodeURIComponent(certParam) + '&price=0'; });
+                return;
+            }
+
+            if (!payment) { initToss(); }
+            if (!payment) { alert('\uACB0\uC81C \uBAA8\uB4C8 \uB85C\uB4DC \uC2E4\uD328. \uD398\uC774\uC9C0\uB97C \uC0C8\uB85C\uACE0\uCE68 \uD6C4 \uB2E4\uC2DC \uC2DC\uB3C4\uD574 \uC8FC\uC138\uC694.'); return; }
+
+            var baseUrl = window.location.origin;
+            var successUrl = baseUrl + '/payment-success.html?product=' + encodeURIComponent(currentProduct) + '&cert=' + encodeURIComponent(certParam) + '&productName=' + encodeURIComponent(p.name) + '&price=' + finalAmount + '&coupon=' + encodeURIComponent(appliedCoupon || '');
+            var failUrl = baseUrl + '/payment-fail.html';
+
+            payment.requestPayment({
+                method: 'CARD',
+                amount: { currency: 'KRW', value: finalAmount },
+                orderId: orderId,
+                orderName: p.name,
+                successUrl: successUrl,
+                failUrl: failUrl
+            }).catch(function(err) {
+                if (err.code === 'USER_CANCEL') return;
+                alert('\uACB0\uC81C \uC624\uB958: ' + (err.message || ''));
+            });
+            return;
+        }
 
         if (finalAmount <= 100) {
             document.getElementById('payBtn').textContent = '\uCC98\uB9AC \uC911...';
