@@ -3204,14 +3204,25 @@ function renderChapters(chapters) {
         var icon = ch.icon || (idx < CHAPTER_ICONS.length ? CHAPTER_ICONS[idx] : CHAPTER_ICONS[0]);
         var isHtml = /<[a-z]/i.test(body.substring(0, 10));
 
-        if (isHtml) {
-            var wrapper = document.createElement('div');
-            wrapper.className = 'chapter-html-block visible';
-            wrapper.style.marginBottom = '20px';
-            wrapper.innerHTML = body;
-            container.appendChild(wrapper);
-            return;
-        }
+if (isHtml) {
+    var card = document.createElement('div');
+    card.className = 'chapter-card';
+    card.setAttribute('data-chapter', idx);
+    if (ch.mood) card.setAttribute('data-mood', ch.mood);
+
+    var headerHtml = '<div class="chapter-header">';
+    headerHtml += '<span class="chapter-icon" style="color:var(--gold);">' + icon + '</span>';
+    headerHtml += '<div class="chapter-number">CHAPTER ' + String(idx + 1).padStart(2, '0') + '</div>';
+    headerHtml += '<div class="chapter-title">' + escapeHtml(title) + '</div>';
+    if (ch.summary) { headerHtml += '<div class="chapter-summary">' + escapeHtml(ch.summary) + '</div>'; }
+    headerHtml += '</div>';
+
+    card.innerHTML = headerHtml
+        + '<div class="cv-visual-slot" id="cvSlot' + idx + '"></div>'
+        + '<div class="chapter-body">' + body + '</div>';
+    container.appendChild(card);
+    return;
+}
 
         var card = document.createElement('div');
         card.className = 'chapter-card';
