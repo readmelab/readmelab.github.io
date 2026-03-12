@@ -330,42 +330,36 @@
     gap: 6px;
   }
 
-  /* ── 카드 안 한줄 비교 ── */
+  /* ── 카드 안 변환 한줄 ── */
   .versus-line {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 6px 16px;
+    padding: 7px 18px;
     background: rgba(0,0,0,0.45);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 20px;
-    font-size: 14px;
-    font-weight: 700;
     margin-bottom: 4px;
   }
 
-  .versus-line .mbti-user {
-    color: var(--accent-light);
-    letter-spacing: 2px;
-  }
-
-  .versus-line .mbti-vs {
-    color: rgba(255,255,255,0.35);
+  .versus-line .mbti-from {
     font-size: 12px;
-    font-weight: 400;
-  }
-
-  .versus-line .mbti-sip {
-    letter-spacing: 2px;
-  }
-
-  .versus-line .mbti-sip .v-match {
+    font-weight: 700;
     color: var(--accent-light);
+    letter-spacing: 1px;
   }
 
-  .versus-line .mbti-sip .v-diff {
-    color: var(--clash);
+  .versus-line .mbti-arrow {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .versus-line .mbti-to {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 1px;
   }
 
   /* 십성 라벨 */
@@ -1004,32 +998,21 @@ async function getMyCard() {
 // ═══════════════════════════════════════════════════════════
 // MBTI vs 본능 비교 렌더링
 // ═══════════════════════════════════════════════════════════
-function renderVersus(userMbti, sipseongMbtiPattern) {
+var MBTI_SHORT = {
+  'INTJ': '전략가', 'INTP': '논리술사', 'ENTJ': '통솔자', 'ENTP': '변론가',
+  'INFJ': '옹호자', 'INFP': '이상주의자', 'ENFJ': '선도자', 'ENFP': '활동가',
+  'ISTJ': '현실주의자', 'ISFJ': '수호자', 'ESTJ': '경영자', 'ESFJ': '친선도모',
+  'ISTP': '장인', 'ISFP': '탐험가', 'ESTP': '사업가', 'ESFP': '연예인'
+};
+
+function renderVersus(userMbti, nickname) {
   var lineEl = document.getElementById('versusLine');
-
-  var patterns = sipseongMbtiPattern.split('/');
-
-  var sipChars = [];
-  for (var i = 0; i < 4; i++) {
-    var userChar = userMbti.charAt(i);
-    var pattern = patterns[i] ? patterns[i].trim() : '-';
-
-    if (pattern === '-') {
-      sipChars.push({ char: userChar, type: 'match' });
-    } else {
-      sipChars.push({ char: pattern, type: (userChar === pattern) ? 'match' : 'diff' });
-    }
-  }
-
-  var sipHtml = '';
-  for (var j = 0; j < sipChars.length; j++) {
-    sipHtml += '<span class="v-' + sipChars[j].type + '">' + sipChars[j].char + '</span>';
-  }
+  var mbtiLabel = MBTI_SHORT[userMbti] || '';
 
   lineEl.innerHTML =
-    '<span class="mbti-user">' + userMbti + '</span>' +
-    '<span class="mbti-vs">vs</span>' +
-    '<span class="mbti-sip">' + sipHtml + '</span>';
+    '<span class="mbti-from">' + userMbti + ' ' + mbtiLabel + '</span>' +
+    '<span class="mbti-arrow">→</span>' +
+    '<span class="mbti-to">' + nickname + '</span>';
 }
 
 function renderCompareTable(userMbti, sipseongMbtiPattern) {
@@ -1080,7 +1063,7 @@ function renderCard(d) {
 
   // MBTI vs 본능 비교 (카드 안)
   var mbtiPattern = d.mbtiPattern || 'E/S/T/J';
-  var versus = renderVersus(d.mbti, mbtiPattern);
+  renderVersus(d.mbti, d.nickname);
 
   // 텍스트
   document.getElementById('sipNickname').textContent = d.nickname;
