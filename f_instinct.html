@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>본능카드 – 나를읽다 연구소</title>
+<meta name="description" content="MBTI와 사주가 만나면? 당신의 진짜 본능을 카드 한 장으로 확인하세요.">
+
+<!-- OG Tags -->
+<meta property="og:title" content="나의 본능카드 – 나를읽다 연구소">
+<meta property="og:description" content="MBTI는 겉, 사주는 속. 둘이 같을까 다를까? 960가지 중 나만의 카드를 확인하세요.">
+<meta property="og:image" content="https://cards.readmelab.co.kr/og/instinct_og.jpg">
+<meta property="og:url" content="https://readmelab.co.kr/f_instinct.html">
+<meta property="og:type" content="website">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- html2canvas -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════
+   0. 리셋 & 변수
+   ═══════════════════════════════════════ */
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --white: #f0ede6;
+  --white60: rgba(240,237,230,0.6);
+  --white40: rgba(240,237,230,0.4);
+  --gold: #c9a96e;
+  --gold-dim: rgba(201,169,110,0.3);
+  --clash: #d94a6a;
+  --cross: #4a90d9;
+  --harmony: #c9a96e;
+  --font-sans: 'Noto Sans KR', -apple-system, sans-serif;
+  --font-serif: 'Noto Serif KR', serif;
+  --card-max-w: 380px;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════
+   1. 헤더
+   ═══════════════════════════════════════ */
+.header {
+  text-align: center;
+  padding: 40px 20px 0;
+  width: 100%;
+  max-width: 480px;
+}
+.header .logo {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: var(--white40);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.header h1 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.header .sub {
+  font-size: 14px;
+  color: var(--white60);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════
+   2. 입력 폼
+   ═══════════════════════════════════════ */
+.form-section {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 20px;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+.input-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white60);
+  margin-bottom: 6px;
+}
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+.input-row select,
+.input-row input {
+  flex: 1;
+}
+select, input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  background: var(--bg2);
+  color: var(--white);
+  font-size: 15px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+select:focus, input:focus {
+  border-color: var(--gold);
+}
+
+/* 음력/양력 토글 */
+.calendar-toggle {
+  display: flex;
+  gap: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 18px;
+}
+.calendar-toggle button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: var(--bg2);
+  color: var(--white60);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.calendar-toggle button.active {
+  background: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+/* 성별 토글 */
+.gender-toggle {
+  display: flex;
+  gap: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 18px;
+}
+.gender-toggle button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: var(--bg2);
+  color: var(--white60);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gender-toggle button.active {
+  background: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+/* MBTI 선택 그리드 */
+.mbti-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.mbti-grid button {
+  padding: 10px 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: var(--bg2);
+  color: var(--white60);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mbti-grid button.selected {
+  border-color: var(--gold);
+  background: rgba(201,169,110,0.15);
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* 제출 버튼 */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--gold), #b8944f);
+  color: var(--bg);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 8px;
+}
+.btn-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════
+   3. 로딩
+   ═══════════════════════════════════════ */
+.loading-section {
+  display: none;
+  text-align: center;
+  padding: 80px 20px;
+}
+.loading-section.show { display: block; }
+
+.spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--gold-dim);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  font-size: 15px;
+  color: var(--white60);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════
+   4. 결과 카드
+   ═══════════════════════════════════════ */
+.result-section {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 20px 40px;
+  flex-direction: column;
+  align-items: center;
+}
+.result-section.show {
+  display: flex;
+}
+
+/* ── 카드 캡처 영역 ── */
+#card-capture {
+  width: 100%;
+  max-width: var(--card-max-w);
+  background: var(--bg);
+  padding: 0 0 20px;
+}
+
+.instinct-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  background: var(--bg);
+}
+
+.card-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  z-index: 1;
+  transition: opacity 0.6s;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(10,10,15,0.5) 62%,
+    rgba(10,10,15,0.88) 75%,
+    rgba(10,10,15,0.97) 100%
+  );
+  z-index: 2;
+}
+
+.card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  padding: 0 18px 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 콤보 태그 */
+.combo-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--white60);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* 십성 라벨 */
+.sipseong-label {
+  text-align: center;
+  margin-bottom: 2px;
+}
+.sipseong-label .nickname {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.sipseong-label .hanja {
+  font-size: 13px;
+  color: var(--white40);
+  letter-spacing: 4px;
+}
+
+/* 점수 섹션 */
+.score-section {
+  width: 100%;
+  text-align: center;
+  margin: 4px 0;
+}
+.score-label {
+  font-size: 11px;
+  color: var(--white40);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.score-number {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 6px;
+  transition: color 0.3s;
+}
+
+/* 게이지 바 */
+.gauge-track {
+  width: 80%;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.gauge-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 등급 뱃지 */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+}
+
+/* 훅 텍스트 */
+.hook-text {
+  font-size: 13px;
+  color: var(--white60);
+  text-align: center;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+/* ── 카드 하단 설명 ── */
+.description-box {
+  width: 100%;
+  max-width: var(--card-max-w);
+  margin-top: 16px;
+  padding: 18px;
+  background: var(--bg2);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.description-box p {
+  font-size: 14px;
+  color: var(--white60);
+  line-height: 1.8;
+  word-break: keep-all;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════
+   5. 액션 버튼
+   ═══════════════════════════════════════ */
+.actions {
+  width: 100%;
+  max-width: var(--card-max-w);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-action {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), #b8944f);
+  color: var(--bg);
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--white60);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ═══════════════════════════════════════
+   6. 푸터
+   ═══════════════════════════════════════ */
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 12px;
+  color: var(--white40);
+}
+.footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+/* ═══════════════════════════════════════
+   7. 반응형
+   ═══════════════════════════════════════ */
+@media (max-width: 380px) {
+  .instinct-card { border-width: 2px; }
+  .score-number { font-size: 36px; }
+  .sipseong-label .nickname { font-size: 19px; }
+  .mbti-grid { gap: 4px; }
+  .mbti-grid button { padding: 8px 0; font-size: 12px; }
+}
+
+/* ═══════════════════════════════════════
+   8. 유틸
+   ═══════════════════════════════════════ */
+.hidden { display: none !important; }
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════
+     SECTION 1: 입력 폼
+     ════════════════════════════════════ -->
+<div class="header" id="headerSection">
+  <div class="logo">나를읽다 연구소</div>
+  <h1>본능 카드</h1>
+  <p class="sub">MBTI는 겉모습, 사주는 본능.<br>둘이 같을까, 완전히 다를까?</p>
+</div>
+
+<div class="form-section" id="formSection">
+
+  <!-- 생년월일 -->
+  <div class="input-group">
+    <label>생년월일</label>
+    <div class="input-row">
+      <select id="birthYear"></select>
+      <select id="birthMonth"></select>
+      <select id="birthDay"></select>
+    </div>
+  </div>
+
+  <!-- 음력/양력 -->
+  <div class="input-group">
+    <label>달력</label>
+    <div class="calendar-toggle" id="calToggle">
+      <button type="button" class="active" data-val="solar">양력</button>
+      <button type="button" data-val="lunar">음력</button>
+    </div>
+  </div>
+
+  <!-- 성별 -->
+  <div class="input-group">
+    <label>성별</label>
+    <div class="gender-toggle" id="genderToggle">
+      <button type="button" class="active" data-val="M">남성</button>
+      <button type="button" data-val="F">여성</button>
+    </div>
+  </div>
+
+  <!-- MBTI -->
+  <div class="input-group">
+    <label>MBTI</label>
+    <div class="mbti-grid" id="mbtiGrid">
+      <button type="button">INTJ</button><button type="button">INTP</button>
+      <button type="button">ENTJ</button><button type="button">ENTP</button>
+      <button type="button">INFJ</button><button type="button">INFP</button>
+      <button type="button">ENFJ</button><button type="button">ENFP</button>
+      <button type="button">ISTJ</button><button type="button">ISTP</button>
+      <button type="button">ESTJ</button><button type="button">ESTP</button>
+      <button type="button">ISFJ</button><button type="button">ISFP</button>
+      <button type="button">ESFJ</button><button type="button">ESFP</button>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="btnSubmit" disabled>본능 카드 뽑기</button>
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 2: 로딩
+     ════════════════════════════════════ -->
+<div class="loading-section" id="loadingSection">
+  <div class="spinner"></div>
+  <p class="loading-text">사주 원국을 분석하고 있어요…<br>당신의 본능을 찾는 중</p>
+</div>
+
+<!-- ════════════════════════════════════
+     SECTION 3: 결과
+     ════════════════════════════════════ -->
+<div class="result-section" id="resultSection">
+
+  <!-- 캡처 영역 -->
+  <div id="card-capture">
+    <div class="instinct-card" id="instinctCard">
+      <div class="card-bg" id="cardBg"></div>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <div class="combo-tag" id="comboTag"></div>
+        <div class="sipseong-label">
+          <span class="nickname" id="sipNickname"></span>
+          <span class="hanja" id="sipHanja"></span>
+        </div>
+        <div class="score-section">
+          <div class="score-label">본능 일치도</div>
+          <div class="score-number" id="scoreNum">0</div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="gaugeFill"></div>
+          </div>
+        </div>
+        <div class="grade-badge" id="gradeBadge">
+          <span id="gradeIcon"></span>
+          <span id="gradeText"></span>
+        </div>
+        <p class="hook-text" id="hookText"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 설명 박스 -->
+  <div class="description-box fade-in" id="descBox">
+    <p id="descText"></p>
+  </div>
+
+  <!-- 액션 버튼 -->
+  <div class="actions fade-in">
+    <a href="https://readmelab.co.kr/#pricing" class="btn-action btn-primary">12,000자 전체 리포트 받기 →</a>
+    <button class="btn-action btn-secondary" onclick="saveCard()">카드 이미지 저장</button>
+    <button class="btn-action btn-outline" onclick="resetForm()">다시 해보기</button>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div class="footer">
+  © 2025 나를읽다 연구소 · <a href="https://readmelab.co.kr">readmelab.co.kr</a>
+</div>
+
+<!-- ════════════════════════════════════
+     SCRIPTS
+     ════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ── API 설정 ──
+  const API_URL = 'https://naread-server-1075269376260.asia-northeast3.run.app/api/free-instinct';
+
+  // ── DOM 참조 ──
+  const $ = id => document.getElementById(id);
+  const formSection    = $('formSection');
+  const headerSection  = $('headerSection');
+  const loadingSection = $('loadingSection');
+  const resultSection  = $('resultSection');
+  const btnSubmit      = $('btnSubmit');
+
+  // ── 상태 ──
+  let state = {
+    year: null,
+    month: null,
+    day: null,
+    isLunar: false,
+    gender: 'M',
+    mbti: null
+  };
+
+  // ═══════════════════════════════════
+  // 폼 초기화
+  // ═══════════════════════════════════
+
+  // 연도 (1940~2010)
+  const selYear = $('birthYear');
+  for (let y = 2010; y >= 1940; y--) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y + '년';
+    selYear.appendChild(opt);
+  }
+  selYear.value = '1990';
+  state.year = 1990;
+
+  selYear.addEventListener('change', function() {
+    state.year = parseInt(this.value);
+    checkReady();
+  });
+
+  // 월
+  const selMonth = $('birthMonth');
+  for (let m = 1; m <= 12; m++) {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m + '월';
+    selMonth.appendChild(opt);
+  }
+  selMonth.addEventListener('change', function() {
+    state.month = parseInt(this.value);
+    checkReady();
+  });
+
+  // 일
+  const selDay = $('birthDay');
+  for (let d = 1; d <= 31; d++) {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d + '일';
+    selDay.appendChild(opt);
+  }
+  selDay.addEventListener('change', function() {
+    state.day = parseInt(this.value);
+    checkReady();
+  });
+
+  // 음력/양력 토글
+  $('calToggle').addEventListener('click', function(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    this.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.isLunar = btn.dataset.val === 'lunar';
+  });
+
+  // 성별 토글
+  $('genderToggle').addEventListener('click', function(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    this.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.gender = btn.dataset.val;
+  });
+
+  // MBTI 선택
+  $('mbtiGrid').addEventListener('click', function(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    this.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.mbti = btn.textContent.trim();
+    checkReady();
+  });
+
+  function checkReady() {
+    btnSubmit.disabled = !(state.year && state.month && state.day && state.mbti);
+  }
+
+  // ═══════════════════════════════════
+  // 제출
+  // ═══════════════════════════════════
+
+  btnSubmit.addEventListener('click', async function() {
+    if (this.disabled) return;
+
+    // UI 전환
+    formSection.classList.add('hidden');
+    headerSection.classList.add('hidden');
+    loadingSection.classList.add('show');
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          birthYear:  state.year,
+          birthMonth: state.month,
+          birthDay:   state.day,
+          mbti:       state.mbti,
+          isLunar:    state.isLunar,
+          gender:     state.gender === 'M' ? '남' : '여'
+        })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.error || '결과를 불러올 수 없습니다');
+      }
+
+      renderResult(data);
+
+    } catch (err) {
+      alert('오류가 발생했습니다: ' + err.message);
+      resetForm();
+    }
+  });
+
+  // ═══════════════════════════════════
+  // 결과 렌더링
+  // ═══════════════════════════════════
+
+  const GRADE_CONFIG = {
+    '완전충돌': { icon: '💥', label: '완전 충돌' },
+    '충돌':     { icon: '⚡', label: '충돌' },
+    '교차':     { icon: '🔀', label: '교차' },
+    '조화':     { icon: '✨', label: '조화' },
+    '완전일치': { icon: '🪞', label: '완전 일치' }
+  };
+
+  function renderResult(data) {
+    const d = data.instinct;
+    const color = d.color || '#c9a96e';
+    const grade = GRADE_CONFIG[d.grade] || { icon: '🔮', label: d.grade };
+
+    // 카드 테두리 색상
+    $('instinctCard').style.borderColor = color;
+
+    // 배경 이미지
+    const bg = $('cardBg');
+    bg.style.backgroundImage = 'url(' + d.imageUrl + ')';
+    bg.style.opacity = '1';
+
+    // 텍스트
+    $('comboTag').textContent = d.sipseong + ' × ' + d.mbti;
+    $('sipNickname').textContent = d.nickname;
+    $('sipHanja').textContent = d.hanja;
+    $('scoreNum').textContent = d.score;
+    $('scoreNum').style.color = color;
+    $('hookText').textContent = d.hook;
+    $('gradeIcon').textContent = grade.icon;
+    $('gradeText').textContent = grade.label;
+    $('gradeBadge').style.borderColor = color;
+    $('gradeBadge').style.color = color;
+
+    // 설명
+    $('descText').textContent = d.description;
+
+    // 게이지 애니메이션
+    const fill = $('gaugeFill');
+    fill.style.background = color;
+    fill.style.width = '0%';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        fill.style.width = d.score + '%';
+      });
+    });
+
+    // UI 전환
+    loadingSection.classList.remove('show');
+    resultSection.classList.add('show');
+
+    // 스크롤 맨 위로
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ═══════════════════════════════════
+  // 저장 & 리셋
+  // ═══════════════════════════════════
+
+  window.saveCard = async function() {
+    try {
+      const el = $('card-capture');
+      const canvas = await html2canvas(el, {
+        backgroundColor: '#0a0a0f',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      });
+      const link = document.createElement('a');
+      link.download = '나의_본능카드.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      alert('저장에 실패했습니다. 스크린샷을 이용해주세요.');
+    }
+  };
+
+  window.resetForm = function() {
+    resultSection.classList.remove('show');
+    loadingSection.classList.remove('show');
+    formSection.classList.remove('hidden');
+    headerSection.classList.remove('hidden');
+
+    // MBTI 선택 초기화
+    $('mbtiGrid').querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+    state.mbti = null;
+    btnSubmit.disabled = true;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+})();
+</script>
+
+</body>
+</html>
