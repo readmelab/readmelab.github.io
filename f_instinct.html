@@ -1059,7 +1059,9 @@ function renderCard(d) {
   document.getElementById('cardCapture').style.borderColor = color;
 
   // 배경 이미지
-  document.getElementById('cardBg').style.backgroundImage = 'url(' + d.imageUrl + ')';
+  var bgEl = document.getElementById('cardBg');
+bgEl.style.backgroundImage = 'none';
+bgEl.innerHTML = '<img src="' + imageUrl + '" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;">';
 
   // MBTI vs 본능 비교 (카드 안)
   var mbtiPattern = d.mbtiPattern || 'E/S/T/J';
@@ -1123,7 +1125,7 @@ async function saveCard() {
     });
 
     var link = document.createElement('a');
-    link.download = '나의_본능카드_나를읽다.png';
+    link.download = (document.getElementById('sipNickname').textContent || '나의_본능카드') + '_나를읽다.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch (err) {
