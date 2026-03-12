@@ -330,77 +330,42 @@
     gap: 6px;
   }
 
-  /* ── MBTI vs 본능 대비 박스 ── */
-  .versus-box {
-    width: 100%;
-    background: rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-bottom: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .versus-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .versus-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 1px;
-    white-space: nowrap;
-    min-width: 70px;
-  }
-
-  .versus-letters {
-    display: flex;
-    gap: 5px;
-  }
-
-  .versus-letter {
-    width: 30px;
-    height: 30px;
+  /* ── 카드 안 한줄 비교 ── */
+  .versus-line {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 900;
+    gap: 8px;
+    padding: 6px 16px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
   }
 
-  .versus-letter.match {
-    background: rgba(201,169,110,0.25);
-    border: 1px solid var(--accent);
+  .versus-line .mbti-user {
+    color: var(--accent-light);
+    letter-spacing: 2px;
+  }
+
+  .versus-line .mbti-vs {
+    color: rgba(255,255,255,0.35);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .versus-line .mbti-sip {
+    letter-spacing: 2px;
+  }
+
+  .versus-line .mbti-sip .v-match {
     color: var(--accent-light);
   }
 
-  .versus-letter.diff {
-    background: rgba(217,74,106,0.2);
-    border: 1px solid var(--clash);
+  .versus-line .mbti-sip .v-diff {
     color: var(--clash);
-  }
-
-  .versus-letter.wild {
-    background: rgba(74,144,217,0.2);
-    border: 1px solid var(--cross);
-    color: var(--cross);
-  }
-
-  .versus-result {
-    text-align: center;
-    padding-top: 2px;
-  }
-
-  .versus-result-text {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
   }
 
   /* 십성 라벨 */
@@ -815,19 +780,7 @@
     <div class="card-overlay"></div>
     <div class="card-watermark">나를읽다 연구소</div>
     <div class="card-content">
-      <div class="versus-box" id="versusBox">
-        <div class="versus-row">
-          <span class="versus-label">나의 MBTI</span>
-          <div class="versus-letters" id="userMbtiLetters"></div>
-        </div>
-        <div class="versus-row">
-          <span class="versus-label">본능 MBTI</span>
-          <div class="versus-letters" id="sipMbtiLetters"></div>
-        </div>
-        <div class="versus-result">
-          <span class="versus-result-text" id="versusResultText"></span>
-        </div>
-      </div>
+      <div class="versus-line" id="versusLine"></div>
       <div class="sipseong-label">
         <span class="nickname" id="sipNickname"></span>
         <span class="hanja" id="sipHanja"></span>
@@ -1052,46 +1005,31 @@ async function getMyCard() {
 // MBTI vs 본능 비교 렌더링
 // ═══════════════════════════════════════════════════════════
 function renderVersus(userMbti, sipseongMbtiPattern) {
-  var userEl = document.getElementById('userMbtiLetters');
-  var sipEl = document.getElementById('sipMbtiLetters');
-  userEl.innerHTML = '';
-  sipEl.innerHTML = '';
+  var lineEl = document.getElementById('versusLine');
 
   var patterns = sipseongMbtiPattern.split('/');
-  var matchCount = 0;
-  var totalCount = 0;
 
+  var sipChars = [];
   for (var i = 0; i < 4; i++) {
     var userChar = userMbti.charAt(i);
     var pattern = patterns[i] ? patterns[i].trim() : '-';
 
-    var sipChar = pattern;
-    var isMatch = false;
-    var isWild = false;
-
     if (pattern === '-') {
-      sipChar = '·';
-      isWild = true;
-    } else if (userChar === pattern) {
-      isMatch = true;
-      matchCount++;
+      sipChars.push({ char: userChar, type: 'match' });
+    } else {
+      sipChars.push({ char: pattern, type: (userChar === pattern) ? 'match' : 'diff' });
     }
-    totalCount++;
-
-    // 사용자 MBTI 글자
-    var userSpan = document.createElement('span');
-    userSpan.className = 'versus-letter ' + (isWild ? 'wild' : (isMatch ? 'match' : 'diff'));
-    userSpan.textContent = userChar;
-    userEl.appendChild(userSpan);
-
-    // 본능 MBTI 글자
-    var sipSpan = document.createElement('span');
-    sipSpan.className = 'versus-letter ' + (isWild ? 'wild' : (isMatch ? 'match' : 'diff'));
-    sipSpan.textContent = sipChar;
-    sipEl.appendChild(sipSpan);
   }
 
-  return { matchCount: matchCount, totalCount: totalCount };
+  var sipHtml = '';
+  for (var j = 0; j < sipChars.length; j++) {
+    sipHtml += '<span class="v-' + sipChars[j].type + '">' + sipChars[j].char + '</span>';
+  }
+
+  lineEl.innerHTML =
+    '<span class="mbti-user">' + userMbti + '</span>' +
+    '<span class="mbti-vs">vs</span>' +
+    '<span class="mbti-sip">' + sipHtml + '</span>';
 }
 
 function renderCompareTable(userMbti, sipseongMbtiPattern) {
@@ -1143,11 +1081,6 @@ function renderCard(d) {
   // MBTI vs 본능 비교 (카드 안)
   var mbtiPattern = d.mbtiPattern || 'E/S/T/J';
   var versus = renderVersus(d.mbti, mbtiPattern);
-
-  // 비교 결과 텍스트
-  var resultText = document.getElementById('versusResultText');
-  resultText.textContent = grade.icon + ' ' + grade.label;
-  resultText.style.color = color;
 
   // 텍스트
   document.getElementById('sipNickname').textContent = d.nickname;
