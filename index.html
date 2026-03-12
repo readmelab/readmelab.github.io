@@ -1304,6 +1304,120 @@ html.light-mode body {
 html.light-mode *::-webkit-scrollbar-track {
     background: #F8F5EF !important;
 }
+
+
+/* 3단계: 라이트모드 카드 구분감 강화 */
+
+/* 페이지 배경을 살짝 어둡게 (순백 → 따뜻한 크림) */
+html.light-mode,
+html.light-mode body {
+    background-color: #F0EBE0 !important;
+}
+
+/* 카드들은 흰색 유지 → 배경과 대비 */
+body.light-mode .pillars-card,
+body.light-mode .oheng-card,
+body.light-mode .yongshin-card,
+body.light-mode .sipsung-card,
+body.light-mode .daeun-card,
+body.light-mode .seun-card,
+body.light-mode .emotion-curve-card,
+body.light-mode .action-plan-card {
+    background: #FFFFFF !important;
+    border: 1px solid #D5CBBA !important;
+    box-shadow: 0 2px 16px rgba(120, 100, 60, 0.08) !important;
+    border-radius: 14px !important;
+}
+
+/* 챕터 카드 구분선 강화 */
+body.light-mode .chapter-card {
+    border-bottom: 1px solid #D5CBBA !important;
+}
+
+/* 인용구 블록 */
+body.light-mode .highlight-quote {
+    background: linear-gradient(180deg, transparent 0%, rgba(139,115,50,0.07) 20%, rgba(139,115,50,0.07) 80%, transparent 100%) !important;
+}
+
+/* 박스 스타일 */
+body.light-mode .chapter-box {
+    background: #FFFFFF !important;
+    border-left: 3px solid #8B7332 !important;
+    box-shadow: 0 1px 8px rgba(120,100,60,0.06) !important;
+}
+
+/* 오버뷰 카드 */
+body.light-mode .overview-card {
+    background: #FFFFFF !important;
+    border: 1px solid #D5CBBA !important;
+    box-shadow: 0 1px 8px rgba(120,100,60,0.06) !important;
+}
+
+/* 용신 내부 아이템 */
+body.light-mode .yongshin-item {
+    background: #F8F5EF !important;
+    border: 1px solid #DDD5C5 !important;
+}
+
+/* 소름한줄 배너 */
+body.light-mode #reportOneLiner {
+    background: #FFFFFF !important;
+    border: 1px solid #D5CBBA !important;
+    border-radius: 14px !important;
+    padding: 32px 24px !important;
+    box-shadow: 0 2px 16px rgba(120,100,60,0.08) !important;
+}
+
+/* Deep Oracle 섹션 */
+body.light-mode #oracleSection > div[style*="border"] {
+    border-color: #D5CBBA !important;
+}
+
+/* 컨테이너 배경도 맞춤 */
+body.light-mode .container {
+    background-color: #F0EBE0 !important;
+}
+
+/* 하단 버튼들 */
+body.light-mode .btn {
+    background: #FFFFFF !important;
+    border-color: #D5CBBA !important;
+    box-shadow: 0 1px 6px rgba(120,100,60,0.06) !important;
+}
+
+/* 차트 컨테이너 */
+body.light-mode .cv-pillars-anim,
+body.light-mode .cv-oheng-radar,
+body.light-mode .cv-sipseong-map,
+body.light-mode .cv-unsung-curve,
+body.light-mode .cv-sinsal-cards {
+    background: #FFFFFF !important;
+    border: 1px solid #D5CBBA !important;
+    box-shadow: 0 1px 8px rgba(120,100,60,0.06) !important;
+}
+
+/* 편지 스타일 카드 */
+body.light-mode .chapter-card.letter-style {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8F5EF 100%) !important;
+    border: 1px solid #D5CBBA !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 16px rgba(120,100,60,0.08) !important;
+}
+
+/* BGM 바 */
+body.light-mode .bgm-bar {
+    background: #FFFFFF !important;
+    border-top: 1px solid #D5CBBA !important;
+}
+
+/* 플로팅 버튼 */
+body.light-mode .toc-fab,
+body.light-mode .float-btn {
+    background: #FFFFFF !important;
+    border: 1px solid #D5CBBA !important;
+    box-shadow: 0 2px 12px rgba(120,100,60,0.1) !important;
+}
+
         
     </style>
 </head>
