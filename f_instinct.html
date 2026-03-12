@@ -300,9 +300,9 @@
     inset: 0;
     background: linear-gradient(
       to bottom,
-      transparent 48%,
-      rgba(10,10,15,0.4) 58%,
-      rgba(10,10,15,0.85) 72%,
+      transparent 42%,
+      rgba(10,10,15,0.3) 52%,
+      rgba(10,10,15,0.82) 68%,
       rgba(10,10,15,0.97) 100%
     );
     z-index: 2;
@@ -322,24 +322,85 @@
     position: absolute;
     bottom: 0;
     left: 0; right: 0;
-    padding: 0 24px 24px;
+    padding: 0 20px 20px;
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
-  /* 콤보 태그 */
-  .combo-tag {
-    display: inline-block;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 12px;
+  /* ── MBTI vs 본능 대비 박스 ── */
+  .versus-box {
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .versus-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .versus-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    min-width: 70px;
+  }
+
+  .versus-letters {
+    display: flex;
+    gap: 5px;
+  }
+
+  .versus-letter {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .versus-letter.match {
+    background: rgba(201,169,110,0.25);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+  }
+
+  .versus-letter.diff {
+    background: rgba(217,74,106,0.2);
+    border: 1px solid var(--clash);
+    color: var(--clash);
+  }
+
+  .versus-letter.wild {
+    background: rgba(74,144,217,0.2);
+    border: 1px solid var(--cross);
+    color: var(--cross);
+  }
+
+  .versus-result {
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .versus-result-text {
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 2px;
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.7);
+    letter-spacing: 1px;
   }
 
   /* 십성 라벨 */
@@ -351,7 +412,7 @@
   .sipseong-label .nickname {
     display: block;
     font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: #fff;
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
@@ -368,7 +429,7 @@
   .score-section {
     width: 100%;
     text-align: center;
-    margin: 6px 0;
+    margin: 4px 0;
   }
 
   .score-label {
@@ -379,10 +440,10 @@
   }
 
   .score-number {
-    font-size: 44px;
+    font-size: 40px;
     font-weight: 900;
     line-height: 1;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .gauge-track {
@@ -417,32 +478,144 @@
 
   /* 훅 텍스트 */
   .hook-text {
-    font-size: 13px;
-    color: rgba(255,255,255,0.65);
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
     text-align: center;
-    line-height: 1.7;
+    line-height: 1.6;
     word-break: keep-all;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
-  /* ── 설명 박스 (= flip-section 스타일) ── */
-  .desc-section {
+  /* ── 카드 아래 설명 영역 ── */
+
+  /* Step 1: 당신의 본능은? */
+  .info-step {
     background: var(--surface);
     border: 1px solid rgba(201, 169, 110, 0.15);
     border-radius: 16px;
     padding: 24px;
     margin-top: 20px;
+  }
+
+  .info-step-label {
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
     text-align: center;
   }
 
-  .desc-label {
+  .info-step-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .info-step-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    text-align: center;
+    word-break: keep-all;
+  }
+
+  /* Step 2: MBTI vs 본능 비교 (카드 밖) */
+  .compare-section {
+    background: var(--surface);
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+  }
+
+  .compare-table {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .compare-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .compare-row:last-child {
+    border-bottom: none;
+  }
+
+  .compare-axis {
+    width: 60px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .compare-user {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .compare-vs {
+    width: 30px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .compare-sip {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .compare-match { color: var(--accent-light); }
+  .compare-diff { color: var(--clash); }
+  .compare-wild { color: var(--cross); }
+
+  .compare-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 4px;
+  }
+
+  .compare-header span {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .compare-header .compare-axis { }
+  .compare-header .compare-user-h { flex: 1; text-align: center; }
+  .compare-header .compare-vs { }
+  .compare-header .compare-sip-h { flex: 1; text-align: center; }
+
+  /* Step 3: 해석 */
+  .message-section {
+    background: var(--surface);
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .message-section .desc-label {
     font-size: 12px;
     color: var(--accent);
     letter-spacing: 2px;
     margin-bottom: 10px;
   }
 
-  .desc-text {
+  .message-section .desc-text {
     font-family: 'Noto Serif KR', serif;
     font-size: 16px;
     line-height: 1.8;
@@ -642,7 +815,19 @@
     <div class="card-overlay"></div>
     <div class="card-watermark">나를읽다 연구소</div>
     <div class="card-content">
-      <div class="combo-tag" id="comboTag"></div>
+      <div class="versus-box" id="versusBox">
+        <div class="versus-row">
+          <span class="versus-label">나의 MBTI</span>
+          <div class="versus-letters" id="userMbtiLetters"></div>
+        </div>
+        <div class="versus-row">
+          <span class="versus-label">본능 MBTI</span>
+          <div class="versus-letters" id="sipMbtiLetters"></div>
+        </div>
+        <div class="versus-result">
+          <span class="versus-result-text" id="versusResultText"></span>
+        </div>
+      </div>
       <div class="sipseong-label">
         <span class="nickname" id="sipNickname"></span>
         <span class="hanja" id="sipHanja"></span>
@@ -662,8 +847,27 @@
     </div>
   </div>
 
-  <!-- 설명 박스 -->
-  <div class="desc-section">
+  <!-- Step 1: 당신의 본능은? -->
+  <div class="info-step" id="infoStep1">
+    <div class="info-step-label">🔮 당신의 사주 본능</div>
+    <div class="info-step-title" id="sipTitle"></div>
+    <div class="info-step-desc" id="sipDesc"></div>
+  </div>
+
+  <!-- Step 2: MBTI vs 본능 비교표 -->
+  <div class="compare-section" id="infoStep2">
+    <div class="info-step-label">⚡ MBTI vs 본능 비교</div>
+    <div class="compare-header">
+      <span class="compare-axis">축</span>
+      <span class="compare-user-h">나의 MBTI</span>
+      <span class="compare-vs"></span>
+      <span class="compare-sip-h">본능</span>
+    </div>
+    <div class="compare-table" id="compareTable"></div>
+  </div>
+
+  <!-- Step 3: 해석 메시지 -->
+  <div class="message-section">
     <div class="desc-label">INSTINCT MESSAGE</div>
     <div class="desc-text" id="descText"></div>
   </div>
@@ -692,10 +896,9 @@
 // ═══════════════════════════════════════════════════════════
 // 설정
 // ═══════════════════════════════════════════════════════════
-const API_BASE = 'https://naread-server-1075269376260.asia-northeast3.run.app';
-const IMG_BASE = 'https://cards.readmelab.co.kr/cards/instinct/';
+var API_BASE = 'https://naread-server-1075269376260.asia-northeast3.run.app';
 
-const GRADE_CONFIG = {
+var GRADE_CONFIG = {
   '완전충돌': { icon: '💥', label: '완전 충돌' },
   '충돌':     { icon: '⚡', label: '충돌' },
   '교차':     { icon: '🔀', label: '교차' },
@@ -703,23 +906,92 @@ const GRADE_CONFIG = {
   '완전일치': { icon: '🪞', label: '완전 일치' }
 };
 
+// ── 십성 설명 (프론트 내장) ──
+var SIPSEONG_INFO = {
+  '비견': {
+    meaning: '비견(比肩) — 나와 같은 기운',
+    desc: '나란히 서서 함께 걷는 본능. 동질감을 추구하고, 경쟁보다 공존을 원하는 에너지입니다.',
+    mbtiLike: 'E·-·-·P형'
+  },
+  '겁재': {
+    meaning: '겁재(劫財) — 쟁취하는 기운',
+    desc: '원하는 것을 향해 거침없이 달리는 본능. 현실에서 승부하고, 빼앗기기 싫어하는 에너지입니다.',
+    mbtiLike: 'E·S·T·P형'
+  },
+  '식신': {
+    meaning: '식신(食神) — 따뜻한 창조의 기운',
+    desc: '부드럽게 표현하고 만들어내는 본능. 여유롭고 따뜻하며, 먹이고 돌보는 에너지입니다.',
+    mbtiLike: '-·N·F·-형'
+  },
+  '상관': {
+    meaning: '상관(傷官) — 파격적 표현의 기운',
+    desc: '틀을 깨고 자유롭게 표현하는 본능. 규칙보다 자신만의 방식을 고집하는 반항의 에너지입니다.',
+    mbtiLike: 'E·N·F·P형'
+  },
+  '편재': {
+    meaning: '편재(偏財) — 기회를 잡는 기운',
+    desc: '현실의 기회를 포착하고, 돈과 모험을 향해 달리는 본능. 리스크를 두려워하지 않는 에너지입니다.',
+    mbtiLike: 'E·S·T·J형'
+  },
+  '정재': {
+    meaning: '정재(正財) — 지키는 기운',
+    desc: '안정적으로 모으고 보존하는 본능. 성실하고 꾸준하며, 흔들리지 않는 수호의 에너지입니다.',
+    mbtiLike: 'I·S·T·J형'
+  },
+  '편관': {
+    meaning: '편관(偏官) — 즉각적 심판의 기운',
+    desc: '불의를 참지 못하고 즉각 행동하는 본능. 강한 카리스마와 추진력의 에너지입니다.',
+    mbtiLike: '-·S·T·J형'
+  },
+  '정관': {
+    meaning: '정관(正官) — 질서와 통치의 기운',
+    desc: '체계를 세우고 원칙을 지키는 본능. 책임감 있게 조직을 이끄는 통치의 에너지입니다.',
+    mbtiLike: 'I·-·T·J형'
+  },
+  '편인': {
+    meaning: '편인(偏印) — 깊은 사유의 기운',
+    desc: '혼자만의 세계에서 깊이 사유하는 본능. 독창적이고 비주류적 사고를 하는 방랑의 에너지입니다.',
+    mbtiLike: 'I·N·F·P형'
+  },
+  '정인': {
+    meaning: '정인(正印) — 지혜로운 보호의 기운',
+    desc: '배움을 통해 보호하고 이끄는 본능. 어머니 같은 따뜻함과 지혜로운 판단의 에너지입니다.',
+    mbtiLike: 'I·N·F·-형'
+  }
+};
+
+// ── MBTI 축 설명 ──
+var AXIS_LABELS = [
+  { axis: '에너지', options: ['E 외향', 'I 내향'] },
+  { axis: '인식', options: ['S 감각', 'N 직관'] },
+  { axis: '판단', options: ['T 사고', 'F 감정'] },
+  { axis: '생활', options: ['J 계획', 'P 인식'] }
+];
+
+var MBTI_FULL = {
+  'E': '외향(E)', 'I': '내향(I)',
+  'S': '감각(S)', 'N': '직관(N)',
+  'T': '사고(T)', 'F': '감정(F)',
+  'J': '계획(J)', 'P': '인식(P)'
+};
+
 // ═══════════════════════════════════════════════════════════
 // 상태
 // ═══════════════════════════════════════════════════════════
-let selectedMbti = '';
-let calendarType = '양력';
+var selectedMbti = '';
+var calendarType = '양력';
 
 // ═══════════════════════════════════════════════════════════
 // 폼 인터랙션
 // ═══════════════════════════════════════════════════════════
 function setCalendar(btn) {
-  document.querySelectorAll('.calendar-toggle button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.calendar-toggle button').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   calendarType = btn.dataset.cal;
 }
 
 function setMbti(btn) {
-  document.querySelectorAll('.mbti-grid button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mbti-grid button').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   selectedMbti = btn.textContent;
   document.getElementById('submitBtn').disabled = false;
@@ -729,10 +1001,10 @@ function setMbti(btn) {
 // API 호출
 // ═══════════════════════════════════════════════════════════
 async function getMyCard() {
-  const year = document.getElementById('birthYear').value;
-  const month = document.getElementById('birthMonth').value;
-  const day = document.getElementById('birthDay').value;
-  const gender = document.getElementById('gender').value;
+  var year = document.getElementById('birthYear').value;
+  var month = document.getElementById('birthMonth').value;
+  var day = document.getElementById('birthDay').value;
+  var gender = document.getElementById('gender').value;
 
   if (!year || !month || !day || !selectedMbti) {
     showError('생년월일과 MBTI를 모두 입력해주세요.');
@@ -746,7 +1018,7 @@ async function getMyCard() {
   document.getElementById('resultSection').classList.remove('show');
 
   try {
-    const response = await fetch(`${API_BASE}/api/free-instinct`, {
+    var response = await fetch(API_BASE + '/api/free-instinct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -759,7 +1031,7 @@ async function getMyCard() {
       })
     });
 
-    const data = await response.json();
+    var data = await response.json();
 
     if (!response.ok || !data.success) {
       throw new Error(data.error || '카드를 찾을 수 없습니다');
@@ -777,11 +1049,90 @@ async function getMyCard() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// MBTI vs 본능 비교 렌더링
+// ═══════════════════════════════════════════════════════════
+function renderVersus(userMbti, sipseongMbtiPattern) {
+  var userEl = document.getElementById('userMbtiLetters');
+  var sipEl = document.getElementById('sipMbtiLetters');
+  userEl.innerHTML = '';
+  sipEl.innerHTML = '';
+
+  var patterns = sipseongMbtiPattern.split('/');
+  var matchCount = 0;
+  var totalCount = 0;
+
+  for (var i = 0; i < 4; i++) {
+    var userChar = userMbti.charAt(i);
+    var pattern = patterns[i] ? patterns[i].trim() : '-';
+
+    var sipChar = pattern;
+    var isMatch = false;
+    var isWild = false;
+
+    if (pattern === '-') {
+      sipChar = '·';
+      isWild = true;
+    } else if (userChar === pattern) {
+      isMatch = true;
+      matchCount++;
+    }
+    totalCount++;
+
+    // 사용자 MBTI 글자
+    var userSpan = document.createElement('span');
+    userSpan.className = 'versus-letter ' + (isWild ? 'wild' : (isMatch ? 'match' : 'diff'));
+    userSpan.textContent = userChar;
+    userEl.appendChild(userSpan);
+
+    // 본능 MBTI 글자
+    var sipSpan = document.createElement('span');
+    sipSpan.className = 'versus-letter ' + (isWild ? 'wild' : (isMatch ? 'match' : 'diff'));
+    sipSpan.textContent = sipChar;
+    sipEl.appendChild(sipSpan);
+  }
+
+  return { matchCount: matchCount, totalCount: totalCount };
+}
+
+function renderCompareTable(userMbti, sipseongMbtiPattern) {
+  var table = document.getElementById('compareTable');
+  table.innerHTML = '';
+
+  var patterns = sipseongMbtiPattern.split('/');
+
+  for (var i = 0; i < 4; i++) {
+    var userChar = userMbti.charAt(i);
+    var pattern = patterns[i] ? patterns[i].trim() : '-';
+
+    var isMatch = false;
+    var isWild = false;
+
+    if (pattern === '-') {
+      isWild = true;
+    } else if (userChar === pattern) {
+      isMatch = true;
+    }
+
+    var colorClass = isWild ? 'compare-wild' : (isMatch ? 'compare-match' : 'compare-diff');
+    var resultIcon = isWild ? '—' : (isMatch ? '✓ 일치' : '✗ 다름');
+
+    var row = document.createElement('div');
+    row.className = 'compare-row';
+    row.innerHTML =
+      '<span class="compare-axis">' + AXIS_LABELS[i].axis + '</span>' +
+      '<span class="compare-user ' + colorClass + '">' + MBTI_FULL[userChar] + '</span>' +
+      '<span class="compare-vs">' + resultIcon + '</span>' +
+      '<span class="compare-sip ' + colorClass + '">' + (isWild ? '무관' : MBTI_FULL[pattern]) + '</span>';
+    table.appendChild(row);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // 카드 렌더링
 // ═══════════════════════════════════════════════════════════
 function renderCard(d) {
-  const color = d.color || '#c9a96e';
-  const grade = GRADE_CONFIG[d.grade] || { icon: '🔮', label: d.grade };
+  var color = d.color || '#c9a96e';
+  var grade = GRADE_CONFIG[d.grade] || { icon: '🔮', label: d.grade };
 
   // 카드 테두리 색상
   document.getElementById('cardCapture').style.borderColor = color;
@@ -789,8 +1140,16 @@ function renderCard(d) {
   // 배경 이미지
   document.getElementById('cardBg').style.backgroundImage = 'url(' + d.imageUrl + ')';
 
+  // MBTI vs 본능 비교 (카드 안)
+  var mbtiPattern = d.mbtiPattern || 'E/S/T/J';
+  var versus = renderVersus(d.mbti, mbtiPattern);
+
+  // 비교 결과 텍스트
+  var resultText = document.getElementById('versusResultText');
+  resultText.textContent = grade.icon + ' ' + grade.label;
+  resultText.style.color = color;
+
   // 텍스트
-  document.getElementById('comboTag').textContent = d.sipseong + ' × ' + d.mbti;
   document.getElementById('sipNickname').textContent = d.nickname;
   document.getElementById('sipHanja').textContent = d.hanja;
   document.getElementById('scoreNum').textContent = d.score;
@@ -803,14 +1162,22 @@ function renderCard(d) {
   document.getElementById('gradeBadge').style.borderColor = color;
   document.getElementById('gradeBadge').style.color = color;
 
-  // 설명
+  // Step 1: 십성 설명
+  var sipInfo = SIPSEONG_INFO[d.sipseong] || { meaning: d.sipseong, desc: '', mbtiLike: '' };
+  document.getElementById('sipTitle').textContent = sipInfo.meaning;
+  document.getElementById('sipDesc').textContent = sipInfo.desc;
+
+  // Step 2: 비교표 (카드 밖)
+  renderCompareTable(d.mbti, mbtiPattern);
+
+  // Step 3: 해석
   document.getElementById('descText').textContent = d.description;
 
   // CTA
   document.getElementById('ctaText').textContent = d.ctaShort || '이 본능 뒤에 숨겨진 당신의 시나리오가 궁금하다면?';
 
   // 게이지 애니메이션
-  const fill = document.getElementById('gaugeFill');
+  var fill = document.getElementById('gaugeFill');
   fill.style.background = color;
   fill.style.width = '0%';
   requestAnimationFrame(function() {
@@ -829,17 +1196,17 @@ function renderCard(d) {
 // 카드 저장
 // ═══════════════════════════════════════════════════════════
 async function saveCard() {
-  const el = document.getElementById('cardCapture');
+  var el = document.getElementById('cardCapture');
 
   try {
-    const canvas = await html2canvas(el, {
+    var canvas = await html2canvas(el, {
       scale: 2,
       useCORS: true,
       allowTaint: false,
       backgroundColor: '#0a0a0f'
     });
 
-    const link = document.createElement('a');
+    var link = document.createElement('a');
     link.download = '나의_본능카드_나를읽다.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
@@ -862,9 +1229,9 @@ function shareKakao() {
     Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
   }
 
-  const nickname = document.getElementById('sipNickname').textContent;
-  const hook = document.getElementById('hookText').textContent;
-  const score = document.getElementById('scoreNum').textContent;
+  var nickname = document.getElementById('sipNickname').textContent;
+  var hook = document.getElementById('hookText').textContent;
+  var score = document.getElementById('scoreNum').textContent;
 
   Kakao.Share.sendDefault({
     objectType: 'feed',
@@ -897,8 +1264,7 @@ function retry() {
   document.getElementById('formSection').style.display = 'block';
   document.getElementById('headerSection').style.display = 'block';
 
-  // MBTI 초기화
-  document.querySelectorAll('.mbti-grid button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mbti-grid button').forEach(function(b) { b.classList.remove('active'); });
   selectedMbti = '';
   document.getElementById('submitBtn').disabled = true;
 
@@ -906,7 +1272,7 @@ function retry() {
 }
 
 function showError(msg) {
-  const el = document.getElementById('errorMsg');
+  var el = document.getElementById('errorMsg');
   el.textContent = msg;
   el.classList.add('show');
 }
@@ -919,31 +1285,31 @@ function hideError() {
 // 생년월일 셀렉트 초기화
 // ═══════════════════════════════════════════════════════════
 (function initBirthSelects() {
-  const yearEl = document.getElementById('birthYear');
-  const monthEl = document.getElementById('birthMonth');
-  const dayEl = document.getElementById('birthDay');
-  const currentYear = new Date().getFullYear();
+  var yearEl = document.getElementById('birthYear');
+  var monthEl = document.getElementById('birthMonth');
+  var dayEl = document.getElementById('birthDay');
+  var currentYear = new Date().getFullYear();
 
   yearEl.innerHTML = '<option value="">년</option>';
-  for (let y = currentYear; y >= 1940; y--) {
+  for (var y = currentYear; y >= 1940; y--) {
     yearEl.innerHTML += '<option value="' + y + '">' + y + '년</option>';
   }
 
   monthEl.innerHTML = '<option value="">월</option>';
-  for (let m = 1; m <= 12; m++) {
-    const mv = String(m).padStart(2, '0');
+  for (var m = 1; m <= 12; m++) {
+    var mv = String(m).padStart(2, '0');
     monthEl.innerHTML += '<option value="' + mv + '">' + m + '월</option>';
   }
 
   function updateDays() {
-    const y = parseInt(yearEl.value) || 2000;
-    const m = parseInt(monthEl.value) || 1;
-    const maxDay = new Date(y, m, 0).getDate();
-    const prevDay = dayEl.value;
+    var y = parseInt(yearEl.value) || 2000;
+    var m = parseInt(monthEl.value) || 1;
+    var maxDay = new Date(y, m, 0).getDate();
+    var prevDay = dayEl.value;
 
     dayEl.innerHTML = '<option value="">일</option>';
-    for (let d = 1; d <= maxDay; d++) {
-      const dv = String(d).padStart(2, '0');
+    for (var d = 1; d <= maxDay; d++) {
+      var dv = String(d).padStart(2, '0');
       dayEl.innerHTML += '<option value="' + dv + '">' + d + '일</option>';
     }
 
