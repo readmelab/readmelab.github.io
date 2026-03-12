@@ -401,6 +401,13 @@ body.light-mode {
     background-color: #F8F5EF !important;
     color: #2A2520 !important;
 }
+body.light-mode .container {
+    background-color: #F8F5EF !important;
+}
+body.light-mode #single-intro-overlay,
+body.light-mode #couple-intro-overlay {
+    background: linear-gradient(170deg, #F8F5EF 0%, #F3EFE7 40%, #F8F5EF 100%) !important;
+}
 
 /* 스크롤바 배경 통일 */
 html, body {
@@ -1285,6 +1292,18 @@ html, body {
   margin-top: 28px;
 }
         
+
+
+/* 2단계: 양쪽 검은 세로줄 제거 */
+html.light-mode {
+    background-color: #F8F5EF !important;
+}
+html.light-mode body {
+    background-color: #F8F5EF !important;
+}
+html.light-mode *::-webkit-scrollbar-track {
+    background: #F8F5EF !important;
+}
         
     </style>
 </head>
