@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>매력카드 | 나를읽다 연구소</title>
+<meta name="description" content="타고난 매력은 숨길 수 없습니다. 사주 신살과 MBTI로 알아보는 당신만의 매력 유형.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="나의 매력카드 | 나를읽다">
+<meta property="og:description" content="타고난 매력은 숨길 수 없습니다. 사주와 MBTI로 확인하세요.">
+<meta property="og:image" content="https://cards.readmelab.co.kr/og/charm_og.jpg">
+<meta property="og:url" content="https://readmelab.co.kr/f_charm">
+
+<!-- Kakao SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0d0b10;
+    --surface: #16131c;
+    --card-bg: #1e1a26;
+    --accent: #e8a0b0;
+    --accent-light: #f2c4d0;
+    --accent-deep: #d4728a;
+    --lavender: #b8a0d4;
+    --lavender-light: #d4c4e8;
+    --gold: #c9a96e;
+    --text: #f0ede6;
+    --text-dim: #9a8fa6;
+    --grade-sss: #e84a6a;
+    --grade-ss: #b864d4;
+    --grade-s: #8a7ad4;
+    --grade-a: #6a9ad4;
+    --grade-b: #c9a96e;
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── 헤더 ── */
+  .header {
+    text-align: center;
+    padding: 60px 20px 30px;
+  }
+
+  .header-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--accent);
+    margin-bottom: 30px;
+    text-transform: uppercase;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent), var(--lavender));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── 입력 폼 ── */
+  .form-section {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+
+  .form-card {
+    background: var(--surface);
+    border: 1px solid rgba(232, 160, 176, 0.12);
+    border-radius: 24px;
+    padding: 32px 24px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Pretendard', sans-serif;
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+  }
+
+  .form-group select:focus {
+    border-color: var(--accent);
+  }
+
+  .birth-selects {
+    display: flex;
+    gap: 8px;
+  }
+
+  .birth-selects select {
+    flex: 1;
+    padding: 14px 8px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Pretendard', sans-serif;
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+    text-align: center;
+  }
+
+  .birth-selects select:focus {
+    border-color: var(--accent);
+  }
+
+  .calendar-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .calendar-toggle button {
+    flex: 1;
+    padding: 10px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .calendar-toggle button.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  /* 태어난 시 */
+  .time-section {
+    margin-bottom: 20px;
+  }
+
+  .time-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .time-toggle button {
+    flex: 1;
+    padding: 9px 4px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .time-toggle button.active {
+    background: linear-gradient(135deg, var(--lavender), var(--accent));
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .time-detail {
+    display: none;
+  }
+
+  .time-detail.show {
+    display: block;
+  }
+
+  .time-approx-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .time-approx-grid button {
+    padding: 10px 4px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .time-approx-grid button.active {
+    background: var(--lavender);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .mbti-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .mbti-grid button {
+    padding: 10px 0;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .mbti-grid button.active {
+    background: linear-gradient(135deg, var(--accent), var(--lavender));
+    color: #fff;
+    border-color: transparent;
+    font-weight: 700;
+  }
+
+  .mbti-grid button:hover {
+    border-color: var(--accent);
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep), var(--lavender));
+    border: none;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(232, 160, 176, 0.25);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── 로딩 ── */
+  .loading-section {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .loading-section.show {
+    display: block;
+  }
+
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(232, 160, 176, 0.15);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 24px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-size: 15px;
+    color: var(--accent);
+    animation: pulse 1.5s ease-in-out infinite;
+    font-weight: 300;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── 결과 ── */
+  .result-section {
+    display: none;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .result-section.show {
+    display: block;
+    animation: fadeUp 0.8s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── 매력 카드 ── */
+  .card-capture {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(232, 160, 176, 0.15), 0 0 80px rgba(184, 160, 212, 0.08);
+  }
+
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .card-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(13,11,16,0.4) 65%,
+      rgba(13,11,16,0.85) 80%,
+      rgba(13,11,16,0.98) 100%
+    );
+    z-index: 2;
+  }
+
+  .card-watermark {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 3px;
+    z-index: 3;
+  }
+
+  .card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    padding: 0 24px 24px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 뱃지 영역 */
+  .charm-badges {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .badge-sinsal {
+    background: rgba(232, 160, 176, 0.15);
+    border: 1px solid rgba(232, 160, 176, 0.4);
+    color: var(--accent-light);
+  }
+
+  .badge-mbti {
+    background: rgba(184, 160, 212, 0.15);
+    border: 1px solid rgba(184, 160, 212, 0.4);
+    color: var(--lavender-light);
+  }
+
+  /* 닉네임 */
+  .charm-nickname {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 2px 20px rgba(232, 160, 176, 0.3);
+    letter-spacing: 1px;
+  }
+
+  /* 매력 키워드 */
+  .charm-keyword {
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    font-weight: 300;
+  }
+
+  /* 등급 */
+  .charm-grade {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* 후킹문장 */
+  .charm-hook {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    line-height: 1.7;
+    word-break: keep-all;
+    font-weight: 300;
+  }
+
+  /* ── 카드 아래 매력 해석 ── */
+  .info-card {
+    background: var(--surface);
+    border: 1px solid rgba(232, 160, 176, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    margin-top: 16px;
+  }
+
+  .info-label {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .info-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .info-desc {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-dim);
+    text-align: center;
+    word-break: keep-all;
+    font-weight: 300;
+  }
+
+  /* ── 버튼 ── */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .btn-save {
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .btn-share {
+    background: #FEE500;
+    color: #000;
+  }
+
+  .btn-save:hover { border-color: var(--accent); }
+  .btn-share:hover { opacity: 0.9; }
+
+  /* ══════════════════════════════════════════════════════ */
+  /* ── 리포트 미리보기 (블러 CTA) ── */
+  /* ══════════════════════════════════════════════════════ */
+  .report-preview {
+    margin-top: 32px;
+    border-top: 1px solid rgba(232, 160, 176, 0.1);
+    padding-top: 32px;
+  }
+
+  .report-preview-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .report-preview-header .rp-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    color: var(--lavender);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .report-preview-header .rp-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .report-preview-header .rp-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  /* 챕터 카드 */
+  .chapter-card {
+    background: var(--surface);
+    border: 1px solid rgba(232, 160, 176, 0.08);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .chapter-card.unlocked {
+    border-color: rgba(232, 160, 176, 0.15);
+  }
+
+  .chapter-card.locked {
+    cursor: pointer;
+  }
+
+  .chapter-card.locked:hover {
+    border-color: var(--accent);
+  }
+
+  .chapter-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    color: var(--lavender);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  .chapter-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chapter-title .lock-icon {
+    font-size: 13px;
+    opacity: 0.5;
+  }
+
+  .chapter-body {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-dim);
+    font-weight: 300;
+    word-break: keep-all;
+  }
+
+  /* 블러 처리 */
+  .chapter-blur {
+    position: relative;
+  }
+
+  .chapter-blur .chapter-body {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .chapter-blur .blur-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, transparent 0%, rgba(13,11,16,0.7) 100%);
+    z-index: 2;
+  }
+
+  .blur-lock-msg {
+    text-align: center;
+    padding: 12px 20px;
+    background: rgba(232, 160, 176, 0.1);
+    border: 1px solid rgba(232, 160, 176, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+  }
+
+  .blur-lock-msg span {
+    font-size: 12px;
+    color: var(--accent-light);
+    font-weight: 500;
+  }
+
+  /* 완전 잠금 (제목만) */
+  .chapter-locked-full {
+    opacity: 0.6;
+  }
+
+  .chapter-locked-full .chapter-body {
+    display: none;
+  }
+
+  /* ── 결제 CTA ── */
+  .purchase-cta {
+    background: linear-gradient(135deg, rgba(232, 160, 176, 0.08), rgba(184, 160, 212, 0.08));
+    border: 1px solid rgba(232, 160, 176, 0.2);
+    border-radius: 20px;
+    padding: 32px 24px;
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  .purchase-cta .cta-emoji {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .purchase-cta .cta-main {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  .purchase-cta .cta-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .purchase-cta .cta-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-light);
+    margin-bottom: 4px;
+  }
+
+  .purchase-cta .cta-price-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .purchase-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  .purchase-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(232, 160, 176, 0.3);
+  }
+
+  .purchase-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 12px;
+    font-weight: 300;
+  }
+
+  /* ── 결제 팝업 ── */
+  .payment-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    backdrop-filter: blur(8px);
+  }
+
+  .payment-modal.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .payment-box {
+    background: var(--surface);
+    border: 1px solid rgba(232, 160, 176, 0.2);
+    border-radius: 24px;
+    padding: 36px 28px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+
+  .payment-box h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .payment-box .pm-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+
+  .payment-box input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Pretendard', sans-serif;
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.3s;
+  }
+
+  .payment-box input:focus {
+    border-color: var(--accent);
+  }
+
+  .payment-box input::placeholder {
+    color: var(--text-dim);
+  }
+
+  .payment-confirm-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: 'Pretendard', sans-serif;
+    transition: all 0.3s;
+  }
+
+  .payment-confirm-btn:hover {
+    box-shadow: 0 8px 30px rgba(232, 160, 176, 0.3);
+  }
+
+  .payment-cancel {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 16px;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  /* ── 리트라이 ── */
+  .retry-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: all 0.3s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .retry-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* 에러 */
+  .error-msg {
+    display: none;
+    text-align: center;
+    padding: 16px;
+    background: rgba(232, 100, 120, 0.1);
+    border: 1px solid rgba(232, 100, 120, 0.2);
+    border-radius: 14px;
+    color: var(--accent-deep);
+    font-size: 13px;
+    margin-top: 16px;
+  }
+
+  .error-msg.show { display: block; }
+
+  /* 푸터 */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 300;
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════ 헤더 ════════ -->
+<div class="header" id="headerSection">
+  <div class="header-logo">나를읽다 연구소</div>
+  <h1>Charm Card</h1>
+  <p>타고난 매력은 숨길 수 없습니다.<br>사주와 MBTI가 말하는 당신의 매력.</p>
+</div>
+
+<!-- ════════ 입력 폼 ════════ -->
+<div class="form-section" id="formSection">
+  <div class="form-card">
+
+    <div class="form-group">
+      <label>생년월일</label>
+      <div class="birth-selects">
+        <select id="birthYear"></select>
+        <select id="birthMonth"></select>
+        <select id="birthDay"></select>
+      </div>
+    </div>
+
+    <div class="calendar-toggle">
+      <button type="button" class="active" data-cal="양력" onclick="setCalendar(this)">양력</button>
+      <button type="button" data-cal="음력" onclick="setCalendar(this)">음력</button>
+    </div>
+
+    <div class="form-group">
+      <label>성별</label>
+      <select id="gender">
+        <option value="여">여성</option>
+        <option value="남">남성</option>
+      </select>
+    </div>
+
+    <div class="form-group time-section">
+      <label>태어난 시간</label>
+      <div class="time-toggle">
+        <button type="button" class="active" data-time="모름" onclick="setTimeType(this)">모름</button>
+        <button type="button" data-time="대략" onclick="setTimeType(this)">대략적</button>
+        <button type="button" data-time="정확" onclick="setTimeType(this)">정확히 알아요</button>
+      </div>
+      <div class="time-detail" id="timeApprox">
+        <div class="time-approx-grid">
+          <button type="button" onclick="setTimeSlot(this)" data-slot="새벽">새벽<br><span style="font-size:10px;opacity:0.6">01~05시</span></button>
+          <button type="button" onclick="setTimeSlot(this)" data-slot="아침">아침<br><span style="font-size:10px;opacity:0.6">05~09시</span></button>
+          <button type="button" onclick="setTimeSlot(this)" data-slot="오전">오전<br><span style="font-size:10px;opacity:0.6">09~12시</span></button>
+          <button type="button" onclick="setTimeSlot(this)" data-slot="오후">오후<br><span style="font-size:10px;opacity:0.6">12~15시</span></button>
+          <button type="button" onclick="setTimeSlot(this)" data-slot="저녁">저녁<br><span style="font-size:10px;opacity:0.6">15~19시</span></button>
+          <button type="button" onclick="setTimeSlot(this)" data-slot="밤">밤<br><span style="font-size:10px;opacity:0.6">19~01시</span></button>
+        </div>
+      </div>
+      <div class="time-detail" id="timeExact">
+        <select id="birthHour" style="width:100%;padding:14px 16px;background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;color:var(--text);font-size:15px;font-family:'Pretendard',sans-serif;-webkit-appearance:none;">
+          <option value="">시간 선택</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>MBTI</label>
+      <div class="mbti-grid" id="mbtiGrid">
+        <button type="button" onclick="setMbti(this)">INTJ</button>
+        <button type="button" onclick="setMbti(this)">INTP</button>
+        <button type="button" onclick="setMbti(this)">ENTJ</button>
+        <button type="button" onclick="setMbti(this)">ENTP</button>
+        <button type="button" onclick="setMbti(this)">INFJ</button>
+        <button type="button" onclick="setMbti(this)">INFP</button>
+        <button type="button" onclick="setMbti(this)">ENFJ</button>
+        <button type="button" onclick="setMbti(this)">ENFP</button>
+        <button type="button" onclick="setMbti(this)">ISTJ</button>
+        <button type="button" onclick="setMbti(this)">ISFJ</button>
+        <button type="button" onclick="setMbti(this)">ESTJ</button>
+        <button type="button" onclick="setMbti(this)">ESFJ</button>
+        <button type="button" onclick="setMbti(this)">ISTP</button>
+        <button type="button" onclick="setMbti(this)">ISFP</button>
+        <button type="button" onclick="setMbti(this)">ESTP</button>
+        <button type="button" onclick="setMbti(this)">ESFP</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="getMyCard()" disabled>내 매력 확인하기</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+</div>
+
+<!-- ════════ 로딩 ════════ -->
+<div class="loading-section" id="loadingSection">
+  <div class="spinner"></div>
+  <div class="loading-text">당신의 매력을 읽고 있습니다...</div>
+</div>
+
+<!-- ════════ 결과 ════════ -->
+<div class="result-section" id="resultSection">
+
+  <!-- 카드 캡처 영역 -->
+  <div class="card-capture" id="cardCapture">
+    <div class="card-bg" id="cardBg"></div>
+    <div class="card-overlay"></div>
+    <div class="card-watermark">나를읽다 연구소</div>
+    <div class="card-content">
+      <div class="charm-badges">
+        <span class="badge badge-sinsal" id="badgeSinsal"></span>
+        <span class="badge badge-mbti" id="badgeMbti"></span>
+      </div>
+      <div class="charm-nickname" id="charmNickname"></div>
+      <div class="charm-keyword" id="charmKeyword"></div>
+      <div class="charm-grade" id="charmGrade"></div>
+      <p class="charm-hook" id="charmHook"></p>
+    </div>
+  </div>
+
+  <!-- 매력 해석 -->
+  <div class="info-card">
+    <div class="info-label">Your Charm</div>
+    <div class="info-title" id="charmInfoTitle"></div>
+    <div class="info-desc" id="charmInfoDesc"></div>
+  </div>
+
+  <!-- 버튼 -->
+  <div class="action-buttons">
+    <button class="action-btn btn-save" onclick="saveCard()">카드 저장</button>
+    <button class="action-btn btn-share" onclick="shareKakao()">카카오 공유</button>
+  </div>
+
+  <!-- ════════ 리포트 미리보기 ════════ -->
+  <div class="report-preview">
+    <div class="report-preview-header">
+      <div class="rp-label">Premium Report</div>
+      <div class="rp-title">내 연애의 비밀</div>
+      <div class="rp-sub">당신만을 위한 매력 분석 리포트</div>
+    </div>
+
+    <!-- Ch1: 맛보기 공개 -->
+    <div class="chapter-card unlocked">
+      <div class="chapter-num">CHAPTER 01</div>
+      <div class="chapter-title">당신의 매력 정체</div>
+      <div class="chapter-body" id="previewCh1"></div>
+    </div>
+
+    <!-- Ch2: 첫 문장 + 블러 -->
+    <div class="chapter-card locked" onclick="openPayment()">
+      <div class="chapter-num">CHAPTER 02</div>
+      <div class="chapter-title">첫 만남에서 당신은 이렇게 보입니다 <span class="lock-icon">🔒</span></div>
+      <div class="chapter-blur">
+        <div class="chapter-body">첫 만남에서 상대방은 당신에게서 특별한 에너지를 느낍니다. 본인은 인지하지 못하지만, 당신의 시선 처리와 미세한 표정 변화가 상대의 무의식을 자극하고 있어요. 특히 대화 중 잠깐 고개를 돌릴 때, 상대는 당신의 옆모습에서 눈을 떼지 못합니다.</div>
+        <div class="blur-overlay">
+          <div class="blur-lock-msg">
+            <span>🔒 리포트를 열면 확인할 수 있어요</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ch3: 제목 + 블러 -->
+    <div class="chapter-card locked" onclick="openPayment()">
+      <div class="chapter-num">CHAPTER 03</div>
+      <div class="chapter-title">썸 탈 때 상대가 빠지는 포인트 <span class="lock-icon">🔒</span></div>
+      <div class="chapter-blur">
+        <div class="chapter-body">당신과 썸을 타는 상대는 결정적으로 한 가지 순간에 완전히 빠져들게 됩니다. 그 순간은 당신이 의도하지 않았을 때 가장 강하게 작동해요. 이건 당신의 사주에 새겨진 매력 패턴과 직접적으로 연결되어 있습니다.</div>
+        <div class="blur-overlay">
+          <div class="blur-lock-msg">
+            <span>🔒 리포트를 열면 확인할 수 있어요</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ch4: 잠금 -->
+    <div class="chapter-card locked chapter-locked-full" onclick="openPayment()">
+      <div class="chapter-num">CHAPTER 04</div>
+      <div class="chapter-title">연애할 때 조심해야 할 패턴 <span class="lock-icon">🔒</span></div>
+      <div class="chapter-body">잠금된 콘텐츠입니다.</div>
+    </div>
+
+    <!-- Ch5: 잠금 — 가장 강한 후킹 -->
+    <div class="chapter-card locked chapter-locked-full" onclick="openPayment()">
+      <div class="chapter-num">CHAPTER 05</div>
+      <div class="chapter-title">나에게 빠지는 남자의 특징 <span class="lock-icon">🔒</span></div>
+      <div class="chapter-body">잠금된 콘텐츠입니다.</div>
+    </div>
+
+    <!-- Ch6: 잠금 -->
+    <div class="chapter-card locked chapter-locked-full" onclick="openPayment()">
+      <div class="chapter-num">CHAPTER 06</div>
+      <div class="chapter-title">매력 극대화 가이드 — 향수, 메이크업, 스타일링 <span class="lock-icon">🔒</span></div>
+      <div class="chapter-body">잠금된 콘텐츠입니다.</div>
+    </div>
+
+    <!-- Ch7: 잠금 -->
+    <div class="chapter-card locked chapter-locked-full" onclick="openPayment()">
+      <div class="chapter-num">CHAPTER 07</div>
+      <div class="chapter-title">운명의 상대를 만나는 장소 & 2026 인연 타이밍 <span class="lock-icon">🔒</span></div>
+      <div class="chapter-body">잠금된 콘텐츠입니다.</div>
+    </div>
+
+    <!-- 결제 CTA -->
+    <div class="purchase-cta">
+      <div class="cta-emoji">🔮</div>
+      <div class="cta-main">나에게 빠지는 남자의 특징,<br>지금 확인해보세요</div>
+      <div class="cta-sub">사주와 MBTI로 분석한 당신만을 위한<br>매력 분석 & 연애 가이드</div>
+      <div class="cta-price">₩9,900</div>
+      <div class="cta-price-sub">결제 후 바로 확인 가능</div>
+      <button class="purchase-btn" onclick="openPayment()">내 연애의 비밀 열어보기</button>
+      <div class="purchase-note">7개 챕터 · 맞춤 스타일링 가이드 포함</div>
+    </div>
+  </div>
+
+  <button class="retry-btn" onclick="retry()">다른 정보로 다시 해보기</button>
+</div>
+
+<!-- ════════ 결제 팝업 ════════ -->
+<div class="payment-modal" id="paymentModal">
+  <div class="payment-box">
+    <h3>내 연애의 비밀</h3>
+    <div class="pm-sub">리포트를 받을 정보를 입력해주세요</div>
+    <input type="text" id="payName" placeholder="이름 (리포트에 표시됩니다)">
+    <input type="tel" id="payPhone" placeholder="연락처 (010-0000-0000)">
+    <button class="payment-confirm-btn" onclick="processPayment()">9,900원 결제하기</button>
+    <button class="payment-cancel" onclick="closePayment()">취소</button>
+  </div>
+</div>
+
+<!-- ════════ 푸터 ════════ -->
+<div class="footer">
+  <p>© 2026 <a href="https://readmelab.co.kr">나를읽다 연구소</a>. All rights reserved.</p>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 설정
+// ═══════════════════════════════════════════════════════════
+var API_BASE = 'https://naread-server-1075269376260.asia-northeast3.run.app';
+var IMAGE_BASE = 'https://cards.readmelab.co.kr/cards/charm/';
+
+var GRADE_STYLE = {
+  'SSS': { color: '#e84a6a', label: 'SSS', icon: '🔥' },
+  'SS':  { color: '#b864d4', label: 'SS',  icon: '💜' },
+  'S':   { color: '#8a7ad4', label: 'S',   icon: '✨' },
+  'A':   { color: '#6a9ad4', label: 'A',   icon: '💫' },
+  'B':   { color: '#c9a96e', label: 'B',   icon: '🌱' }
+};
+
+// ═══════════════════════════════════════════════════════════
+// 상태
+// ═══════════════════════════════════════════════════════════
+var selectedMbti = '';
+var calendarType = '양력';
+var timeType = '모름';
+var timeSlot = '';
+var birthHourVal = '';
+var currentCardData = null;
+
+// ═══════════════════════════════════════════════════════════
+// 폼 인터랙션
+// ═══════════════════════════════════════════════════════════
+function setCalendar(btn) {
+  document.querySelectorAll('.calendar-toggle button').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  calendarType = btn.dataset.cal;
+}
+
+function setTimeType(btn) {
+  document.querySelectorAll('.time-toggle button').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  timeType = btn.dataset.time;
+
+  document.getElementById('timeApprox').classList.remove('show');
+  document.getElementById('timeExact').classList.remove('show');
+
+  if (timeType === '대략') {
+    document.getElementById('timeApprox').classList.add('show');
+  } else if (timeType === '정확') {
+    document.getElementById('timeExact').classList.add('show');
+  }
+}
+
+function setTimeSlot(btn) {
+  document.querySelectorAll('.time-approx-grid button').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  timeSlot = btn.dataset.slot;
+}
+
+function setMbti(btn) {
+  document.querySelectorAll('.mbti-grid button').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  selectedMbti = btn.textContent;
+  document.getElementById('submitBtn').disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// API 호출
+// ═══════════════════════════════════════════════════════════
+async function getMyCard() {
+  var year = document.getElementById('birthYear').value;
+  var month = document.getElementById('birthMonth').value;
+  var day = document.getElementById('birthDay').value;
+  var gender = document.getElementById('gender').value;
+
+  if (!year || !month || !day || !selectedMbti) {
+    showError('생년월일과 MBTI를 모두 입력해주세요.');
+    return;
+  }
+
+  // 시간 값 정리
+  var timeValue = '모름';
+  if (timeType === '대략' && timeSlot) {
+    timeValue = timeSlot;
+  } else if (timeType === '정확') {
+    timeValue = document.getElementById('birthHour').value || '모름';
+  }
+
+  hideError();
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('headerSection').style.display = 'none';
+  document.getElementById('loadingSection').classList.add('show');
+  document.getElementById('resultSection').classList.remove('show');
+
+  try {
+    var response = await fetch(API_BASE + '/api/free-charm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        birthYear: year,
+        birthMonth: month,
+        birthDay: day,
+        mbti: selectedMbti,
+        isLunar: calendarType === '음력',
+        gender: gender,
+        birthTime: timeValue
+      })
+    });
+
+    var data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || '매력 카드를 찾을 수 없습니다');
+    }
+
+    currentCardData = data.charm;
+    renderCard(data.charm);
+
+  } catch (err) {
+    console.error('에러:', err);
+    document.getElementById('loadingSection').classList.remove('show');
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('headerSection').style.display = 'block';
+    showError(err.message || '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 카드 렌더링
+// ═══════════════════════════════════════════════════════════
+function renderCard(d) {
+  var gradeInfo = GRADE_STYLE[d.grade] || GRADE_STYLE['B'];
+
+  // 배경 이미지
+  var bgEl = document.getElementById('cardBg');
+  bgEl.innerHTML = '<img src="' + d.imageUrl + '" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;">';
+
+  // 뱃지
+  document.getElementById('badgeSinsal').textContent = d.sinsal;
+  document.getElementById('badgeMbti').textContent = d.mbti;
+
+  // 닉네임, 키워드
+  document.getElementById('charmNickname').textContent = d.nickname;
+  document.getElementById('charmKeyword').textContent = d.charmKeyword;
+
+  // 등급
+  var gradeEl = document.getElementById('charmGrade');
+  gradeEl.innerHTML = '<span>' + gradeInfo.icon + '</span><span>' + gradeInfo.label + '</span>';
+  gradeEl.style.borderColor = gradeInfo.color;
+  gradeEl.style.color = gradeInfo.color;
+
+  // 후킹문장
+  document.getElementById('charmHook').textContent = d.hookLine;
+
+  // 매력 해석
+  document.getElementById('charmInfoTitle').textContent = d.sinsal + ' × ' + d.mbti;
+  document.getElementById('charmInfoDesc').textContent = d.description;
+
+  // 리포트 미리보기 Ch1
+  document.getElementById('previewCh1').textContent = d.previewText || '당신의 사주에는 ' + d.sinsal + '이(가) 있습니다. 이것은 태어날 때부터 가지고 온 매력의 원천이에요. ' + d.mbti + '의 성향과 만나 독특한 방식으로 발현되고 있습니다.';
+
+  // 카드 그림자 색상
+  document.getElementById('cardCapture').style.boxShadow = '0 20px 60px ' + gradeInfo.color + '22, 0 0 80px ' + gradeInfo.color + '11';
+
+  // UI 전환
+  document.getElementById('loadingSection').classList.remove('show');
+  document.getElementById('resultSection').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 카드 저장
+// ═══════════════════════════════════════════════════════════
+async function saveCard() {
+  var el = document.getElementById('cardCapture');
+  try {
+    var canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#0d0b10'
+    });
+    var link = document.createElement('a');
+    link.download = (document.getElementById('charmNickname').textContent || '나의_매력카드') + '_나를읽다.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (err) {
+    console.error('저장 실패:', err);
+    alert('카드 저장에 실패했습니다. 스크린샷으로 저장해주세요.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 카카오 공유
+// ═══════════════════════════════════════════════════════════
+function shareKakao() {
+  if (!window.Kakao) {
+    alert('카카오 SDK 로딩 중입니다.');
+    return;
+  }
+  if (!Kakao.isInitialized()) {
+    Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
+  }
+
+  var nickname = document.getElementById('charmNickname').textContent;
+  var hook = document.getElementById('charmHook').textContent;
+
+  Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: '나의 매력카드: ' + nickname,
+      description: hook,
+      imageUrl: 'https://cards.readmelab.co.kr/og/charm_og.jpg',
+      link: {
+        mobileWebUrl: 'https://readmelab.co.kr/f_charm',
+        webUrl: 'https://readmelab.co.kr/f_charm'
+      }
+    },
+    buttons: [{
+      title: '내 매력카드 확인하기',
+      link: {
+        mobileWebUrl: 'https://readmelab.co.kr/f_charm',
+        webUrl: 'https://readmelab.co.kr/f_charm'
+      }
+    }]
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 결제 팝업
+// ═══════════════════════════════════════════════════════════
+function openPayment() {
+  document.getElementById('paymentModal').classList.add('show');
+}
+
+function closePayment() {
+  document.getElementById('paymentModal').classList.remove('show');
+}
+
+async function processPayment() {
+  var name = document.getElementById('payName').value.trim();
+  var phone = document.getElementById('payPhone').value.trim();
+
+  if (!name) {
+    alert('이름을 입력해주세요.');
+    return;
+  }
+  if (!phone) {
+    alert('연락처를 입력해주세요.');
+    return;
+  }
+
+  closePayment();
+
+  // TODO: 실제 결제 연동 (토스페이먼츠 등)
+  // 결제 성공 후 리포트 표시
+  alert('결제 기능은 준비 중입니다. 곧 오픈됩니다!');
+}
+
+// ═══════════════════════════════════════════════════════════
+// 유틸
+// ═══════════════════════════════════════════════════════════
+function retry() {
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('headerSection').style.display = 'block';
+  document.querySelectorAll('.mbti-grid button').forEach(function(b) { b.classList.remove('active'); });
+  selectedMbti = '';
+  document.getElementById('submitBtn').disabled = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  var el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════════
+// 생년월일 & 시간 셀렉트 초기화
+// ═══════════════════════════════════════════════════════════
+(function init() {
+  var yearEl = document.getElementById('birthYear');
+  var monthEl = document.getElementById('birthMonth');
+  var dayEl = document.getElementById('birthDay');
+  var hourEl = document.getElementById('birthHour');
+  var currentYear = new Date().getFullYear();
+
+  yearEl.innerHTML = '<option value="">년</option>';
+  for (var y = currentYear; y >= 1940; y--) {
+    yearEl.innerHTML += '<option value="' + y + '">' + y + '년</option>';
+  }
+
+  monthEl.innerHTML = '<option value="">월</option>';
+  for (var m = 1; m <= 12; m++) {
+    var mv = String(m).padStart(2, '0');
+    monthEl.innerHTML += '<option value="' + mv + '">' + m + '월</option>';
+  }
+
+  function updateDays() {
+    var y = parseInt(yearEl.value) || 2000;
+    var m = parseInt(monthEl.value) || 1;
+    var maxDay = new Date(y, m, 0).getDate();
+    var prevDay = dayEl.value;
+    dayEl.innerHTML = '<option value="">일</option>';
+    for (var d = 1; d <= maxDay; d++) {
+      var dv = String(d).padStart(2, '0');
+      dayEl.innerHTML += '<option value="' + dv + '">' + d + '일</option>';
+    }
+    if (parseInt(prevDay) <= maxDay) dayEl.value = prevDay;
+  }
+
+  yearEl.addEventListener('change', updateDays);
+  monthEl.addEventListener('change', updateDays);
+  updateDays();
+
+  // 시간 셀렉트 (0~23시)
+  for (var h = 0; h < 24; h++) {
+    var hLabel = String(h).padStart(2, '0') + '시';
+    hourEl.innerHTML += '<option value="' + h + '">' + hLabel + '</option>';
+  }
+})();
+</script>
+
+</body>
+</html>
