@@ -3,864 +3,958 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>본능카드 – 나를읽다 연구소</title>
-<meta name="description" content="MBTI와 사주가 만나면? 당신의 진짜 본능을 카드 한 장으로 확인하세요.">
+<title>본능카드 | 나를읽다 연구소</title>
+<meta name="description" content="MBTI는 겉모습, 사주는 본능. 둘이 같을까 다를까? 160가지 중 나만의 본능카드를 확인하세요.">
 
-<!-- OG Tags -->
-<meta property="og:title" content="나의 본능카드 – 나를읽다 연구소">
-<meta property="og:description" content="MBTI는 겉, 사주는 속. 둘이 같을까 다를까? 960가지 중 나만의 카드를 확인하세요.">
+<!-- Open Graph -->
+<meta property="og:title" content="나의 본능카드 | 나를읽다">
+<meta property="og:description" content="MBTI와 사주 본능이 충돌할까, 조화를 이룰까? 무료로 확인하세요.">
 <meta property="og:image" content="https://cards.readmelab.co.kr/og/instinct_og.jpg">
-<meta property="og:url" content="https://readmelab.co.kr/f_instinct.html">
-<meta property="og:type" content="website">
+<meta property="og:url" content="https://readmelab.co.kr/f_instinct">
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
-
+<!-- Kakao SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
 <!-- html2canvas -->
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
-/* ═══════════════════════════════════════
-   0. 리셋 & 변수
-   ═══════════════════════════════════════ */
-:root {
-  --bg: #0a0a0f;
-  --bg2: #111118;
-  --white: #f0ede6;
-  --white60: rgba(240,237,230,0.6);
-  --white40: rgba(240,237,230,0.4);
-  --gold: #c9a96e;
-  --gold-dim: rgba(201,169,110,0.3);
-  --clash: #d94a6a;
-  --cross: #4a90d9;
-  --harmony: #c9a96e;
-  --font-sans: 'Noto Sans KR', -apple-system, sans-serif;
-  --font-serif: 'Noto Serif KR', serif;
-  --card-max-w: 380px;
-  --radius: 16px;
-  --radius-sm: 10px;
-}
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@600;700;900&display=swap');
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: var(--font-sans);
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  -webkit-font-smoothing: antialiased;
-}
+  :root {
+    --bg: #0a0a0f;
+    --surface: #14141f;
+    --card-bg: #1a1a2e;
+    --accent: #c9a96e;
+    --accent-light: #e4cc9c;
+    --text: #f0ede6;
+    --text-dim: #8a8a9a;
+    --clash: #d94a6a;
+    --cross: #4a90d9;
+    --harmony: #c9a96e;
+  }
 
-/* ═══════════════════════════════════════
-   1. 헤더
-   ═══════════════════════════════════════ */
-.header {
-  text-align: center;
-  padding: 40px 20px 0;
-  width: 100%;
-  max-width: 480px;
-}
-.header .logo {
-  font-size: 13px;
-  letter-spacing: 3px;
-  color: var(--white40);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.header h1 {
-  font-family: var(--font-serif);
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 6px;
-}
-.header .sub {
-  font-size: 14px;
-  color: var(--white60);
-  line-height: 1.6;
-}
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* ═══════════════════════════════════════
-   2. 입력 폼
-   ═══════════════════════════════════════ */
-.form-section {
-  width: 100%;
-  max-width: 420px;
-  padding: 32px 20px;
-}
+  /* ── 헤더 ── */
+  .header {
+    text-align: center;
+    padding: 60px 20px 30px;
+  }
 
-.input-group {
-  margin-bottom: 18px;
-}
-.input-group label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--white60);
-  margin-bottom: 6px;
-}
-.input-row {
-  display: flex;
-  gap: 8px;
-}
-.input-row select,
-.input-row input {
-  flex: 1;
-}
-select, input[type="text"] {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-sm);
-  background: var(--bg2);
-  color: var(--white);
-  font-size: 15px;
-  font-family: var(--font-sans);
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
-}
-select:focus, input:focus {
-  border-color: var(--gold);
-}
+  .header-logo {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    margin-bottom: 30px;
+  }
 
-/* 음력/양력 토글 */
-.calendar-toggle {
-  display: flex;
-  gap: 0;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 18px;
-}
-.calendar-toggle button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  background: var(--bg2);
-  color: var(--white60);
-  font-size: 14px;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.calendar-toggle button.active {
-  background: var(--gold);
-  color: var(--bg);
-  font-weight: 700;
-}
+  .header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-/* 성별 토글 */
-.gender-toggle {
-  display: flex;
-  gap: 0;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 18px;
-}
-.gender-toggle button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  background: var(--bg2);
-  color: var(--white60);
-  font-size: 14px;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.gender-toggle button.active {
-  background: var(--gold);
-  color: var(--bg);
-  font-weight: 700;
-}
+  .header p {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
 
-/* MBTI 선택 그리드 */
-.mbti-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 18px;
-}
-.mbti-grid button {
-  padding: 10px 0;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  background: var(--bg2);
-  color: var(--white60);
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.mbti-grid button.selected {
-  border-color: var(--gold);
-  background: rgba(201,169,110,0.15);
-  color: var(--gold);
-  font-weight: 700;
-}
+  /* ── 입력 폼 ── */
+  .form-section {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
 
-/* 제출 버튼 */
-.btn-submit {
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--gold), #b8944f);
-  color: var(--bg);
-  font-size: 16px;
-  font-weight: 700;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: opacity 0.2s;
-  margin-top: 8px;
-}
-.btn-submit:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+  .form-card {
+    background: var(--surface);
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    border-radius: 20px;
+    padding: 32px 24px;
+  }
 
-/* ═══════════════════════════════════════
-   3. 로딩
-   ═══════════════════════════════════════ */
-.loading-section {
-  display: none;
-  text-align: center;
-  padding: 80px 20px;
-}
-.loading-section.show { display: block; }
+  .form-group {
+    margin-bottom: 20px;
+  }
 
-.spinner {
-  width: 48px; height: 48px;
-  border: 3px solid var(--gold-dim);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 20px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
 
-.loading-text {
-  font-size: 15px;
-  color: var(--white60);
-  line-height: 1.6;
-}
+  .form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+  }
 
-/* ═══════════════════════════════════════
-   4. 결과 카드
-   ═══════════════════════════════════════ */
-.result-section {
-  display: none;
-  width: 100%;
-  max-width: 480px;
-  padding: 0 20px 40px;
-  flex-direction: column;
-  align-items: center;
-}
-.result-section.show {
-  display: flex;
-}
+  .form-group select:focus {
+    border-color: var(--accent);
+  }
 
-/* ── 카드 캡처 영역 ── */
-#card-capture {
-  width: 100%;
-  max-width: var(--card-max-w);
-  background: var(--bg);
-  padding: 0 0 20px;
-}
+  .birth-selects {
+    display: flex;
+    gap: 8px;
+  }
 
-.instinct-card {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 9 / 16;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 3px solid var(--gold);
-  background: var(--bg);
-}
+  .birth-selects select {
+    flex: 1;
+    padding: 14px 8px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+    text-align: center;
+  }
 
-.card-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-  z-index: 1;
-  transition: opacity 0.6s;
-}
+  .birth-selects select:focus {
+    border-color: var(--accent);
+  }
 
-.card-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    rgba(10,10,15,0.5) 62%,
-    rgba(10,10,15,0.88) 75%,
-    rgba(10,10,15,0.97) 100%
-  );
-  z-index: 2;
-}
+  .calendar-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
 
-.card-content {
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  padding: 0 18px 22px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
+  .calendar-toggle button {
+    flex: 1;
+    padding: 10px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
 
-/* 콤보 태그 */
-.combo-tag {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--white60);
-  text-transform: uppercase;
-  background: rgba(255,255,255,0.08);
-  padding: 4px 12px;
-  border-radius: 20px;
-}
+  .calendar-toggle button.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
 
-/* 십성 라벨 */
-.sipseong-label {
-  text-align: center;
-  margin-bottom: 2px;
-}
-.sipseong-label .nickname {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 2px;
-}
-.sipseong-label .hanja {
-  font-size: 13px;
-  color: var(--white40);
-  letter-spacing: 4px;
-}
+  .mbti-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
 
-/* 점수 섹션 */
-.score-section {
-  width: 100%;
-  text-align: center;
-  margin: 4px 0;
-}
-.score-label {
-  font-size: 11px;
-  color: var(--white40);
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-.score-number {
-  font-size: 42px;
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 6px;
-  transition: color 0.3s;
-}
+  .mbti-grid button {
+    padding: 10px 0;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
 
-/* 게이지 바 */
-.gauge-track {
-  width: 80%;
-  height: 6px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 3px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-.gauge-fill {
-  height: 100%;
-  width: 0%;
-  border-radius: 3px;
-  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-}
+  .mbti-grid button.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
 
-/* 등급 뱃지 */
-.grade-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.05);
-}
+  .mbti-grid button:hover {
+    border-color: var(--accent);
+  }
 
-/* 훅 텍스트 */
-.hook-text {
-  font-size: 13px;
-  color: var(--white60);
-  text-align: center;
-  line-height: 1.7;
-  word-break: keep-all;
-}
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), #b8943e);
+    border: none;
+    border-radius: 14px;
+    color: var(--bg);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
 
-/* ── 카드 하단 설명 ── */
-.description-box {
-  width: 100%;
-  max-width: var(--card-max-w);
-  margin-top: 16px;
-  padding: 18px;
-  background: var(--bg2);
-  border-radius: var(--radius);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.description-box p {
-  font-size: 14px;
-  color: var(--white60);
-  line-height: 1.8;
-  word-break: keep-all;
-  text-align: center;
-}
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(201, 169, 110, 0.3);
+  }
 
-/* ═══════════════════════════════════════
-   5. 액션 버튼
-   ═══════════════════════════════════════ */
-.actions {
-  width: 100%;
-  max-width: var(--card-max-w);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-}
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
 
-.btn-action {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: var(--radius);
-  font-size: 15px;
-  font-weight: 700;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: opacity 0.2s;
-  text-align: center;
-  text-decoration: none;
-  display: block;
-}
-.btn-primary {
-  background: linear-gradient(135deg, var(--gold), #b8944f);
-  color: var(--bg);
-}
-.btn-secondary {
-  background: rgba(255,255,255,0.06);
-  color: var(--white);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.btn-outline {
-  background: transparent;
-  color: var(--white60);
-  border: 1px solid rgba(255,255,255,0.1);
-}
+  /* ── 로딩 ── */
+  .loading-section {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+  }
 
-/* ═══════════════════════════════════════
-   6. 푸터
-   ═══════════════════════════════════════ */
-.footer {
-  text-align: center;
-  padding: 40px 20px;
-  font-size: 12px;
-  color: var(--white40);
-}
-.footer a {
-  color: var(--gold);
-  text-decoration: none;
-}
+  .loading-section.show {
+    display: block;
+  }
 
-/* ═══════════════════════════════════════
-   7. 반응형
-   ═══════════════════════════════════════ */
-@media (max-width: 380px) {
-  .instinct-card { border-width: 2px; }
-  .score-number { font-size: 36px; }
-  .sipseong-label .nickname { font-size: 19px; }
-  .mbti-grid { gap: 4px; }
-  .mbti-grid button { padding: 8px 0; font-size: 12px; }
-}
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(201, 169, 110, 0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 24px;
+  }
 
-/* ═══════════════════════════════════════
-   8. 유틸
-   ═══════════════════════════════════════ */
-.hidden { display: none !important; }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-.fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  .loading-text {
+    font-size: 16px;
+    color: var(--accent);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ── 결과 ── */
+  .result-section {
+    display: none;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .result-section.show {
+    display: block;
+    animation: fadeUp 0.8s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── 본능 카드 ── */
+  .card-capture {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 3px solid var(--accent);
+  }
+
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center top;
+    z-index: 1;
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 48%,
+      rgba(10,10,15,0.4) 58%,
+      rgba(10,10,15,0.85) 72%,
+      rgba(10,10,15,0.97) 100%
+    );
+    z-index: 2;
+  }
+
+  .card-watermark {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 2px;
+    z-index: 3;
+  }
+
+  .card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    padding: 0 24px 24px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 콤보 태그 */
+  .combo-tag {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* 십성 라벨 */
+  .sipseong-label {
+    text-align: center;
+    margin: 4px 0;
+  }
+
+  .sipseong-label .nickname {
+    display: block;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    margin-bottom: 2px;
+  }
+
+  .sipseong-label .hanja {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 4px;
+  }
+
+  /* 점수 */
+  .score-section {
+    width: 100%;
+    text-align: center;
+    margin: 6px 0;
+  }
+
+  .score-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .score-number {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .gauge-track {
+    width: 75%;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* 등급 뱃지 */
+  .grade-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    margin-top: 2px;
+  }
+
+  /* 훅 텍스트 */
+  .hook-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    text-align: center;
+    line-height: 1.7;
+    word-break: keep-all;
+    margin-top: 4px;
+  }
+
+  /* ── 설명 박스 (= flip-section 스타일) ── */
+  .desc-section {
+    background: var(--surface);
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .desc-label {
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .desc-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  /* ── 버튼 ── */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+  }
+
+  .btn-save {
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-share {
+    background: #FEE500;
+    color: #000;
+  }
+
+  .btn-save:hover { border-color: var(--accent); }
+  .btn-share:hover { opacity: 0.9; }
+
+  /* CTA */
+  .cta-section {
+    background: linear-gradient(135deg, rgba(201,169,110,0.1), rgba(201,169,110,0.05));
+    border: 1px solid rgba(201, 169, 110, 0.2);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  .cta-text {
+    font-size: 15px;
+    color: var(--accent-light);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, var(--accent), #b8943e);
+    border: none;
+    border-radius: 12px;
+    color: var(--bg);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(201, 169, 110, 0.3);
+  }
+
+  .retry-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: all 0.3s;
+  }
+
+  .retry-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* 에러 */
+  .error-msg {
+    display: none;
+    text-align: center;
+    padding: 16px;
+    background: rgba(217, 74, 74, 0.1);
+    border: 1px solid rgba(217, 74, 74, 0.3);
+    border-radius: 12px;
+    color: #d94a4a;
+    font-size: 14px;
+    margin-top: 16px;
+  }
+
+  .error-msg.show { display: block; }
+
+  /* 푸터 */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
 </style>
 </head>
-
 <body>
 
-<!-- ════════════════════════════════════
-     SECTION 1: 입력 폼
-     ════════════════════════════════════ -->
+<!-- ════════ 헤더 ════════ -->
 <div class="header" id="headerSection">
-  <div class="logo">나를읽다 연구소</div>
+  <div class="header-logo">나를읽다 연구소</div>
   <h1>본능 카드</h1>
-  <p class="sub">MBTI는 겉모습, 사주는 본능.<br>둘이 같을까, 완전히 다를까?</p>
+  <p>MBTI는 겉모습, 사주는 본능.<br>둘이 같을까, 완전히 다를까?</p>
 </div>
 
+<!-- ════════ 입력 폼 ════════ -->
 <div class="form-section" id="formSection">
+  <div class="form-card">
 
-  <!-- 생년월일 -->
-  <div class="input-group">
-    <label>생년월일</label>
-    <div class="input-row">
-      <select id="birthYear"></select>
-      <select id="birthMonth"></select>
-      <select id="birthDay"></select>
+    <div class="form-group">
+      <label>생년월일</label>
+      <div class="birth-selects">
+        <select id="birthYear"></select>
+        <select id="birthMonth"></select>
+        <select id="birthDay"></select>
+      </div>
     </div>
-  </div>
 
-  <!-- 음력/양력 -->
-  <div class="input-group">
-    <label>달력</label>
-    <div class="calendar-toggle" id="calToggle">
-      <button type="button" class="active" data-val="solar">양력</button>
-      <button type="button" data-val="lunar">음력</button>
+    <div class="calendar-toggle">
+      <button type="button" class="active" data-cal="양력" onclick="setCalendar(this)">양력</button>
+      <button type="button" data-cal="음력" onclick="setCalendar(this)">음력</button>
     </div>
-  </div>
 
-  <!-- 성별 -->
-  <div class="input-group">
-    <label>성별</label>
-    <div class="gender-toggle" id="genderToggle">
-      <button type="button" class="active" data-val="M">남성</button>
-      <button type="button" data-val="F">여성</button>
+    <div class="form-group">
+      <label>성별</label>
+      <select id="gender">
+        <option value="남">남성</option>
+        <option value="여">여성</option>
+      </select>
     </div>
-  </div>
 
-  <!-- MBTI -->
-  <div class="input-group">
-    <label>MBTI</label>
-    <div class="mbti-grid" id="mbtiGrid">
-      <button type="button">INTJ</button><button type="button">INTP</button>
-      <button type="button">ENTJ</button><button type="button">ENTP</button>
-      <button type="button">INFJ</button><button type="button">INFP</button>
-      <button type="button">ENFJ</button><button type="button">ENFP</button>
-      <button type="button">ISTJ</button><button type="button">ISTP</button>
-      <button type="button">ESTJ</button><button type="button">ESTP</button>
-      <button type="button">ISFJ</button><button type="button">ISFP</button>
-      <button type="button">ESFJ</button><button type="button">ESFP</button>
+    <div class="form-group">
+      <label>MBTI</label>
+      <div class="mbti-grid" id="mbtiGrid">
+        <button type="button" onclick="setMbti(this)">INTJ</button>
+        <button type="button" onclick="setMbti(this)">INTP</button>
+        <button type="button" onclick="setMbti(this)">ENTJ</button>
+        <button type="button" onclick="setMbti(this)">ENTP</button>
+        <button type="button" onclick="setMbti(this)">INFJ</button>
+        <button type="button" onclick="setMbti(this)">INFP</button>
+        <button type="button" onclick="setMbti(this)">ENFJ</button>
+        <button type="button" onclick="setMbti(this)">ENFP</button>
+        <button type="button" onclick="setMbti(this)">ISTJ</button>
+        <button type="button" onclick="setMbti(this)">ISFJ</button>
+        <button type="button" onclick="setMbti(this)">ESTJ</button>
+        <button type="button" onclick="setMbti(this)">ESFJ</button>
+        <button type="button" onclick="setMbti(this)">ISTP</button>
+        <button type="button" onclick="setMbti(this)">ISFP</button>
+        <button type="button" onclick="setMbti(this)">ESTP</button>
+        <button type="button" onclick="setMbti(this)">ESFP</button>
+      </div>
     </div>
-  </div>
 
-  <button class="btn-submit" id="btnSubmit" disabled>본능 카드 뽑기</button>
+    <button class="submit-btn" id="submitBtn" onclick="getMyCard()" disabled>본능 카드 뽑기</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
 </div>
 
-<!-- ════════════════════════════════════
-     SECTION 2: 로딩
-     ════════════════════════════════════ -->
+<!-- ════════ 로딩 ════════ -->
 <div class="loading-section" id="loadingSection">
   <div class="spinner"></div>
-  <p class="loading-text">사주 원국을 분석하고 있어요…<br>당신의 본능을 찾는 중</p>
+  <div class="loading-text">사주 원국에서 본능을 읽고 있습니다...</div>
 </div>
 
-<!-- ════════════════════════════════════
-     SECTION 3: 결과
-     ════════════════════════════════════ -->
+<!-- ════════ 결과 ════════ -->
 <div class="result-section" id="resultSection">
 
-  <!-- 캡처 영역 -->
-  <div id="card-capture">
-    <div class="instinct-card" id="instinctCard">
-      <div class="card-bg" id="cardBg"></div>
-      <div class="card-overlay"></div>
-      <div class="card-content">
-        <div class="combo-tag" id="comboTag"></div>
-        <div class="sipseong-label">
-          <span class="nickname" id="sipNickname"></span>
-          <span class="hanja" id="sipHanja"></span>
-        </div>
-        <div class="score-section">
-          <div class="score-label">본능 일치도</div>
-          <div class="score-number" id="scoreNum">0</div>
-          <div class="gauge-track">
-            <div class="gauge-fill" id="gaugeFill"></div>
-          </div>
-        </div>
-        <div class="grade-badge" id="gradeBadge">
-          <span id="gradeIcon"></span>
-          <span id="gradeText"></span>
-        </div>
-        <p class="hook-text" id="hookText"></p>
+  <!-- 카드 캡처 영역 -->
+  <div class="card-capture" id="cardCapture">
+    <div class="card-bg" id="cardBg"></div>
+    <div class="card-overlay"></div>
+    <div class="card-watermark">나를읽다 연구소</div>
+    <div class="card-content">
+      <div class="combo-tag" id="comboTag"></div>
+      <div class="sipseong-label">
+        <span class="nickname" id="sipNickname"></span>
+        <span class="hanja" id="sipHanja"></span>
       </div>
+      <div class="score-section">
+        <div class="score-label">본능 일치도</div>
+        <div class="score-number" id="scoreNum">0</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" id="gaugeFill"></div>
+        </div>
+      </div>
+      <div class="grade-badge" id="gradeBadge">
+        <span id="gradeIcon"></span>
+        <span id="gradeText"></span>
+      </div>
+      <p class="hook-text" id="hookText"></p>
     </div>
   </div>
 
   <!-- 설명 박스 -->
-  <div class="description-box fade-in" id="descBox">
-    <p id="descText"></p>
+  <div class="desc-section">
+    <div class="desc-label">INSTINCT MESSAGE</div>
+    <div class="desc-text" id="descText"></div>
   </div>
 
-  <!-- 액션 버튼 -->
-  <div class="actions fade-in">
-    <a href="https://readmelab.co.kr/#pricing" class="btn-action btn-primary">12,000자 전체 리포트 받기 →</a>
-    <button class="btn-action btn-secondary" onclick="saveCard()">카드 이미지 저장</button>
-    <button class="btn-action btn-outline" onclick="resetForm()">다시 해보기</button>
+  <!-- 버튼 -->
+  <div class="action-buttons">
+    <button class="action-btn btn-save" onclick="saveCard()">카드 저장</button>
+    <button class="action-btn btn-share" onclick="shareKakao()">카카오 공유</button>
   </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-text" id="ctaText"></div>
+    <a href="https://readmelab.co.kr/#pricing" class="cta-btn">12,000자 전체 리포트 받기</a>
+  </div>
+
+  <button class="retry-btn" onclick="retry()">다른 생년월일로 다시 해보기</button>
 </div>
 
-<!-- 푸터 -->
+<!-- ════════ 푸터 ════════ -->
 <div class="footer">
-  © 2025 나를읽다 연구소 · <a href="https://readmelab.co.kr">readmelab.co.kr</a>
+  <p>© 2026 <a href="https://readmelab.co.kr">나를읽다 연구소</a>. All rights reserved.</p>
 </div>
 
-<!-- ════════════════════════════════════
-     SCRIPTS
-     ════════════════════════════════════ -->
 <script>
-(function() {
-  'use strict';
+// ═══════════════════════════════════════════════════════════
+// 설정
+// ═══════════════════════════════════════════════════════════
+const API_BASE = 'https://naread-server-1075269376260.asia-northeast3.run.app';
+const IMG_BASE = 'https://cards.readmelab.co.kr/cards/instinct/';
 
-  // ── API 설정 ──
-  const API_URL = 'https://naread-server-1075269376260.asia-northeast3.run.app/api/free-instinct';
+const GRADE_CONFIG = {
+  '완전충돌': { icon: '💥', label: '완전 충돌' },
+  '충돌':     { icon: '⚡', label: '충돌' },
+  '교차':     { icon: '🔀', label: '교차' },
+  '조화':     { icon: '✨', label: '조화' },
+  '완전일치': { icon: '🪞', label: '완전 일치' }
+};
 
-  // ── DOM 참조 ──
-  const $ = id => document.getElementById(id);
-  const formSection    = $('formSection');
-  const headerSection  = $('headerSection');
-  const loadingSection = $('loadingSection');
-  const resultSection  = $('resultSection');
-  const btnSubmit      = $('btnSubmit');
+// ═══════════════════════════════════════════════════════════
+// 상태
+// ═══════════════════════════════════════════════════════════
+let selectedMbti = '';
+let calendarType = '양력';
 
-  // ── 상태 ──
-  let state = {
-    year: null,
-    month: null,
-    day: null,
-    isLunar: false,
-    gender: 'M',
-    mbti: null
-  };
+// ═══════════════════════════════════════════════════════════
+// 폼 인터랙션
+// ═══════════════════════════════════════════════════════════
+function setCalendar(btn) {
+  document.querySelectorAll('.calendar-toggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  calendarType = btn.dataset.cal;
+}
 
-  // ═══════════════════════════════════
-  // 폼 초기화
-  // ═══════════════════════════════════
+function setMbti(btn) {
+  document.querySelectorAll('.mbti-grid button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedMbti = btn.textContent;
+  document.getElementById('submitBtn').disabled = false;
+}
 
-  // 연도 (1940~2010)
-  const selYear = $('birthYear');
-  for (let y = 2010; y >= 1940; y--) {
-    const opt = document.createElement('option');
-    opt.value = y; opt.textContent = y + '년';
-    selYear.appendChild(opt);
-  }
-  selYear.value = '1990';
-  state.year = 1990;
+// ═══════════════════════════════════════════════════════════
+// API 호출
+// ═══════════════════════════════════════════════════════════
+async function getMyCard() {
+  const year = document.getElementById('birthYear').value;
+  const month = document.getElementById('birthMonth').value;
+  const day = document.getElementById('birthDay').value;
+  const gender = document.getElementById('gender').value;
 
-  selYear.addEventListener('change', function() {
-    state.year = parseInt(this.value);
-    checkReady();
-  });
-
-  // 월
-  const selMonth = $('birthMonth');
-  for (let m = 1; m <= 12; m++) {
-    const opt = document.createElement('option');
-    opt.value = m; opt.textContent = m + '월';
-    selMonth.appendChild(opt);
-  }
-  selMonth.addEventListener('change', function() {
-    state.month = parseInt(this.value);
-    checkReady();
-  });
-
-  // 일
-  const selDay = $('birthDay');
-  for (let d = 1; d <= 31; d++) {
-    const opt = document.createElement('option');
-    opt.value = d; opt.textContent = d + '일';
-    selDay.appendChild(opt);
-  }
-  selDay.addEventListener('change', function() {
-    state.day = parseInt(this.value);
-    checkReady();
-  });
-
-  // 음력/양력 토글
-  $('calToggle').addEventListener('click', function(e) {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    this.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.isLunar = btn.dataset.val === 'lunar';
-  });
-
-  // 성별 토글
-  $('genderToggle').addEventListener('click', function(e) {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    this.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.gender = btn.dataset.val;
-  });
-
-  // MBTI 선택
-  $('mbtiGrid').addEventListener('click', function(e) {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    this.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    state.mbti = btn.textContent.trim();
-    checkReady();
-  });
-
-  function checkReady() {
-    btnSubmit.disabled = !(state.year && state.month && state.day && state.mbti);
+  if (!year || !month || !day || !selectedMbti) {
+    showError('생년월일과 MBTI를 모두 입력해주세요.');
+    return;
   }
 
-  // ═══════════════════════════════════
-  // 제출
-  // ═══════════════════════════════════
+  hideError();
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('headerSection').style.display = 'none';
+  document.getElementById('loadingSection').classList.add('show');
+  document.getElementById('resultSection').classList.remove('show');
 
-  btnSubmit.addEventListener('click', async function() {
-    if (this.disabled) return;
-
-    // UI 전환
-    formSection.classList.add('hidden');
-    headerSection.classList.add('hidden');
-    loadingSection.classList.add('show');
-
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          birthYear:  state.year,
-          birthMonth: state.month,
-          birthDay:   state.day,
-          mbti:       state.mbti,
-          isLunar:    state.isLunar,
-          gender:     state.gender === 'M' ? '남' : '여'
-        })
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        throw new Error(data.error || '결과를 불러올 수 없습니다');
-      }
-
-      renderResult(data);
-
-    } catch (err) {
-      alert('오류가 발생했습니다: ' + err.message);
-      resetForm();
-    }
-  });
-
-  // ═══════════════════════════════════
-  // 결과 렌더링
-  // ═══════════════════════════════════
-
-  const GRADE_CONFIG = {
-    '완전충돌': { icon: '💥', label: '완전 충돌' },
-    '충돌':     { icon: '⚡', label: '충돌' },
-    '교차':     { icon: '🔀', label: '교차' },
-    '조화':     { icon: '✨', label: '조화' },
-    '완전일치': { icon: '🪞', label: '완전 일치' }
-  };
-
-  function renderResult(data) {
-    const d = data.instinct;
-    const color = d.color || '#c9a96e';
-    const grade = GRADE_CONFIG[d.grade] || { icon: '🔮', label: d.grade };
-
-    // 카드 테두리 색상
-    $('instinctCard').style.borderColor = color;
-
-    // 배경 이미지
-    const bg = $('cardBg');
-    bg.style.backgroundImage = 'url(' + d.imageUrl + ')';
-    bg.style.opacity = '1';
-
-    // 텍스트
-    $('comboTag').textContent = d.sipseong + ' × ' + d.mbti;
-    $('sipNickname').textContent = d.nickname;
-    $('sipHanja').textContent = d.hanja;
-    $('scoreNum').textContent = d.score;
-    $('scoreNum').style.color = color;
-    $('hookText').textContent = d.hook;
-    $('gradeIcon').textContent = grade.icon;
-    $('gradeText').textContent = grade.label;
-    $('gradeBadge').style.borderColor = color;
-    $('gradeBadge').style.color = color;
-
-    // 설명
-    $('descText').textContent = d.description;
-
-    // 게이지 애니메이션
-    const fill = $('gaugeFill');
-    fill.style.background = color;
-    fill.style.width = '0%';
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        fill.style.width = d.score + '%';
-      });
+  try {
+    const response = await fetch(`${API_BASE}/api/free-instinct`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        birthYear: year,
+        birthMonth: month,
+        birthDay: day,
+        mbti: selectedMbti,
+        isLunar: calendarType === '음력',
+        gender: gender
+      })
     });
 
-    // UI 전환
-    loadingSection.classList.remove('show');
-    resultSection.classList.add('show');
+    const data = await response.json();
 
-    // 스크롤 맨 위로
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || '카드를 찾을 수 없습니다');
+    }
+
+    renderCard(data.instinct);
+
+  } catch (err) {
+    console.error('에러:', err);
+    document.getElementById('loadingSection').classList.remove('show');
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('headerSection').style.display = 'block';
+    showError(err.message || '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 카드 렌더링
+// ═══════════════════════════════════════════════════════════
+function renderCard(d) {
+  const color = d.color || '#c9a96e';
+  const grade = GRADE_CONFIG[d.grade] || { icon: '🔮', label: d.grade };
+
+  // 카드 테두리 색상
+  document.getElementById('cardCapture').style.borderColor = color;
+
+  // 배경 이미지
+  document.getElementById('cardBg').style.backgroundImage = 'url(' + d.imageUrl + ')';
+
+  // 텍스트
+  document.getElementById('comboTag').textContent = d.sipseong + ' × ' + d.mbti;
+  document.getElementById('sipNickname').textContent = d.nickname;
+  document.getElementById('sipHanja').textContent = d.hanja;
+  document.getElementById('scoreNum').textContent = d.score;
+  document.getElementById('scoreNum').style.color = color;
+  document.getElementById('hookText').textContent = d.hook;
+
+  // 등급 뱃지
+  document.getElementById('gradeIcon').textContent = grade.icon;
+  document.getElementById('gradeText').textContent = grade.label;
+  document.getElementById('gradeBadge').style.borderColor = color;
+  document.getElementById('gradeBadge').style.color = color;
+
+  // 설명
+  document.getElementById('descText').textContent = d.description;
+
+  // CTA
+  document.getElementById('ctaText').textContent = d.ctaShort || '이 본능에 숨겨진 인생 시나리오가 궁금하다면?';
+
+  // 게이지 애니메이션
+  const fill = document.getElementById('gaugeFill');
+  fill.style.background = color;
+  fill.style.width = '0%';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      fill.style.width = d.score + '%';
+    });
+  });
+
+  // UI 전환
+  document.getElementById('loadingSection').classList.remove('show');
+  document.getElementById('resultSection').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 카드 저장
+// ═══════════════════════════════════════════════════════════
+async function saveCard() {
+  const el = document.getElementById('cardCapture');
+
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#0a0a0f'
+    });
+
+    const link = document.createElement('a');
+    link.download = '나의_본능카드_나를읽다.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (err) {
+    console.error('저장 실패:', err);
+    alert('카드 저장에 실패했습니다. 스크린샷으로 저장해주세요.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 카카오 공유
+// ═══════════════════════════════════════════════════════════
+function shareKakao() {
+  if (!window.Kakao) {
+    alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해주세요.');
+    return;
   }
 
-  // ═══════════════════════════════════
-  // 저장 & 리셋
-  // ═══════════════════════════════════
+  if (!Kakao.isInitialized()) {
+    Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
+  }
 
-  window.saveCard = async function() {
-    try {
-      const el = $('card-capture');
-      const canvas = await html2canvas(el, {
-        backgroundColor: '#0a0a0f',
-        scale: 2,
-        useCORS: true,
-        allowTaint: true
-      });
-      const link = document.createElement('a');
-      link.download = '나의_본능카드.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    } catch (err) {
-      alert('저장에 실패했습니다. 스크린샷을 이용해주세요.');
+  const nickname = document.getElementById('sipNickname').textContent;
+  const hook = document.getElementById('hookText').textContent;
+  const score = document.getElementById('scoreNum').textContent;
+
+  Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: '나의 본능카드: ' + nickname + ' (일치도 ' + score + '점)',
+      description: hook,
+      imageUrl: 'https://cards.readmelab.co.kr/og/instinct_og.jpg',
+      link: {
+        mobileWebUrl: 'https://readmelab.co.kr/f_instinct',
+        webUrl: 'https://readmelab.co.kr/f_instinct'
+      }
+    },
+    buttons: [
+      {
+        title: '내 본능카드 확인하기',
+        link: {
+          mobileWebUrl: 'https://readmelab.co.kr/f_instinct',
+          webUrl: 'https://readmelab.co.kr/f_instinct'
+        }
+      }
+    ]
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 유틸
+// ═══════════════════════════════════════════════════════════
+function retry() {
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('headerSection').style.display = 'block';
+
+  // MBTI 초기화
+  document.querySelectorAll('.mbti-grid button').forEach(b => b.classList.remove('active'));
+  selectedMbti = '';
+  document.getElementById('submitBtn').disabled = true;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════════
+// 생년월일 셀렉트 초기화
+// ═══════════════════════════════════════════════════════════
+(function initBirthSelects() {
+  const yearEl = document.getElementById('birthYear');
+  const monthEl = document.getElementById('birthMonth');
+  const dayEl = document.getElementById('birthDay');
+  const currentYear = new Date().getFullYear();
+
+  yearEl.innerHTML = '<option value="">년</option>';
+  for (let y = currentYear; y >= 1940; y--) {
+    yearEl.innerHTML += '<option value="' + y + '">' + y + '년</option>';
+  }
+
+  monthEl.innerHTML = '<option value="">월</option>';
+  for (let m = 1; m <= 12; m++) {
+    const mv = String(m).padStart(2, '0');
+    monthEl.innerHTML += '<option value="' + mv + '">' + m + '월</option>';
+  }
+
+  function updateDays() {
+    const y = parseInt(yearEl.value) || 2000;
+    const m = parseInt(monthEl.value) || 1;
+    const maxDay = new Date(y, m, 0).getDate();
+    const prevDay = dayEl.value;
+
+    dayEl.innerHTML = '<option value="">일</option>';
+    for (let d = 1; d <= maxDay; d++) {
+      const dv = String(d).padStart(2, '0');
+      dayEl.innerHTML += '<option value="' + dv + '">' + d + '일</option>';
     }
-  };
 
-  window.resetForm = function() {
-    resultSection.classList.remove('show');
-    loadingSection.classList.remove('show');
-    formSection.classList.remove('hidden');
-    headerSection.classList.remove('hidden');
+    if (parseInt(prevDay) <= maxDay) {
+      dayEl.value = prevDay;
+    }
+  }
 
-    // MBTI 선택 초기화
-    $('mbtiGrid').querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-    state.mbti = null;
-    btnSubmit.disabled = true;
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
+  yearEl.addEventListener('change', updateDays);
+  monthEl.addEventListener('change', updateDays);
+  updateDays();
 })();
 </script>
 
