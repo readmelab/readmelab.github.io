@@ -1059,9 +1059,9 @@ function renderCard(d) {
   document.getElementById('cardCapture').style.borderColor = color;
 
   // 배경 이미지
-  var bgEl = document.getElementById('cardBg');
+var bgEl = document.getElementById('cardBg');
 bgEl.style.backgroundImage = 'none';
-bgEl.innerHTML = '<img src="' + imageUrl + '" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;">';
+bgEl.innerHTML = '<img src="' + d.imageUrl + '" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;">';
 
   // MBTI vs 본능 비교 (카드 안)
   var mbtiPattern = d.mbtiPattern || 'E/S/T/J';
