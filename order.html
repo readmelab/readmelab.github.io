@@ -112,7 +112,8 @@ var PRODUCTS = {
         'FRIEND30':  { type: 'percent', value: 30, label: '\uC9C0\uC778 \uCD94\uCC9C 30% \uD560\uC778', maxUse: 50 },
         'WELCOME':   { type: 'amount',  value: 10000, label: '\uCCAB \uC8FC\uBB38 1\uB9CC\uC6D0 \uD560\uC778', maxUse: 200 },
         'READMELAB': { type: 'percent', value: 100, label: '\uB098\uB97C\uC77D\uB2E4 100% \uCFE0\uD3F0', maxUse: 10 },
-        'TEST100':   { type: 'percent', value: 100, label: '\uD14C\uC2A4\uD2B8 100% \uD560\uC778', maxUse: 999 }
+        'TEST100':   { type: 'percent', value: 100, label: '\uD14C\uC2A4\uD2B8 100% \uD560\uC778', maxUse: 999 },
+        'DAGUN5000': { type: 'amount',  value: 5000, label: '당근 단골 5,000원 할인', maxUse: 500 }
     };
 
 var UPSELL_MAP = {
@@ -185,11 +186,12 @@ if (upsell) {
     window.applyCoupon = function() {
         var code = document.getElementById('couponInput').value.trim().toUpperCase();
         var msg = document.getElementById('couponMsg');
-        if (!code) { msg.className = 'coupon-msg error'; msg.textContent = '\uCFE0\uD3F0 \uCF54\uB4DC\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.'; return; }
-        if (!COUPONS[code]) { msg.className = 'coupon-msg error'; msg.textContent = '\uC720\uD6A8\uD558\uC9C0 \uC54A\uC740 \uCFE0\uD3F0\uC785\uB2C8\uB2E4.'; return; }
+        if (!code) { msg.className = 'coupon-msg error'; msg.textContent = '쿠폰 코드를 입력해 주세요.'; return; }
+        if (!COUPONS[code]) { msg.className = 'coupon-msg error'; msg.textContent = '유효하지 않은 쿠폰입니다.'; return; }
+        if (currentProduct === 'EXT3') { msg.className = 'coupon-msg error'; msg.textContent = 'Deep Oracle 연장 상품에는 쿠폰을 사용할 수 없습니다.'; return; }
         appliedCoupon = code;
         msg.className = 'coupon-msg success';
-        msg.textContent = '\u2705 ' + COUPONS[code].label + ' \uC801\uC6A9\uB428';
+        msg.textContent = '✅ ' + COUPONS[code].label + ' 적용됨';
         refreshUI();
     };
 
