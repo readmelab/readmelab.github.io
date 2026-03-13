@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>테스트 결제 결과</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07070c;color:#d4d0c8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.wrap{max-width:480px;width:100%}
+.badge{text-align:center;font-size:.7rem;color:#ef4444;background:rgba(239,68,68,.08);padding:6px 14px;border-radius:8px;border:1px solid rgba(239,68,68,.15);margin-bottom:20px;display:inline-block}
+.card{background:#111119;border:1px solid rgba(212,168,83,.15);border-radius:14px;padding:24px;margin-bottom:16px}
+.card h2{font-size:1rem;margin-bottom:16px;text-align:center}
+.card h2 .icon{font-size:1.8rem;display:block;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem}
+.row:last-child{border-bottom:none}
+.row .label{color:#8a8780}
+.row .value{color:#e8c97a;font-weight:500;text-align:right;max-width:60%;word-break:break-all}
+.row .value.ok{color:#4ade80}
+.row .value.fail{color:#ef4444}
+.spinner{width:24px;height:24px;border:3px solid rgba(212,168,83,.15);border-top-color:#d4a853;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-box{text-align:center;padding:16px;border-radius:10px;font-size:.85rem;margin-bottom:16px}
+.result-box.ok{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:#4ade80}
+.result-box.fail{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444}
+.back-btn{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#d4a853,#b8912a);color:#0a0a0f;font-size:.9rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;text-align:center;text-decoration:none;letter-spacing:1px}
+.log{background:#0a0a12;border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:14px;margin-bottom:16px;font-size:.7rem;color:#6a6455;max-height:200px;overflow-y:auto;white-space:pre-wrap;font-family:monospace;line-height:1.8}
+.note{font-size:.7rem;color:#6a6455;text-align:center;line-height:1.8;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="text-align:center"><span class="badge">⚠️ TEST MODE</span></div>
+
+  <div class="card">
+    <h2><span class="icon" id="icon">⏳</span><span id="title">토스 승인 확인 중...</span></h2>
+    <div class="row"><span class="label">경로</span><span class="value" id="vRoute">—</span></div>
+    <div class="row"><span class="label">주문번호</span><span class="value" id="vOrderId">—</span></div>
+    <div class="row"><span class="label">상품</span><span class="value" id="vProduct">—</span></div>
+    <div class="row"><span class="label">금액</span><span class="value" id="vAmount">—</span></div>
+    <div class="row"><span class="label">쿠폰</span><span class="value" id="vCoupon">—</span></div>
+    <div class="row"><span class="label">formPage</span><span class="value" id="vFormPage">—</span></div>
+    <div class="row"><span class="label">paymentKey</span><span class="value" id="vPaymentKey" style="font-size:.65rem">—</span></div>
+    <div class="row"><span class="label">토스 승인</span><span class="value" id="vTossResult"><div class="spinner"></div></span></div>
+  </div>
+
+  <div class="log" id="log"></div>
+  <div id="resultBox"></div>
+  <div class="note" id="noteText"></div>
+  <a class="back-btn" href="/test-payment.html">← 테스트 콘솔로 돌아가기</a>
+</div>
+
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var route       = params.get('route') || '?';
+  var paymentKey  = params.get('paymentKey') || '';
+  var orderId     = params.get('orderId') || '';
+  var amount      = params.get('amount') || '0';
+  var product     = params.get('product') || '';
+  var productName = params.get('productName') || '';
+  var formPage    = params.get('formPage') || '';
+  var coupon      = params.get('coupon') || '';
+
+  var TEST_SK = 'test_sk_DpexMgkW36GxvmGwpaOdVGbR5ozO';
+
+  var ROUTE_NAMES = {
+    '1': '경로1 — 매력리포트 (f_charm)',
+    '2': '경로2 — N1 매력리포트 할인',
+    '3': '경로3 — 정가 구매',
+    '5': '경로5 — W1 궁합 할인'
+  };
+
+  /* 화면 표시 */
+  document.getElementById('vRoute').textContent = ROUTE_NAMES[route] || '경로 ' + route;
+  document.getElementById('vOrderId').textContent = orderId;
+  document.getElementById('vProduct').textContent = product + (productName ? ' / ' + productName : '');
+  document.getElementById('vAmount').textContent = parseInt(amount).toLocaleString() + '원';
+  document.getElementById('vCoupon').textContent = coupon || '없음';
+  document.getElementById('vFormPage').textContent = formPage || '없음';
+  document.getElementById('vPaymentKey').textContent = paymentKey || '없음';
+
+  var logEl = document.getElementById('log');
+  function log(msg){
+    logEl.textContent += '[' + new Date().toLocaleTimeString() + '] ' + msg + '\n';
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function showResult(ok, msg, note){
+    document.getElementById('icon').textContent = ok ? '✅' : '❌';
+    document.getElementById('title').textContent = ok ? '테스트 성공' : '테스트 실패';
+    document.getElementById('vTossResult').innerHTML = ok
+      ? '<span class="ok">승인 성공</span>'
+      : '<span class="fail">승인 실패</span>';
+
+    var box = document.getElementById('resultBox');
+    box.innerHTML = '<div class="result-box ' + (ok ? 'ok' : 'fail') + '">' + msg + '</div>';
+
+    if(note) document.getElementById('noteText').textContent = note;
+  }
+
+  /* 필수 파라미터 체크 */
+  if(!paymentKey || !orderId || !amount){
+    showResult(false, '필수 파라미터 누락 — paymentKey, orderId, amount 확인');
+    log('❌ 파라미터 부족');
+    return;
+  }
+
+  log('테스트 승인 시작');
+  log('orderId: ' + orderId);
+  log('amount: ' + amount);
+
+  /* ── 토스 테스트 승인 (브라우저에서 직접) ── */
+  var authHeader = 'Basic ' + btoa(TEST_SK + ':');
+
+  fetch('https://api.tosspayments.com/v1/payments/confirm', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authHeader
+    },
+    body: JSON.stringify({
+      paymentKey: paymentKey,
+      orderId: orderId,
+      amount: parseInt(amount)
+    })
+  })
+  .then(function(res){
+    log('토스 응답 코드: ' + res.status);
+    return res.json().then(function(data){ return { status: res.status, data: data }; });
+  })
+  .then(function(result){
+    if(result.status === 200){
+      log('✅ 토스 승인 성공');
+      log('결제수단: ' + (result.data.method || ''));
+      log('승인일시: ' + (result.data.approvedAt || ''));
+      showResult(true,
+        '토스 테스트 승인 성공 — 결제 흐름 정상',
+        '이 테스트는 토스 승인까지만 확인합니다. GAS/마스터탭에는 기록되지 않습니다.'
+      );
+    } else {
+      log('❌ 토스 승인 실패: ' + (result.data.message || ''));
+      log('에러코드: ' + (result.data.code || ''));
+      showResult(false, '토스 승인 실패: ' + (result.data.message || ''));
+    }
+  })
+  .catch(function(err){
+    log('❌ 네트워크 에러: ' + err.message);
+    showResult(false, '통신 실패: ' + err.message);
+  });
+
+})();
+</script>
+</body>
+</html>
