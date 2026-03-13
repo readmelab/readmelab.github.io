@@ -16,6 +16,8 @@
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
 <!-- html2canvas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- 토스페이먼츠 SDK -->
+<script src="https://js.tosspayments.com/v2/standard"></script>
 
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -910,6 +912,163 @@
     color: var(--accent);
     text-decoration: none;
   }
+
+  /* ══════════════════════════════════════════════════════ */
+  /* ── 유료 리포트 결과 화면 ── */
+  /* ══════════════════════════════════════════════════════ */
+  .report-full { display: none; }
+  .report-full.show { display: block; animation: fadeUp 0.8s ease; }
+
+  .report-hero {
+    text-align: center;
+    padding: 48px 20px 32px;
+    position: relative;
+  }
+  .report-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(232,160,176,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .report-hero .rh-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; color: var(--lavender);
+    letter-spacing: 5px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .report-hero .rh-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600;
+    background: linear-gradient(135deg, var(--accent-light), var(--lavender));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .report-hero .rh-tags {
+    display: flex; justify-content: center; gap: 8px;
+    flex-wrap: wrap; margin-top: 10px;
+  }
+  .report-hero .rh-tag {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 500;
+    background: rgba(232,160,176,0.1);
+    border: 1px solid rgba(232,160,176,0.2);
+    color: var(--accent-light);
+  }
+
+  /* 챕터 */
+  .rf-chapter {
+    background: var(--surface);
+    border: 1px solid rgba(232,160,176,0.08);
+    border-radius: 20px;
+    padding: 28px 22px;
+    margin: 0 20px 16px;
+  }
+  .rf-chapter-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .rf-chapter-emoji { font-size: 22px; }
+  .rf-chapter-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px; color: var(--lavender);
+    letter-spacing: 3px;
+  }
+  .rf-chapter-title {
+    font-size: 16px; font-weight: 600; color: var(--text);
+  }
+  .rf-chapter-body {
+    font-size: 14px; line-height: 1.9;
+    color: var(--text-dim); font-weight: 300;
+    word-break: keep-all;
+  }
+
+  /* 스타일링 가이드 (ch6) */
+  .styling-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .styling-item {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 16px 14px;
+  }
+  .styling-item-label {
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 6px; font-weight: 500;
+  }
+  .styling-item-body {
+    font-size: 13px; line-height: 1.7;
+    color: var(--text-dim); font-weight: 300;
+    word-break: keep-all;
+  }
+  .styling-item.full-width {
+    grid-column: 1 / -1;
+  }
+
+  /* 장소 (ch7) */
+  .location-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 18px 16px;
+    margin-bottom: 10px;
+  }
+  .location-card-label {
+    font-size: 10px; color: var(--lavender);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px; font-weight: 500;
+  }
+  .location-card-body {
+    font-size: 14px; line-height: 1.8;
+    color: var(--text-dim); font-weight: 300;
+    word-break: keep-all;
+  }
+
+  /* 브랜드 연결 CTA */
+  .brand-cta {
+    margin: 32px 20px 0;
+    padding: 28px 22px;
+    background: linear-gradient(135deg, rgba(201,169,110,0.08), rgba(184,160,212,0.08));
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 20px;
+    text-align: center;
+  }
+  .brand-cta-title {
+    font-size: 16px; font-weight: 700; color: var(--text);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .brand-cta-sub {
+    font-size: 13px; color: var(--text-dim);
+    font-weight: 300; line-height: 1.6; margin-bottom: 20px;
+  }
+  .brand-cta-buttons { display: flex; flex-direction: column; gap: 10px; }
+  .brand-cta-btn {
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none;
+    font-family: 'Pretendard', sans-serif;
+    transition: all 0.3s;
+    text-decoration: none; text-align: center;
+    display: block;
+  }
+  .brand-cta-btn.primary {
+    background: linear-gradient(135deg, var(--gold), #d4b47a);
+    color: #1a1a2e;
+  }
+  .brand-cta-btn.secondary {
+    background: var(--card-bg);
+    border: 1px solid rgba(184,160,212,0.3);
+    color: var(--lavender-light);
+  }
+  .brand-cta-btn:hover { transform: translateY(-2px); }
+  
 </style>
 </head>
 <body>
@@ -1123,6 +1282,42 @@
   <button class="retry-btn" onclick="retry()">다른 정보로 다시 해보기</button>
 </div>
 
+
+<!-- ════════ 유료 리포트 결과 ════════ -->
+<div class="report-full" id="reportFull">
+  <div class="report-hero">
+    <div class="rh-label">Charm Report</div>
+    <div class="rh-name" id="rfName"></div>
+    <div class="rh-tags" id="rfTags"></div>
+  </div>
+  <div id="rfChapters"></div>
+
+  <!-- 브랜드 연결 -->
+  <div class="brand-cta">
+    <div class="brand-cta-title">매력만으로는 부족하다면</div>
+    <div class="brand-cta-sub">
+      사주와 MBTI로 읽은 당신의 매력, 더 깊이 들여다보세요.<br>
+      연애 패턴부터 운명의 궁합까지 — 당신의 이야기가 계속됩니다.
+    </div>
+    <div class="brand-cta-buttons">
+      <a class="brand-cta-btn primary" href="https://readmelab.co.kr/order" target="_blank">
+        나를읽다 — 내 사주 리포트 받기
+      </a>
+      <a class="brand-cta-btn secondary" href="https://readmelab.co.kr/order-w" target="_blank">
+        우리를읽다 — 궁합 리포트 받기
+      </a>
+    </div>
+  </div>
+
+  <button class="retry-btn" onclick="retry()" style="max-width:420px;margin:20px auto;display:block;">
+    다른 정보로 다시 해보기
+  </button>
+
+  <div class="footer">
+    <p>&copy; 2026 <a href="https://readmelab.co.kr">나를읽다 연구소</a>. All rights reserved.</p>
+  </div>
+</div>
+  
 <!-- ════════ 결제 팝업 ════════ -->
 <div class="payment-modal" id="paymentModal">
   <div class="payment-box">
@@ -1146,6 +1341,8 @@
 // ═══════════════════════════════════════════════════════════
 var API_BASE = 'https://naread-server-1075269376260.asia-northeast3.run.app';
 var IMAGE_BASE = 'https://cards.readmelab.co.kr/cards/charm/';
+var TOSS_CLIENT_KEY = 'live_ck_vZnjEJeQVxJXjPMLG9bD8PmOoBN0';
+var CHARM_REPORT_PRICE = 9900;
 
 var GRADE_STYLE = {
   'SSS': { color: '#e84a6a', label: 'SSS', icon: '🔥' },
@@ -1265,8 +1462,20 @@ function getHourValue() {
       throw new Error(data.error || '매력 카드를 찾을 수 없습니다');
     }
 
+
+    // ★ 원본 입력값 저장 (결제 콜백에서 재사용)
     currentCardData = data.data;
-    renderCard(data.data);
+    currentCardData._input = {
+      year: parseInt(year),
+      month: parseInt(month),
+      day: parseInt(day),
+      hour: getHourValue(),
+      gender: gender,
+      calendarType: calendarType,
+      mbti: selectedMbti
+    };
+
+     renderCard(data.data);
 
   } catch (err) {
     console.error('에러:', err);
@@ -1390,30 +1599,72 @@ function closePayment() {
 }
 
 async function processPayment() {
-  var name = document.getElementById('payName').value.trim();
-  var phone = document.getElementById('payPhone').value.trim();
+  var nameInput = document.getElementById('payName');
+  var phoneInput = document.getElementById('payPhone');
+  var userName = nameInput ? nameInput.value.trim() : '';
+  var userPhone = phoneInput ? phoneInput.value.trim().replace(/-/g, '') : '';
 
-  if (!name) {
+  if (!userName || userName.length < 2) {
     alert('이름을 입력해주세요.');
     return;
   }
-  if (!phone) {
-    alert('연락처를 입력해주세요.');
+  if (!userPhone || userPhone.length < 10) {
+    alert('연락처를 정확히 입력해주세요.');
     return;
   }
 
-  closePayment();
+  var orderId = 'CHARM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
 
-  // TODO: 실제 결제 연동 (토스페이먼츠 등)
-  // 결제 성공 후 리포트 표시
-  alert('결제 기능은 준비 중입니다. 곧 오픈됩니다!');
+  // 세션에 복원용 데이터 저장
+  sessionStorage.setItem('charm_order', JSON.stringify({
+    orderId: orderId,
+    amount: CHARM_REPORT_PRICE,
+    name: userName,
+    phone: userPhone,
+    // ★ 원본 입력값을 직접 저장
+    year: currentCardData._input.year,
+    month: currentCardData._input.month,
+    day: currentCardData._input.day,
+    hour: currentCardData._input.hour,
+    gender: currentCardData._input.gender,
+    calendarType: currentCardData._input.calendarType,
+    mbti: currentCardData._input.mbti
+  }));
+
+  try {
+    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    var payment = tossPayments.payment({ customerKey: 'ANONYMOUS' });
+
+    await payment.requestPayment({
+      method: 'CARD',
+      amount: { value: CHARM_REPORT_PRICE, currency: 'KRW' },
+      orderId: orderId,
+      orderName: '매력리포트 — 나를읽다 연구소',
+      customerName: userName,
+      customerMobilePhone: userPhone,
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card: {
+        flowMode: 'DEFAULT'
+      }
+    });
+  } catch (e) {
+    if (e.code === 'USER_CANCEL') {
+      console.log('사용자가 결제를 취소했습니다.');
+    } else {
+      console.error('결제 요청 오류:', e);
+      alert('결제 요청 중 오류가 발생했습니다.');
+    }
+  }
 }
+
 
 // ═══════════════════════════════════════════════════════════
 // 유틸
 // ═══════════════════════════════════════════════════════════
 function retry() {
   document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('reportFull').classList.remove('show');  // ★ 추가
   document.getElementById('formSection').style.display = 'block';
   document.getElementById('headerSection').style.display = 'block';
   document.querySelectorAll('.mbti-grid button').forEach(function(b) { b.classList.remove('active'); });
@@ -1435,7 +1686,177 @@ function hideError() {
 // ═══════════════════════════════════════════════════════════
 // 생년월일 & 시간 셀렉트 초기화
 // ═══════════════════════════════════════════════════════════
-(function init() {
+
+  // ═══════════════════════════════════════════════════════════
+// 결제 성공 콜백 처리
+// ═══════════════════════════════════════════════════════════
+(function handlePaymentCallback() {
+  var params = new URLSearchParams(window.location.search);
+
+  if (params.get('payment') === 'success') {
+    var paymentKey = params.get('paymentKey');
+    var orderId = params.get('orderId');
+    var amount = params.get('amount');
+
+    // URL 정리
+    history.replaceState(null, '', window.location.pathname);
+
+    var orderData = sessionStorage.getItem('charm_order');
+    if (!orderData) {
+      alert('결제 정보를 찾을 수 없습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    var order = JSON.parse(orderData);
+
+    // ★ 금액·주문번호 위변조 검증
+    if (order.orderId !== orderId || order.amount !== parseInt(amount)) {
+      alert('결제 정보가 일치하지 않습니다. 고객센터에 문의해주세요.');
+      sessionStorage.removeItem('charm_order');
+      return;
+    }
+    
+    sessionStorage.removeItem('charm_order');
+
+    // 폼/헤더 숨기고 로딩 표시
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('headerSection').style.display = 'none';
+    document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('loadingSection').classList.add('show');
+    document.querySelector('.loading-text').textContent = '리포트를 생성하고 있습니다...';
+
+    // 서버에 결제 승인 + 리포트 요청
+    fetch(API_BASE + '/api/charm-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        year: parseInt(order.year),
+        month: parseInt(order.month),
+        day: parseInt(order.day),
+        hour: order.hour,
+        minute: 0,
+        gender: order.gender,
+        calendarType: order.calendarType,
+        mbti: order.mbti,
+        name: order.name,
+        paymentKey: paymentKey,
+        orderId: orderId,
+        amount: parseInt(amount)
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      document.getElementById('loadingSection').classList.remove('show');
+      if (data.success && data.data) {
+        renderFullReport(data.data);
+      } else {
+        alert('리포트 생성에 실패했습니다: ' + (data.error || '알 수 없는 오류'));
+        document.getElementById('formSection').style.display = 'block';
+        document.getElementById('headerSection').style.display = 'block';
+      }
+    })
+    .catch(function(err) {
+      document.getElementById('loadingSection').classList.remove('show');
+      document.getElementById('formSection').style.display = 'block';
+      document.getElementById('headerSection').style.display = 'block';
+      alert('리포트 요청 중 오류가 발생했습니다.');
+      console.error(err);
+    });
+  }
+
+  if (params.get('payment') === 'fail') {
+    history.replaceState(null, '', window.location.pathname);
+    alert('결제가 취소되었거나 실패했습니다.');
+  }
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// 유료 리포트 렌더링
+// ═══════════════════════════════════════════════════════════
+function renderFullReport(report) {
+  var meta = report.meta;
+  var chapters = report.chapters;
+
+  // 히어로
+  document.getElementById('rfName').textContent = meta.name + '님의 매력 리포트';
+  var tagsHtml = '';
+  tagsHtml += '<span class="rh-tag">' + meta.sinsal + '</span>';
+  tagsHtml += '<span class="rh-tag">' + meta.mbti + '</span>';
+  if (meta.ilgan) tagsHtml += '<span class="rh-tag">' + meta.ilgan + '(' + meta.ilganHanja + ')</span>';
+  document.getElementById('rfTags').innerHTML = tagsHtml;
+
+  // 챕터
+  var html = '';
+  chapters.forEach(function(ch) {
+    html += '<div class="rf-chapter">';
+    html += '<div class="rf-chapter-head">';
+    html += '<span class="rf-chapter-emoji">' + (ch.emoji || '') + '</span>';
+    html += '<div>';
+    html += '<div class="rf-chapter-num">CHAPTER ' + ch.number + '</div>';
+    html += '<div class="rf-chapter-title">' + ch.title + '</div>';
+    html += '</div></div>';
+
+    // ch6: 스타일링
+    if (ch.styling) {
+      var items = [
+        { key: 'makeup',    label: 'Makeup',    full: false },
+        { key: 'perfume',   label: 'Perfume',   full: false },
+        { key: 'hair',      label: 'Hair',      full: false },
+        { key: 'color',     label: 'Color',     full: false },
+        { key: 'fashion',   label: 'Fashion',   full: true },
+        { key: 'jewelry',   label: 'Jewelry',   full: false },
+        { key: 'accessory', label: 'Accessory', full: false },
+        { key: 'nail',      label: 'Nail',      full: false }
+      ];
+      html += '<div class="styling-grid">';
+      items.forEach(function(item) {
+        if (!ch.styling[item.key]) return;
+        html += '<div class="styling-item' + (item.full ? ' full-width' : '') + '">';
+        html += '<div class="styling-item-label">' + item.label + '</div>';
+        html += '<div class="styling-item-body">' + ch.styling[item.key] + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+    // ch7: 장소 + 타이밍
+    else if (ch.location) {
+      if (ch.location.place) {
+        html += '<div class="location-card">';
+        html += '<div class="location-card-label">Place</div>';
+        html += '<div class="location-card-body">' + ch.location.place + '</div>';
+        html += '</div>';
+      }
+      if (ch.location.club) {
+        html += '<div class="location-card">';
+        html += '<div class="location-card-label">Activity</div>';
+        html += '<div class="location-card-body">' + ch.location.club + '</div>';
+        html += '</div>';
+      }
+      if (ch.location.timing2026) {
+        html += '<div class="location-card">';
+        html += '<div class="location-card-label">2026 Timing</div>';
+        html += '<div class="location-card-body">' + ch.location.timing2026 + '</div>';
+        html += '</div>';
+      }
+    }
+    // 일반 텍스트 챕터
+    else if (ch.body) {
+      html += '<div class="rf-chapter-body">' + ch.body.replace(/\n/g, '<br>') + '</div>';
+    }
+
+    html += '</div>';
+  });
+
+  document.getElementById('rfChapters').innerHTML = html;
+
+  // UI 전환
+  document.getElementById('resultSection').classList.remove('show');
+  document.getElementById('reportFull').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+  
+  (function init() {
   var yearEl = document.getElementById('birthYear');
   var monthEl = document.getElementById('birthMonth');
   var dayEl = document.getElementById('birthDay');
