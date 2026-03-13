@@ -129,12 +129,20 @@ select.prod-sel{width:100%;padding:10px;background:#0a0a12;border:1px solid rgba
 function unlock(){
   var pw = document.getElementById('lockPw').value;
   if(pw === '2991'){
+    sessionStorage.setItem('test_unlocked', 'true');
     document.getElementById('lockScreen').style.display = 'none';
     document.getElementById('mainWrap').style.display = 'block';
   } else {
     document.getElementById('lockErr').textContent = '비밀번호가 틀렸습니다';
   }
 }
+
+
+if(sessionStorage.getItem('test_unlocked') === 'true'){
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('mainWrap').style.display = 'block';
+}
+  
 
 /* ═══ 토스 테스트 키 (하드코딩 — 이 파일은 테스트 전용) ═══ */
 var TEST_CK = 'test_ck_DpexMgkW36GxvmGwpaOdVGbR5ozO';
