@@ -2094,6 +2094,58 @@ if (!document.getElementById('pdfDownloadBtn')) {
   btnWrap.appendChild(btn);
   document.getElementById('rfChapters').appendChild(btnWrap);
 }
+
+
+// ── 유틸리티 버튼 (URL 복사, 브라우저로 열기, 카톡 전송) ──
+if (report.reportUrl) {
+  var utilDiv = document.createElement('div');
+  utilDiv.style.cssText = 'display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;';
+
+  // URL 복사
+  var copyBtn = document.createElement('button');
+  copyBtn.textContent = '🔗 링크 복사';
+  copyBtn.style.cssText = 'padding:12px 20px; border-radius:12px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff; font-size:14px; cursor:pointer;';
+  copyBtn.onclick = function() {
+    navigator.clipboard.writeText(report.reportUrl).then(function() {
+      copyBtn.textContent = '✅ 복사됨!';
+      setTimeout(function() { copyBtn.textContent = '🔗 링크 복사'; }, 2000);
+    });
+  };
+
+  // 브라우저에서 열기
+  var openBtn = document.createElement('button');
+  openBtn.textContent = '🌐 브라우저에서 열기';
+  openBtn.style.cssText = copyBtn.style.cssText;
+  openBtn.onclick = function() {
+    window.open(report.reportUrl, '_blank');
+  };
+
+  // 카카오톡으로 링크 보내기
+  var kakaoLinkBtn = document.createElement('button');
+  kakaoLinkBtn.textContent = '💬 카톡으로 링크받기';
+  kakaoLinkBtn.style.cssText = copyBtn.style.cssText;
+  kakaoLinkBtn.onclick = function() {
+    if (typeof Kakao !== 'undefined' && Kakao.isInitialized()) {
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '내 매력리포트 보러가기',
+          description: '결제한 매력리포트를 다시 볼 수 있어요',
+          imageUrl: 'https://cards.readmelab.co.kr/cards/charm/og/charm_og.png',
+          link: { mobileWebUrl: report.reportUrl, webUrl: report.reportUrl }
+        },
+        buttons: [{ title: '리포트 보기', link: { mobileWebUrl: report.reportUrl, webUrl: report.reportUrl } }]
+      });
+    } else {
+      alert('카카오톡 공유를 사용할 수 없습니다. 링크를 복사해 주세요.');
+    }
+  };
+
+  utilDiv.appendChild(copyBtn);
+  utilDiv.appendChild(openBtn);
+  utilDiv.appendChild(kakaoLinkBtn);
+  document.getElementById('rfChapters').appendChild(utilDiv);
+}
   
 
   // UI 전환
@@ -2144,6 +2196,35 @@ if (!document.getElementById('pdfDownloadBtn')) {
 })();
 
 
+
+  // ── 재열람 처리 ──
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var reportId = params.get('id');
+    if (reportId) {
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('headerSection').style.display = 'none';
+      document.getElementById('loadingSection').classList.add('show');
+      startReportLoading();
+      fetch(API_BASE + '/api/charm-report/' + reportId)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          document.getElementById('loadingSection').classList.remove('show');
+          if (d.success) {
+            renderFullReport(d.data);
+          } else {
+            alert('리포트를 불러올 수 없습니다. 링크를 다시 확인해 주세요.');
+            location.href = '/f_charm';
+          }
+        })
+        .catch(function() {
+          document.getElementById('loadingSection').classList.remove('show');
+          alert('리포트를 불러올 수 없습니다.');
+          location.href = '/f_charm';
+        });
+    }
+  })();
+  
   
 </script>
 
