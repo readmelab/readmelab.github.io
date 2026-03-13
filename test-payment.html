@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>결제 테스트 콘솔 (관리자 전용)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07070c;color:#d4d0c8;min-height:100vh;padding:24px}
+.wrap{max-width:520px;margin:0 auto}
+h1{font-size:1.1rem;color:#e8c97a;text-align:center;margin-bottom:8px}
+.badge{text-align:center;margin-bottom:24px;font-size:.75rem;color:#ef4444;background:rgba(239,68,68,.08);padding:10px;border-radius:8px;border:1px solid rgba(239,68,68,.15);line-height:1.8}
+.section{background:#111119;border:1px solid rgba(212,168,83,.15);border-radius:14px;padding:20px;margin-bottom:16px}
+.section h2{font-size:.85rem;color:#e8c97a;margin-bottom:4px}
+.section .desc{font-size:.73rem;color:#8a8780;margin-bottom:14px;line-height:1.7}
+.route-btn{width:100%;padding:14px;background:linear-gradient(135deg,#d4a853,#b8912a);color:#0a0a0f;font-size:.85rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;letter-spacing:1px;margin-bottom:6px;transition:transform .2s}
+.route-btn:active{transform:scale(.97)}
+.route-btn.api{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff}
+.route-btn.gas{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+select.prod-sel{width:100%;padding:10px;background:#0a0a12;border:1px solid rgba(212,168,83,.2);border-radius:8px;color:#d4d0c8;margin-bottom:10px;font-size:.83rem}
+.lock-screen{position:fixed;inset:0;background:#07070c;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.lock-screen input{background:#111119;border:1px solid rgba(212,168,83,.3);border-radius:8px;padding:14px 18px;color:#f0e6d3;font-size:1rem;text-align:center;width:240px;outline:none}
+.lock-screen input:focus{border-color:#d4a853;box-shadow:0 0 0 3px rgba(212,168,83,.12)}
+.lock-screen button{padding:12px 32px;background:linear-gradient(135deg,#d4a853,#b8912a);color:#0a0a0f;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+.lock-screen .err{color:#ef4444;font-size:.8rem;min-height:20px}
+.lock-screen .title{color:#e8c97a;font-size:1rem;font-weight:700}
+.check-list{margin-top:20px;background:#111119;border:1px solid rgba(212,168,83,.15);border-radius:14px;padding:20px}
+.check-list h3{font-size:.85rem;color:#e8c97a;margin-bottom:12px}
+.check-item{font-size:.75rem;color:#8a8780;line-height:2;padding-left:18px;position:relative}
+.check-item::before{content:'✓';position:absolute;left:0;color:#22c55e}
+.check-item.x::before{content:'✗';color:#ef4444}
+</style>
+</head>
+<body>
+
+<div class="lock-screen" id="lockScreen">
+  <div class="title">관리자 인증</div>
+  <input type="password" id="lockPw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')unlock()">
+  <button onclick="unlock()">확인</button>
+  <div class="err" id="lockErr"></div>
+</div>
+
+<div class="wrap" id="mainWrap" style="display:none">
+  <h1>결제 테스트 콘솔</h1>
+  <div class="badge">
+    ⚠️ TEST MODE — 토스 테스트 키 사용 · 실제 결제 없음<br>
+    기존 라이브 환경에 영향 없음 · 마스터 시트 기록 없음
+  </div>
+
+  <!-- 경로 1 -->
+  <div class="section">
+    <h2>경로 1 — 매력리포트 (f_charm)</h2>
+    <div class="desc">
+      토스 테스트 결제 → test-payment-success에서 토스 승인 확인<br>
+      검증: 결제창 · 파라미터 · 승인 응답
+    </div>
+    <button class="route-btn" onclick="testRoute(1, 'TC', 9900, '매력리포트 (테스트)', '/f_charm')">테스트 결제 실행</button>
+  </div>
+
+  <!-- 경로 2 -->
+  <div class="section">
+    <h2>경로 2 — N1 매력리포트 할인 (9,900원)</h2>
+    <div class="desc">
+      토스 테스트 결제 → test-payment-success에서 토스 승인 확인<br>
+      검증: 결제창 · 파라미터 · successUrl 구성 · 승인 응답
+    </div>
+    <button class="route-btn" onclick="testRoute(2, 'NC', 9900, '나를 읽다 — 기본 분석 (매력리포트 할인)', '/form.html', 'N1', 'CHARM_UPGRADE')">테스트 결제 실행</button>
+  </div>
+
+  <!-- 경로 3 -->
+  <div class="section">
+    <h2>경로 3 — 정가 구매 (order.html)</h2>
+    <div class="desc">
+      토스 테스트 결제 → test-payment-success에서 토스 승인 확인<br>
+      검증: 결제창 · 상품별 금액 · 승인 응답
+    </div>
+    <select class="prod-sel" id="route3Sel">
+      <option value="N1" data-price="19900" data-name="나를 읽다" data-form="/form.html">N1 — 나를 읽다 (19,900원)</option>
+      <option value="N2" data-price="29800" data-name="나를 듣다" data-form="/form.html">N2 — 나를 듣다 (29,800원)</option>
+      <option value="W1" data-price="39900" data-name="우리를 읽다" data-form="/form-w.html">W1 — 우리를 읽다 (39,900원)</option>
+      <option value="W2" data-price="49800" data-name="우리를 듣다" data-form="/form-w.html">W2 — 우리를 듣다 (49,800원)</option>
+    </select>
+    <button class="route-btn" onclick="testRoute3()">테스트 결제 실행</button>
+  </div>
+
+  <!-- 경로 4 -->
+  <div class="section">
+    <h2>경로 4 — 무통장입금 (order-private)</h2>
+    <div class="desc">
+      토스 결제 없음 · GAS에 PRIVATE_ORDER 전송<br>
+      검증: GAS 통신 · 마스터탭 행 생성 여부
+    </div>
+    <select class="prod-sel" id="route4Sel">
+      <option value="N1" data-price="19900" data-name="나를 읽다">N1 — 나를 읽다 (19,900원)</option>
+      <option value="N2" data-price="29800" data-name="나를 듣다">N2 — 나를 듣다 (29,800원)</option>
+      <option value="W1" data-price="39900" data-name="우리를 읽다">W1 — 우리를 읽다 (39,900원)</option>
+      <option value="W2" data-price="49800" data-name="우리를 듣다">W2 — 우리를 듣다 (49,800원)</option>
+    </select>
+    <button class="route-btn gas" onclick="testRoute4()">GAS 전송 테스트</button>
+  </div>
+
+  <!-- 경로 5 -->
+  <div class="section">
+    <h2>경로 5 — W1 궁합 매력리포트 할인 (29,900원)</h2>
+    <div class="desc">
+      토스 테스트 결제 → test-payment-success에서 토스 승인 확인<br>
+      검증: 결제창 · 파라미터 · 승인 응답
+    </div>
+    <button class="route-btn" onclick="testRoute(5, 'WC', 29900, '우리를 읽다 — 기본 궁합 (매력리포트 할인)', '/form-w.html', 'W1', 'CHARM_UPGRADE')">테스트 결제 실행</button>
+  </div>
+
+  <!-- 검증 범위 안내 -->
+  <div class="check-list">
+    <h3>이 콘솔로 검증할 수 있는 것</h3>
+    <div class="check-item">토스 결제창이 정상적으로 뜨는지</div>
+    <div class="check-item">상품명 · 금액 · orderId가 올바른지</div>
+    <div class="check-item">토스 결제 승인이 성공하는지</div>
+    <div class="check-item">successUrl 파라미터 구성이 올바른지</div>
+    <div class="check-item">경로 4 GAS 통신이 정상인지</div>
+    <div class="check-item x">GAS TOSS_CONFIRM → 마스터탭 행 생성 (라이브 키 필요)</div>
+    <div class="check-item x">server.js 매력리포트 생성 (라이브 키 필요)</div>
+  </div>
+
+</div>
+
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<script>
+/* ═══ 잠금 ═══ */
+function unlock(){
+  var pw = document.getElementById('lockPw').value;
+  if(pw === 'readme7274'){
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainWrap').style.display = 'block';
+  } else {
+    document.getElementById('lockErr').textContent = '비밀번호가 틀렸습니다';
+  }
+}
+
+/* ═══ 토스 테스트 키 (하드코딩 — 이 파일은 테스트 전용) ═══ */
+var TEST_CK = 'test_ck_DpexMgkW36GxvmGwpaOdVGbR5ozO';
+var TEST_SK = 'test_sk_DpexMgkW36GxvmGwpaOdVGbR5ozO';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbwyuXY4ZSqDX60kjXeD9oc4ftXf-QSHuA8QnnHnPzIDg22AEYp8-bgjod1XEikMoRxy7g/exec';
+
+var tossPayments = null;
+var payment = null;
+
+function initToss(){
+  try {
+    tossPayments = TossPayments(TEST_CK);
+    payment = tossPayments.payment({ customerKey: 'TEST_' + Date.now() });
+  } catch(e){ alert('토스 SDK 로드 실패: ' + e.message); }
+}
+initToss();
+
+function genCode(prefix){
+  var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';
+  for(var i = 0; i < 8; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+  return prefix + '-' + s;
+}
+
+/* ═══ 범용 테스트 (경로 1,2,5) ═══ */
+function testRoute(route, prefix, price, name, formPage, product, coupon){
+  if(!payment){ initToss(); }
+  if(!payment){ alert('결제 모듈 로드 실패'); return; }
+
+  var orderId = genCode(prefix);
+  product = product || '';
+  coupon = coupon || '';
+
+  var successUrl = window.location.origin + '/test-payment-success.html'
+    + '?route=' + route
+    + '&product=' + encodeURIComponent(product)
+    + '&productName=' + encodeURIComponent(name)
+    + '&formPage=' + encodeURIComponent(formPage)
+    + '&price=' + price
+    + '&coupon=' + encodeURIComponent(coupon);
+
+  payment.requestPayment({
+    method: 'CARD',
+    amount: { currency: 'KRW', value: price },
+    orderId: orderId,
+    orderName: '[TEST] ' + name,
+    successUrl: successUrl,
+    failUrl: window.location.href
+  }).catch(function(err){
+    if(err.code === 'USER_CANCEL') return;
+    alert('결제 오류: ' + (err.message || ''));
+  });
+}
+
+/* ═══ 경로 3 (상품 선택) ═══ */
+function testRoute3(){
+  var sel = document.getElementById('route3Sel');
+  var opt = sel.options[sel.selectedIndex];
+  testRoute(3, opt.value.startsWith('W') ? 'WT' : 'NT',
+    parseInt(opt.dataset.price), opt.dataset.name,
+    opt.dataset.form, opt.value, '');
+}
+
+/* ═══ 경로 4 (무통장 — GAS 직접) ═══ */
+async function testRoute4(){
+  var sel = document.getElementById('route4Sel');
+  var opt = sel.options[sel.selectedIndex];
+  var code = opt.value;
+  var price = parseInt(opt.dataset.price);
+  var name = opt.dataset.name;
+  var orderId = genCode(code.startsWith('W') ? 'WT' : 'NT');
+
+  var payload = {
+    type: 'PRIVATE_ORDER',
+    code: orderId,
+    product: code,
+    productName: name,
+    amount: price,
+    name: '테스트유저',
+    gender: '남',
+    birthDate: '1990-01-15',
+    calendarType: '양력',
+    birthTime: '09:30',
+    mbti: 'INTJ',
+    q1: '[테스트] 질문1 응답',
+    q2: '[테스트] 질문2 응답',
+    phone: '010-0000-0000',
+    email: 'test@readmelab.co.kr',
+    source: 'test-console',
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    alert('✅ GAS 전송 완료\n\n주문번호: ' + orderId + '\n\n마스터탭에서 이 코드를 확인하세요.\n(no-cors라 응답은 확인 불가)');
+  } catch(e){
+    alert('❌ 전송 실패: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>
