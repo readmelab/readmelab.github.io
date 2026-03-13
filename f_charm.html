@@ -309,31 +309,68 @@
     display: none;
     text-align: center;
     padding: 80px 20px;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
   }
 
   .loading-section.show {
-    display: block;
+    display: flex;
   }
 
-  .spinner {
-    width: 44px;
-    height: 44px;
-    border: 2px solid rgba(232, 160, 176, 0.15);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 24px;
+  .loading-icon {
+    font-size: 40px;
+    margin-bottom: 32px;
+    animation: floatIcon 2s ease-in-out infinite;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  @keyframes floatIcon {
+    0%, 100% { transform: translateY(0); opacity: 0.8; }
+    50% { transform: translateY(-10px); opacity: 1; }
+  }
+
+  .loading-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent-light), var(--lavender));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
   }
 
   .loading-text {
-    font-size: 15px;
-    color: var(--accent);
+    font-size: 14px;
+    color: var(--text-dim);
     animation: pulse 1.5s ease-in-out infinite;
     font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .loading-steps {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .loading-step {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 300;
+    opacity: 0;
+    animation: stepFadeIn 0.6s ease forwards;
+  }
+
+  .loading-step.done {
+    color: var(--accent);
+  }
+
+  @keyframes stepFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes pulse {
@@ -919,7 +956,6 @@
   /* ── 유료 리포트 결과 화면 ── */
   /* ══════════════════════════════════════════════════════ */
   .report-full { display: none; }
-  .report-full.show { display: block; animation: fadeUp 0.8s ease; }
 
   .report-hero {
     text-align: center;
@@ -1078,6 +1114,46 @@
     color: #f4a8c1;
     font-weight: 700;
   }
+
+
+   .report-full.show {
+    display: block;
+    animation: reportReveal 1.2s ease;
+  }
+
+  @keyframes reportReveal {
+    0% { opacity: 0; }
+    30% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .report-full.show .report-hero {
+    animation: heroSlideIn 1s ease 0.3s both;
+  }
+
+  @keyframes heroSlideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .report-full.show .rf-chapter {
+    opacity: 0;
+    animation: chapterFadeIn 0.6s ease forwards;
+  }
+
+  .report-full.show .rf-chapter:nth-child(1) { animation-delay: 0.5s; }
+  .report-full.show .rf-chapter:nth-child(2) { animation-delay: 0.7s; }
+  .report-full.show .rf-chapter:nth-child(3) { animation-delay: 0.9s; }
+  .report-full.show .rf-chapter:nth-child(4) { animation-delay: 1.1s; }
+  .report-full.show .rf-chapter:nth-child(5) { animation-delay: 1.3s; }
+  .report-full.show .rf-chapter:nth-child(6) { animation-delay: 1.5s; }
+  .report-full.show .rf-chapter:nth-child(7) { animation-delay: 1.7s; }
+
+  @keyframes chapterFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
   
 </style>
 </head>
@@ -1169,8 +1245,10 @@
 
 <!-- ════════ 로딩 ════════ -->
 <div class="loading-section" id="loadingSection">
-  <div class="spinner"></div>
-  <div class="loading-text">당신의 매력을 읽고 있습니다...</div>
+  <div class="loading-icon">🔮</div>
+  <div class="loading-title" id="loadingTitle">당신의 매력을 읽고 있습니다</div>
+  <div class="loading-text" id="loadingText">사주와 MBTI를 분석하고 있어요</div>
+  <div class="loading-steps" id="loadingSteps"></div>
 </div>
 
 <!-- ════════ 결과 ════════ -->
@@ -1451,6 +1529,7 @@ function getHourValue() {
   document.getElementById('formSection').style.display = 'none';
   document.getElementById('headerSection').style.display = 'none';
   document.getElementById('loadingSection').classList.add('show');
+  startCardLoading();  // ← 추가  
   document.getElementById('resultSection').classList.remove('show');
 
   try {
@@ -1740,7 +1819,7 @@ function hideError() {
     document.getElementById('headerSection').style.display = 'none';
     document.getElementById('resultSection').classList.remove('show');
     document.getElementById('loadingSection').classList.add('show');
-    document.querySelector('.loading-text').textContent = '리포트를 생성하고 있습니다...';
+    startReportLoading();;
 
     // 서버에 결제 승인 + 리포트 요청
     fetch(API_BASE + '/api/charm-report', {
@@ -1789,6 +1868,40 @@ function hideError() {
 
 
 
+function startReportLoading() {
+  document.getElementById('loadingTitle').textContent = '리포트를 준비하고 있습니다';
+  document.getElementById('loadingText').textContent = '당신만을 위한 7개 챕터를 구성 중이에요';
+  var stepsEl = document.getElementById('loadingSteps');
+  stepsEl.innerHTML = '';
+
+  var steps = [
+    { text: '✦ 사주 데이터 분석 중...', delay: 800 },
+    { text: '✦ 매력 유형 매칭 중...', delay: 2200 },
+    { text: '✦ 맞춤 스타일링 가이드 생성 중...', delay: 3800 },
+    { text: '✦ 2026 인연 타이밍 계산 중...', delay: 5200 },
+    { text: '✦ 리포트 완성 중...', delay: 6500 }
+  ];
+
+  steps.forEach(function(step) {
+    setTimeout(function() {
+      var el = document.createElement('div');
+      el.className = 'loading-step';
+      el.textContent = step.text;
+      el.style.animationDelay = '0s';
+      stepsEl.appendChild(el);
+      setTimeout(function() { el.classList.add('done'); }, 600);
+    }, step.delay);
+  });
+}
+
+function startCardLoading() {
+  document.getElementById('loadingTitle').textContent = '당신의 매력을 읽고 있습니다';
+  document.getElementById('loadingText').textContent = '사주와 MBTI를 분석하고 있어요';
+  document.getElementById('loadingSteps').innerHTML = '';
+}
+
+
+  
 function downloadReportPDF() {
   var btn = document.getElementById('pdfDownloadBtn');
   btn.textContent = '생성 중...';
