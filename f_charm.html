@@ -1778,6 +1778,9 @@ function hideError() {
 // 유료 리포트 렌더링
 // ═══════════════════════════════════════════════════════════
 function renderFullReport(report) {
+  var bold = function(text) {
+    return (text || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  };
   var meta = report.meta;
   var chapters = report.chapters;
 
@@ -1817,7 +1820,7 @@ function renderFullReport(report) {
         if (!ch.styling[item.key]) return;
         html += '<div class="styling-item' + (item.full ? ' full-width' : '') + '">';
         html += '<div class="styling-item-label">' + item.label + '</div>';
-        html += '<div class="styling-item-body">' + ch.styling[item.key] + '</div>';
+        html += '<div class="styling-item-body">' + bold(ch.styling[item.key]) + '</div>';
         html += '</div>';
       });
       html += '</div>';
@@ -1827,25 +1830,25 @@ function renderFullReport(report) {
       if (ch.location.place) {
         html += '<div class="location-card">';
         html += '<div class="location-card-label">Place</div>';
-        html += '<div class="location-card-body">' + ch.location.place + '</div>';
+        html += '<div class="location-card-body">' + bold(ch.location.place) + '</div>';
         html += '</div>';
       }
       if (ch.location.club) {
         html += '<div class="location-card">';
         html += '<div class="location-card-label">Activity</div>';
-        html += '<div class="location-card-body">' + ch.location.club + '</div>';
+        html += '<div class="location-card-body">' + bold(ch.location.club) + '</div>';
         html += '</div>';
       }
       if (ch.location.timing2026) {
         html += '<div class="location-card">';
         html += '<div class="location-card-label">2026 Timing</div>';
-        html += '<div class="location-card-body">' + ch.location.timing2026 + '</div>';
+        html += '<div class="location-card-body">' + bold(ch.location.timing2026) + '</div>';
         html += '</div>';
       }
     }
     // 일반 텍스트 챕터
     else if (ch.body) {
-      html += '<div class="rf-chapter-body">' + ch.body.replace(/\n/g, '<br>') + '</div>';
+      html += '<div class="rf-chapter-body">' + bold(ch.body) + '</div>';
     }
 
     html += '</div>';
@@ -1858,24 +1861,6 @@ function renderFullReport(report) {
   document.getElementById('reportFull').classList.add('show');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-  
-  (function init() {
-  var yearEl = document.getElementById('birthYear');
-  var monthEl = document.getElementById('birthMonth');
-  var dayEl = document.getElementById('birthDay');
-  var hourEl = document.getElementById('birthHour');
-  var currentYear = new Date().getFullYear();
-
-  yearEl.innerHTML = '<option value="">년</option>';
-  for (var y = currentYear; y >= 1940; y--) {
-    yearEl.innerHTML += '<option value="' + y + '">' + y + '년</option>';
-  }
-
-  monthEl.innerHTML = '<option value="">월</option>';
-  for (var m = 1; m <= 12; m++) {
-    var mv = String(m).padStart(2, '0');
-    monthEl.innerHTML += '<option value="' + mv + '">' + m + '월</option>';
-  }
 
   function updateDays() {
     var y = parseInt(yearEl.value) || 2000;
