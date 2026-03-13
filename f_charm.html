@@ -1862,6 +1862,24 @@ function renderFullReport(report) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+(function init() {
+  var yearEl = document.getElementById('birthYear');
+  var monthEl = document.getElementById('birthMonth');
+  var dayEl = document.getElementById('birthDay');
+  var hourEl = document.getElementById('birthHour');
+  var currentYear = new Date().getFullYear();
+
+  yearEl.innerHTML = '<option value="">년</option>';
+  for (var y = currentYear; y >= 1940; y--) {
+    yearEl.innerHTML += '<option value="' + y + '">' + y + '년</option>';
+  }
+
+  monthEl.innerHTML = '<option value="">월</option>';
+  for (var m = 1; m <= 12; m++) {
+    var mv = String(m).padStart(2, '0');
+    monthEl.innerHTML += '<option value="' + mv + '">' + m + '월</option>';
+  }
+
   function updateDays() {
     var y = parseInt(yearEl.value) || 2000;
     var m = parseInt(monthEl.value) || 1;
@@ -1879,13 +1897,11 @@ function renderFullReport(report) {
   monthEl.addEventListener('change', updateDays);
   updateDays();
 
-  // 시간 셀렉트 (0~23시)
   for (var h = 0; h < 24; h++) {
     var hLabel = String(h).padStart(2, '0') + '시';
     hourEl.innerHTML += '<option value="' + h + '">' + hLabel + '</option>';
   }
 })();
-
 
   
 </script>
