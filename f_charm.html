@@ -6,6 +6,8 @@
 <title>매력카드 | 나를읽다 연구소</title>
 <meta name="description" content="타고난 매력은 숨길 수 없습니다. 사주 신살과 MBTI로 알아보는 당신만의 매력 유형.">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  
+
 <!-- Open Graph -->
 <meta property="og:title" content="나의 매력카드 | 나를읽다">
 <meta property="og:description" content="타고난 매력은 숨길 수 없습니다. 사주와 MBTI로 확인하세요.">
@@ -1068,6 +1070,14 @@
     color: var(--lavender-light);
   }
   .brand-cta-btn:hover { transform: translateY(-2px); }
+
+
+    .rf-chapter-body strong,
+  .styling-item-body strong,
+  .location-card-body strong {
+    color: #f4a8c1;
+    font-weight: 700;
+  }
   
 </style>
 </head>
@@ -1493,6 +1503,8 @@ function getHourValue() {
 // 카드 렌더링
 // ═══════════════════════════════════════════════════════════
 function renderCard(d) {
+  window._charmCardImageUrl = d.imageUrl;
+  
   var gradeInfo = GRADE_STYLE[d.grade] || GRADE_STYLE['B'];
 
   // 배경 이미지
@@ -1530,6 +1542,8 @@ function renderCard(d) {
   document.getElementById('loadingSection').classList.remove('show');
   document.getElementById('resultSection').classList.add('show');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1774,6 +1788,99 @@ function hideError() {
 })();
 
 
+
+function downloadReportPDF() {
+  var btn = document.getElementById('pdfDownloadBtn');
+  btn.textContent = '생성 중...';
+  btn.disabled = true;
+
+  var reportEl = document.getElementById('reportFull');
+  var chapters = reportEl.querySelectorAll('.rf-chapter');
+  var hero = reportEl.querySelector('.report-hero');
+  var pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+  var pageWidth = 210;
+  var pageHeight = 297;
+  var margin = 10;
+  var contentWidth = pageWidth - margin * 2;
+
+  function addCoverPage() {
+    return new Promise(function(resolve) {
+      var cardUrl = window._charmCardImageUrl;
+      if (!cardUrl) { resolve(); return; }
+
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        pdf.setFillColor(26, 26, 46);
+        pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+
+        var imgRatio = img.width / img.height;
+        var maxW = contentWidth * 0.7;
+        var maxH = pageHeight * 0.6;
+        var w = maxW;
+        var h = w / imgRatio;
+        if (h > maxH) { h = maxH; w = h * imgRatio; }
+
+        var x = (pageWidth - w) / 2;
+        var y = (pageHeight - h) / 2 - 10;
+        pdf.addImage(img, 'JPEG', x, y, w, h);
+
+        // 하단 텍스트
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(200, 200, 200);
+        pdf.text('Charm Report by readmelab.co.kr', pageWidth / 2, pageHeight - 20, { align: 'center' });
+
+        resolve();
+      };
+      img.onerror = function() { resolve(); };
+      img.src = cardUrl;
+    });
+  }
+
+  function captureChapters() {
+    var elements = [hero].concat(Array.from(chapters));
+    var index = 0;
+
+    function captureNext() {
+      if (index >= elements.length) {
+        pdf.save('매력리포트.pdf');
+        btn.textContent = 'PDF로 저장하기';
+        btn.disabled = false;
+        return;
+      }
+      var el = elements[index];
+      html2canvas(el, {
+        scale: 2,
+        backgroundColor: '#1a1a2e',
+        useCORS: true
+      }).then(function(canvas) {
+        var imgData = canvas.toDataURL('image/jpeg', 0.95);
+        var imgWidth = contentWidth;
+        var imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addPage();
+
+        if (imgHeight > pageHeight - margin * 2) {
+          imgHeight = pageHeight - margin * 2;
+          imgWidth = (canvas.width * imgHeight) / canvas.height;
+        }
+
+        var x = (pageWidth - imgWidth) / 2;
+        pdf.setFillColor(26, 26, 46);
+        pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+        pdf.addImage(imgData, 'JPEG', x, margin, imgWidth, imgHeight);
+
+        index++;
+        captureNext();
+      });
+    }
+    captureNext();
+  }
+
+  addCoverPage().then(captureChapters);
+}
+  
 // ═══════════════════════════════════════════════════════════
 // 유료 리포트 렌더링
 // ═══════════════════════════════════════════════════════════
@@ -1856,6 +1963,20 @@ function renderFullReport(report) {
 
   document.getElementById('rfChapters').innerHTML = html;
 
+// PDF 다운로드 버튼
+if (!document.getElementById('pdfDownloadBtn')) {
+  var btnWrap = document.createElement('div');
+  btnWrap.style.cssText = 'text-align:center; padding:24px 0 48px;';
+  var btn = document.createElement('button');
+  btn.id = 'pdfDownloadBtn';
+  btn.textContent = 'PDF로 저장하기';
+  btn.style.cssText = 'background:#f4a8c1; color:#1a1a2e; border:none; border-radius:12px; padding:14px 32px; font-size:16px; font-weight:700; cursor:pointer;';
+  btn.onclick = downloadReportPDF;
+  btnWrap.appendChild(btn);
+  document.getElementById('rfChapters').appendChild(btnWrap);
+}
+  
+
   // UI 전환
   document.getElementById('resultSection').classList.remove('show');
   document.getElementById('reportFull').classList.add('show');
@@ -1903,13 +2024,6 @@ function renderFullReport(report) {
   }
 })();
 
-
-.rf-chapter-body strong,
-.styling-item-body strong,
-.location-card-body strong {
-  color: #f4a8c1;
-  font-weight: 700;
-}
 
   
 </script>
