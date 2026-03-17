@@ -107,14 +107,15 @@ var PRODUCTS = {
     'EXT3': { name: 'Deep Oracle 연장 — 3회', code: 'EXT3', line: 'X', orig: 4900, price: 4900, form: null }
 };
 
-    var COUPONS = {
-        'BETA50':    { type: 'percent', value: 50, label: '\uBCA0\uD0C0 \uD14C\uC2A4\uD130 50% \uD560\uC778', maxUse: 100 },
-        'FRIEND30':  { type: 'percent', value: 30, label: '\uC9C0\uC778 \uCD94\uCC9C 30% \uD560\uC778', maxUse: 50 },
-        'WELCOME':   { type: 'amount',  value: 10000, label: '\uCCAB \uC8FC\uBB38 1\uB9CC\uC6D0 \uD560\uC778', maxUse: 200 },
-        'READMELAB': { type: 'percent', value: 100, label: '\uB098\uB97C\uC77D\uB2E4 100% \uCFE0\uD3F0', maxUse: 10 },
-        'TEST100':   { type: 'percent', value: 100, label: '\uD14C\uC2A4\uD2B8 100% \uD560\uC778', maxUse: 999 },
-        'DAGUN5000': { type: 'amount',  value: 5000, label: '당근 단골 5,000원 할인', maxUse: 500 }
-    };
+var COUPONS = {
+    'BETA50':    { type: 'percent', value: 50, label: '\uBCA0\uD0C0 \uD14C\uC2A4\uD130 50% \uD560\uC778', maxUse: 100 },
+    'FRIEND30':  { type: 'percent', value: 30, label: '\uC9C0\uC778 \uCD94\uCC9C 30% \uD560\uC778', maxUse: 50 },
+    'WELCOME':   { type: 'amount',  value: 10000, label: '\uCCAB \uC8FC\uBB38 1\uB9CC\uC6D0 \uD560\uC778', maxUse: 200 },
+    'READMELAB': { type: 'percent', value: 100, label: '\uB098\uB97C\uC77D\uB2E4 100% \uCFE0\uD3F0', maxUse: 10 },
+    'TEST100':   { type: 'percent', value: 100, label: '\uD14C\uC2A4\uD2B8 100% \uD560\uC778', maxUse: 999 },
+    'DAGUN5000': { type: 'amount',  value: 5000, label: '당근 단골 5,000원 할인', maxUse: 500 },
+    'MAMS100':   { type: 'percent', value: 100, label: 'Mams 특별 100% 할인', maxUse: 10, expires: '2026-03-20T23:59:59' }
+};
 
 var UPSELL_MAP = {
     'N1': { to: 'N2', desc: '>> 2배의 압도적 심층 분석리포트 + 추가 질문 3회 + 맞춤 음원 >> 단돈 9,900원!' },
@@ -183,17 +184,25 @@ if (upsell) {
         }
     }
 
-    window.applyCoupon = function() {
-        var code = document.getElementById('couponInput').value.trim().toUpperCase();
-        var msg = document.getElementById('couponMsg');
-        if (!code) { msg.className = 'coupon-msg error'; msg.textContent = '쿠폰 코드를 입력해 주세요.'; return; }
-        if (!COUPONS[code]) { msg.className = 'coupon-msg error'; msg.textContent = '유효하지 않은 쿠폰입니다.'; return; }
-        if (currentProduct === 'EXT3') { msg.className = 'coupon-msg error'; msg.textContent = 'Deep Oracle 연장 상품에는 쿠폰을 사용할 수 없습니다.'; return; }
-        appliedCoupon = code;
-        msg.className = 'coupon-msg success';
-        msg.textContent = '✅ ' + COUPONS[code].label + ' 적용됨';
-        refreshUI();
-    };
+window.applyCoupon = function() {
+    var code = document.getElementById('couponInput').value.trim().toUpperCase();
+    var msg = document.getElementById('couponMsg');
+    if (!code) { msg.className = 'coupon-msg error'; msg.textContent = '쿠폰 코드를 입력해 주세요.'; return; }
+    if (!COUPONS[code]) { msg.className = 'coupon-msg error'; msg.textContent = '유효하지 않은 쿠폰입니다.'; return; }
+
+    // ★ 추가: MAMS100 유효기간 체크
+    if (COUPONS[code].expires && new Date() > new Date(COUPONS[code].expires)) {
+        msg.className = 'coupon-msg error';
+        msg.textContent = '기간이 만료된 쿠폰입니다.';
+        return;
+    }
+
+    if (currentProduct === 'EXT3') { msg.className = 'coupon-msg error'; msg.textContent = 'Deep Oracle 연장 상품에는 쿠폰을 사용할 수 없습니다.'; return; }
+    appliedCoupon = code;
+    msg.className = 'coupon-msg success';
+    msg.textContent = '✅ ' + COUPONS[code].label + ' 적용됨';
+    refreshUI();
+};
 
     window.doUpsell = function() {
         var u = UPSELL_MAP[currentProduct];
