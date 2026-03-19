@@ -52,7 +52,7 @@ select option{background:#1a1008;color:#e8d5b0}
 
 .card-image-area{width:100%;position:relative;overflow:hidden;background:#0a0a06}
 .card-image-area img{width:100%;height:auto;display:block}
-.card-overlay{position:absolute;bottom:8%;left:12%;right:12%;padding:0;background:none;text-align:center;overflow:hidden}
+.card-overlay{position:absolute;bottom:16%;left:12%;right:12%;padding:0;background:none;text-align:center;overflow:hidden}
 .card-overlay-tag{display:inline-block;padding:3px 10px;border:1px solid rgba(197,151,91,.6);border-radius:16px;font-size:10px;color:#c5975b;margin-bottom:4px}
 .card-overlay-title{font-size:20px;font-weight:900;color:#c5975b;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 15px rgba(197,151,91,.4);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-overlay-oneliner{font-size:10px;color:#e8d5b0;line-height:1.3;font-style:italic;text-shadow:0 1px 6px rgba(0,0,0,.9);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -394,7 +394,7 @@ function renderCard(data) {
   document.getElementById('cardOneliner').textContent = '\u201C' + card.oneLiner + '\u201D';
   document.getElementById('cardDescription').textContent = card.description;
   document.getElementById('cardSeason').textContent = card.seasonLine;
-  document.getElementById('cardCta').textContent = card.cta;
+  document.getElementById('cardCta').innerHTML = card.cta.replace('호왕이', '<br>호왕이');
 
   document.getElementById('pYear').textContent = spi.fourPillars.year;
   document.getElementById('pMonth').textContent = spi.fourPillars.month;
