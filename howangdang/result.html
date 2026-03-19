@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕당 — 사주풀이 결과</title>
+<meta property="og:title" content="호왕당 — 사주풀이">
+<meta property="og:description" content="사주로 너의 길을 읽어주마">
+<style>
+:root{--bg-deep:#0a0a0a;--bg-card:#141414;--bg-card-hover:#1a1a1a;--gold:#C5975B;--gold-light:#d4aa6a;--gold-dim:#8a6a3a;--text-primary:#e8e0d0;--text-secondary:#9a9080;--text-dim:#6a6050;--border:#2a2520;--border-gold:rgba(197,151,91,0.3);--radius:12px;--max-width:480px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.7;-webkit-font-smoothing:antialiased}
+.container{max-width:var(--max-width);margin:0 auto;padding:0 20px 40px}
+
+/* 헤더 */
+.result-header{text-align:center;padding:40px 0 30px}
+.result-header h1{font-size:28px;color:var(--gold);letter-spacing:4px;font-weight:800}
+.hw-hanja{font-size:13px;font-weight:400;color:var(--gold-dim);margin-left:6px;vertical-align:middle}
+.result-for{font-size:14px;color:var(--text-secondary);margin-top:8px}
+.result-date{font-size:12px;color:var(--text-dim);margin-top:4px}
+
+/* 대시보드 */
+.dashboard{background:var(--bg-card);border:1px solid var(--border-gold);border-radius:var(--radius);padding:24px;margin-bottom:28px}
+.dashboard-title{font-size:12px;color:var(--text-dim);letter-spacing:2px;text-align:center;margin-bottom:16px}
+.pillars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.pillar{background:rgba(197,151,91,0.06);border-radius:8px;padding:14px 4px}
+.pillar-label{font-size:11px;color:var(--text-dim);margin-bottom:6px}
+.pillar-sky{font-size:22px;color:var(--gold);font-weight:700}
+.pillar-earth{font-size:22px;color:var(--text-primary);margin-top:2px}
+.oheng-row{display:flex;justify-content:center;gap:14px;margin-top:20px}
+.oheng-item{text-align:center}
+.oheng-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;margin:0 auto 4px}
+.oheng-label{font-size:11px;color:var(--text-dim)}
+
+/* 챕터 */
+.chapter{margin-bottom:36px;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.chapter.visible{opacity:1;transform:translateY(0)}
+.chapter-num{font-size:12px;color:var(--gold-dim);letter-spacing:2px;margin-bottom:4px}
+.chapter-title{font-size:20px;color:var(--gold);font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.chapter-body{font-size:15px;color:var(--text-primary);line-height:1.9}
+.chapter-body p{margin-bottom:14px}
+.chapter-body strong{color:var(--gold-light)}
+
+/* 처방전 박스 */
+.prescription{background:rgba(197,151,91,0.06);border-left:3px solid var(--gold);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.prescription-title{font-size:14px;color:var(--gold);font-weight:700;margin-bottom:10px}
+.prescription-item{font-size:14px;color:var(--text-primary);padding:6px 0;padding-left:16px;position:relative}
+.prescription-item::before{content:'→';position:absolute;left:0;color:var(--gold-dim)}
+
+/* 호왕 채팅 */
+.chat-section{background:var(--bg-card);border:1px solid var(--border-gold);border-radius:var(--radius);padding:24px;margin-top:36px}
+.chat-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.chat-avatar{width:44px;height:44px;border-radius:50%;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:22px}
+.chat-title-area h3{font-size:16px;color:var(--gold)}
+.chat-title-area p{font-size:12px;color:var(--text-dim)}
+.chat-messages{max-height:500px;overflow-y:auto;margin-bottom:16px}
+.chat-bubble{border-radius:12px;padding:14px 16px;margin-bottom:10px;font-size:14px;line-height:1.8}
+.chat-bubble.howang{background:rgba(197,151,91,0.08);color:var(--text-primary)}
+.chat-bubble.user{background:rgba(255,255,255,0.06);color:var(--text-secondary);text-align:right}
+.chat-input-row{display:flex;gap:8px}
+.chat-input{flex:1;padding:12px 14px;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;outline:none}
+.chat-input:focus{border-color:var(--gold-dim)}
+.chat-send{padding:12px 20px;background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+.chat-remaining{text-align:center;font-size:12px;color:var(--text-dim);margin-top:10px}
+.chat-loading{text-align:center;color:var(--gold-dim);font-size:13px;padding:12px}
+
+/* 하단 버튼 */
+.action-buttons{display:flex;gap:10px;margin-top:28px}
+.action-btn{flex:1;padding:14px;border:1px solid var(--border-gold);background:transparent;border-radius:8px;color:var(--gold);font-size:14px;cursor:pointer;text-align:center;transition:background .3s}
+.action-btn:hover{background:rgba(197,151,91,0.1)}
+
+/* 추가질문 구매 */
+.buy-questions{text-align:center;margin-top:16px;padding:20px;background:rgba(197,151,91,0.04);border-radius:var(--radius);border:1px dashed var(--border-gold)}
+.buy-questions p{font-size:13px;color:var(--text-secondary);margin-bottom:10px}
+.buy-questions-btn{padding:10px 24px;background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer}
+
+/* 푸터 */
+.hw-footer{text-align:center;padding:40px 0 30px;border-top:1px solid var(--border);margin-top:40px}
+.hw-footer p{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+
+/* 로딩/에러 */
+.status-view{text-align:center;padding-top:120px}
+.status-icon{font-size:44px;margin-bottom:20px}
+.status-text{font-size:16px;color:var(--gold);line-height:1.8}
+.status-sub{font-size:13px;color:var(--text-dim);margin-top:8px}
+
+@media print{
+  body{background:#fff;color:#222}
+  .chat-section,.action-buttons,.buy-questions,.hw-footer{display:none}
+  .dashboard{border-color:#ccc}
+  .chapter-title{color:#333}
+  .chapter-body{color:#222}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 로딩 -->
+  <div id="loadingView" class="status-view">
+    <div class="status-icon">🐅</div>
+    <p class="status-text">풀이를 불러오는 중...</p>
+  </div>
+
+  <!-- 결과 -->
+  <div id="resultView" style="display:none;">
+
+    <div class="result-header">
+      <h1>호왕당<span class="hw-hanja">虎王堂</span></h1>
+      <p class="result-for" id="resultFor"></p>
+      <p class="result-date" id="resultDate"></p>
+    </div>
+
+    <div class="dashboard" id="dashboardArea"></div>
+
+    <div id="chaptersArea"></div>
+
+    <!-- 호왕에게 묻기 -->
+    <div class="chat-section" id="chatSection">
+      <div class="chat-header">
+        <div class="chat-avatar">🐅</div>
+        <div class="chat-title-area">
+          <h3>호왕에게 묻기</h3>
+          <p>사주를 바탕으로 명쾌하게 답하겠느니라</p>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chatInput" placeholder="궁금한 것을 물어보세요" maxlength="200">
+        <button class="chat-send" id="chatSendBtn" onclick="askHowang()">묻기</button>
+      </div>
+      <p class="chat-remaining">남은 질문: <strong id="chatRemaining">-</strong>회</p>
+    </div>
+
+    <!-- 추가질문 구매 (횟수 소진 시 표시) -->
+    <div class="buy-questions" id="buyQuestions" style="display:none;">
+      <p>질문 횟수를 모두 사용하셨습니다.<br>추가 질문을 원하시면 아래를 눌러주세요.</p>
+      <button class="buy-questions-btn" onclick="buyMoreQuestions()">추가 질문 3회 (4,900원)</button>
+    </div>
+
+    <div class="action-buttons">
+      <button class="action-btn" onclick="sharePage()">공유하기</button>
+      <button class="action-btn" onclick="window.print()">PDF 저장</button>
+    </div>
+  </div>
+
+  <!-- 에러 -->
+  <div id="errorView" class="status-view" style="display:none;">
+    <div class="status-icon">⚠️</div>
+    <p class="status-text" style="color:var(--text-secondary);" id="errorMsg">결과를 불러올 수 없습니다.</p>
+    <p class="status-sub">링크를 다시 확인해주세요.</p>
+  </div>
+
+</div>
+
+<footer class="hw-footer">
+  <p>호왕당 — 사주로 너의 길을 읽어주마</p>
+  <p>운영: 나를읽다연구소 | 사업자등록번호: 347-12-03156</p>
+</footer>
+
+<script>
+/* ===== 호왕당 결과 페이지 ===== */
+const HW_SERVER = ''; // hw-server 배포 후 URL 입력
+let RESULT_DATA = null;
+let RESULT_ID = null;
+
+document.addEventListener('DOMContentLoaded', loadResult);
+
+async function loadResult() {
+  const params = new URLSearchParams(location.search);
+  RESULT_ID = params.get('id');
+  if (!RESULT_ID) return showError('잘못된 접근입니다.');
+
+  // 서버 미연결 시 데모 데이터
+  if (!HW_SERVER) {
+    showDemo();
+    return;
+  }
+
+  try {
+    const res = await fetch(HW_SERVER + '/result/' + RESULT_ID);
+    if (!res.ok) throw new Error(res.status);
+    RESULT_DATA = await res.json();
+    renderResult(RESULT_DATA);
+  } catch(err) {
+    console.error(err);
+    showError('결과를 불러올 수 없습니다.');
+  }
+}
+
+/* ===== 데모 (서버 연결 전 미리보기) ===== */
+function showDemo() {
+  RESULT_DATA = {
+    customerName: '홍길동',
+    productName: '초견',
+    product: 'HW1',
+    createdAt: new Date().toISOString(),
+    questionsAllowed: 1,
+    questionsUsed: 0,
+    report: {
+      dashboard: {
+        pillars: {
+          year: {sky:'甲',earth:'子'},
+          month: {sky:'丙',earth:'寅'},
+          day: {sky:'庚',earth:'午'},
+          hour: {sky:'壬',earth:'戌'}
+        },
+        oheng: {목:2,화:2,토:1,금:1,수:2}
+      },
+      chapters: [
+        {title:'타고난 성정', body:'경금(庚金) 일간으로 태어난 그대는 **강철같은 의지**와 결단력을 타고났느니라.\n\n겉으로는 차갑고 단단해 보이나, 속에는 뜨거운 불씨를 품고 있다. 한번 마음먹은 일은 반드시 해내는 성정이로되, 그 고집이 때로는 독이 되기도 하느니라.\n\n사람을 대함에 있어 진심이 늦게 드러나니, 첫인상은 차가우나 깊이 사귀면 이보다 의리 있는 사람이 없겠노라.'},
+        {title:'2026년 운세 핵심', body:'병오(丙午)년의 기운이 그대의 경금과 만나니, **재물운이 크게 열리는 해**이니라.\n\n다만 화(火)의 기운이 과하여 건강에 무리가 올 수 있으니, 상반기에는 속도를 조절하고 하반기에 힘을 집중하는 것이 이롭겠느니라.\n\n특히 5월과 9월에 큰 기회가 오니, 이때를 놓치지 말라.'},
+        {title:'호왕의 한마디', body:'그대는 칼과 같은 사람이니라.\n\n잘 벼리면 천하를 얻을 수 있으되, 날만 세우면 제 손을 베느니라.\n\n**올해는 칼을 갈되, 칼집에 넣어둘 줄도 아는 한 해로 삼으라.**'}
+      ]
+    }
+  };
+  renderResult(RESULT_DATA);
+}
+
+/* ===== 렌더링 ===== */
+function renderResult(data) {
+  document.getElementById('loadingView').style.display = 'none';
+  document.getElementById('resultView').style.display = 'block';
+  document.getElementById('resultFor').textContent = data.customerName + '님의 ' + data.productName;
+  document.getElementById('resultDate').textContent = formatDate(data.createdAt);
+  renderDashboard(data.report?.dashboard);
+  renderChapters(data.report?.chapters || []);
+  const remaining = (data.questionsAllowed||0) - (data.questionsUsed||0);
+  document.getElementById('chatRemaining').textContent = remaining;
+  if (remaining <= 0) {
+    document.getElementById('chatInput').disabled = true;
+    document.getElementById('chatInput').placeholder = '질문 횟수를 모두 사용했습니다';
+    document.getElementById('chatSendBtn').disabled = true;
+    document.getElementById('buyQuestions').style.display = 'block';
+  }
+}
+
+function renderDashboard(db) {
+  const area = document.getElementById('dashboardArea');
+  if (!db) { area.style.display='none'; return; }
+  const p = db.pillars || {};
+  const labels = {year:'년주(年)',month:'월주(月)',day:'일주(日)',hour:'시주(時)'};
+  let html = '<div class="dashboard-title">사 주 원 국</div><div class="pillars-grid">';
+  ['year','month','day','hour'].forEach(k => {
+    const col = p[k]||{};
+    html += `<div class="pillar"><div class="pillar-label">${labels[k]}</div><div class="pillar-sky">${col.sky||'-'}</div><div class="pillar-earth">${col.earth||'-'}</div></div>`;
+  });
+  html += '</div>';
+  if (db.oheng) {
+    const colors = {목:'#4a8c5c',화:'#c0392b',토:'#d4a017',금:'#b8860b',수:'#2874a6'};
+    html += '<div class="oheng-row">';
+    Object.entries(db.oheng).forEach(([k,v]) => {
+      html += `<div class="oheng-item"><div class="oheng-circle" style="background:${colors[k]||'#555'}">${k}</div><div class="oheng-label">${v}</div></div>`;
+    });
+    html += '</div>';
+  }
+  area.innerHTML = html;
+}
+
+function renderChapters(chapters) {
+  const area = document.getElementById('chaptersArea');
+  const kor = ['일','이','삼','사','오','육','칠','팔','구','십'];
+  let html = '';
+  chapters.forEach((ch,i) => {
+    html += `<div class="chapter" style="transition-delay:${i*0.15}s"><div class="chapter-num">제${kor[i]||i+1}장</div><h2 class="chapter-title">${esc(ch.title||'')}</h2><div class="chapter-body">${formatBody(ch.body||'')}</div></div>`;
+  });
+  area.innerHTML = html;
+  setTimeout(() => {
+    area.querySelectorAll('.chapter').forEach((el,i) => {
+      setTimeout(() => el.classList.add('visible'), i*200);
+    });
+  }, 100);
+}
+
+/* ===== 호왕 채팅 ===== */
+async function askHowang() {
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  if (!question) return;
+  const remaining = parseInt(document.getElementById('chatRemaining').textContent);
+  if (remaining <= 0) return;
+  addBubble(question, 'user');
+  input.value = '';
+  input.disabled = true;
+  document.getElementById('chatSendBtn').disabled = true;
+
+  const loadEl = document.createElement('div');
+  loadEl.className = 'chat-loading';
+  loadEl.textContent = '호왕이 살피는 중...';
+  document.getElementById('chatMessages').appendChild(loadEl);
+
+  try {
+    if (!HW_SERVER) {
+      // 데모 모드
+      await new Promise(r => setTimeout(r, 1500));
+      loadEl.remove();
+      addBubble('허허, 아직 호왕이 준비 중이니라. 서버가 연결되면 답해주겠노라.', 'howang');
+    } else {
+      const res = await fetch(HW_SERVER + '/ask', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({resultId: RESULT_ID, question})
+      });
+      loadEl.remove();
+      if (!res.ok) throw new Error('error');
+      const data = await res.json();
+      addBubble(data.answer, 'howang');
+    }
+    const nr = remaining - 1;
+    document.getElementById('chatRemaining').textContent = nr;
+    if (nr <= 0) {
+      input.placeholder = '질문 횟수를 모두 사용했습니다';
+      document.getElementById('buyQuestions').style.display = 'block';
+      return;
+    }
+    input.disabled = false;
+    document.getElementById('chatSendBtn').disabled = false;
+    input.focus();
+  } catch(err) {
+    loadEl.remove();
+    addBubble('잠시 후 다시 물어보거라.', 'howang');
+    input.disabled = false;
+    document.getElementById('chatSendBtn').disabled = false;
+  }
+}
+
+function addBubble(text, type) {
+  const el = document.createElement('div');
+  el.className = 'chat-bubble ' + type;
+  el.textContent = text;
+  const c = document.getElementById('chatMessages');
+  c.appendChild(el);
+  c.scrollTop = c.scrollHeight;
+}
+
+/* ===== 유틸 ===== */
+function showError(msg) {
+  document.getElementById('loadingView').style.display='none';
+  document.getElementById('errorView').style.display='block';
+  document.getElementById('errorMsg').textContent = msg;
+}
+function formatDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일';
+}
+function formatBody(text) {
+  return text.split('\n\n').map(p => '<p>'+p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')+'</p>').join('');
+}
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function sharePage() {
+  if (navigator.share) navigator.share({title:'호왕당 사주풀이',url:location.href});
+  else navigator.clipboard.writeText(location.href).then(()=>alert('링크가 복사되었습니다.'));
+}
+function buyMoreQuestions() {
+  alert('추가 질문 구매 기능은 준비 중입니다.');
+}
+document.getElementById('chatInput')?.addEventListener('keypress', e => {
+  if (e.key==='Enter') askHowang();
+});
+</script>
+</body>
+</html>
