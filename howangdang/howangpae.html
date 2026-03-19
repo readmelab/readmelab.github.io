@@ -13,7 +13,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
 
 *{margin:0;padding:0;box-sizing:border-box}
-
 body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
 
 #screen-input{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at center,#1a1008 0%,#000 70%);position:relative}
@@ -85,7 +84,6 @@ select option{background:#1a1008;color:#e8d5b0}
 
 .card-watermark{text-align:center;padding:12px 0;font-size:11px;color:#3a2a1a}
 
-/* 공유 버튼 영역 (캡처 바깥) */
 .share-section{margin-top:24px;width:360px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .share-btn{display:flex;align-items:center;gap:6px;padding:12px 20px;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .3s}
@@ -120,6 +118,17 @@ select option{background:#1a1008;color:#e8d5b0}
     </div>
 
     <div>
+      <label>태어난 시각</label>
+      <div class="form-row">
+        <select id="birthHour"><option value="" disabled selected>시</option></select>
+        <select id="birthMinute"><option value="" disabled selected>분</option></select>
+      </div>
+      <div style="margin-top:6px">
+        <button class="gender-btn" id="unknownTimeBtn" onclick="toggleUnknownTime()" style="font-size:12px;padding:8px">모름</button>
+      </div>
+    </div>
+
+    <div>
       <label>양력 / 음력</label>
       <div class="gender-row">
         <button class="gender-btn active" data-cal="solar" onclick="selectCal(this)">양력</button>
@@ -149,10 +158,9 @@ select option{background:#1a1008;color:#e8d5b0}
 
 <!-- 화면 3: 결과 -->
 <div id="screen-result">
-  <!-- 캡처 영역 -->
   <div id="card-capture">
     <div class="card-image-area">
-      <img id="cardImage" src="" alt="호왕패" crossorigin="anonymous">
+      <img id="cardImage" src="" alt="호왕패">
     </div>
     <div class="card-text-area">
       <div class="card-element-tag" id="cardTag"></div>
@@ -183,7 +191,6 @@ select option{background:#1a1008;color:#e8d5b0}
     <div class="card-watermark">@howangdang · 虎王堂</div>
   </div>
 
-  <!-- 공유 버튼 (캡처 바깥) -->
   <div class="share-section">
     <div class="share-row">
       <button class="share-btn btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
@@ -199,6 +206,7 @@ select option{background:#1a1008;color:#e8d5b0}
 </div>
 
 <div class="toast" id="toast"></div>
+
 <script>
 const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/api/howangpae';
 const DOOR_SOUND = 'https://audio.readmelab.co.kr/howang/door_creak.mp3';
@@ -206,9 +214,9 @@ const SHARE_URL = 'https://readmelab.github.io/howangdang/howangpae.html';
 
 let selectedGender = '';
 let selectedCal = 'solar';
+let unknownTime = false;
 let currentCardData = null;
 
-// 카카오 초기화
 Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
 
 // 드롭다운 초기화
@@ -216,35 +224,60 @@ Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
   const yearSel = document.getElementById('birthYear');
   const monthSel = document.getElementById('birthMonth');
   const daySel = document.getElementById('birthDay');
+  const hourSel = document.getElementById('birthHour');
+  const minSel = document.getElementById('birthMinute');
 
-  // 년도: 2025 ~ 1940 (1985 근처에서 시작하도록 스크롤)
   for (let y = 2025; y >= 1940; y--) {
     const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y + '년';
+    opt.value = y; opt.textContent = y + '년';
     yearSel.appendChild(opt);
   }
-  // 기본 선택: 1990
   yearSel.value = 1990;
 
-  // 월: 1~12 (기본 6월)
   for (let m = 1; m <= 12; m++) {
     const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = m + '월';
+    opt.value = m; opt.textContent = m + '월';
     monthSel.appendChild(opt);
   }
   monthSel.value = 6;
 
-  // 일: 1~31 (기본 15일)
   for (let d = 1; d <= 31; d++) {
     const opt = document.createElement('option');
-    opt.value = d;
-    opt.textContent = d + '일';
+    opt.value = d; opt.textContent = d + '일';
     daySel.appendChild(opt);
   }
   daySel.value = 15;
+
+  for (let h = 0; h <= 23; h++) {
+    const opt = document.createElement('option');
+    opt.value = h; opt.textContent = h + '시';
+    hourSel.appendChild(opt);
+  }
+  hourSel.value = 12;
+
+  for (let mi = 0; mi <= 50; mi += 10) {
+    const opt = document.createElement('option');
+    opt.value = mi; opt.textContent = (mi < 10 ? '0' : '') + mi + '분';
+    minSel.appendChild(opt);
+  }
+  minSel.value = 0;
 })();
+
+function toggleUnknownTime() {
+  unknownTime = !unknownTime;
+  const btn = document.getElementById('unknownTimeBtn');
+  const hourSel = document.getElementById('birthHour');
+  const minSel = document.getElementById('birthMinute');
+  if (unknownTime) {
+    btn.classList.add('active');
+    hourSel.disabled = true; hourSel.style.opacity = '0.3';
+    minSel.disabled = true; minSel.style.opacity = '0.3';
+  } else {
+    btn.classList.remove('active');
+    hourSel.disabled = false; hourSel.style.opacity = '1';
+    minSel.disabled = false; minSel.style.opacity = '1';
+  }
+}
 
 function selectGender(btn) {
   document.querySelectorAll('[data-gender]').forEach(b => b.classList.remove('active'));
@@ -269,6 +302,8 @@ async function submitForm() {
   const year = document.getElementById('birthYear').value;
   const month = document.getElementById('birthMonth').value;
   const day = document.getElementById('birthDay').value;
+  const hour = unknownTime ? null : Number(document.getElementById('birthHour').value);
+  const minute = unknownTime ? null : Number(document.getElementById('birthMinute').value);
 
   if (!year || !month || !day) { alert('생년월일을 선택해주세요.'); return; }
   if (!selectedGender) { alert('성별을 선택해주세요.'); return; }
@@ -291,10 +326,22 @@ async function submitForm() {
   }
 
   try {
+    const body = {
+      gender: selectedGender,
+      birthYear: Number(year),
+      birthMonth: Number(month),
+      birthDay: Number(day),
+      calendarType: selectedCal
+    };
+    if (!unknownTime) {
+      body.birthHour = hour;
+      body.birthMinute = minute;
+    }
+
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gender: selectedGender, birthYear: Number(year), birthMonth: Number(month), birthDay: Number(day), calendarType: selectedCal })
+      body: JSON.stringify(body)
     });
     const data = await res.json();
     if (!data.success) { alert('오류: ' + (data.error || '')); retry(); return; }
@@ -336,11 +383,11 @@ function renderCard(data) {
   document.getElementById('pYear').textContent = spi.fourPillars.year;
   document.getElementById('pMonth').textContent = spi.fourPillars.month;
   document.getElementById('pDay').textContent = spi.fourPillars.day;
-  document.getElementById('pHour').textContent = spi.fourPillars.hour;
+  document.getElementById('pHour').textContent = spi.fourPillars.hour || '—';
   document.getElementById('pYearH').textContent = spi.fourPillarsHangul.year;
   document.getElementById('pMonthH').textContent = spi.fourPillarsHangul.month;
   document.getElementById('pDayH').textContent = spi.fourPillarsHangul.day;
-  document.getElementById('pHourH').textContent = spi.fourPillarsHangul.hour;
+  document.getElementById('pHourH').textContent = spi.fourPillarsHangul.hour || '모름';
 }
 
 function animateGauge(gauge) {
@@ -353,7 +400,6 @@ function animateGauge(gauge) {
   });
 }
 
-// 카카오톡 공유
 function shareKakao() {
   if (!currentCardData) return;
   const card = currentCardData.card;
@@ -371,13 +417,13 @@ function shareKakao() {
   });
 }
 
-// 이미지 저장
 async function saveCard() {
   try {
     const canvas = await html2canvas(document.getElementById('card-capture'), {
       backgroundColor: '#0a0a06',
       scale: 2,
-      useCORS: true
+      useCORS: true,
+      allowTaint: true
     });
     const link = document.createElement('a');
     link.download = 'howangpae_' + (currentCardData ? currentCardData.card.id : 'card') + '.png';
@@ -385,11 +431,10 @@ async function saveCard() {
     link.click();
     showToast('이미지가 저장되었습니다');
   } catch(e) {
-    showToast('저장에 실패했습니다. 스크린샷을 이용해주세요.');
+    showToast('길게 눌러 스크린샷으로 저장해주세요');
   }
 }
 
-// 링크 복사
 function copyLink() {
   navigator.clipboard.writeText(SHARE_URL).then(() => {
     showToast('링크가 복사되었습니다');
@@ -398,13 +443,13 @@ function copyLink() {
   });
 }
 
-// 인스타 스토리 안내
 async function shareInsta() {
   try {
     const canvas = await html2canvas(document.getElementById('card-capture'), {
       backgroundColor: '#0a0a06',
       scale: 2,
-      useCORS: true
+      useCORS: true,
+      allowTaint: true
     });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], 'howangpae.png', { type: 'image/png' });
@@ -412,7 +457,6 @@ async function shareInsta() {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], title: '호왕패', text: '내 호왕패를 확인해봐!' });
     } else {
-      // 공유 불가능 시 저장 유도
       const link = document.createElement('a');
       link.download = 'howangpae.png';
       link.href = canvas.toDataURL('image/png');
@@ -430,7 +474,6 @@ function retry() {
   document.getElementById('screen-loading').style.display = 'none';
   document.querySelector('.door-img').classList.remove('zoom');
   document.getElementById('screen-input').style.display = 'flex';
-  // 게이지 리셋
   ['Wood','Fire','Earth','Metal','Water'].forEach(id => {
     document.getElementById('g' + id).style.width = '0';
     document.getElementById('g' + id + 'Pct').textContent = '';
