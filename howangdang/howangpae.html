@@ -211,6 +211,7 @@ select option{background:#1a1008;color:#e8d5b0}
 
 <script>
 const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/api/howangpae';
+const PROXY_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/proxy-image?url=';
 const DOOR_SOUND = 'https://audio.readmelab.co.kr/howang/door_creak.mp3';
 const SHARE_URL = 'https://readmelab.github.io/howangdang/howangpae.html';
 
@@ -301,8 +302,11 @@ function showToast(msg) {
 }
 
 async function loadImageAsBase64(url) {
+  // hw-server 프록시를 통해 CORS 문제 없이 이미지를 base64로 변환
+  const proxyUrl = PROXY_URL + encodeURIComponent(url);
   try {
-    const resp = await fetch(url);
+    const resp = await fetch(proxyUrl);
+    if (!resp.ok) throw new Error('proxy failed');
     const blob = await resp.blob();
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -310,7 +314,19 @@ async function loadImageAsBase64(url) {
       reader.readAsDataURL(blob);
     });
   } catch (e) {
-    return url;
+    // 프록시 실패 시 직접 시도
+    try {
+      const resp2 = await fetch(url);
+      const blob2 = await resp2.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob2);
+      });
+    } catch (e2) {
+      console.warn('Image base64 conversion failed:', e2);
+      return url;
+    }
   }
 }
 
@@ -361,6 +377,8 @@ async function submitForm() {
     if (!data.success) { alert('오류: ' + (data.error || '')); retry(); return; }
 
     currentCardData = data;
+
+    // 프록시를 통해 base64로 변환 — 이미지 저장 시 캡처 가능하게
     cardImageBase64 = await loadImageAsBase64(data.card.imageUrl);
 
     const doorImg = document.querySelector('.door-img');
@@ -388,6 +406,7 @@ function renderCard(data) {
   const card = data.card;
   const spi = data.spiProperties;
 
+  // base64 이미지 사용 (html2canvas 캡처용)
   document.getElementById('cardImage').src = cardImageBase64 || card.imageUrl;
   document.getElementById('cardTag').textContent = card.elementKo + ' ' + card.animalKo + ' · ' + spi.dayGan + ' 일간';
   document.getElementById('cardTitle').textContent = card.title;
@@ -435,19 +454,21 @@ function shareKakao() {
 
 async function saveCard() {
   try {
-    const canvas = await html2canvas(document.getElementById('card-capture'), {
+    const el = document.getElementById('card-capture');
+    const canvas = await html2canvas(el, {
       backgroundColor: '#0a0a06',
       scale: 2,
-      useCORS: true,
+      useCORS: false,
       allowTaint: true
     });
     const link = document.createElement('a');
     const title = currentCardData ? currentCardData.card.title.replace(/\s/g, '') : 'card';
-    link.download = '\uD638\uC655\uD328_' + title + '.png';
+    link.download = '호왕패_' + title + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
     showToast('이미지가 저장되었습니다');
   } catch(e) {
+    console.error('saveCard error:', e);
     showToast('길게 눌러 스크린샷으로 저장해주세요');
   }
 }
@@ -462,26 +483,28 @@ function copyLink() {
 
 async function shareInsta() {
   try {
-    const canvas = await html2canvas(document.getElementById('card-capture'), {
+    const el = document.getElementById('card-capture');
+    const canvas = await html2canvas(el, {
       backgroundColor: '#0a0a06',
       scale: 2,
-      useCORS: true,
+      useCORS: false,
       allowTaint: true
     });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const title = currentCardData ? currentCardData.card.title.replace(/\s/g, '') : 'card';
-    const file = new File([blob], '\uD638\uC655\uD328_' + title + '.png', { type: 'image/png' });
+    const file = new File([blob], '호왕패_' + title + '.png', { type: 'image/png' });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], title: '호왕패', text: '내 호왕패를 확인해봐! ' + SHARE_URL });
     } else {
       const link = document.createElement('a');
-      link.download = '\uD638\uC655\uD328_' + title + '.png';
+      link.download = '호왕패_' + title + '.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
       showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
     }
   } catch(e) {
+    console.error('shareInsta error:', e);
     showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
   }
 }
@@ -494,6 +517,7 @@ function retry() {
   document.getElementById('loadingText').classList.remove('show');
   document.getElementById('screen-input').style.display = 'flex';
   cardImageBase64 = null;
+  currentCardData = null;
   ['Wood','Fire','Earth','Metal','Water'].forEach(id => {
     document.getElementById('g' + id).style.width = '0';
     document.getElementById('g' + id + 'Pct').textContent = '';
