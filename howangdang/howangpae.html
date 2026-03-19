@@ -50,8 +50,8 @@ select option{background:#1a1008;color:#e8d5b0}
 
 #card-capture{width:360px;background:linear-gradient(180deg,#1a1208 0%,#0a0a06 100%);border:1px solid #3a2a1a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.15)}
 
-.card-image-area{width:100%;height:400px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a06}
-.card-image-area img{width:100%;height:100%;object-fit:cover}
+.card-image-area{width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a06}
+.card-image-area img{width:100%;height:auto;display:block}
 
 .card-text-area{padding:24px 20px}
 .card-element-tag{display:inline-block;padding:4px 12px;border:1px solid #c5975b;border-radius:20px;font-size:12px;color:#c5975b;margin-bottom:12px}
@@ -102,7 +102,6 @@ select option{background:#1a1008;color:#e8d5b0}
 </head>
 <body>
 
-<!-- 화면 1: 입력 -->
 <div id="screen-input">
   <div class="logo-text">虎王堂</div>
   <div class="logo-sub">호왕패를 뽑아보거라</div>
@@ -148,7 +147,6 @@ select option{background:#1a1008;color:#e8d5b0}
   </div>
 </div>
 
-<!-- 화면 2: 로딩 -->
 <div id="screen-loading">
   <div class="door-container">
     <img class="door-img" src="https://audio.readmelab.co.kr/howang/door.jpeg" alt="호왕당 문">
@@ -156,7 +154,6 @@ select option{background:#1a1008;color:#e8d5b0}
   </div>
 </div>
 
-<!-- 화면 3: 결과 -->
 <div id="screen-result">
   <div id="card-capture">
     <div class="card-image-area">
@@ -216,10 +213,10 @@ let selectedGender = '';
 let selectedCal = 'solar';
 let unknownTime = false;
 let currentCardData = null;
+let cardImageBase64 = null;
 
 Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
 
-// 드롭다운 초기화
 (function initDropdowns() {
   const yearSel = document.getElementById('birthYear');
   const monthSel = document.getElementById('birthMonth');
@@ -298,6 +295,20 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
+async function loadImageAsBase64(url) {
+  try {
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) {
+    return url;
+  }
+}
+
 async function submitForm() {
   const year = document.getElementById('birthYear').value;
   const month = document.getElementById('birthMonth').value;
@@ -316,7 +327,7 @@ async function submitForm() {
 
   const loadingText = document.getElementById('loadingText');
   loadingText.textContent = '호왕이 사주를 살피는 중이다...';
-  loadingText.classList.add('show');}
+  loadingText.classList.add('show');
 
   try {
     const body = {
@@ -340,6 +351,8 @@ async function submitForm() {
     if (!data.success) { alert('오류: ' + (data.error || '')); retry(); return; }
 
     currentCardData = data;
+
+    cardImageBase64 = await loadImageAsBase64(data.card.imageUrl);
 
     const doorImg = document.querySelector('.door-img');
     doorImg.classList.add('zoom');
@@ -366,7 +379,7 @@ function renderCard(data) {
   const card = data.card;
   const spi = data.spiProperties;
 
-  document.getElementById('cardImage').src = card.imageUrl;
+  document.getElementById('cardImage').src = cardImageBase64 || card.imageUrl;
   document.getElementById('cardTag').textContent = card.elementKo + ' ' + card.animalKo + ' · ' + spi.dayGan + ' 일간';
   document.getElementById('cardTitle').textContent = card.title;
   document.getElementById('cardOneliner').textContent = '\u201C' + card.oneLiner + '\u201D';
@@ -376,7 +389,7 @@ function renderCard(data) {
   document.getElementById('pYear').textContent = spi.fourPillars.year;
   document.getElementById('pMonth').textContent = spi.fourPillars.month;
   document.getElementById('pDay').textContent = spi.fourPillars.day;
-  document.getElementById('pHour').textContent = spi.fourPillars.hour || '—';
+  document.getElementById('pHour').textContent = spi.fourPillars.hour || '\u2014';
   document.getElementById('pYearH').textContent = spi.fourPillarsHangul.year;
   document.getElementById('pMonthH').textContent = spi.fourPillarsHangul.month;
   document.getElementById('pDayH').textContent = spi.fourPillarsHangul.day;
@@ -419,7 +432,8 @@ async function saveCard() {
       allowTaint: true
     });
     const link = document.createElement('a');
-    link.download = 'howangpae_' + (currentCardData ? currentCardData.card.id : 'card') + '.png';
+    const title = currentCardData ? currentCardData.card.title.replace(/\s/g, '') : 'card';
+    link.download = '\uD638\uC655\uD328_' + title + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
     showToast('이미지가 저장되었습니다');
@@ -445,13 +459,14 @@ async function shareInsta() {
       allowTaint: true
     });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file = new File([blob], 'howangpae.png', { type: 'image/png' });
+    const title = currentCardData ? currentCardData.card.title.replace(/\s/g, '') : 'card';
+    const file = new File([blob], '\uD638\uC655\uD328_' + title + '.png', { type: 'image/png' });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: '호왕패', text: '내 호왕패를 확인해봐!' });
+      await navigator.share({ files: [file], title: '호왕패', text: '내 호왕패를 확인해봐! ' + SHARE_URL });
     } else {
       const link = document.createElement('a');
-      link.download = 'howangpae.png';
+      link.download = '\uD638\uC655\uD328_' + title + '.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
       showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
@@ -466,7 +481,9 @@ function retry() {
   document.getElementById('screen-result').classList.remove('show');
   document.getElementById('screen-loading').style.display = 'none';
   document.querySelector('.door-img').classList.remove('zoom');
+  document.getElementById('loadingText').classList.remove('show');
   document.getElementById('screen-input').style.display = 'flex';
+  cardImageBase64 = null;
   ['Wood','Fire','Earth','Metal','Water'].forEach(id => {
     document.getElementById('g' + id).style.width = '0';
     document.getElementById('g' + id + 'Pct').textContent = '';
