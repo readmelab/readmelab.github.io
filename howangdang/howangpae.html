@@ -412,7 +412,12 @@ function renderCard(data) {
   document.getElementById('cardOneliner').textContent = card.viralLine || card.oneLiner;
   document.getElementById('cardDescription').textContent = '\u201C' + card.oneLiner + '\u201D\n\n' + card.description;
   document.getElementById('cardSeason').textContent = card.seasonLine;
-  document.getElementById('cardCta').innerHTML = card.cta.replace('호왕이', '<br>호왕이');
+  const birthInfo = document.getElementById('birthYear').value + '년 ' + document.getElementById('birthMonth').value + '월 ' + document.getElementById('birthDay').value + '일';
+const timeInfo = unknownTime ? '모름' : document.getElementById('birthHour').value + '시 ' + document.getElementById('birthMinute').value + '분';
+const pillarsText = spi.fourPillars.year + ' ' + spi.fourPillars.month + ' ' + spi.fourPillars.day + ' ' + (spi.fourPillars.hour || '');
+const chogyeonUrl = 'chogyeon.html?title=' + encodeURIComponent(card.title) + '&pillars=' + encodeURIComponent(pillarsText) + '&birth=' + encodeURIComponent(birthInfo) + '&time=' + encodeURIComponent(timeInfo) + '&cal=' + encodeURIComponent(selectedCal);
+
+document.getElementById('cardCta').innerHTML = card.cta.replace('호왕이', '<br>호왕이') + '<br><br><a href="' + chogyeonUrl + '" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-weight:700;text-decoration:none;letter-spacing:2px;font-size:15px;">초견 받으러 가기</a>';
 
   document.getElementById('pYear').textContent = spi.fourPillars.year;
   document.getElementById('pMonth').textContent = spi.fourPillars.month;
