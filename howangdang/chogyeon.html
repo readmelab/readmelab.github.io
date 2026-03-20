@@ -208,13 +208,6 @@ if (pTitle) {
   document.getElementById('sumTitle').textContent = pTitle;
   document.getElementById('sumPillars').textContent = pPillars || '';
 }
-if (pBirth) {
-  const calText = pCal === 'lunar' ? ' 음력' : ' 양력';
-  document.getElementById('userBirth').value = pBirth + calText;
-}
-if (pTime) {
-  document.getElementById('userTime').value = pTime;
-}
 
 // ── 결제 성공/실패 콜백 처리 ──
 (function handlePaymentCallback() {
