@@ -54,6 +54,7 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
 .toast.show{opacity:1}
 .divider{width:100%;max-width:360px;height:1px;background:#2a1a0a;margin:8px 0}
+.upgrade-badge{display:inline-block;padding:4px 10px;background:rgba(232,80,80,.15);border:1px solid rgba(232,80,80,.3);border-radius:12px;font-size:11px;color:#e85050;font-weight:700;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -80,17 +81,17 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="product-desc">호왕이 너를 처음 봐주는 자리다.<br>네 사주 핵심, 타고난 성정, 재물 성향, 올해 한마디까지.<br>짧지만 네 급소를 찌른다.</div>
       <div class="product-includes">포함: 사주 핵심 요약 · 성정 풀이 · 재물 성향 · 올해 운 한마디 · 호왕의 호통</div>
     </div>
-    <div class="product-card" data-product="HW2" data-price="19900" onclick="selectProduct(this)">
+    <div class="product-card" data-product="HW2" data-price="19800" onclick="selectProduct(this)">
       <div class="product-badge badge-popular">재물 특화</div>
       <div class="product-name">재물풀이 財物</div>
-      <div class="product-price">19,900원</div>
+      <div class="product-price">19,800원</div>
       <div class="product-desc">네 돈 길을 파헤쳐 주마.<br>돈 그릇, 돈이 들어오는 길, 새는 구멍까지.<br>직업에 맞춰서 솔루션을 준다.</div>
       <div class="product-includes">포함: 초견 전체 + 돈 그릇 분석 · 재물 통로 · 재물 누수 패턴 · 3년 재물 흐름 · 직업별 솔루션 · 질문 1회</div>
     </div>
-    <div class="product-card" data-product="HW3" data-price="49900" onclick="selectProduct(this)">
+    <div class="product-card" data-product="HW3" data-price="49700" onclick="selectProduct(this)">
       <div class="product-badge badge-deep">심층 풀이</div>
       <div class="product-name">본풀이 本</div>
-      <div class="product-price">49,900원</div>
+      <div class="product-price">49,700원</div>
       <div class="product-desc">네 사주를 통째로 뒤집어 본다.<br>돈, 사람, 건강, 인생 흐름까지.<br>한번 보면 10년이 보인다.</div>
       <div class="product-includes">포함: 재물풀이 전체 + 대운 흐름 · 관계 패턴 · 건강 주의점 · 질문 1회 + 추가 질문권 1회(카톡)</div>
     </div>
@@ -150,10 +151,52 @@ var pBirth = params.get('birth');
 var pTime = params.get('time');
 var pCal = params.get('cal');
 
+// 업그레이드 파라미터
+var upgradeTarget = params.get('upgrade');
+var upgradeFromId = params.get('from');
+var isUpgrade = false;
+var upgradePrice = 0;
+
 if (pTitle) {
   document.getElementById('sajuSummary').classList.remove('hidden');
   document.getElementById('sumTitle').textContent = pTitle;
   document.getElementById('sumPillars').textContent = pPillars || '';
+}
+
+// 업그레이드 모드 처리
+if (upgradeTarget && upgradeFromId) {
+  isUpgrade = true;
+  if (upgradeTarget === 'HW2') {
+    upgradePrice = 14900;
+    setTimeout(function() {
+      document.getElementById('introBox').innerHTML = '<div class="upgrade-badge">초견 구매자 할인 적용</div><div class="intro-title">돈 길이 궁금하지?<br>재물풀이를 받아라.</div><div class="intro-desc">초견을 본 네게 특별 할인이다.</div>';
+      var hw2Card = document.querySelector('[data-product="HW2"]');
+      if (hw2Card) {
+        selectProduct(hw2Card);
+        hw2Card.querySelector('.product-price').innerHTML = '<span style="text-decoration:line-through;color:#6a5a4a;font-size:14px">19,800원</span><br>14,900원';
+        document.getElementById('submitBtn').textContent = '재물풀이 업그레이드 (14,900원)';
+        selectedPrice = 14900;
+        document.querySelectorAll('.product-card').forEach(function(c) {
+          if (c.dataset.product !== 'HW2') c.style.display = 'none';
+        });
+      }
+    }, 100);
+  } else if (upgradeTarget === 'HW3') {
+    upgradePrice = 29900;
+    setTimeout(function() {
+      document.getElementById('introBox').innerHTML = '<div class="upgrade-badge">재물풀이 구매자 할인 적용</div><div class="intro-title">네 사주 전부를 보여주마.<br>본풀이를 받아라.</div><div class="intro-desc">재물풀이를 본 네게 특별 할인이다.</div>';
+      var hw3Card = document.querySelector('[data-product="HW3"]');
+      if (hw3Card) {
+        selectProduct(hw3Card);
+        hw3Card.querySelector('.product-price').innerHTML = '<span style="text-decoration:line-through;color:#6a5a4a;font-size:14px">49,700원</span><br>29,900원';
+        document.getElementById('submitBtn').textContent = '본풀이 업그레이드 (29,900원)';
+        selectedPrice = 29900;
+        document.querySelectorAll('.product-card').forEach(function(c) {
+          if (c.dataset.product !== 'HW3') c.style.display = 'none';
+        });
+      }
+    }, 100);
+  }
 }
 
 (function handlePaymentCallback() {
@@ -184,7 +227,8 @@ if (pTitle) {
       body: JSON.stringify({
         orderId: orderId, product: order.product, name: order.name, phone: order.phone,
         birthDate: order.birthDate, birthTime: order.birthTime,
-        calendarType: order.calendarType, question: order.question, job: order.job
+        calendarType: order.calendarType, question: order.question, job: order.job,
+        upgradeFrom: order.upgradeFrom || ''
       })
     })
     .then(function() {
@@ -212,11 +256,15 @@ function selectProduct(el) {
   document.querySelectorAll('.product-card').forEach(function(c) { c.classList.remove('selected'); });
   el.classList.add('selected');
   selectedProduct = el.dataset.product;
-  selectedPrice = Number(el.dataset.price);
+  if (!isUpgrade) {
+    selectedPrice = Number(el.dataset.price);
+  }
   document.getElementById('orderSection').classList.add('show');
   document.querySelectorAll('.hw2-only').forEach(function(e) { e.style.display = (selectedProduct === 'HW2' || selectedProduct === 'HW3') ? 'block' : 'none'; });
   document.querySelectorAll('.hw3-only').forEach(function(e) { e.style.display = selectedProduct === 'HW3' ? 'block' : 'none'; });
-  document.getElementById('submitBtn').textContent = PRODUCT_NAMES[selectedProduct] + ' 결제하기 (' + selectedPrice.toLocaleString() + '원)';
+  if (!isUpgrade) {
+    document.getElementById('submitBtn').textContent = PRODUCT_NAMES[selectedProduct] + ' 결제하기 (' + selectedPrice.toLocaleString() + '원)';
+  }
   document.getElementById('orderSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -250,7 +298,8 @@ function submitOrder() {
   sessionStorage.setItem('hw_order', JSON.stringify({
     orderId: orderId, product: selectedProduct, price: selectedPrice,
     name: name, phone: phone, birthDate: pBirth || '', birthTime: pTime || '',
-    calendarType: pCal || 'solar', question: question, job: selectedJob
+    calendarType: pCal || 'solar', question: question, job: selectedJob,
+    upgradeFrom: upgradeFromId || ''
   }));
 
   try {
@@ -260,11 +309,11 @@ function submitOrder() {
       method: 'CARD',
       amount: { currency: 'KRW', value: selectedPrice },
       orderId: orderId,
-      orderName: '호왕당 ' + PRODUCT_NAMES[selectedProduct],
+      orderName: '호왕당 ' + PRODUCT_NAMES[selectedProduct] + (isUpgrade ? ' (업그레이드)' : ''),
       customerName: name,
       customerMobilePhone: phone.replace(/[^0-9]/g, ''),
-successUrl: window.location.origin + window.location.pathname + '?payment=success',
-failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
       card: { flowMode: 'DEFAULT' }
     }).catch(function(e) {
       if (e.code === 'USER_CANCEL') { showToast('결제가 취소되었습니다'); }
