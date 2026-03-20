@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕당 - 초견·재물풀이·본풀이</title>
+<meta property="og:title" content="호왕당 - 네 사주를 풀어주마">
+<meta property="og:description" content="호왕이 직접 봐주는 사주 풀이. 초견 4,900원부터.">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/door.jpeg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
+
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%)}
+
+.logo-text{font-size:36px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.5);letter-spacing:8px;margin-bottom:6px}
+.logo-sub{font-size:13px;color:#8a7a5a;margin-bottom:12px;letter-spacing:2px}
+
+.intro-box{max-width:360px;text-align:center;margin-bottom:32px}
+.intro-title{font-size:20px;font-weight:900;color:#c5975b;margin-bottom:12px;line-height:1.5}
+.intro-desc{font-size:13px;color:#a89878;line-height:1.8}
+
+/* ── 카드 사주 요약 (호왕패에서 넘어온 정보) ── */
+.saju-summary{max-width:360px;width:100%;padding:16px;background:rgba(26,16,8,.8);border:1px solid #2a1a0a;border-radius:12px;margin-bottom:32px;text-align:center}
+.saju-summary .label{font-size:11px;color:#8a7a5a;margin-bottom:4px}
+.saju-summary .title{font-size:18px;font-weight:900;color:#c5975b;margin-bottom:2px}
+.saju-summary .pillars{font-size:14px;color:#a89878;letter-spacing:2px}
+.saju-summary.hidden{display:none}
+
+/* ── 상품 카드 ── */
+.product-list{max-width:360px;width:100%;display:flex;flex-direction:column;gap:16px;margin-bottom:32px}
+
+.product-card{padding:24px 20px;background:rgba(26,16,8,.9);border:1px solid #2a1a0a;border-radius:12px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.product-card:hover{border-color:#c5975b;transform:translateY(-2px)}
+.product-card.selected{border-color:#c5975b;background:rgba(197,151,91,.08)}
+.product-card.selected::after{content:'✓';position:absolute;top:12px;right:16px;font-size:20px;color:#c5975b}
+
+.product-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-bottom:8px}
+.badge-first{background:rgba(197,151,91,.2);color:#c5975b}
+.badge-popular{background:rgba(139,26,26,.3);color:#e85050}
+.badge-deep{background:rgba(197,151,91,.1);color:#8a7a5a}
+
+.product-name{font-size:18px;font-weight:900;color:#e8d5b0;margin-bottom:6px}
+.product-price{font-size:22px;font-weight:900;color:#c5975b;margin-bottom:10px}
+.product-desc{font-size:12px;color:#8a7a5a;line-height:1.7}
+.product-includes{margin-top:10px;font-size:11px;color:#6a5a4a;line-height:1.6}
+
+/* ── 주문 폼 ── */
+.order-section{max-width:360px;width:100%;display:none;flex-direction:column;gap:16px;margin-bottom:24px}
+.order-section.show{display:flex}
+
+.form-label{font-size:12px;color:#8a7a5a;margin-bottom:4px}
+.form-input{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none}
+.form-input:focus{border-color:#c5975b}
+.form-input::placeholder{color:#4a3a2a}
+
+.form-select{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;-webkit-appearance:none}
+.form-select:focus{border-color:#c5975b}
+.form-select option{background:#1a1008;color:#e8d5b0}
+
+.form-textarea{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:14px;outline:none;resize:none;min-height:100px;line-height:1.6}
+.form-textarea:focus{border-color:#c5975b}
+.form-textarea::placeholder{color:#4a3a2a}
+
+.job-row{display:flex;flex-wrap:wrap;gap:8px}
+.job-btn{padding:10px 16px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s}
+.job-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+
+.hw2-only,.hw3-only{display:none}
+
+.submit-btn{margin-top:8px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
+.submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+
+/* ── 결제 안내 ── */
+.payment-section{max-width:360px;width:100%;display:none;flex-direction:column;align-items:center;gap:16px}
+.payment-section.show{display:flex}
+
+.payment-box{width:100%;padding:24px 20px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:12px;text-align:center}
+.payment-title{font-size:16px;font-weight:700;color:#c5975b;margin-bottom:16px}
+.payment-info{font-size:14px;color:#a89878;line-height:2}
+.payment-amount{font-size:28px;font-weight:900;color:#c5975b;margin:12px 0}
+.payment-account{font-size:15px;color:#e8d5b0;font-weight:700;padding:12px;background:rgba(197,151,91,.08);border-radius:8px;margin:8px 0;letter-spacing:1px}
+.payment-name{font-size:13px;color:#8a7a5a;margin-bottom:16px}
+.payment-notice{font-size:11px;color:#6a5a4a;line-height:1.8;margin-top:12px;text-align:left;padding:12px;background:rgba(0,0,0,.3);border-radius:8px}
+
+.copy-btn{padding:10px 20px;background:rgba(197,151,91,.15);border:1px solid #c5975b;border-radius:8px;color:#c5975b;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .3s}
+.copy-btn:hover{background:rgba(197,151,91,.25)}
+
+.back-btn{margin-top:16px;padding:10px 24px;background:none;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+
+.divider{width:100%;max-width:360px;height:1px;background:#2a1a0a;margin:8px 0}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="logo-text">虎王堂</div>
+  <div class="logo-sub">호왕이 직접 봐주마</div>
+
+  <!-- 호왕패에서 넘어온 사주 요약 -->
+  <div class="saju-summary hidden" id="sajuSummary">
+    <div class="label">네 호왕패</div>
+    <div class="title" id="sumTitle"></div>
+    <div class="pillars" id="sumPillars"></div>
+  </div>
+
+  <!-- 인트로 -->
+  <div class="intro-box">
+    <div class="intro-title">패는 봤다.<br>그 안의 뜻이 궁금하지 않냐?</div>
+    <div class="intro-desc">호왕이 네 사주를 직접 풀어주마.<br>듣고 나면 네가 왜 그렇게 살았는지 알게 된다.</div>
+  </div>
+
+  <!-- 상품 선택 -->
+  <div class="product-list" id="productList">
+    <div class="product-card" data-product="HW1" onclick="selectProduct(this)">
+      <div class="product-badge badge-first">첫 풀이</div>
+      <div class="product-name">초견 初見</div>
+      <div class="product-price">4,900원</div>
+      <div class="product-desc">호왕이 너를 처음 봐주는 자리다.<br>네 사주 핵심, 타고난 성정, 재물 성향, 올해 한마디까지.<br>짧지만 네 급소를 찌른다.</div>
+      <div class="product-includes">포함: 사주 핵심 요약 · 성정 풀이 · 재물 성향 · 올해 운 한마디 · 호왕의 호통</div>
+    </div>
+
+    <div class="product-card" data-product="HW2" onclick="selectProduct(this)">
+      <div class="product-badge badge-popular">재물 특화</div>
+      <div class="product-name">재물풀이 財物</div>
+      <div class="product-price">19,900원</div>
+      <div class="product-desc">네 돈 길을 파헤쳐 주마.<br>돈 그릇, 돈이 들어오는 길, 새는 구멍까지.<br>직업에 맞춰서 솔루션을 준다.</div>
+      <div class="product-includes">포함: 초견 전체 + 돈 그릇 분석 · 재물 통로 · 재물 누수 패턴 · 3년 재물 흐름 · 직업별 솔루션 · 질문 1회</div>
+    </div>
+
+    <div class="product-card" data-product="HW3" onclick="selectProduct(this)">
+      <div class="product-badge badge-deep">심층 풀이</div>
+      <div class="product-name">본풀이 本</div>
+      <div class="product-price">49,900원</div>
+      <div class="product-desc">네 사주를 통째로 뒤집어 본다.<br>돈, 사람, 건강, 인생 흐름까지.<br>한번 보면 10년이 보인다.</div>
+      <div class="product-includes">포함: 재물풀이 전체 + 대운 흐름 · 관계 패턴 · 건강 주의점 · 질문 1회 + 추가 질문권 1회(카톡)</div>
+    </div>
+  </div>
+
+  <!-- 주문 폼 -->
+  <div class="order-section" id="orderSection">
+    <div class="divider"></div>
+
+    <div>
+      <div class="form-label">이름</div>
+      <input class="form-input" id="userName" type="text" placeholder="이름을 알려주거라">
+    </div>
+
+    <div>
+      <div class="form-label">연락처</div>
+      <input class="form-input" id="userPhone" type="tel" placeholder="010-0000-0000">
+    </div>
+
+    <div>
+      <div class="form-label">생년월일 (음력/양력)</div>
+      <input class="form-input" id="userBirth" type="text" placeholder="예: 1987년 10월 19일 음력" readonly>
+    </div>
+
+    <div>
+      <div class="form-label">태어난 시</div>
+      <input class="form-input" id="userTime" type="text" placeholder="예: 사시 (09~11시)" readonly>
+    </div>
+
+    <!-- 재물풀이, 본풀이만 -->
+    <div class="hw2-only" id="jobSection">
+      <div class="form-label">직업</div>
+      <div class="job-row">
+        <button class="job-btn" data-job="사업" onclick="selectJob(this)">사업</button>
+        <button class="job-btn" data-job="직장인" onclick="selectJob(this)">직장인</button>
+        <button class="job-btn" data-job="프리랜서" onclick="selectJob(this)">프리랜서</button>
+        <button class="job-btn" data-job="주부" onclick="selectJob(this)">주부</button>
+        <button class="job-btn" data-job="취준생" onclick="selectJob(this)">취준생</button>
+        <button class="job-btn" data-job="학생" onclick="selectJob(this)">학생</button>
+      </div>
+    </div>
+
+    <!-- 본풀이만 -->
+    <div class="hw3-only" id="questionSection">
+      <div class="form-label">지금 가장 궁금한 것 (질문 1개)</div>
+      <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitOrder()">주문하기</button>
+  </div>
+
+  <!-- 결제 안내 -->
+  <div class="payment-section" id="paymentSection">
+    <div class="payment-box">
+      <div class="payment-title">결제 안내</div>
+      <div class="payment-amount" id="payAmount"></div>
+      <div class="payment-info">아래 계좌로 입금해주시면<br>확인 후 풀이를 보내드립니다.</div>
+      <div class="payment-account" id="payAccount">카카오뱅크 3333-00-0000000</div>
+      <div class="payment-name">예금주: 호왕당</div>
+      <button class="copy-btn" onclick="copyAccount()">계좌번호 복사</button>
+      <div class="payment-notice">
+        · 입금자명은 주문 시 입력한 이름과 동일하게 해주세요.<br>
+        · 입금 확인 후 24시간 이내 카카오톡으로 결과를 보내드립니다.<br>
+        · 주문번호: <strong id="payOrderId"></strong>
+      </div>
+    </div>
+    <button class="back-btn" onclick="location.href='howangpae.html'">호왕패 다시 뽑기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const PRICES = { HW1: '4,900원', HW2: '19,900원', HW3: '49,900원' };
+
+let selectedProduct = '';
+let selectedJob = '';
+
+// 호왕패에서 넘어온 데이터 읽기
+const params = new URLSearchParams(location.search);
+const pTitle = params.get('title');
+const pPillars = params.get('pillars');
+const pBirth = params.get('birth');
+const pTime = params.get('time');
+const pCal = params.get('cal');
+
+if (pTitle) {
+  document.getElementById('sajuSummary').classList.remove('hidden');
+  document.getElementById('sumTitle').textContent = pTitle;
+  document.getElementById('sumPillars').textContent = pPillars || '';
+}
+if (pBirth) {
+  const calText = pCal === 'lunar' ? ' 음력' : ' 양력';
+  document.getElementById('userBirth').value = pBirth + calText;
+}
+if (pTime) {
+  document.getElementById('userTime').value = pTime;
+}
+
+function selectProduct(el) {
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedProduct = el.dataset.product;
+
+  document.getElementById('orderSection').classList.add('show');
+
+  // 직업 / 질문 표시 제어
+  const hw2Only = document.querySelectorAll('.hw2-only');
+  const hw3Only = document.querySelectorAll('.hw3-only');
+
+  hw2Only.forEach(e => e.style.display = (selectedProduct === 'HW2' || selectedProduct === 'HW3') ? 'block' : 'none');
+  hw3Only.forEach(e => e.style.display = selectedProduct === 'HW3' ? 'block' : 'none');
+
+  // 버튼 텍스트 변경
+  const names = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
+  document.getElementById('submitBtn').textContent = names[selectedProduct] + ' 주문하기';
+
+  // 스크롤
+  document.getElementById('orderSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectJob(btn) {
+  document.querySelectorAll('.job-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedJob = btn.dataset.job;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+async function submitOrder() {
+  const name = document.getElementById('userName').value.trim();
+  const phone = document.getElementById('userPhone').value.trim();
+  const birth = document.getElementById('userBirth').value.trim();
+  const time = document.getElementById('userTime').value.trim();
+  const question = document.getElementById('userQuestion') ? document.getElementById('userQuestion').value.trim() : '';
+
+  if (!selectedProduct) { showToast('상품을 선택해주세요'); return; }
+  if (!name) { showToast('이름을 입력해주세요'); return; }
+  if (!phone) { showToast('연락처를 입력해주세요'); return; }
+  if (!birth) { showToast('생년월일을 입력해주세요'); return; }
+
+  if ((selectedProduct === 'HW2' || selectedProduct === 'HW3') && !selectedJob) {
+    showToast('직업을 선택해주세요');
+    return;
+  }
+  if (selectedProduct === 'HW3' && !question) {
+    showToast('질문을 입력해주세요');
+    return;
+  }
+
+  const orderId = 'HW' + Date.now();
+
+  try {
+    const res = await fetch(API_BASE + '/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId,
+        product: selectedProduct,
+        name,
+        phone,
+        birthDate: birth,
+        birthTime: time,
+        calendarType: pCal || 'solar',
+        question: question,
+        job: selectedJob
+      })
+    });
+    const data = await res.json();
+    if (!data.success) { showToast('주문 실패: ' + (data.error || '')); return; }
+
+    // 결제 안내 표시
+    document.getElementById('productList').style.display = 'none';
+    document.getElementById('orderSection').classList.remove('show');
+    document.getElementById('paymentSection').classList.add('show');
+    document.getElementById('payAmount').textContent = PRICES[selectedProduct];
+    document.getElementById('payOrderId').textContent = orderId;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (e) {
+    showToast('서버 연결에 실패했습니다');
+  }
+}
+
+function copyAccount() {
+  const account = '3333-00-0000000';
+  navigator.clipboard.writeText(account).then(() => {
+    showToast('계좌번호가 복사되었습니다');
+  }).catch(() => {
+    showToast('복사에 실패했습니다');
+  });
+}
+</script>
+</body>
+</html>
