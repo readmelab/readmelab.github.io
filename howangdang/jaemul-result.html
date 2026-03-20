@@ -3,346 +3,298 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>재물풀이 결과 | 호왕당</title>
+<title>재물풀이 | 호왕당</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Noto Serif KR', serif;
-    background: #0a0a0a;
-    color: #e8dcc8;
-    min-height: 100vh;
-    overflow-x: hidden;
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Noto Serif KR',serif;
+    background:#0d0906;
+    color:#e8dcc8;
+    min-height:100vh;
+    overflow-x:hidden;
   }
 
-  /* ── 로딩 ── */
-  .loading-screen {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #0a0a0a;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    transition: opacity 0.8s;
-  }
-  .loading-screen.hide { opacity: 0; pointer-events: none; }
-  .loading-circle {
-    width: 60px; height: 60px;
-    border: 3px solid #2a2a2a;
-    border-top-color: #c8a96e;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { margin-top: 20px; color: #c8a96e; font-size: 14px; letter-spacing: 4px; }
-
-  /* ── 공통 ── */
-  .container { max-width: 480px; margin: 0 auto; padding: 0 20px 60px; }
-  .gold { color: #c8a96e; }
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #c8a96e33, transparent);
-    margin: 40px 0;
+  /* 배경 질감 */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse at 20% 0%, #1a120a 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, #1a120a 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity:0.6;
   }
 
-  /* ── 헤더 ── */
-  .header {
-    text-align: center; padding: 50px 0 30px;
+  /* 로딩 */
+  .loading-screen{
+    position:fixed;inset:0;z-index:9999;
+    background:#0d0906;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity 1s;
   }
-  .header-icon { font-size: 40px; margin-bottom: 12px; }
-  .header h1 { font-size: 26px; color: #c8a96e; font-weight: 900; letter-spacing: 3px; }
-  .header .sub { font-size: 13px; color: #888; margin-top: 8px; letter-spacing: 2px; }
-  .user-badge {
-    display: inline-block; margin-top: 16px; padding: 8px 24px;
-    border: 1px solid #c8a96e44; border-radius: 30px;
-    font-size: 14px; color: #c8a96e;
+  .loading-screen.hide{opacity:0;pointer-events:none;}
+  .loading-circle{
+    width:48px;height:48px;
+    border:2px solid #2a1f14;border-top-color:#c8a96e;
+    border-radius:50%;animation:spin 1.2s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{margin-top:20px;color:#c8a96e;font-size:13px;letter-spacing:6px;}
+
+  .container{max-width:480px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+  /* 장식선 */
+  .ornament{
+    text-align:center;margin:40px 0;color:#c8a96e44;font-size:13px;letter-spacing:8px;
+  }
+  .divider{
+    height:1px;margin:36px 0;
+    background:linear-gradient(90deg, transparent 0%, #c8a96e33 30%, #c8a96e55 50%, #c8a96e33 70%, transparent 100%);
   }
 
-  /* ── 사주 패널 ── */
-  .saju-panel {
-    background: linear-gradient(135deg, #1a1510, #0f0f0f);
-    border: 1px solid #c8a96e33;
-    border-radius: 16px; padding: 28px 20px;
-    margin: 20px 0; text-align: center;
+  /* 헤더 */
+  .header{text-align:center;padding:48px 0 20px;}
+  .header-stamp{
+    width:72px;height:72px;margin:0 auto 16px;
+    border:2px solid #c8a96e55;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;
+    background:radial-gradient(circle, #1a120a, #0d0906);
   }
-  .saju-panel .label { font-size: 12px; color: #888; letter-spacing: 3px; margin-bottom: 16px; }
-  .pillars { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
-  .pillar {
-    width: 64px; padding: 12px 0;
-    background: #0a0a0a; border: 1px solid #c8a96e44;
-    border-radius: 12px; text-align: center;
+  .header h1{
+    font-size:24px;color:#c8a96e;font-weight:900;letter-spacing:6px;
   }
-  .pillar .pos { font-size: 10px; color: #888; margin-bottom: 6px; }
-  .pillar .hanja { font-size: 22px; color: #c8a96e; font-weight: 700; line-height: 1.3; }
-  .pillar .hangul { font-size: 11px; color: #aaa; margin-top: 4px; }
-  .day-master-info { font-size: 13px; color: #aaa; margin-top: 8px; }
-  .day-master-info .val { color: #c8a96e; font-weight: 700; }
-
-  /* ── 등급 카드 ── */
-  .grade-card {
-    background: linear-gradient(135deg, #1a1510, #0f0f0f);
-    border: 1px solid #c8a96e55; border-radius: 16px;
-    padding: 30px 20px; text-align: center; margin: 20px 0;
+  .header .sub{
+    font-size:12px;color:#8a7a60;margin-top:8px;letter-spacing:4px;
   }
-  .grade-letter {
-    font-size: 72px; font-weight: 900; line-height: 1;
-    background: linear-gradient(180deg, #f5d98e, #c8a96e, #8a6e3e);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .grade-label { font-size: 14px; color: #aaa; margin-top: 8px; letter-spacing: 2px; }
-  .grade-bar-wrap { margin-top: 20px; }
-  .grade-bar-bg {
-    height: 8px; background: #1a1a1a; border-radius: 4px; overflow: hidden;
-  }
-  .grade-bar-fill {
-    height: 100%; border-radius: 4px;
-    background: linear-gradient(90deg, #8a6e3e, #c8a96e, #f5d98e);
-    transition: width 1.5s ease;
-  }
-  .grade-bar-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: #666; }
-
-  /* ── 섹션 카드 공통 ── */
-  .section-card {
-    background: linear-gradient(135deg, #141210, #0c0c0c);
-    border: 1px solid #c8a96e22;
-    border-radius: 16px; padding: 28px 22px; margin: 24px 0;
-    position: relative; overflow: hidden;
-  }
-  .section-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #c8a96e66, transparent);
-  }
-  .section-num {
-    font-size: 11px; color: #c8a96e88; letter-spacing: 3px; margin-bottom: 8px;
-  }
-  .section-title {
-    font-size: 20px; font-weight: 700; color: #c8a96e; margin-bottom: 16px;
-  }
-  .section-body {
-    font-size: 14px; line-height: 1.9; color: #ccc;
-    word-break: keep-all;
+  .user-badge{
+    display:inline-block;margin-top:16px;padding:6px 20px;
+    border:1px solid #c8a96e33;font-size:13px;color:#c8a96e;
+    background:#c8a96e0a;letter-spacing:2px;
   }
 
-  /* ── 오행 게이지 ── */
-  .oh-gauge { margin: 20px 0; }
-  .oh-row { display: flex; align-items: center; margin: 8px 0; }
-  .oh-label { width: 32px; font-size: 13px; color: #aaa; text-align: center; }
-  .oh-bar-bg {
-    flex: 1; height: 10px; background: #1a1a1a; border-radius: 5px;
-    margin: 0 10px; overflow: hidden;
+  /* 사주패널 */
+  .saju-panel{
+    background:#110e09;border:1px solid #c8a96e22;
+    padding:28px 16px;margin:20px 0;text-align:center;
+    position:relative;
   }
-  .oh-bar-fill { height: 100%; border-radius: 5px; transition: width 1.2s ease; }
-  .oh-bar-fill.wood { background: linear-gradient(90deg, #4a7c59, #6db87a); }
-  .oh-bar-fill.fire { background: linear-gradient(90deg, #a84040, #e06050); }
-  .oh-bar-fill.earth { background: linear-gradient(90deg, #8a7a40, #c8a96e); }
-  .oh-bar-fill.metal { background: linear-gradient(90deg, #8899aa, #c0cdd8); }
-  .oh-bar-fill.water { background: linear-gradient(90deg, #3a5a8a, #5a8ac0); }
-  .oh-pct { width: 36px; font-size: 12px; color: #888; text-align: right; }
+  .saju-panel::before,.saju-panel::after{
+    content:'';position:absolute;width:20px;height:20px;
+    border-color:#c8a96e33;border-style:solid;
+  }
+  .saju-panel::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+  .saju-panel::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+  .saju-label{font-size:11px;color:#8a7a60;letter-spacing:6px;margin-bottom:16px;}
+  .pillars{display:flex;justify-content:center;gap:8px;margin-bottom:16px;}
+  .pillar{
+    width:68px;padding:14px 0;
+    background:#0d0906;border:1px solid #c8a96e33;
+    text-align:center;position:relative;
+  }
+  .pillar .pos{font-size:10px;color:#8a7a60;margin-bottom:8px;letter-spacing:2px;}
+  .pillar .hanja{font-size:24px;color:#c8a96e;font-weight:700;line-height:1.2;}
+  .pillar .hangul{font-size:10px;color:#aa9a7a;margin-top:6px;}
+  .day-master-info{font-size:12px;color:#aa9a7a;margin-top:8px;}
+  .day-master-info .val{color:#c8a96e;font-weight:700;}
 
-  /* ── 그릇 시각화 ── */
-  .vessel-visual { text-align: center; margin: 24px 0 16px; }
-  .vessel-icon { font-size: 64px; margin-bottom: 8px; }
-  .vessel-name { font-size: 18px; color: #c8a96e; font-weight: 700; }
-  .vessel-bar-wrap { margin: 16px auto; max-width: 280px; }
-  .vessel-bar-bg {
-    height: 14px; background: #1a1a1a; border-radius: 7px; overflow: hidden;
-    position: relative;
-  }
-  .vessel-bar-fill {
-    height: 100%; border-radius: 7px;
-    background: linear-gradient(90deg, #5a4a2a, #c8a96e, #f5d98e);
-    transition: width 1.5s ease;
-  }
-  .vessel-pct {
-    font-size: 28px; color: #c8a96e; font-weight: 900; margin-top: 8px;
-  }
+  /* 오행게이지 */
+  .oh-gauge{margin:20px 0;}
+  .oh-row{display:flex;align-items:center;margin:7px 0;}
+  .oh-label{width:28px;font-size:12px;color:#aa9a7a;text-align:center;}
+  .oh-bar-bg{flex:1;height:6px;background:#1a1510;margin:0 10px;overflow:hidden;}
+  .oh-bar-fill{height:100%;transition:width 1.2s ease;}
+  .oh-bar-fill.wood{background:#5a7a4a;}
+  .oh-bar-fill.fire{background:#a85040;}
+  .oh-bar-fill.earth{background:#b89a5a;}
+  .oh-bar-fill.metal{background:#8899aa;}
+  .oh-bar-fill.water{background:#4a6a8a;}
+  .oh-pct{width:34px;font-size:11px;color:#8a7a60;text-align:right;}
 
-  /* ── 통로 게이지 ── */
-  .channel-gauge { margin: 20px 0; }
-  .channel-row { display: flex; align-items: center; margin: 10px 0; }
-  .channel-label { width: 50px; font-size: 12px; color: #aaa; }
-  .channel-bar-bg {
-    flex: 1; height: 8px; background: #1a1a1a; border-radius: 4px;
-    margin: 0 10px; overflow: hidden;
+  /* 등급 */
+  .grade-card{
+    background:#110e09;border:1px solid #c8a96e33;
+    padding:30px 20px;text-align:center;margin:20px 0;
+    position:relative;
   }
-  .channel-bar-fill {
-    height: 100%; border-radius: 4px;
-    background: linear-gradient(90deg, #c8a96e88, #c8a96e);
-    transition: width 1.2s ease;
+  .grade-card::before,.grade-card::after{
+    content:'';position:absolute;width:24px;height:24px;
+    border-color:#c8a96e33;border-style:solid;
   }
-  .channel-pct { width: 36px; font-size: 12px; color: #888; text-align: right; }
-  .channel-badge {
-    display: inline-block; margin-top: 12px; padding: 6px 18px;
-    background: #c8a96e22; border: 1px solid #c8a96e44;
-    border-radius: 20px; font-size: 13px; color: #c8a96e;
+  .grade-card::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+  .grade-card::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+  .grade-top-label{font-size:11px;color:#8a7a60;letter-spacing:4px;margin-bottom:12px;}
+  .grade-letter{
+    font-size:64px;font-weight:900;line-height:1;
+    color:#c8a96e;
+    text-shadow:0 0 30px #c8a96e33;
   }
+  .grade-label{font-size:13px;color:#aa9a7a;margin-top:8px;letter-spacing:2px;}
+  .grade-bar-wrap{margin-top:20px;}
+  .grade-bar-bg{height:4px;background:#1a1510;overflow:hidden;}
+  .grade-bar-fill{height:100%;background:#c8a96e;transition:width 1.5s ease;}
+  .grade-bar-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:#5a4a3a;}
 
-  /* ── 누수 시각화 ── */
-  .leak-meter { text-align: center; margin: 24px 0; }
-  .leak-drops { font-size: 36px; margin-bottom: 8px; }
-  .leak-level-bar { display: flex; gap: 6px; justify-content: center; margin: 12px 0; }
-  .leak-dot {
-    width: 16px; height: 16px; border-radius: 50%;
-    background: #1a1a1a; border: 1px solid #333;
-    transition: background 0.5s;
+  /* 섹션 카드 */
+  .section-card{
+    background:#110e09;border:1px solid #c8a96e1a;
+    padding:28px 22px;margin:24px 0;
+    position:relative;
   }
-  .leak-dot.active { background: #e06050; border-color: #e06050; }
-  .leak-label-text { font-size: 14px; color: #e06050; font-weight: 700; }
+  .section-card::before,.section-card::after{
+    content:'';position:absolute;width:16px;height:16px;
+    border-color:#c8a96e22;border-style:solid;
+  }
+  .section-card::before{top:6px;left:6px;border-width:1px 0 0 1px;}
+  .section-card::after{bottom:6px;right:6px;border-width:0 1px 1px 0;}
+  .section-num{font-size:10px;color:#5a4a3a;letter-spacing:4px;margin-bottom:8px;}
+  .section-title{font-size:18px;font-weight:700;color:#c8a96e;margin-bottom:16px;letter-spacing:1px;}
+  .section-body{font-size:13.5px;line-height:2;color:#ccc0aa;word-break:keep-all;}
 
-  /* ── 투자 레이더 ── */
-  .invest-radar { margin: 24px 0; }
-  .invest-row { display: flex; align-items: center; margin: 8px 0; }
-  .invest-label { width: 50px; font-size: 12px; color: #aaa; }
-  .invest-bar-bg {
-    flex: 1; height: 10px; background: #1a1a1a; border-radius: 5px;
-    margin: 0 10px; overflow: hidden;
-  }
-  .invest-bar-fill {
-    height: 100%; border-radius: 5px;
-    transition: width 1.2s ease;
-  }
-  .invest-bar-fill.high { background: linear-gradient(90deg, #c8a96e, #f5d98e); }
-  .invest-bar-fill.mid { background: linear-gradient(90deg, #8a7a40, #c8a96e); }
-  .invest-bar-fill.low { background: linear-gradient(90deg, #4a4030, #8a7a40); }
-  .invest-pct { width: 36px; font-size: 12px; color: #888; text-align: right; }
+  /* 그릇 시각화 */
+  .vessel-visual{text-align:center;margin:20px 0 16px;}
+  .vessel-icon{font-size:52px;margin-bottom:8px;}
+  .vessel-name{font-size:16px;color:#c8a96e;font-weight:700;letter-spacing:2px;}
+  .vessel-pct{font-size:24px;color:#c8a96e;font-weight:900;margin:8px 0;}
+  .vessel-bar-wrap{margin:12px auto;max-width:260px;}
+  .vessel-bar-bg{height:8px;background:#1a1510;overflow:hidden;}
+  .vessel-bar-fill{height:100%;background:#c8a96e;transition:width 1.5s ease;}
 
-  /* ── 직업궁합 ── */
-  .job-score-visual { text-align: center; margin: 24px 0; }
-  .job-ring-wrap {
-    position: relative; width: 120px; height: 120px; margin: 0 auto;
-  }
-  .job-ring-bg, .job-ring-fill {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-  }
-  .job-ring-bg { border: 6px solid #1a1a1a; }
-  .job-ring-fill {
-    border: 6px solid transparent;
-    border-top-color: #c8a96e;
-    border-right-color: #c8a96e;
-    transform: rotate(0deg);
-    transition: transform 1.5s ease;
-  }
-  .job-score-num {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 32px; font-weight: 900; color: #c8a96e;
-  }
-  .job-label { font-size: 13px; color: #aaa; margin-top: 12px; }
-
-  /* ── 월별 차트 ── */
-  .monthly-chart { margin: 20px 0; }
-  .monthly-row {
-    display: flex; align-items: center; margin: 6px 0;
-  }
-  .monthly-month { width: 36px; font-size: 12px; color: #888; text-align: center; }
-  .monthly-bar-bg {
-    flex: 1; height: 8px; background: #1a1a1a; border-radius: 4px;
-    margin: 0 8px; overflow: hidden;
-  }
-  .monthly-bar-fill {
-    height: 100%; border-radius: 4px;
-    transition: width 1.2s ease;
-  }
-  .monthly-bar-fill.s5 { background: linear-gradient(90deg, #c8a96e, #f5d98e); }
-  .monthly-bar-fill.s4 { background: linear-gradient(90deg, #a89050, #c8a96e); }
-  .monthly-bar-fill.s3 { background: linear-gradient(90deg, #7a6a3a, #a89050); }
-  .monthly-bar-fill.s2 { background: linear-gradient(90deg, #5a4a2a, #7a6a3a); }
-  .monthly-bar-fill.s1 { background: linear-gradient(90deg, #3a3020, #5a4a2a); }
-  .monthly-score { width: 20px; font-size: 11px; color: #888; text-align: center; }
-  .monthly-comment { font-size: 11px; color: #999; margin: 2px 0 8px 44px; }
-
-  /* ── 3년 흐름 ── */
-  .three-year-cards { display: flex; gap: 10px; margin: 20px 0; }
-  .year-card {
-    flex: 1; padding: 20px 12px;
-    background: #0f0f0f; border: 1px solid #c8a96e33;
-    border-radius: 12px; text-align: center;
-  }
-  .year-card .yr { font-size: 14px; color: #c8a96e; font-weight: 700; }
-  .year-card .yr-score {
-    font-size: 36px; font-weight: 900; margin: 8px 0;
-    background: linear-gradient(180deg, #f5d98e, #c8a96e);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .year-card .yr-comment { font-size: 11px; color: #aaa; line-height: 1.6; }
-
-  /* ── 체크리스트 ── */
-  .checklist { margin: 20px 0; }
-  .check-item {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px 0; border-bottom: 1px solid #1a1a1a;
-  }
-  .check-box {
-    width: 22px; height: 22px; border: 2px solid #c8a96e55;
-    border-radius: 6px; flex-shrink: 0; margin-top: 1px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.3s;
-  }
-  .check-box.checked { background: #c8a96e; border-color: #c8a96e; }
-  .check-box.checked::after { content: '✓'; color: #0a0a0a; font-size: 14px; font-weight: 700; }
-  .check-text { font-size: 13px; color: #ccc; line-height: 1.5; }
-
-  /* ── 호통 카드 ── */
-  .hotong-card {
-    background: linear-gradient(135deg, #1a1008, #0f0a05);
-    border: 2px solid #c8a96e66; border-radius: 16px;
-    padding: 30px 22px; text-align: center; margin: 24px 0;
-    position: relative;
-  }
-  .hotong-card::before {
-    content: ''; position: absolute; inset: -1px;
-    border-radius: 16px; padding: 2px;
-    background: linear-gradient(135deg, #c8a96e66, transparent, #c8a96e66);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    pointer-events: none;
-  }
-  .hotong-icon { font-size: 48px; margin-bottom: 12px; }
-  .hotong-intensity { margin: 16px 0; }
-  .hotong-bars { display: flex; gap: 4px; justify-content: center; }
-  .hotong-bar {
-    width: 24px; height: 8px; border-radius: 4px;
-    background: #1a1a1a; transition: background 0.5s;
-  }
-  .hotong-bar.active { background: #e06050; }
-  .hotong-label { font-size: 11px; color: #e06050; margin-top: 6px; }
-  .hotong-body {
-    font-size: 15px; line-height: 2; color: #e8dcc8;
-    text-align: left; margin-top: 20px; word-break: keep-all;
+  /* 통로 게이지 */
+  .channel-gauge{margin:20px 0;}
+  .channel-row{display:flex;align-items:center;margin:9px 0;}
+  .channel-label{width:48px;font-size:11px;color:#aa9a7a;letter-spacing:1px;}
+  .channel-bar-bg{flex:1;height:6px;background:#1a1510;margin:0 10px;overflow:hidden;}
+  .channel-bar-fill{height:100%;background:#c8a96e;transition:width 1.2s ease;}
+  .channel-pct{width:32px;font-size:11px;color:#8a7a60;text-align:right;}
+  .channel-badge{
+    display:inline-block;margin-top:12px;padding:5px 16px;
+    border:1px solid #c8a96e33;font-size:12px;color:#c8a96e;
+    letter-spacing:2px;
   }
 
-  /* ── CTA ── */
-  .cta-section { text-align: center; padding: 40px 0; }
-  .cta-btn {
-    display: inline-block; padding: 16px 48px;
-    background: linear-gradient(135deg, #c8a96e, #a88a4e);
-    color: #0a0a0a; font-size: 16px; font-weight: 700;
-    border: none; border-radius: 30px; cursor: pointer;
-    letter-spacing: 2px; text-decoration: none;
-    transition: transform 0.3s, box-shadow 0.3s;
+  /* 누수 */
+  .leak-meter{text-align:center;margin:20px 0;}
+  .leak-drops{font-size:32px;margin-bottom:8px;}
+  .leak-level-bar{display:flex;gap:5px;justify-content:center;margin:12px 0;}
+  .leak-dot{
+    width:12px;height:12px;border-radius:50%;
+    background:#1a1510;border:1px solid #2a1f14;transition:background 0.5s;
   }
-  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px #c8a96e44; }
-  .cta-sub { font-size: 12px; color: #888; margin-top: 12px; }
+  .leak-dot.active{background:#a85040;border-color:#a85040;}
+  .leak-label-text{font-size:13px;color:#a85040;font-weight:700;}
 
-  /* ── 푸터 ── */
-  .footer { text-align: center; padding: 40px 0 30px; font-size: 11px; color: #555; }
+  /* 투자 */
+  .invest-radar{margin:20px 0;}
+  .invest-row{display:flex;align-items:center;margin:8px 0;}
+  .invest-label{width:48px;font-size:11px;color:#aa9a7a;}
+  .invest-bar-bg{flex:1;height:6px;background:#1a1510;margin:0 10px;overflow:hidden;}
+  .invest-bar-fill{height:100%;transition:width 1.2s ease;}
+  .invest-bar-fill.high{background:#c8a96e;}
+  .invest-bar-fill.mid{background:#8a7a50;}
+  .invest-bar-fill.low{background:#4a4030;}
+  .invest-pct{width:32px;font-size:11px;color:#8a7a60;text-align:right;}
 
-  /* ── 애니메이션 ── */
-  .fade-up {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity 0.8s, transform 0.8s;
+  /* 직업 궁합 */
+  .job-score-visual{text-align:center;margin:20px 0;}
+  .job-ring-wrap{position:relative;width:110px;height:110px;margin:0 auto;}
+  .job-score-num{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:28px;font-weight:900;color:#c8a96e;
   }
-  .fade-up.show { opacity: 1; transform: translateY(0); }
+  .job-label{font-size:12px;color:#aa9a7a;margin-top:10px;letter-spacing:1px;}
 
-  /* 스크롤바 */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #0a0a0a; }
-  ::-webkit-scrollbar-thumb { background: #c8a96e44; border-radius: 2px; }
+  /* ── 월별: 라인그래프 + 3x4 그리드 ── */
+  .monthly-graph-wrap{margin:20px 0 8px;position:relative;}
+  .monthly-graph-svg{width:100%;height:160px;}
+  .monthly-grid{
+    display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;margin:16px 0;
+  }
+  .monthly-cell{
+    background:#0d0906;border:1px solid #c8a96e1a;padding:10px 8px;
+    text-align:center;
+  }
+  .monthly-cell .mc-month{font-size:12px;color:#c8a96e;font-weight:700;margin-bottom:4px;}
+  .monthly-cell .mc-stars{font-size:10px;color:#c8a96e88;margin-bottom:4px;}
+  .monthly-cell .mc-text{font-size:10px;color:#aa9a7a;line-height:1.5;word-break:keep-all;}
+
+  /* ── 3년 흐름: 가로 + 라인그래프 ── */
+  .three-year-graph{margin:20px 0 8px;position:relative;}
+  .three-year-svg{width:100%;height:120px;}
+  .three-year-row{
+    display:flex;gap:8px;margin:16px 0;
+  }
+  .year-card{
+    flex:1;padding:16px 10px;
+    background:#0d0906;border:1px solid #c8a96e22;
+    text-align:center;
+  }
+  .year-card .yr{font-size:13px;color:#c8a96e;font-weight:700;}
+  .year-card .yr-score{
+    font-size:28px;font-weight:900;margin:6px 0;color:#c8a96e;
+    text-shadow:0 0 20px #c8a96e22;
+  }
+  .year-card .yr-comment{font-size:10px;color:#aa9a7a;line-height:1.6;word-break:keep-all;}
+
+  /* 체크리스트 */
+  .checklist{margin:20px 0;}
+  .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #1a1510;}
+  .check-box{
+    width:20px;height:20px;border:1px solid #c8a96e44;flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;
+  }
+  .check-box.checked{background:#c8a96e;border-color:#c8a96e;}
+  .check-box.checked::after{content:'✓';color:#0d0906;font-size:12px;font-weight:700;}
+  .check-text{font-size:12px;color:#ccc0aa;line-height:1.5;}
+
+  /* 호통 */
+  .hotong-card{
+    background:#110e09;border:1px solid #c8a96e44;
+    padding:30px 22px;text-align:center;margin:24px 0;
+    position:relative;
+  }
+  .hotong-card::before,.hotong-card::after{
+    content:'';position:absolute;width:28px;height:28px;
+    border-color:#c8a96e44;border-style:solid;
+  }
+  .hotong-card::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+  .hotong-card::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+  .hotong-icon{font-size:40px;margin-bottom:12px;}
+  .hotong-bars{display:flex;gap:4px;justify-content:center;}
+  .hotong-bar{width:20px;height:6px;background:#1a1510;transition:background 0.5s;}
+  .hotong-bar.active{background:#a85040;}
+  .hotong-label{font-size:10px;color:#a85040;margin-top:6px;}
+  .hotong-body{
+    font-size:13.5px;line-height:2;color:#e8dcc8;
+    text-align:left;margin-top:20px;word-break:keep-all;
+  }
+
+  /* CTA */
+  .cta-section{text-align:center;padding:40px 0;}
+  .cta-btn{
+    display:inline-block;padding:14px 44px;
+    background:#c8a96e;color:#0d0906;
+    font-size:15px;font-weight:700;font-family:'Noto Serif KR',serif;
+    border:none;cursor:pointer;letter-spacing:3px;text-decoration:none;
+    transition:background 0.3s;
+  }
+  .cta-btn:hover{background:#b8994e;}
+  .cta-sub{font-size:11px;color:#5a4a3a;margin-top:12px;letter-spacing:2px;}
+
+  .footer{text-align:center;padding:40px 0 30px;font-size:10px;color:#3a3020;letter-spacing:1px;}
+
+  /* 애니메이션 */
+  .fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.8s,transform 0.8s;}
+  .fade-up.show{opacity:1;transform:translateY(0);}
+
+  ::-webkit-scrollbar{width:3px;}
+  ::-webkit-scrollbar-track{background:#0d0906;}
+  ::-webkit-scrollbar-thumb{background:#c8a96e33;}
 </style>
 </head>
 <body>
 
-<!-- 로딩 -->
 <div class="loading-screen" id="loadingScreen">
   <div class="loading-circle"></div>
   <div class="loading-text">재물의 흐름을 읽는 중…</div>
@@ -350,17 +302,17 @@
 
 <div class="container" id="resultWrap" style="display:none;">
 
-  <!-- 헤더 -->
   <div class="header fade-up">
-    <div class="header-icon">🏺</div>
-    <h1>재물풀이</h1>
+    <div class="header-stamp">🏺</div>
+    <h1>재 물 풀 이</h1>
     <div class="sub">호왕당 할머니의 재물 감정서</div>
     <div class="user-badge" id="userBadge"></div>
   </div>
 
-  <!-- 사주 패널 -->
+  <div class="ornament">— ◆ —</div>
+
   <div class="saju-panel fade-up" id="sajuPanel">
-    <div class="label">四 柱 命 式</div>
+    <div class="saju-label">四 柱 命 式</div>
     <div class="pillars" id="pillarsWrap"></div>
     <div class="day-master-info">
       일간 <span class="val" id="dayGanText"></span> ·
@@ -369,14 +321,13 @@
     </div>
   </div>
 
-  <!-- 오행 게이지 -->
   <div class="oh-gauge fade-up" id="ohGauge"></div>
 
   <div class="divider"></div>
 
-  <!-- 재물 등급 -->
+  <!-- 등급 -->
   <div class="grade-card fade-up" id="gradeCard">
-    <div class="section-num">WEALTH GRADE</div>
+    <div class="grade-top-label">재 물 운 등 급</div>
     <div class="grade-letter" id="gradeLetter"></div>
     <div class="grade-label" id="gradeLabel"></div>
     <div class="grade-bar-wrap">
@@ -385,19 +336,19 @@
     </div>
   </div>
 
-  <div class="divider"></div>
+  <div class="ornament">— ◆ —</div>
 
-  <!-- 섹션 1: 재물 총론 -->
+  <!-- 01 총론 -->
   <div class="section-card fade-up">
-    <div class="section-num">01</div>
-    <div class="section-title">🔮 재물 총론</div>
+    <div class="section-num">第 一</div>
+    <div class="section-title">재물 총론</div>
     <div class="section-body" id="secOverview"></div>
   </div>
 
-  <!-- 섹션 2: 돈 그릇 -->
+  <!-- 02 돈 그릇 -->
   <div class="section-card fade-up">
-    <div class="section-num">02</div>
-    <div class="section-title">🏺 돈 그릇</div>
+    <div class="section-num">第 二</div>
+    <div class="section-title">돈 그릇</div>
     <div class="vessel-visual">
       <div class="vessel-icon" id="vesselIcon">🏺</div>
       <div class="vessel-name" id="vesselName"></div>
@@ -409,21 +360,19 @@
     <div class="section-body" id="secVessel"></div>
   </div>
 
-  <!-- 섹션 3: 돈의 통로 -->
+  <!-- 03 통로 -->
   <div class="section-card fade-up">
-    <div class="section-num">03</div>
-    <div class="section-title">💰 돈의 통로</div>
+    <div class="section-num">第 三</div>
+    <div class="section-title">돈의 통로</div>
     <div class="channel-gauge" id="channelGauge"></div>
-    <div style="text-align:center;">
-      <span class="channel-badge" id="channelBadge"></span>
-    </div>
+    <div style="text-align:center;"><span class="channel-badge" id="channelBadge"></span></div>
     <div class="section-body" id="secChannel" style="margin-top:16px;"></div>
   </div>
 
-  <!-- 섹션 4: 누수 패턴 -->
+  <!-- 04 누수 -->
   <div class="section-card fade-up">
-    <div class="section-num">04</div>
-    <div class="section-title">💧 누수 패턴</div>
+    <div class="section-num">第 四</div>
+    <div class="section-title">누수 패턴</div>
     <div class="leak-meter">
       <div class="leak-drops" id="leakDrops"></div>
       <div class="leak-level-bar" id="leakDots"></div>
@@ -432,26 +381,25 @@
     <div class="section-body" id="secLeak"></div>
   </div>
 
-  <!-- 섹션 5: 투자 적성 -->
+  <!-- 05 투자 -->
   <div class="section-card fade-up">
-    <div class="section-num">05</div>
-    <div class="section-title">📊 투자 적성</div>
+    <div class="section-num">第 五</div>
+    <div class="section-title">투자 적성</div>
     <div class="invest-radar" id="investRadar"></div>
     <div class="section-body" id="secInvest"></div>
   </div>
 
-  <!-- 섹션 6: 직업 궁합 -->
+  <!-- 06 직업 -->
   <div class="section-card fade-up">
-    <div class="section-num">06</div>
-    <div class="section-title">💼 직업 궁합</div>
+    <div class="section-num">第 六</div>
+    <div class="section-title">직업 궁합</div>
     <div class="job-score-visual">
       <div class="job-ring-wrap">
-        <div class="job-ring-bg"></div>
-        <svg width="120" height="120" viewBox="0 0 120 120" style="position:absolute;inset:0;transform:rotate(-90deg);">
-          <circle cx="60" cy="60" r="52" fill="none" stroke="#1a1a1a" stroke-width="8"/>
-          <circle id="jobRing" cx="60" cy="60" r="52" fill="none" stroke="#c8a96e" stroke-width="8"
-            stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round"
-            style="transition: stroke-dashoffset 1.5s ease;"/>
+        <svg width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg);">
+          <circle cx="55" cy="55" r="48" fill="none" stroke="#1a1510" stroke-width="5"/>
+          <circle id="jobRing" cx="55" cy="55" r="48" fill="none" stroke="#c8a96e" stroke-width="5"
+            stroke-dasharray="301.6" stroke-dashoffset="301.6" stroke-linecap="butt"
+            style="transition:stroke-dashoffset 1.5s ease;"/>
         </svg>
         <div class="job-score-num" id="jobScoreNum"></div>
       </div>
@@ -460,36 +408,40 @@
     <div class="section-body" id="secJob"></div>
   </div>
 
-  <!-- 섹션 7: 월별 재물 흐름 -->
+  <div class="ornament">— ◆ —</div>
+
+  <!-- 07 월별 -->
   <div class="section-card fade-up">
-    <div class="section-num">07</div>
-    <div class="section-title">📅 2026 월별 재물 흐름</div>
-    <div class="monthly-chart" id="monthlyChart"></div>
+    <div class="section-num">第 七</div>
+    <div class="section-title">2026 월별 재물 흐름</div>
+    <div class="monthly-graph-wrap" id="monthlyGraphWrap"></div>
+    <div class="monthly-grid" id="monthlyGrid"></div>
   </div>
 
-  <!-- 섹션 8: 3년 흐름 -->
+  <!-- 08 3년 -->
   <div class="section-card fade-up">
-    <div class="section-num">08</div>
-    <div class="section-title">📈 3년 재물 흐름</div>
-    <div class="three-year-cards" id="threeYearCards"></div>
+    <div class="section-num">第 八</div>
+    <div class="section-title">3년 재물 흐름</div>
+    <div class="three-year-graph" id="threeYearGraph"></div>
+    <div class="three-year-row" id="threeYearRow"></div>
   </div>
 
-  <!-- 섹션 9: 돈 습관 처방 -->
+  <!-- 09 습관 -->
   <div class="section-card fade-up">
-    <div class="section-num">09</div>
-    <div class="section-title">🧾 돈 습관 처방</div>
+    <div class="section-num">第 九</div>
+    <div class="section-title">돈 습관 처방</div>
     <div class="section-body" id="secHabit"></div>
     <div class="checklist" id="checklist"></div>
   </div>
 
-  <div class="divider"></div>
+  <div class="ornament">— ◆ —</div>
 
-  <!-- 섹션 10: 재물 호통 -->
+  <!-- 10 호통 -->
   <div class="hotong-card fade-up">
-    <div class="section-num">10</div>
+    <div class="section-num">第 十</div>
     <div class="hotong-icon">🔥</div>
     <div class="section-title" style="margin-bottom:8px;">할머니의 재물 호통</div>
-    <div class="hotong-intensity">
+    <div style="margin:12px 0;">
       <div class="hotong-bars" id="hotongBars"></div>
       <div class="hotong-label" id="hotongLabel"></div>
     </div>
@@ -498,278 +450,251 @@
 
   <div class="divider"></div>
 
-  <!-- CTA -->
   <div class="cta-section fade-up">
     <a class="cta-btn" id="ctaBtn" href="#">본풀이로 더 깊이 보기</a>
     <div class="cta-sub">본풀이에서 맞춤 질문까지 가능합니다</div>
   </div>
 
-  <div class="footer">
-    ⓒ 호왕당 · 이 결과는 참고용이며 투자 권유가 아닙니다
-  </div>
+  <div class="footer">ⓒ 호왕당 · 이 결과는 참고용이며 투자 권유가 아닙니다</div>
 </div>
 
 <script>
 (function(){
   const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
 
-  function getOrderId() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('orderId') || params.get('id') || '';
+  function getOrderId(){
+    const p = new URLSearchParams(window.location.search);
+    return p.get('orderId') || p.get('id') || '';
   }
 
-  async function loadResult() {
+  async function loadResult(){
     const orderId = getOrderId();
-    if (!orderId) {
-      alert('주문 정보를 찾을 수 없습니다.');
-      return;
-    }
-
-    try {
+    if(!orderId){alert('주문 정보를 찾을 수 없습니다.');return;}
+    try{
       let data;
-      try {
-        const savedRes = await fetch(API_BASE + '/result/' + orderId);
-        const saved = await savedRes.json();
-        if (saved.success && saved.data && saved.data.sections && saved.data.sections.overview) {
-          data = saved.data;
-        }
-      } catch(e) {}
-
-      if (!data) {
-        const genRes = await fetch(API_BASE + '/api/jaemul', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId })
-        });
-        const gen = await genRes.json();
-        if (!gen.success) throw new Error(gen.error || 'generation failed');
-        data = gen.result;
+      try{
+        const r = await fetch(API_BASE+'/result/'+orderId);
+        const j = await r.json();
+        if(j.success && j.data && j.data.sections && j.data.sections.overview) data=j.data;
+      }catch(e){}
+      if(!data){
+        const r2 = await fetch(API_BASE+'/api/jaemul',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderId})});
+        const j2 = await r2.json();
+        if(!j2.success) throw new Error(j2.error||'failed');
+        data=j2.result;
       }
-
       render(data);
-    } catch (e) {
+    }catch(e){
       console.error(e);
-      document.getElementById('loadingScreen').innerHTML =
-        '<div style="color:#e06050;font-size:14px;text-align:center;padding:40px;">결과를 불러오지 못했습니다.<br>' + e.message + '</div>';
+      document.getElementById('loadingScreen').innerHTML='<div style="color:#a85040;font-size:13px;text-align:center;padding:40px;">결과를 불러오지 못했습니다.<br>'+e.message+'</div>';
     }
   }
 
-  function render(d) {
-    const s = d.sections;
-    const fp = d.fourPillars;
-    const fph = d.fourPillarsHangul;
-    const eg = d.elementGauge;
+  function render(d){
+    const s=d.sections, fp=d.fourPillars, fph=d.fourPillarsHangul, eg=d.elementGauge;
+    const elKo={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
 
     // 헤더
-    document.getElementById('userBadge').textContent = (d.userName || '') + '님의 재물 감정서';
+    document.getElementById('userBadge').textContent=(d.userName||'')+'님의 재물 감정서';
 
-    // 사주 패널
-    const pillarLabels = ['시주','일주','월주','연주'];
-    const pillarKeys = ['hour','day','month','year'];
-    const pw = document.getElementById('pillarsWrap');
-    pw.innerHTML = '';
-    pillarKeys.forEach((k, i) => {
-      pw.innerHTML += '<div class="pillar"><div class="pos">' + pillarLabels[i] +
-        '</div><div class="hanja">' + (fp[k]||'??') +
-        '</div><div class="hangul">' + (fph[k]||'') + '</div></div>';
+    // 사주
+    const pLabels=['시주','일주','월주','연주'], pKeys=['hour','day','month','year'];
+    const pw=document.getElementById('pillarsWrap'); pw.innerHTML='';
+    pKeys.forEach((k,i)=>{
+      pw.innerHTML+='<div class="pillar"><div class="pos">'+pLabels[i]+'</div><div class="hanja">'+(fp[k]||'??')+'</div><div class="hangul">'+(fph[k]||'')+'</div></div>';
     });
+    document.getElementById('dayGanText').textContent=d.dayGan||'';
+    document.getElementById('strengthText').textContent=d.strength==='strong'?'신강':'신약';
+    document.getElementById('dayElementText').textContent=elKo[d.dayElement]||'';
 
-    document.getElementById('dayGanText').textContent = d.dayGan || '';
-    document.getElementById('strengthText').textContent = d.strength === 'strong' ? '신강' : '신약';
-    const elKoMap = { wood:'목', fire:'화', earth:'토', metal:'금', water:'수' };
-    document.getElementById('dayElementText').textContent = elKoMap[d.dayElement] || '';
-
-    // 오행 게이지
-    const ohWrap = document.getElementById('ohGauge');
-    const ohLabels = { wood:'목', fire:'화', earth:'토', metal:'금', water:'수' };
-    ohWrap.innerHTML = '';
-    ['wood','fire','earth','metal','water'].forEach(el => {
-      const pct = eg[el] || 0;
-      ohWrap.innerHTML += '<div class="oh-row"><div class="oh-label">' + ohLabels[el] +
-        '</div><div class="oh-bar-bg"><div class="oh-bar-fill ' + el +
-        '" style="width:0%" data-w="' + pct + '%"></div></div><div class="oh-pct">' + pct + '%</div></div>';
+    // 오행
+    const ohW=document.getElementById('ohGauge'); ohW.innerHTML='';
+    ['wood','fire','earth','metal','water'].forEach(el=>{
+      const p=eg[el]||0;
+      ohW.innerHTML+='<div class="oh-row"><div class="oh-label">'+elKo[el]+'</div><div class="oh-bar-bg"><div class="oh-bar-fill '+el+'" style="width:0%" data-w="'+p+'%"></div></div><div class="oh-pct">'+p+'%</div></div>';
     });
 
     // 등급
-    document.getElementById('gradeLetter').textContent = d.wealthGrade || 'B';
-    const gradeDescMap = { S:'최상위 재물운', A:'상위 재물운', B:'평균 재물운', C:'약한 재물운', D:'주의 필요' };
-    document.getElementById('gradeLabel').textContent = gradeDescMap[d.wealthGrade] || '';
-    const gradeWidthMap = { S:100, A:80, B:60, C:40, D:20 };
-    document.getElementById('gradeBar').style.width = '0%';
-    document.getElementById('gradeBar').dataset.w = (gradeWidthMap[d.wealthGrade] || 60) + '%';
+    document.getElementById('gradeLetter').textContent=d.wealthGrade||'B';
+    const gDesc={S:'최상위 재물운',A:'상위 재물운',B:'평균 재물운',C:'약한 재물운',D:'주의 필요'};
+    document.getElementById('gradeLabel').textContent=gDesc[d.wealthGrade]||'';
+    const gW={S:100,A:80,B:60,C:40,D:20};
+    document.getElementById('gradeBar').dataset.w=(gW[d.wealthGrade]||60)+'%';
 
-    // 섹션 1: 총론
-    document.getElementById('secOverview').textContent = s.overview || '';
+    // 01 총론
+    document.getElementById('secOverview').textContent=s.overview||'';
 
-    // 섹션 2: 돈 그릇
-    const vesselIconMap = { both_strong:'🏺', jeong_strong:'🍶', pyeon_strong:'⚱️', both_weak:'🥣', leak:'🪣', skill:'🧰' };
-    document.getElementById('vesselIcon').textContent = vesselIconMap[d.vesselKey] || '🏺';
-    document.getElementById('vesselName').textContent = d.vesselLabel || '';
-    document.getElementById('vesselPct').textContent = (d.vesselSize || 50) + '%';
-    document.getElementById('vesselBar').style.width = '0%';
-    document.getElementById('vesselBar').dataset.w = (d.vesselSize || 50) + '%';
-    document.getElementById('secVessel').textContent = s.moneyVessel || '';
+    // 02 그릇
+    const vIcon={both_strong:'🏺',jeong_strong:'🍶',pyeon_strong:'⚱️',both_weak:'🥣',leak:'🪣',skill:'🧰'};
+    document.getElementById('vesselIcon').textContent=vIcon[d.vesselKey]||'🏺';
+    document.getElementById('vesselName').textContent=d.vesselLabel||'';
+    document.getElementById('vesselPct').textContent=(d.vesselSize||50)+'%';
+    document.getElementById('vesselBar').dataset.w=(d.vesselSize||50)+'%';
+    document.getElementById('secVessel').textContent=s.moneyVessel||'';
 
-    // 섹션 3: 통로
-    const cg = d.channelGauge || {};
-    const chLabels = { official:'조직', creative:'창작', network:'인맥', knowledge:'지식', finance:'재테크' };
-    const cgWrap = document.getElementById('channelGauge');
-    cgWrap.innerHTML = '';
-    ['official','creative','network','knowledge','finance'].forEach(ch => {
-      const v = cg[ch] || 10;
-      cgWrap.innerHTML += '<div class="channel-row"><div class="channel-label">' + chLabels[ch] +
-        '</div><div class="channel-bar-bg"><div class="channel-bar-fill" style="width:0%" data-w="' + v +
-        '%"></div></div><div class="channel-pct">' + v + '</div></div>';
+    // 03 통로
+    const cg=d.channelGauge||{};
+    const cL={official:'조직',creative:'창작',network:'인맥',knowledge:'지식',finance:'재테크'};
+    const cgW=document.getElementById('channelGauge'); cgW.innerHTML='';
+    ['official','creative','network','knowledge','finance'].forEach(ch=>{
+      const v=cg[ch]||25;
+      cgW.innerHTML+='<div class="channel-row"><div class="channel-label">'+cL[ch]+'</div><div class="channel-bar-bg"><div class="channel-bar-fill" style="width:0%" data-w="'+v+'%"></div></div><div class="channel-pct">'+v+'</div></div>';
     });
-    const chKeyKo = { official:'조직형', creative:'창작형', network:'인맥형', knowledge:'지식형', finance:'재테크형', mixed:'복합형' };
-    document.getElementById('channelBadge').textContent = '주력 통로: ' + (chKeyKo[d.channelKey] || '복합형');
-    document.getElementById('secChannel').textContent = s.moneyChannel || '';
+    const cKo={official:'조직형',creative:'창작형',network:'인맥형',knowledge:'지식형',finance:'재테크형',mixed:'복합형'};
+    document.getElementById('channelBadge').textContent='주력 통로: '+(cKo[d.channelKey]||'복합형');
+    document.getElementById('secChannel').textContent=s.moneyChannel||'';
 
-    // 섹션 4: 누수
-    const leakLevel = d.leakLevel || 2;
-    document.getElementById('leakDrops').textContent = '💧'.repeat(leakLevel);
-    const dotsWrap = document.getElementById('leakDots');
-    dotsWrap.innerHTML = '';
-    for (let i = 1; i <= 5; i++) {
-      dotsWrap.innerHTML += '<div class="leak-dot' + (i <= leakLevel ? ' active' : '') + '"></div>';
-    }
-    document.getElementById('leakLabelText').textContent = '위험도: ' + (d.leakLabel || '보통');
-    document.getElementById('secLeak').textContent = s.leakPattern || '';
+    // 04 누수
+    const ll=d.leakLevel||2;
+    document.getElementById('leakDrops').textContent='💧'.repeat(ll);
+    const ld=document.getElementById('leakDots'); ld.innerHTML='';
+    for(let i=1;i<=5;i++) ld.innerHTML+='<div class="leak-dot'+(i<=ll?' active':'')+'"></div>';
+    document.getElementById('leakLabelText').textContent='위험도: '+(d.leakLabel||'보통');
+    document.getElementById('secLeak').textContent=s.leakPattern||'';
 
-    // 섹션 5: 투자 적성
-    const ir = d.investRadar || {};
-    const irLabels = { realestate:'부동산', stock:'주식', business:'사업', saving:'저축', crypto:'코인' };
-    const irWrap = document.getElementById('investRadar');
-    irWrap.innerHTML = '';
-    ['realestate','stock','business','saving','crypto'].forEach(k => {
-      const v = ir[k] || 30;
-      const cls = v >= 70 ? 'high' : v >= 40 ? 'mid' : 'low';
-      irWrap.innerHTML += '<div class="invest-row"><div class="invest-label">' + irLabels[k] +
-        '</div><div class="invest-bar-bg"><div class="invest-bar-fill ' + cls +
-        '" style="width:0%" data-w="' + v + '%"></div></div><div class="invest-pct">' + v + '</div></div>';
+    // 05 투자
+    const ir=d.investRadar||{};
+    const iL={realestate:'부동산',stock:'주식',business:'사업',saving:'저축',crypto:'코인'};
+    const irW=document.getElementById('investRadar'); irW.innerHTML='';
+    ['realestate','stock','business','saving','crypto'].forEach(k=>{
+      const v=ir[k]||30; const cls=v>=70?'high':v>=40?'mid':'low';
+      irW.innerHTML+='<div class="invest-row"><div class="invest-label">'+iL[k]+'</div><div class="invest-bar-bg"><div class="invest-bar-fill '+cls+'" style="width:0%" data-w="'+v+'%"></div></div><div class="invest-pct">'+v+'</div></div>';
     });
-    document.getElementById('secInvest').textContent = s.investType || '';
+    document.getElementById('secInvest').textContent=s.investType||'';
 
-    // 섹션 6: 직업 궁합
-    const jScore = d.jobScore || 75;
-    document.getElementById('jobScoreNum').textContent = jScore;
-    const circumference = 327;
-    const jobOffset = circumference - (circumference * jScore / 100);
-    document.getElementById('jobRing').dataset.offset = jobOffset;
-    document.getElementById('jobLabel').textContent = (d.job || '직장인') + ' × ' + (elKoMap[d.dayElement] || '') + '행';
-    document.getElementById('secJob').textContent = s.jobMatch || '';
+    // 06 직업
+    const js=d.jobScore||75;
+    document.getElementById('jobScoreNum').textContent=js;
+    const circ=301.6;
+    document.getElementById('jobRing').dataset.offset=circ-(circ*js/100);
+    document.getElementById('jobLabel').textContent=(d.job||'직장인')+' × '+(elKo[d.dayElement]||'')+'행';
+    document.getElementById('secJob').textContent=s.jobMatch||'';
 
-    // 섹션 7: 월별 (배열 형태 대응)
-    const mf = s.monthlyFortune || [];
-    const mcWrap = document.getElementById('monthlyChart');
-    mcWrap.innerHTML = '';
-
-    if (Array.isArray(mf)) {
-      // 배열 형태: [{month, score, text}, ...]
-      mf.forEach(entry => {
-        const m = entry.month || 0;
-        const sc = entry.score || 3;
-        const comment = entry.text || entry.comment || '';
-        mcWrap.innerHTML += '<div class="monthly-row"><div class="monthly-month">' + m + '월</div>' +
-          '<div class="monthly-bar-bg"><div class="monthly-bar-fill s' + sc +
-          '" style="width:0%" data-w="' + (sc * 20) + '%"></div></div>' +
-          '<div class="monthly-score">' + '★'.repeat(sc) + '</div></div>' +
-          '<div class="monthly-comment">' + comment + '</div>';
-      });
-    } else {
-      // 객체 형태: {"1월": {score, comment}, ...}
-      for (let m = 1; m <= 12; m++) {
-        const mk = String(m) + '월';
-        const entry = mf[mk] || { score: 3, comment: '' };
-        const sc = entry.score || 3;
-        mcWrap.innerHTML += '<div class="monthly-row"><div class="monthly-month">' + m + '월</div>' +
-          '<div class="monthly-bar-bg"><div class="monthly-bar-fill s' + sc +
-          '" style="width:0%" data-w="' + (sc * 20) + '%"></div></div>' +
-          '<div class="monthly-score">' + '★'.repeat(sc) + '</div></div>' +
-          '<div class="monthly-comment">' + (entry.comment || entry.text || '') + '</div>';
+    // 07 월별 - 라인그래프 + 3x4 그리드
+    const mf=s.monthlyFortune||[];
+    let monthArr=[];
+    if(Array.isArray(mf)){
+      monthArr=mf.map(e=>({m:e.month,sc:e.score||3,t:e.text||e.comment||''}));
+    }else{
+      for(let m=1;m<=12;m++){
+        const mk=m+'월'; const e=mf[mk]||{score:3};
+        monthArr.push({m,sc:e.score||3,t:e.comment||e.text||''});
       }
     }
 
-    // 섹션 8: 3년 흐름 (y2026/y2027/y2028 또는 2026/2027/2028 대응)
-    const ty = s.threeYearFlow || {};
-    const tyWrap = document.getElementById('threeYearCards');
-    tyWrap.innerHTML = '';
-    ['2026','2027','2028'].forEach(yr => {
-      const entry = ty[yr] || ty['y' + yr] || { score: 3, text: '' };
-      const comment = entry.text || entry.comment || '';
-      tyWrap.innerHTML += '<div class="year-card"><div class="yr">' + yr +
-        '</div><div class="yr-score">' + (entry.score || 3) +
-        '</div><div class="yr-comment">' + comment + '</div></div>';
+    // SVG 라인 그래프
+    const gW2=document.getElementById('monthlyGraphWrap');
+    const svgW=420, svgH=140, padL=30, padR=10, padT=20, padB=30;
+    const plotW=svgW-padL-padR, plotH=svgH-padT-padB;
+    let pts=monthArr.map((e,i)=>{
+      const x=padL+(plotW/(11))*i;
+      const y=padT+plotH-(plotH*((e.sc-1)/4));
+      return {x,y,sc:e.sc,m:e.m};
     });
-
-    // 섹션 9: 돈 습관
-    document.getElementById('secHabit').textContent = s.moneyHabit || '';
-    const cl = d.checklist || [];
-    const clWrap = document.getElementById('checklist');
-    clWrap.innerHTML = '';
-    cl.forEach((item, i) => {
-      clWrap.innerHTML += '<div class="check-item"><div class="check-box" data-idx="' + i +
-        '"></div><div class="check-text">' + item + '</div></div>';
-    });
-    clWrap.querySelectorAll('.check-box').forEach(box => {
-      box.addEventListener('click', function(){ this.classList.toggle('checked'); });
-    });
-
-    // 섹션 10: 호통
-    const htIntensity = d.hoTongIntensity || 3;
-    const htBars = document.getElementById('hotongBars');
-    htBars.innerHTML = '';
-    for (let i = 1; i <= 5; i++) {
-      htBars.innerHTML += '<div class="hotong-bar' + (i <= htIntensity ? ' active' : '') + '"></div>';
+    let pathD='M'+pts.map(p=>p.x+','+p.y).join(' L');
+    let areaD=pathD+' L'+pts[pts.length-1].x+','+(padT+plotH)+' L'+pts[0].x+','+(padT+plotH)+' Z';
+    let dots=pts.map(p=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#c8a96e"/>').join('');
+    let labels=pts.map(p=>'<text x="'+p.x+'" y="'+(padT+plotH+18)+'" text-anchor="middle" fill="#8a7a60" font-size="9" font-family="Noto Serif KR">'+p.m+'월</text>').join('');
+    let yLabels='';
+    for(let i=1;i<=5;i++){
+      const y=padT+plotH-(plotH*((i-1)/4));
+      yLabels+='<text x="'+(padL-8)+'" y="'+(y+3)+'" text-anchor="end" fill="#5a4a3a" font-size="9">'+i+'</text>';
+      yLabels+='<line x1="'+padL+'" y1="'+y+'" x2="'+(svgW-padR)+'" y2="'+y+'" stroke="#1a1510" stroke-width="1"/>';
     }
-    const htLabelMap = { 1:'살살', 2:'따끔', 3:'호통', 4:'불호령', 5:'천둥벽력' };
-    document.getElementById('hotongLabel').textContent = '강도: ' + (htLabelMap[htIntensity] || '호통');
-    document.getElementById('secHoTong').textContent = s.wealthHoTong || '';
+    gW2.innerHTML='<svg class="monthly-graph-svg" viewBox="0 0 '+svgW+' '+svgH+'">'+yLabels+'<path d="'+areaD+'" fill="url(#mgrad)" opacity="0.3"/><path d="'+pathD+'" fill="none" stroke="#c8a96e" stroke-width="2"/>'+dots+labels+'<defs><linearGradient id="mgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c8a96e"/><stop offset="100%" stop-color="#0d0906"/></linearGradient></defs></svg>';
+
+    // 3x4 그리드
+    const mg=document.getElementById('monthlyGrid'); mg.innerHTML='';
+    monthArr.forEach(e=>{
+      mg.innerHTML+='<div class="monthly-cell"><div class="mc-month">'+e.m+'월</div><div class="mc-stars">'+'★'.repeat(e.sc)+'☆'.repeat(5-e.sc)+'</div><div class="mc-text">'+e.t+'</div></div>';
+    });
+
+    // 08 3년 - 라인그래프 + 가로 카드
+    const ty=s.threeYearFlow||{};
+    const years=['2026','2027','2028'];
+    let yearArr=years.map(yr=>{
+      const e=ty[yr]||ty['y'+yr]||{score:3,text:''};
+      return {yr, sc:e.score||3, t:e.text||e.comment||''};
+    });
+
+    const tgW=document.getElementById('threeYearGraph');
+    const tsvgW=300, tsvgH=100, tPadL=30, tPadR=30, tPadT=15, tPadB=25;
+    const tPlotW=tsvgW-tPadL-tPadR, tPlotH=tsvgH-tPadT-tPadB;
+    let tPts=yearArr.map((e,i)=>{
+      const x=tPadL+(tPlotW/2)*i;
+      const y=tPadT+tPlotH-(tPlotH*((e.sc-1)/4));
+      return {x,y,sc:e.sc,yr:e.yr};
+    });
+    let tPathD='M'+tPts.map(p=>p.x+','+p.y).join(' L');
+    let tAreaD=tPathD+' L'+tPts[2].x+','+(tPadT+tPlotH)+' L'+tPts[0].x+','+(tPadT+tPlotH)+' Z';
+    let tDots=tPts.map(p=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="#c8a96e"/><text x="'+p.x+'" y="'+(p.y-10)+'" text-anchor="middle" fill="#c8a96e" font-size="14" font-weight="700" font-family="Noto Serif KR">'+p.sc+'</text>').join('');
+    let tLabels=tPts.map(p=>'<text x="'+p.x+'" y="'+(tPadT+tPlotH+18)+'" text-anchor="middle" fill="#8a7a60" font-size="11" font-family="Noto Serif KR">'+p.yr+'</text>').join('');
+    let tYLines='';
+    for(let i=1;i<=5;i++){
+      const y=tPadT+tPlotH-(tPlotH*((i-1)/4));
+      tYLines+='<line x1="'+tPadL+'" y1="'+y+'" x2="'+(tsvgW-tPadR)+'" y2="'+y+'" stroke="#1a1510" stroke-width="1"/>';
+    }
+    tgW.innerHTML='<svg class="three-year-svg" viewBox="0 0 '+tsvgW+' '+tsvgH+'">'+tYLines+'<path d="'+tAreaD+'" fill="url(#tgrad)" opacity="0.3"/><path d="'+tPathD+'" fill="none" stroke="#c8a96e" stroke-width="2.5"/>'+tDots+tLabels+'<defs><linearGradient id="tgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c8a96e"/><stop offset="100%" stop-color="#0d0906"/></linearGradient></defs></svg>';
+
+    const trW=document.getElementById('threeYearRow'); trW.innerHTML='';
+    yearArr.forEach(e=>{
+      trW.innerHTML+='<div class="year-card"><div class="yr">'+e.yr+'</div><div class="yr-score">'+e.sc+'</div><div class="yr-comment">'+e.t+'</div></div>';
+    });
+
+    // 09 습관
+    document.getElementById('secHabit').textContent=s.moneyHabit||'';
+    const cl=d.checklist||[];
+    const clW=document.getElementById('checklist'); clW.innerHTML='';
+    cl.forEach((item,i)=>{
+      clW.innerHTML+='<div class="check-item"><div class="check-box" data-idx="'+i+'"></div><div class="check-text">'+item+'</div></div>';
+    });
+    clW.querySelectorAll('.check-box').forEach(b=>{b.addEventListener('click',function(){this.classList.toggle('checked');});});
+
+    // 10 호통
+    const hi=d.hoTongIntensity||3;
+    const hb=document.getElementById('hotongBars'); hb.innerHTML='';
+    for(let i=1;i<=5;i++) hb.innerHTML+='<div class="hotong-bar'+(i<=hi?' active':'')+'"></div>';
+    const hL={1:'살살',2:'따끔',3:'호통',4:'불호령',5:'천둥벽력'};
+    document.getElementById('hotongLabel').textContent='강도: '+(hL[hi]||'호통');
+    document.getElementById('secHoTong').textContent=s.wealthHoTong||'';
 
     // CTA
-    document.getElementById('ctaBtn').href = '/howangdang/order.html?product=HW3&upgradeFrom=' + (d.orderId || '');
+    document.getElementById('ctaBtn').href='/howangdang/order.html?product=HW3&upgradeFrom='+(d.orderId||'');
 
     // 표시
-    document.getElementById('resultWrap').style.display = 'block';
+    document.getElementById('resultWrap').style.display='block';
     document.getElementById('loadingScreen').classList.add('hide');
-
-    setTimeout(() => animateBars(), 300);
+    setTimeout(()=>animateBars(),300);
     observeFadeUp();
   }
 
-  function animateBars() {
-    document.querySelectorAll('[data-w]').forEach(el => {
-      el.style.width = el.dataset.w;
-    });
-    const jr = document.getElementById('jobRing');
-    if (jr && jr.dataset.offset) {
-      jr.style.strokeDashoffset = jr.dataset.offset;
-    }
+  function animateBars(){
+    document.querySelectorAll('[data-w]').forEach(el=>{el.style.width=el.dataset.w;});
+    const jr=document.getElementById('jobRing');
+    if(jr&&jr.dataset.offset) jr.style.strokeDashoffset=jr.dataset.offset;
   }
 
-  function observeFadeUp() {
-    const els = document.querySelectorAll('.fade-up');
-    if ('IntersectionObserver' in window) {
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
+  function observeFadeUp(){
+    const els=document.querySelectorAll('.fade-up');
+    if('IntersectionObserver' in window){
+      const obs=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
             entry.target.classList.add('show');
             obs.unobserve(entry.target);
-            entry.target.querySelectorAll('[data-w]').forEach(bar => {
-              bar.style.width = bar.dataset.w;
-            });
+            entry.target.querySelectorAll('[data-w]').forEach(b=>{b.style.width=b.dataset.w;});
+            // 직업 링도 트리거
+            const jr=entry.target.querySelector('#jobRing');
+            if(jr&&jr.dataset.offset) jr.style.strokeDashoffset=jr.dataset.offset;
           }
         });
-      }, { threshold: 0.15 });
-      els.forEach(el => obs.observe(el));
-    } else {
-      els.forEach(el => el.classList.add('show'));
-    }
+      },{threshold:0.15});
+      els.forEach(el=>obs.observe(el));
+    }else{els.forEach(el=>el.classList.add('show'));}
   }
 
   loadResult();
 })();
 </script>
-
 </body>
 </html>
