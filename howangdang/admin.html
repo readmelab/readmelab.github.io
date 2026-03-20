@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>호왕당 관리</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#0a0a06;color:#e8d5b0;min-height:100vh;padding:20px}
+
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:24px;color:#c5975b;letter-spacing:4px;margin-bottom:4px}
+.header p{font-size:12px;color:#8a7a5a}
+
+.login-box{max-width:320px;margin:80px auto;text-align:center}
+.login-input{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;text-align:center;margin-bottom:12px}
+.login-input:focus{border-color:#c5975b}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;cursor:pointer}
+
+.dashboard{display:none}
+
+.stats{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.stat-card{flex:1;min-width:100px;padding:16px 12px;background:rgba(26,16,8,.9);border:1px solid #2a1a0a;border-radius:10px;text-align:center}
+.stat-num{font-size:24px;font-weight:900;color:#c5975b}
+.stat-label{font-size:11px;color:#8a7a5a;margin-top:4px}
+
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:8px 16px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:12px;cursor:pointer}
+.filter-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+
+.order-list{display:flex;flex-direction:column;gap:12px}
+
+.order-card{padding:16px;background:rgba(26,16,8,.9);border:1px solid #2a1a0a;border-radius:10px}
+.order-card.confirmed{border-left:3px solid #4a8c5c}
+.order-card.waiting{border-left:3px solid #c5975b}
+.order-card.done{border-left:3px solid #4a6a9c}
+
+.order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.order-product{font-size:14px;font-weight:700;color:#c5975b}
+.order-price{font-size:14px;font-weight:700;color:#e8d5b0}
+.order-status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.status-waiting{background:rgba(197,151,91,.2);color:#c5975b}
+.status-confirmed{background:rgba(74,140,92,.2);color:#4a8c5c}
+.status-processing{background:rgba(74,106,156,.2);color:#4a6a9c}
+.status-done{background:rgba(138,122,90,.2);color:#8a7a5a}
+
+.order-info{font-size:12px;color:#8a7a5a;line-height:1.8}
+.order-info strong{color:#a89878}
+
+.order-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.action-btn{padding:6px 14px;border-radius:6px;font-family:'Noto Serif KR',serif;font-size:11px;font-weight:700;cursor:pointer;border:none}
+.btn-confirm{background:rgba(74,140,92,.2);color:#4a8c5c;border:1px solid #4a8c5c}
+.btn-done{background:rgba(74,106,156,.2);color:#4a6a9c;border:1px solid #4a6a9c}
+.btn-copy-info{background:rgba(197,151,91,.1);color:#c5975b;border:1px solid #3a2a1a}
+
+.empty{text-align:center;padding:40px;color:#6a5a4a;font-size:14px}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+
+.refresh-btn{position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;color:#e8d5b0;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="login-box" id="loginBox">
+  <h1 style="font-size:28px;color:#c5975b;letter-spacing:6px;margin-bottom:24px">虎王堂</h1>
+  <p style="color:#8a7a5a;margin-bottom:20px;font-size:13px">관리자 접속</p>
+  <input class="login-input" id="adminPw" type="password" placeholder="비밀번호" onkeypress="if(event.key==='Enter')login()">
+  <button class="login-btn" onclick="login()">입장</button>
+</div>
+
+<!-- 대시보드 -->
+<div class="dashboard" id="dashboard">
+  <div class="header">
+    <h1>虎王堂 관리</h1>
+    <p id="lastUpdate"></p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">전체 주문</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statConfirmed">0</div>
+      <div class="stat-label">결제 완료</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statRevenue">0</div>
+      <div class="stat-label">매출 (원)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statToday">0</div>
+      <div class="stat-label">오늘 주문</div>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" data-filter="all" onclick="filterOrders(this)">전체</button>
+    <button class="filter-btn" data-filter="waiting" onclick="filterOrders(this)">입금 대기</button>
+    <button class="filter-btn" data-filter="confirmed" onclick="filterOrders(this)">결제 완료</button>
+    <button class="filter-btn" data-filter="processing" onclick="filterOrders(this)">처리 중</button>
+    <button class="filter-btn" data-filter="done" onclick="filterOrders(this)">완료</button>
+  </div>
+
+  <div class="order-list" id="orderList">
+    <div class="empty">주문을 불러오는 중...</div>
+  </div>
+</div>
+
+<button class="refresh-btn" id="refreshBtn" style="display:none" onclick="loadOrders()">↻</button>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const ADMIN_PW = 'howang2026';
+let allOrders = [];
+let currentFilter = 'all';
+
+function login() {
+  const pw = document.getElementById('adminPw').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('refreshBtn').style.display = 'block';
+    loadOrders();
+  } else {
+    showToast('비밀번호가 틀렸습니다');
+  }
+}
+
+async function loadOrders() {
+  try {
+    const res = await fetch(API_BASE + '/admin/orders?pw=' + ADMIN_PW);
+    const data = await res.json();
+    if (!data.success) { showToast('불러오기 실패'); return; }
+
+    allOrders = data.orders;
+    updateStats();
+    renderOrders();
+    document.getElementById('lastUpdate').textContent = '마지막 갱신: ' + new Date().toLocaleTimeString('ko');
+  } catch (e) {
+    showToast('서버 연결 실패');
+  }
+}
+
+function updateStats() {
+  const confirmed = allOrders.filter(o => o.paymentStatus === 'confirmed' || o.status === 'done');
+  const revenue = confirmed.reduce((sum, o) => sum + (o.price || 0), 0);
+  const today = new Date().toISOString().slice(0, 10);
+  const todayOrders = allOrders.filter(o => o.createdAt && o.createdAt.slice(0, 10) === today);
+
+  document.getElementById('statTotal').textContent = allOrders.length;
+  document.getElementById('statConfirmed').textContent = confirmed.length;
+  document.getElementById('statRevenue').textContent = revenue.toLocaleString();
+  document.getElementById('statToday').textContent = todayOrders.length;
+}
+
+function filterOrders(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderOrders();
+}
+
+function renderOrders() {
+  let orders = allOrders;
+  if (currentFilter !== 'all') {
+    if (currentFilter === 'waiting') {
+      orders = orders.filter(o => o.paymentStatus === 'waiting');
+    } else if (currentFilter === 'confirmed') {
+      orders = orders.filter(o => o.paymentStatus === 'confirmed' && o.status !== 'done');
+    } else if (currentFilter === 'processing') {
+      orders = orders.filter(o => o.status === 'processing');
+    } else if (currentFilter === 'done') {
+      orders = orders.filter(o => o.status === 'done');
+    }
+  }
+
+  const list = document.getElementById('orderList');
+  if (orders.length === 0) {
+    list.innerHTML = '<div class="empty">주문이 없습니다</div>';
+    return;
+  }
+
+  list.innerHTML = orders.map(o => {
+    const statusClass = o.status === 'done' ? 'done' : (o.paymentStatus === 'confirmed' ? 'confirmed' : 'waiting');
+    const statusText = o.status === 'done' ? '완료' : (o.paymentStatus === 'confirmed' ? '결제완료' : (o.paymentStatus === 'waiting' ? '대기' : o.paymentStatus));
+    const statusBadge = o.status === 'done' ? 'status-done' : (o.paymentStatus === 'confirmed' ? 'status-confirmed' : 'status-waiting');
+
+    return `
+    <div class="order-card ${statusClass}">
+      <div class="order-top">
+        <span class="order-product">${o.productName || o.product}</span>
+        <span class="order-price">${(o.price||0).toLocaleString()}원</span>
+      </div>
+      <div class="order-top">
+        <span class="order-status ${statusBadge}">${statusText}</span>
+        <span style="font-size:11px;color:#6a5a4a">${o.createdAt ? new Date(o.createdAt).toLocaleString('ko') : ''}</span>
+      </div>
+      <div class="order-info">
+        <strong>이름:</strong> ${o.user?.name || '-'}<br>
+        <strong>연락처:</strong> ${o.user?.phone || '-'}<br>
+        <strong>생년월일:</strong> ${o.user?.birthDate || '-'}<br>
+        <strong>시:</strong> ${o.user?.birthTime || '-'}<br>
+        ${o.job ? '<strong>직업:</strong> ' + o.job + '<br>' : ''}
+        ${o.question ? '<strong>질문:</strong> ' + o.question + '<br>' : ''}
+        <strong>주문번호:</strong> ${o.orderId}
+      </div>
+      <div class="order-actions">
+        ${o.paymentStatus === 'waiting' ? '<button class="action-btn btn-confirm" onclick="confirmOrder(\'' + o.orderId + '\')">입금 확인</button>' : ''}
+        ${o.paymentStatus === 'confirmed' && o.status !== 'done' ? '<button class="action-btn btn-done" onclick="markDone(\'' + o.orderId + '\')">풀이 완료</button>' : ''}
+        <button class="action-btn btn-copy-info" onclick="copyInfo('${o.orderId}')">정보 복사</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function confirmOrder(orderId) {
+  if (!confirm('입금 확인 처리하시겠습니까?')) return;
+  try {
+    const res = await fetch(API_BASE + '/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('입금 확인 완료'); loadOrders(); }
+    else { showToast('실패: ' + data.error); }
+  } catch (e) { showToast('서버 오류'); }
+}
+
+async function markDone(orderId) {
+  if (!confirm('풀이 완료 처리하시겠습니까?')) return;
+  try {
+    const res = await fetch(API_BASE + '/admin/done', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, pw: ADMIN_PW })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('완료 처리됨'); loadOrders(); }
+    else { showToast('실패: ' + data.error); }
+  } catch (e) { showToast('서버 오류'); }
+}
+
+function copyInfo(orderId) {
+  const o = allOrders.find(x => x.orderId === orderId);
+  if (!o) return;
+  const text = `[${o.productName}] ${o.user?.name}\n연락처: ${o.user?.phone}\n생년월일: ${o.user?.birthDate}\n시: ${o.user?.birthTime}\n${o.job ? '직업: ' + o.job + '\n' : ''}${o.question ? '질문: ' + o.question + '\n' : ''}주문번호: ${o.orderId}`;
+  navigator.clipboard.writeText(text).then(() => showToast('복사 완료'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
