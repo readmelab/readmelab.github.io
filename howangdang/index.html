@@ -7,6 +7,7 @@
 <meta name="description" content="정통 사주 기반 맞춤 풀이. 초견·재물풀이·본풀이.">
 <meta property="og:title" content="호왕당 — 사주풀이">
 <meta property="og:description" content="사주로 너의 길을 읽어주마">
+<script src="https://js.tosspayments.com/v2/standard"></script>
 <style>
 :root {
   --bg-deep: #0a0a0a;
@@ -26,10 +27,9 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.7;-webkit-font-smoothing:antialiased}
-#orderScreen,#confirmScreen{max-width:var(--max-width);margin:0 auto;padding:0 20px 40px}
+.page-wrap{max-width:var(--max-width);margin:0 auto;padding:0 20px 40px}
 .hw-header{text-align:center;padding:50px 0 30px}
 .hw-logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
-.hw-logo{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold-dim)}
 .hw-title{font-size:32px;font-weight:800;color:var(--gold);letter-spacing:4px}
 .hw-hanja{font-size:14px;font-weight:400;color:var(--gold-dim);margin-left:6px;vertical-align:middle}
 .hw-tagline{font-size:15px;color:var(--text-secondary);letter-spacing:2px}
@@ -53,46 +53,44 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;backgr
 .product-price{font-size:26px;font-weight:800;color:var(--gold)}
 .product-price .won{font-size:14px;font-weight:400;color:var(--gold-dim)}
 .product-question-count{font-size:12px;color:var(--gold-dim);margin-top:6px}
-.hw-form-section{padding-top:10px;border-top:1px solid var(--border)}
+
+/* 폼 */
+.hw-form-section{padding-top:24px;border-top:1px solid var(--border);display:none}
+.hw-form-section.show{display:block}
 .form-group{margin-bottom:22px}
 .form-group label{display:block;font-size:14px;color:var(--gold-light);margin-bottom:8px;font-weight:500}
-input[type="text"],input[type="tel"],select{width:100%;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;outline:none;transition:border-color .3s}
-input:focus,select:focus{border-color:var(--gold-dim)}
-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9080' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
-select option{background:#1a1a1a;color:#e8e0d0}
+.form-input{width:100%;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;outline:none;transition:border-color .3s;font-family:inherit}
+.form-input:focus{border-color:var(--gold-dim)}
+.form-input::placeholder{color:#4a3a2a}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9080' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+select.form-input option{background:#1a1a1a;color:#e8e0d0}
 .date-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.time-row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
 .radio-group{display:flex;gap:8px;flex-wrap:wrap}
-.radio-group.vertical{flex-direction:column}
 .radio-btn{cursor:pointer}
 .radio-btn input{display:none}
 .radio-btn span{display:inline-block;padding:10px 18px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-secondary);transition:all .25s}
-.radio-group.vertical .radio-btn span{display:block;width:100%}
 .radio-btn input:checked+span{border-color:var(--gold);color:var(--gold);background:rgba(197,151,91,0.08)}
-.custom-input{margin-top:8px}
+.job-row{display:flex;flex-wrap:wrap;gap:8px}
+.job-btn{padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all .3s;font-family:inherit}
+.job-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(197,151,91,0.1)}
+.form-textarea{width:100%;padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:inherit;font-size:14px;outline:none;resize:none;min-height:100px;line-height:1.6}
+.form-textarea:focus{border-color:var(--gold-dim)}
+.form-textarea::placeholder{color:#4a3a2a}
 .consent{margin-top:30px}
 .checkbox-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text-dim);cursor:pointer}
 .checkbox-label input[type="checkbox"]{width:18px;height:18px;margin-top:2px;accent-color:var(--gold)}
-.hw-submit-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:10px;font-size:17px;font-weight:700;color:#0a0a0a;cursor:pointer;margin-top:10px;transition:all .3s;letter-spacing:2px}
+.hw-submit-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:10px;font-size:17px;font-weight:700;color:#0a0a0a;cursor:pointer;margin-top:10px;transition:all .3s;letter-spacing:2px;font-family:inherit}
 .hw-submit-btn:hover{box-shadow:0 4px 20px rgba(197,151,91,0.4)}
 .hw-submit-btn:disabled{opacity:.5;cursor:not-allowed}
-#confirmScreen{padding-top:60px;text-align:center}
-.confirm-icon{font-size:48px;margin-bottom:16px}
-#confirmScreen h2{font-size:22px;color:var(--text-primary);margin-bottom:8px}
-.confirm-sub{font-size:14px;color:var(--text-secondary);margin-bottom:30px}
-.confirm-box{background:var(--bg-card);border:1px solid var(--border-gold);border-radius:var(--radius);padding:24px 20px;text-align:left;margin-bottom:20px}
-.confirm-box h3{font-size:16px;color:var(--gold);margin-bottom:16px;letter-spacing:1px}
-.confirm-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
-.confirm-row .label{color:var(--text-secondary)}
-.confirm-row .value{color:var(--text-primary);font-weight:600}
-.confirm-row .value.price{color:var(--gold);font-size:18px}
-.confirm-row .value.account{color:var(--gold-light)}
-.confirm-divider{border-top:1px dashed var(--border);margin:12px 0}
-.copy-btn{width:100%;padding:12px;background:rgba(197,151,91,0.1);border:1px solid var(--border-gold);border-radius:8px;color:var(--gold);font-size:14px;cursor:pointer;margin-top:12px;transition:background .3s}
-.copy-btn:hover{background:rgba(197,151,91,0.2)}
-.confirm-notice{background:rgba(197,151,91,0.05);border-radius:8px;padding:16px;margin-bottom:20px}
-.confirm-notice p{font-size:13px;color:var(--text-secondary);margin-bottom:4px}
-.confirm-notice strong{color:var(--gold-light)}
-.confirm-order-info{font-size:12px;color:var(--text-dim)}
+.hw2-only,.hw3-only{display:none}
+
+/* 호왕패 링크 */
+.hw-free{text-align:center;margin:32px 0 0;padding-top:24px;border-top:1px solid var(--border)}
+.hw-free-text{font-size:13px;color:var(--text-secondary);margin-bottom:12px}
+.hw-free-btn{display:inline-block;padding:14px 32px;background:none;border:1px solid var(--border-gold);border-radius:10px;color:var(--gold);font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;letter-spacing:2px;text-decoration:none}
+.hw-free-btn:hover{background:rgba(197,151,91,0.08);border-color:var(--gold)}
+
 .hw-footer{text-align:center;padding:40px 0 30px;border-top:1px solid var(--border);margin-top:40px}
 .hw-footer p{font-size:11px;color:var(--text-dim);margin-bottom:4px}
 .hw-toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0a0a0a;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;z-index:9999;transition:bottom .4s ease;white-space:nowrap}
@@ -104,8 +102,7 @@ select option{background:#1a1a1a;color:#e8e0d0}
 </head>
 <body>
 
-<!-- ===== SCREEN 1: 주문 ===== -->
-<div id="orderScreen">
+<div class="page-wrap">
 
 <header class="hw-header">
   <div class="hw-logo-area">
@@ -123,7 +120,7 @@ select option{background:#1a1a1a;color:#e8e0d0}
 <section class="hw-products fade-in">
   <h2 class="section-title">풀이를 고르시오</h2>
 
-  <div class="product-card" data-code="HW1" data-price="9900" data-name="초견">
+  <div class="product-card" data-code="HW1" data-price="4900" onclick="selectProduct(this)">
     <div class="product-badge">입문</div>
     <h3 class="product-title">초견<span class="product-hanja">初見</span></h3>
     <p class="product-desc">나를 한눈에 읽는 사주 요약과 올해의 흐름</p>
@@ -131,352 +128,371 @@ select option{background:#1a1a1a;color:#e8e0d0}
       <li>사주 원국 대시보드</li>
       <li>타고난 성정 요약</li>
       <li>2026년 운세 핵심</li>
-      <li>호왕의 한마디</li>
+      <li>호왕의 호통</li>
     </ul>
-    <div class="product-price">9,900<span class="won">원</span></div>
-    <div class="product-question-count">호왕에게 질문 1회</div>
+    <div class="product-price">4,900<span class="won">원</span></div>
   </div>
 
-  <div class="product-card" data-code="HW2" data-price="29900" data-name="재물풀이">
+  <div class="product-card" data-code="HW2" data-price="19800" onclick="selectProduct(this)">
     <div class="product-badge best">인기</div>
     <h3 class="product-title">재물풀이<span class="product-hanja">財物解</span></h3>
     <p class="product-desc">돈의 그릇과 흐름, 구체적 재물 타이밍</p>
     <ul class="product-includes">
-      <li>사주 원국 대시보드 + 재물 게이지</li>
-      <li>재물의 그릇 분석</li>
+      <li>재물 총론 + 재물운 등급</li>
+      <li>돈의 그릇 · 통로 · 누수 패턴</li>
+      <li>투자 적성 · 직업 궁합</li>
       <li>2026 월별 재물 타이밍</li>
-      <li>나에게 맞는 돈 버는 방식</li>
-      <li>호왕 재물 처방 (3~5가지)</li>
+      <li>돈 습관 처방</li>
     </ul>
-    <div class="product-price">29,900<span class="won">원</span></div>
-    <div class="product-question-count">호왕에게 질문 2회</div>
+    <div class="product-price">19,800<span class="won">원</span></div>
   </div>
 
-  <div class="product-card" data-code="HW3" data-price="49900" data-name="본풀이">
+  <div class="product-card" data-code="HW3" data-price="49700" onclick="selectProduct(this)">
     <div class="product-badge premium">프리미엄</div>
     <h3 class="product-title">본풀이<span class="product-hanja">本解</span></h3>
     <p class="product-desc">성정·재물·연애·건강·대운 — 삶의 전체 지도</p>
     <ul class="product-includes">
-      <li>사주 원국 대시보드</li>
-      <li>타고난 성정과 재능</li>
+      <li>사주 원국 종합 해석</li>
       <li>재물운 · 연애혼인운 · 건강운</li>
       <li>2026 월별 운세</li>
       <li>향후 10년 대운 흐름</li>
-      <li>호왕 처방전 (5~7가지)</li>
-      <li>호왕의 밀서</li>
+      <li>호왕 처방전 · 호왕의 밀서</li>
     </ul>
-    <div class="product-price">49,900<span class="won">원</span></div>
-    <div class="product-question-count">호왕에게 질문 3회</div>
+    <div class="product-price">49,700<span class="won">원</span></div>
   </div>
 </section>
 
 <!-- 정보 입력 폼 -->
-<section class="hw-form-section fade-in" id="formSection" style="display:none;">
+<section class="hw-form-section fade-in" id="formSection">
   <h2 class="section-title">사주 정보를 알려주시오</h2>
-  <form id="hwForm" autocomplete="off">
-    <input type="hidden" id="selectedProduct" value="">
-    <input type="hidden" id="selectedPrice" value="">
-    <input type="hidden" id="selectedName" value="">
 
-    <div class="form-group">
-      <label for="userName">이름</label>
-      <input type="text" id="userName" placeholder="본명을 입력하세요" required maxlength="20">
+  <div class="form-group">
+    <label>이름</label>
+    <input class="form-input" type="text" id="userName" placeholder="본명을 입력하세요" maxlength="20">
+  </div>
+
+  <div class="form-group">
+    <label>성별</label>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="gender" value="male"><span>남</span></label>
+      <label class="radio-btn"><input type="radio" name="gender" value="female"><span>여</span></label>
     </div>
+  </div>
 
-    <div class="form-group">
-      <label>성별</label>
-      <div class="radio-group">
-        <label class="radio-btn"><input type="radio" name="gender" value="남" required><span>남</span></label>
-        <label class="radio-btn"><input type="radio" name="gender" value="여"><span>여</span></label>
-      </div>
+  <div class="form-group">
+    <label>생년월일</label>
+    <div class="date-row">
+      <select class="form-input" id="birthYear"><option value="">년</option></select>
+      <select class="form-input" id="birthMonth"><option value="">월</option></select>
+      <select class="form-input" id="birthDay"><option value="">일</option></select>
     </div>
+  </div>
 
-    <div class="form-group">
-      <label>생년월일</label>
-      <div class="date-row">
-        <select id="birthYear" required><option value="">년</option></select>
-        <select id="birthMonth" required><option value="">월</option></select>
-        <select id="birthDay" required><option value="">일</option></select>
-      </div>
+  <div class="form-group">
+    <label>양력 / 음력</label>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="calendar" value="solar" checked><span>양력</span></label>
+      <label class="radio-btn"><input type="radio" name="calendar" value="lunar"><span>음력</span></label>
     </div>
+  </div>
 
-    <div class="form-group">
-      <label>양력 / 음력</label>
-      <div class="radio-group">
-        <label class="radio-btn"><input type="radio" name="calendar" value="양력" checked><span>양력</span></label>
-        <label class="radio-btn"><input type="radio" name="calendar" value="음력"><span>음력</span></label>
-        <label class="radio-btn"><input type="radio" name="calendar" value="윤달"><span>윤달</span></label>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="birthTime">태어난 시간</label>
-      <select id="birthTime" required>
+  <div class="form-group">
+    <label>태어난 시간</label>
+    <div class="time-row">
+      <select class="form-input" id="birthTime">
         <option value="">선택</option>
         <option value="모름">모름</option>
-        <option value="23:00-01:00">子시 (23:00~01:00)</option>
-        <option value="01:00-03:00">丑시 (01:00~03:00)</option>
-        <option value="03:00-05:00">寅시 (03:00~05:00)</option>
-        <option value="05:00-07:00">卯시 (05:00~07:00)</option>
-        <option value="07:00-09:00">辰시 (07:00~09:00)</option>
-        <option value="09:00-11:00">巳시 (09:00~11:00)</option>
-        <option value="11:00-13:00">午시 (11:00~13:00)</option>
-        <option value="13:00-15:00">未시 (13:00~15:00)</option>
-        <option value="15:00-17:00">申시 (15:00~17:00)</option>
-        <option value="17:00-19:00">酉시 (17:00~19:00)</option>
-        <option value="19:00-21:00">戌시 (19:00~21:00)</option>
-        <option value="21:00-23:00">亥시 (21:00~23:00)</option>
+        <option value="23시">子시 (23:00~01:00)</option>
+        <option value="1시">丑시 (01:00~03:00)</option>
+        <option value="3시">寅시 (03:00~05:00)</option>
+        <option value="5시">卯시 (05:00~07:00)</option>
+        <option value="7시">辰시 (07:00~09:00)</option>
+        <option value="9시">巳시 (09:00~11:00)</option>
+        <option value="11시">午시 (11:00~13:00)</option>
+        <option value="13시">未시 (13:00~15:00)</option>
+        <option value="15시">申시 (15:00~17:00)</option>
+        <option value="17시">酉시 (17:00~19:00)</option>
+        <option value="19시">戌시 (19:00~21:00)</option>
+        <option value="21시">亥시 (21:00~23:00)</option>
       </select>
     </div>
+  </div>
 
-    <!-- HW2 전용 -->
-    <div class="form-group" id="q_hw2" style="display:none;">
-      <label>재물에 대해 가장 궁금한 것은?</label>
-      <div class="radio-group vertical">
-        <label class="radio-btn"><input type="radio" name="q_money" value="현재 하는 일을 계속해도 되는지"><span>현재 하는 일을 계속해도 되는지</span></label>
-        <label class="radio-btn"><input type="radio" name="q_money" value="이직·전직 시기와 방향"><span>이직·전직 시기와 방향</span></label>
-        <label class="radio-btn"><input type="radio" name="q_money" value="투자·사업 적성 여부"><span>투자·사업 적성 여부</span></label>
-        <label class="radio-btn"><input type="radio" name="q_money" value="돈이 모이지 않는 이유"><span>돈이 모이지 않는 이유</span></label>
-        <label class="radio-btn"><input type="radio" name="q_money" value="직접입력"><span>직접 입력</span></label>
-      </div>
-      <input type="text" id="q_money_custom" class="custom-input" placeholder="궁금한 것을 적어주세요" style="display:none;" maxlength="100">
+  <div class="form-group">
+    <label>연락처</label>
+    <input class="form-input" type="tel" id="userPhone" placeholder="010-0000-0000" maxlength="13">
+  </div>
+
+  <!-- HW2, HW3 전용: 직업 -->
+  <div class="form-group hw2-only" id="jobSection">
+    <label>직업</label>
+    <div class="job-row">
+      <button type="button" class="job-btn" data-job="사업" onclick="selectJob(this)">사업</button>
+      <button type="button" class="job-btn" data-job="직장인" onclick="selectJob(this)">직장인</button>
+      <button type="button" class="job-btn" data-job="프리랜서" onclick="selectJob(this)">프리랜서</button>
+      <button type="button" class="job-btn" data-job="주부" onclick="selectJob(this)">주부</button>
+      <button type="button" class="job-btn" data-job="취준생" onclick="selectJob(this)">취준생</button>
+      <button type="button" class="job-btn" data-job="학생" onclick="selectJob(this)">학생</button>
     </div>
+  </div>
 
-    <!-- HW3 전용 -->
-    <div id="q_hw3" style="display:none;">
-      <div class="form-group">
-        <label>지금 가장 무거운 고민은?</label>
-        <div class="radio-group vertical">
-          <label class="radio-btn"><input type="radio" name="q_worry" value="진로·직업"><span>진로·직업</span></label>
-          <label class="radio-btn"><input type="radio" name="q_worry" value="돈·재물"><span>돈·재물</span></label>
-          <label class="radio-btn"><input type="radio" name="q_worry" value="연애·결혼"><span>연애·결혼</span></label>
-          <label class="radio-btn"><input type="radio" name="q_worry" value="건강"><span>건강</span></label>
-          <label class="radio-btn"><input type="radio" name="q_worry" value="대인관계"><span>대인관계</span></label>
-          <label class="radio-btn"><input type="radio" name="q_worry" value="직접입력"><span>직접 입력</span></label>
-        </div>
-        <input type="text" id="q_worry_custom" class="custom-input" placeholder="고민을 적어주세요" style="display:none;" maxlength="100">
-      </div>
-      <div class="form-group">
-        <label>앞으로 가장 바라는 것은?</label>
-        <div class="radio-group vertical">
-          <label class="radio-btn"><input type="radio" name="q_wish" value="안정적인 수입"><span>안정적인 수입</span></label>
-          <label class="radio-btn"><input type="radio" name="q_wish" value="하고 싶은 일 찾기"><span>하고 싶은 일 찾기</span></label>
-          <label class="radio-btn"><input type="radio" name="q_wish" value="좋은 사람 만나기"><span>좋은 사람 만나기</span></label>
-          <label class="radio-btn"><input type="radio" name="q_wish" value="건강 회복"><span>건강 회복</span></label>
-          <label class="radio-btn"><input type="radio" name="q_wish" value="독립·자유"><span>독립·자유</span></label>
-          <label class="radio-btn"><input type="radio" name="q_wish" value="직접입력"><span>직접 입력</span></label>
-        </div>
-        <input type="text" id="q_wish_custom" class="custom-input" placeholder="바라는 것을 적어주세요" style="display:none;" maxlength="100">
-      </div>
-    </div>
+  <!-- HW3 전용: 질문 -->
+  <div class="form-group hw3-only" id="questionSection">
+    <label>지금 가장 궁금한 것 (질문 1개)</label>
+    <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
+  </div>
 
-    <div class="form-group">
-      <label for="phone">연락처 (카카오톡 알림 발송용)</label>
-      <input type="tel" id="phone" placeholder="010-0000-0000" required maxlength="13">
-    </div>
+  <div class="form-group consent">
+    <label class="checkbox-label">
+      <input type="checkbox" id="agreePrivacy">
+      <span>개인정보 수집·이용에 동의합니다 (사주풀이 목적, 서비스 완료 후 1년 보관)</span>
+    </label>
+  </div>
 
-    <div class="form-group consent">
-      <label class="checkbox-label">
-        <input type="checkbox" id="consent" required>
-        <span>개인정보 수집·이용에 동의합니다 (사주풀이 목적, 서비스 완료 후 90일 보관)</span>
-      </label>
-    </div>
-
-    <input type="hidden" id="payMethod" value="bank">
-
-    <button type="submit" class="hw-submit-btn" id="submitBtn">
-      <span class="btn-text">신청하기</span>
-      <span class="btn-loading" style="display:none;">접수 중...</span>
-    </button>
-  </form>
+  <button class="hw-submit-btn" id="submitBtn" onclick="submitOrder()">결제하기</button>
 </section>
+
+<div class="hw-free fade-in">
+  <p class="hw-free-text">먼저 무료로 네 사주를 한 장에 담아보거라</p>
+  <a class="hw-free-btn" href="howangpae.html">호왕패 무료 뽑기</a>
+</div>
 
 <footer class="hw-footer">
   <p>운영: 나를읽다연구소 | 사업자등록번호: 347-12-03156</p>
   <p>대표: 오동훈 | 문의: 카카오톡 채널 @howangdang</p>
 </footer>
-</div>
 
-<!-- ===== SCREEN 2: 신청 완료 ===== -->
-<div id="confirmScreen" style="display:none;">
-  <div class="confirm-icon">✅</div>
-  <h2>신청이 완료되었습니다</h2>
-  <p class="confirm-sub">카카오톡 알림톡으로 안내 메시지를 보내드렸습니다.</p>
-
-  <div class="confirm-box">
-    <h3>입금 안내</h3>
-    <div class="confirm-row"><span class="label">상품</span><span class="value" id="cfProduct">-</span></div>
-    <div class="confirm-row"><span class="label">금액</span><span class="value price" id="cfPrice">-</span></div>
-    <div class="confirm-divider"></div>
-    <div class="confirm-row"><span class="label">입금 계좌</span><span class="value account">토스뱅크 1002-4758-3163</span></div>
-    <div class="confirm-row"><span class="label">예금주</span><span class="value">나를읽다연구소</span></div>
-    <button class="copy-btn" onclick="copyAccount()">계좌번호 복사</button>
-  </div>
-
-  <div class="confirm-notice">
-    <p>입금 확인 후 카카오톡으로 사주풀이 결과를 보내드립니다.</p>
-    <p>입금자명은 <strong id="cfName">-</strong>(으)로 부탁드립니다.</p>
-  </div>
-  <div class="confirm-order-info">주문번호: <strong id="cfOrderId">-</strong></div>
-
-  <footer class="hw-footer">
-    <p>운영: 나를읽다연구소 | 사업자등록번호: 347-12-03156</p>
-    <p>대표: 오동훈 | 문의: 카카오톡 채널 @howangdang</p>
-  </footer>
 </div>
 
 <div id="toast" class="hw-toast"></div>
 
 <script>
-/* ===== 호왕당 주문 ===== */
-const HW_SERVER = ''; // hw-server 배포 후 URL 입력
+var API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
 
-document.addEventListener('DOMContentLoaded', () => {
-  initDateSelects();
-  initProductCards();
-  initFormListeners();
-  initFadeIn();
+var selectedProductCode = '';
+var selectedPrice = 0;
+var selectedJob = '';
+
+// ======== 드롭다운 초기화 ========
+(function initDropdowns() {
+  var y = document.getElementById('birthYear');
+  var m = document.getElementById('birthMonth');
+  var d = document.getElementById('birthDay');
+  for (var i = 2025; i >= 1940; i--) y.innerHTML += '<option value="'+i+'">'+i+'년</option>';
+  for (var i = 1; i <= 12; i++) m.innerHTML += '<option value="'+i+'">'+i+'월</option>';
+  for (var i = 1; i <= 31; i++) d.innerHTML += '<option value="'+i+'">'+i+'일</option>';
+})();
+
+// ======== 전화번호 자동 하이픈 ========
+document.getElementById('userPhone').addEventListener('input', function(e) {
+  var v = e.target.value.replace(/[^0-9]/g, '');
+  if (v.length > 3 && v.length <= 7) v = v.slice(0,3)+'-'+v.slice(3);
+  else if (v.length > 7) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+  e.target.value = v;
 });
 
-function initDateSelects() {
-  const y = document.getElementById('birthYear');
-  const m = document.getElementById('birthMonth');
-  const d = document.getElementById('birthDay');
-  const now = new Date().getFullYear();
-  for (let i = now - 5; i >= 1940; i--) y.innerHTML += `<option value="${i}">${i}년</option>`;
-  for (let i = 1; i <= 12; i++) m.innerHTML += `<option value="${i}">${i}월</option>`;
-  for (let i = 1; i <= 31; i++) d.innerHTML += `<option value="${i}">${i}일</option>`;
+// ======== 상품 선택 ========
+function selectProduct(el) {
+  document.querySelectorAll('.product-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedProductCode = el.dataset.code;
+  selectedPrice = Number(el.dataset.price);
+
+  document.getElementById('formSection').classList.add('show');
+  // HW2, HW3일 때 직업 표시
+  document.querySelectorAll('.hw2-only').forEach(function(e) {
+    e.style.display = (selectedProductCode === 'HW2' || selectedProductCode === 'HW3') ? 'block' : 'none';
+  });
+  // HW3일 때 질문 표시
+  document.querySelectorAll('.hw3-only').forEach(function(e) {
+    e.style.display = selectedProductCode === 'HW3' ? 'block' : 'none';
+  });
+
+  document.getElementById('submitBtn').textContent = PRODUCT_NAMES[selectedProductCode] + ' 결제하기 (' + selectedPrice.toLocaleString() + '원)';
+
+  setTimeout(function() {
+    document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 200);
 }
 
-function initProductCards() {
-  document.querySelectorAll('.product-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      document.getElementById('selectedProduct').value = card.dataset.code;
-      document.getElementById('selectedPrice').value = card.dataset.price;
-      document.getElementById('selectedName').value = card.dataset.name;
-      document.getElementById('formSection').style.display = 'block';
-      document.getElementById('q_hw2').style.display = card.dataset.code === 'HW2' ? 'block' : 'none';
-      document.getElementById('q_hw3').style.display = card.dataset.code === 'HW3' ? 'block' : 'none';
-      setTimeout(() => document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+function selectJob(btn) {
+  document.querySelectorAll('.job-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  selectedJob = btn.dataset.job;
+}
+
+// ======== 결제 콜백 처리 ========
+(function handlePaymentCallback() {
+  var urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get('payment') === 'success') {
+    var paymentKey = urlParams.get('paymentKey');
+    var orderId = urlParams.get('orderId');
+    var amount = urlParams.get('amount');
+
+    // URL 정리
+    history.replaceState(null, '', window.location.pathname);
+
+    var orderData = sessionStorage.getItem('hw_order_index');
+    if (!orderData) { showToast('주문 정보를 찾을 수 없습니다.'); return; }
+    var order = JSON.parse(orderData);
+
+    if (order.orderId !== orderId || order.price !== parseInt(amount)) {
+      showToast('결제 정보가 일치하지 않습니다.');
+      sessionStorage.removeItem('hw_order_index');
+      return;
+    }
+    sessionStorage.removeItem('hw_order_index');
+
+    // 화면 숨기기
+    document.querySelector('.hw-products').style.display = 'none';
+    document.querySelector('.hw-intro').style.display = 'none';
+    document.getElementById('formSection').classList.remove('show');
+    document.querySelector('.hw-free').style.display = 'none';
+
+    // 로딩 표시
+    var wrap = document.querySelector('.page-wrap');
+    var loadingDiv = document.createElement('div');
+    loadingDiv.style.cssText = 'text-align:center;padding:80px 20px;';
+    loadingDiv.innerHTML = '<div style="font-size:16px;color:var(--gold);animation:pulse 1.5s ease infinite">결제 확인 중...</div>';
+    wrap.insertBefore(loadingDiv, wrap.querySelector('.hw-footer'));
+
+    // 1) 서버에 주문 등록
+    fetch(API_BASE + '/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderId,
+        product: order.product,
+        name: order.name,
+        phone: order.phone,
+        birthDate: order.birthDate,
+        birthTime: order.birthTime,
+        calendarType: order.calendarType,
+        question: order.question || '',
+        job: order.job || '',
+        gender: order.gender || ''
+      })
+    })
+    // 2) 토스 결제 승인
+    .then(function() {
+      return fetch(API_BASE + '/payment/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentKey: paymentKey,
+          orderId: orderId,
+          amount: parseInt(amount)
+        })
+      });
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        // 상품별 결과 페이지 분기
+        var resultPage = 'chogyeon-result.html?id=' + orderId;
+        if (order.product === 'HW2') resultPage = 'jaemul-result.html?orderId=' + orderId;
+        else if (order.product === 'HW3') resultPage = 'bonpuli-result.html?orderId=' + orderId;
+        location.href = resultPage;
+      } else {
+        loadingDiv.innerHTML = '<div style="color:#e85050;font-size:14px">결제 승인 실패: ' + (data.error || '') + '<br><br><a href="index.html" style="color:var(--gold)">다시 시도하기</a></div>';
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+      loadingDiv.innerHTML = '<div style="color:#e85050;font-size:14px">결제 처리 중 오류가 발생했습니다.<br><br><a href="index.html" style="color:var(--gold)">다시 시도하기</a></div>';
     });
-  });
-}
+  }
 
-function initFormListeners() {
-  document.querySelectorAll('input[name="q_money"]').forEach(r => r.addEventListener('change', () => {
-    document.getElementById('q_money_custom').style.display = r.value === '직접입력' && r.checked ? 'block' : 'none';
-  }));
-  document.querySelectorAll('input[name="q_worry"]').forEach(r => r.addEventListener('change', () => {
-    document.getElementById('q_worry_custom').style.display = r.value === '직접입력' && r.checked ? 'block' : 'none';
-  }));
-  document.querySelectorAll('input[name="q_wish"]').forEach(r => r.addEventListener('change', () => {
-    document.getElementById('q_wish_custom').style.display = r.value === '직접입력' && r.checked ? 'block' : 'none';
-  }));
-  document.getElementById('phone').addEventListener('input', function(e) {
-    let v = e.target.value.replace(/[^0-9]/g, '');
-    if (v.length > 3 && v.length <= 7) v = v.slice(0,3)+'-'+v.slice(3);
-    else if (v.length > 7) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
-    e.target.value = v;
-  });
-  document.getElementById('hwForm').addEventListener('submit', handleSubmit);
-}
+  if (urlParams.get('payment') === 'fail') {
+    history.replaceState(null, '', window.location.pathname);
+    showToast('결제가 취소되었거나 실패했습니다.');
+  }
+})();
 
-async function handleSubmit(e) {
-  e.preventDefault();
-  const product = document.getElementById('selectedProduct').value;
-  const price = document.getElementById('selectedPrice').value;
-  const productName = document.getElementById('selectedName').value;
-  if (!product) return showToast('상품을 선택해주세요');
-  const name = document.getElementById('userName').value.trim();
-  const gender = document.querySelector('input[name="gender"]:checked')?.value;
-  const year = document.getElementById('birthYear').value;
-  const month = document.getElementById('birthMonth').value;
-  const day = document.getElementById('birthDay').value;
-  const calendar = document.querySelector('input[name="calendar"]:checked')?.value;
-  const birthTime = document.getElementById('birthTime').value;
-  const phone = document.getElementById('phone').value.trim();
-  const consent = document.getElementById('consent').checked;
+// ======== 주문 제출 → 토스 결제 ========
+function submitOrder() {
+  var name = document.getElementById('userName').value.trim();
+  var gender = (document.querySelector('input[name="gender"]:checked') || {}).value || '';
+  var year = document.getElementById('birthYear').value;
+  var month = document.getElementById('birthMonth').value;
+  var day = document.getElementById('birthDay').value;
+  var calType = (document.querySelector('input[name="calendar"]:checked') || {}).value || 'solar';
+  var birthTime = document.getElementById('birthTime').value;
+  var phone = document.getElementById('userPhone').value.trim();
+  var agree = document.getElementById('agreePrivacy').checked;
+  var question = '';
+
+  if (!selectedProductCode) return showToast('상품을 선택해주세요');
   if (!name) return showToast('이름을 입력해주세요');
   if (!gender) return showToast('성별을 선택해주세요');
-  if (!year||!month||!day) return showToast('생년월일을 선택해주세요');
+  if (!year || !month || !day) return showToast('생년월일을 선택해주세요');
   if (!birthTime) return showToast('태어난 시간을 선택해주세요');
-  if (!phone||phone.replace(/-/g,'').length<10) return showToast('연락처를 정확히 입력해주세요');
-  if (!consent) return showToast('개인정보 수집에 동의해주세요');
-
-  let question = '';
-  if (product === 'HW2') {
-    const q = document.querySelector('input[name="q_money"]:checked')?.value;
-    if (!q) return showToast('재물 관련 질문을 선택해주세요');
-    question = q === '직접입력' ? document.getElementById('q_money_custom').value.trim() : q;
-    if (q === '직접입력' && !question) return showToast('궁금한 것을 적어주세요');
+  if (!phone || phone.replace(/-/g,'').length < 10) return showToast('연락처를 정확히 입력해주세요');
+  if ((selectedProductCode === 'HW2' || selectedProductCode === 'HW3') && !selectedJob) return showToast('직업을 선택해주세요');
+  if (selectedProductCode === 'HW3') {
+    question = document.getElementById('userQuestion').value.trim();
+    if (!question) return showToast('질문을 입력해주세요');
   }
-  if (product === 'HW3') {
-    const w = document.querySelector('input[name="q_worry"]:checked')?.value;
-    const wi = document.querySelector('input[name="q_wish"]:checked')?.value;
-    if (!w) return showToast('고민을 선택해주세요');
-    if (!wi) return showToast('바라는 것을 선택해주세요');
-    const worry = w === '직접입력' ? document.getElementById('q_worry_custom').value.trim() : w;
-    const wish = wi === '직접입력' ? document.getElementById('q_wish_custom').value.trim() : wi;
-    if ((w==='직접입력'&&!worry)||(wi==='직접입력'&&!wish)) return showToast('내용을 입력해주세요');
-    question = JSON.stringify({worry, wish});
-  }
+  if (!agree) return showToast('개인정보 수집·이용에 동의해주세요');
 
-  const birthDate = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-  const orderId = 'HW-' + genId(8);
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.querySelector('.btn-text').style.display = 'none';
-  btn.querySelector('.btn-loading').style.display = 'inline';
+  var birthDate = year + '년 ' + month + '월 ' + day + '일';
+  var orderId = 'HW' + Date.now();
 
+  // 세션에 주문 정보 저장
+  sessionStorage.setItem('hw_order_index', JSON.stringify({
+    orderId: orderId,
+    product: selectedProductCode,
+    price: selectedPrice,
+    name: name,
+    gender: gender,
+    phone: phone.replace(/-/g, ''),
+    birthDate: birthDate,
+    birthTime: birthTime,
+    calendarType: calType,
+    question: question,
+    job: selectedJob
+  }));
+
+  // 토스 결제 요청
   try {
-    if (HW_SERVER) {
-      await fetch(HW_SERVER + '/order', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({orderId,product,productName,price:Number(price),payMethod:'bank',name,gender,birthDate,calendar,birthTime,phone:phone.replace(/-/g,''),question})
-      });
-    }
-    showConfirm(orderId, productName, price, name);
-  } catch(err) {
-    console.error(err);
-    // 서버 연결 전에도 완료 화면은 보여줌
-    showConfirm(orderId, productName, price, name);
+    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    var payment = tossPayments.payment({ customerKey: 'ANONYMOUS' });
+    payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: selectedPrice },
+      orderId: orderId,
+      orderName: '호왕당 ' + PRODUCT_NAMES[selectedProductCode],
+      customerName: name,
+      customerMobilePhone: phone.replace(/[^0-9]/g, ''),
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card: { flowMode: 'DEFAULT' }
+    }).catch(function(e) {
+      if (e.code === 'USER_CANCEL') showToast('결제가 취소되었습니다');
+      else { console.error(e); showToast('결제 중 오류: ' + (e.message || '')); }
+    });
+  } catch(e) {
+    console.error(e);
+    showToast('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
   }
 }
 
-function showConfirm(orderId, productName, price, name) {
-  document.getElementById('orderScreen').style.display = 'none';
-  document.getElementById('confirmScreen').style.display = 'block';
-  document.getElementById('cfProduct').textContent = '호왕당 ' + productName;
-  document.getElementById('cfPrice').textContent = Number(price).toLocaleString() + '원';
-  document.getElementById('cfName').textContent = name;
-  document.getElementById('cfOrderId').textContent = orderId;
-  window.scrollTo(0,0);
-}
-
-function genId(len) {
-  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-  let r = '';
-  for (let i = 0; i < len; i++) r += c.charAt(Math.floor(Math.random()*c.length));
-  return r;
-}
-function copyAccount() {
-  navigator.clipboard.writeText('1002-4758-3163').then(() => showToast('계좌번호가 복사되었습니다')).catch(() => showToast('복사 실패'));
-}
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
-function initFadeIn() {
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+
+(function initFadeIn() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, {threshold:0.1});
-  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-}
+  document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+})();
 </script>
 </body>
 </html>
