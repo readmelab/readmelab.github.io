@@ -2,364 +2,454 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>호왕당 스타일 샘플</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>재물풀이 샘플 | 호왕당</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0d0906;
+  font-family:'Noto Serif KR',serif;
+  color:#e8dcc8;
+  min-height:100vh;
+  display:flex;justify-content:center;
+  padding:20px 12px 60px;
+}
 
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{
-    font-family:'Noto Serif KR',serif;
-    background:#0a0704;
-    color:#e8dcc8;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:40px 16px;
-  }
+/* ── 전체 두루마리 컨테이너 ── */
+.scroll-wrap{
+  max-width:480px;width:100%;
+  position:relative;
+}
 
-  .sample-label{
-    font-size:11px;color:#5a4a3a;letter-spacing:4px;margin-bottom:30px;
-  }
+/* ── 방울 ── */
+.bell{
+  text-align:center;
+  font-size:36px;
+  margin-bottom:-8px;
+  filter:drop-shadow(0 4px 12px rgba(212,175,55,.5));
+  animation:bellSwing 3s ease-in-out infinite;
+  position:relative;z-index:10;
+}
+@keyframes bellSwing{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(6deg)}
+  75%{transform:rotate(-6deg)}
+}
 
-  /* ============================================
-     호왕당 프레임 카드
-     ============================================ */
-  .hw-card{
-    width:100%;max-width:440px;
-    position:relative;
-    margin:20px 0;
-    /* 나무 질감 외곽 */
-    background:
-      linear-gradient(135deg, #1a1008 0%, #0f0a05 50%, #1a1008 100%);
-    border:3px solid #3a2a18;
-    box-shadow:
-      inset 0 0 20px rgba(0,0,0,0.5),
-      0 0 30px rgba(0,0,0,0.8),
-      0 0 2px #5a4a30;
-  }
+/* ── 상단 장식 (호왕당 현판) ── */
+.scroll-top{
+  background:linear-gradient(180deg,#3a2a1a 0%,#2a1c10 40%,#1e1409 100%);
+  border:2px solid #6b5233;
+  border-bottom:none;
+  border-radius:8px 8px 0 0;
+  padding:28px 20px 22px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.scroll-top::before{
+  content:'';position:absolute;inset:6px;
+  border:1px solid rgba(212,175,55,.25);
+  border-radius:4px;
+  pointer-events:none;
+}
+/* 구름 무늬 */
+.scroll-top::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:
+    radial-gradient(ellipse 80px 30px at 15% 20%, rgba(212,175,55,.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60px 25px at 80% 60%, rgba(212,175,55,.04) 0%, transparent 70%);
+  pointer-events:none;
+}
+.scroll-top h1{
+  font-size:28px;font-weight:900;
+  color:#d4af37;
+  text-shadow:0 0 20px rgba(212,175,55,.4), 0 2px 4px rgba(0,0,0,.6);
+  letter-spacing:12px;
+  margin-bottom:6px;
+}
+.scroll-top .sub{
+  font-size:13px;color:#a08c6a;letter-spacing:4px;
+}
 
-  /* 나무 테두리 질감 - 바깥 */
-  .hw-card::before{
-    content:'';position:absolute;inset:-3px;
-    border:4px solid transparent;
-    border-image: linear-gradient(
-      180deg,
-      #4a3820 0%, #2a1a0c 20%, #3a2815 40%,
-      #2a1a0c 60%, #4a3820 80%, #2a1a0c 100%
-    ) 1;
-    pointer-events:none;
-    z-index:1;
-  }
+/* ── 양쪽 테두리 본문 영역 ── */
+.scroll-body{
+  border-left:3px solid #6b5233;
+  border-right:3px solid #6b5233;
+  background:#110e09;
+  position:relative;
+}
+/* 안쪽 붉은 실선 */
+.scroll-body::before{
+  content:'';position:absolute;
+  top:0;bottom:0;left:8px;right:8px;
+  border-left:1px solid rgba(180,60,30,.25);
+  border-right:1px solid rgba(180,60,30,.25);
+  pointer-events:none;z-index:1;
+}
+.scroll-inner{
+  padding:0 24px;
+  position:relative;z-index:2;
+}
 
-  /* 안쪽 붉은 끈 */
-  .hw-card-inner{
-    position:relative;
-    margin:8px;
-    border:1px solid #6a2020;
-    box-shadow:
-      inset 0 0 1px #6a2020,
-      0 0 1px #6a2020;
-    padding:0;
-  }
+/* ── 챕터 ── */
+.chapter{
+  padding:36px 0;
+}
 
-  /* 안쪽 배경 + 구름무늬 */
-  .hw-card-content{
-    position:relative;
-    padding:28px 22px;
-    background:
-      radial-gradient(ellipse at 50% 30%, #12100a 0%, #0a0804 100%);
-    overflow:hidden;
-  }
+/* 챕터 구분선 */
+.chapter-divider{
+  display:flex;align-items:center;gap:12px;
+  padding:0 10px;
+}
+.chapter-divider::before,
+.chapter-divider::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,#6b5233,transparent);
+}
+.chapter-divider .diamond{
+  color:#d4af37;font-size:10px;
+  text-shadow:0 0 8px rgba(212,175,55,.4);
+}
 
-  /* 구름 무늬 배경 */
-  .hw-card-content::before{
-    content:'';position:absolute;
-    top:10%;left:5%;width:90%;height:50%;
-    background:
-      radial-gradient(ellipse at 30% 50%, #c8a96e08 0%, transparent 50%),
-      radial-gradient(ellipse at 70% 40%, #c8a96e06 0%, transparent 40%),
-      radial-gradient(ellipse at 50% 60%, #c8a96e05 0%, transparent 45%);
-    opacity:0.6;
-    pointer-events:none;
-  }
+/* 챕터 번호 */
+.ch-number{
+  text-align:center;
+  font-size:11px;
+  color:#6b5233;
+  letter-spacing:8px;
+  margin-bottom:10px;
+}
 
-  /* 모서리 금속 장식 */
-  .hw-corner{
-    position:absolute;width:16px;height:16px;z-index:2;
-  }
-  .hw-corner::before,.hw-corner::after{
-    content:'';position:absolute;background:#8a7a50;
-  }
-  .hw-corner-tl{top:-1px;left:-1px;}
-  .hw-corner-tl::before{top:0;left:0;width:16px;height:2px;background:linear-gradient(90deg,#b89a5a,#6a5a30);}
-  .hw-corner-tl::after{top:0;left:0;width:2px;height:16px;background:linear-gradient(180deg,#b89a5a,#6a5a30);}
+/* 챕터 제목 */
+.ch-title{
+  text-align:center;
+  font-size:20px;font-weight:700;
+  color:#d4af37;
+  letter-spacing:3px;
+  margin-bottom:6px;
+  text-shadow:0 0 12px rgba(212,175,55,.3);
+}
+.ch-subtitle{
+  text-align:center;
+  font-size:12px;color:#8a7a60;
+  letter-spacing:2px;
+  margin-bottom:24px;
+}
 
-  .hw-corner-tr{top:-1px;right:-1px;}
-  .hw-corner-tr::before{top:0;right:0;width:16px;height:2px;background:linear-gradient(270deg,#b89a5a,#6a5a30);}
-  .hw-corner-tr::after{top:0;right:0;width:2px;height:16px;background:linear-gradient(180deg,#b89a5a,#6a5a30);}
+/* 챕터 본문 */
+.ch-body{
+  font-size:15px;line-height:1.95;
+  color:#d4c8a8;
+  text-align:justify;
+  word-break:keep-all;
+}
 
-  .hw-corner-bl{bottom:-1px;left:-1px;}
-  .hw-corner-bl::before{bottom:0;left:0;width:16px;height:2px;background:linear-gradient(90deg,#b89a5a,#6a5a30);}
-  .hw-corner-bl::after{bottom:0;left:0;width:2px;height:16px;background:linear-gradient(0deg,#b89a5a,#6a5a30);}
+/* ── 시각화: 바 게이지 ── */
+.gauge-group{margin:24px 0 8px}
+.gauge-row{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:10px;
+}
+.gauge-label{
+  width:56px;font-size:12px;color:#a08c6a;text-align:right;
+  flex-shrink:0;
+}
+.gauge-track{
+  flex:1;height:10px;
+  background:rgba(107,82,51,.25);
+  border-radius:5px;overflow:hidden;
+}
+.gauge-fill{
+  height:100%;border-radius:5px;
+  background:linear-gradient(90deg,#d4af37,#e8c84a);
+  transition:width 1.2s ease;
+}
+.gauge-val{
+  width:32px;font-size:11px;color:#8a7a60;
+}
 
-  .hw-corner-br{bottom:-1px;right:-1px;}
-  .hw-corner-br::before{bottom:0;right:0;width:16px;height:2px;background:linear-gradient(270deg,#b89a5a,#6a5a30);}
-  .hw-corner-br::after{bottom:0;right:0;width:2px;height:16px;background:linear-gradient(0deg,#b89a5a,#6a5a30);}
+/* ── 시각화: 등급 ── */
+.grade-box{
+  text-align:center;margin:20px 0;
+}
+.grade-letter{
+  display:inline-block;
+  font-size:48px;font-weight:900;
+  color:#d4af37;
+  text-shadow:0 0 30px rgba(212,175,55,.5),0 0 60px rgba(212,175,55,.2);
+  border:2px solid rgba(212,175,55,.3);
+  width:80px;height:80px;
+  line-height:80px;
+  border-radius:50%;
+}
+.grade-desc{
+  font-size:13px;color:#a08c6a;margin-top:8px;letter-spacing:1px;
+}
 
-  /* 금속 리벳 (모서리 장식 중앙 점) */
-  .hw-corner::after{
-    /* 리벳 위에 작은 원 */
-  }
-  .hw-rivet{
-    position:absolute;width:6px;height:6px;
-    background:radial-gradient(circle, #d4b868, #8a7a50, #5a4a30);
-    border-radius:50%;
-    box-shadow:0 0 3px #d4b86844;
-    z-index:3;
-  }
-  .hw-rivet-tl{top:3px;left:3px;}
-  .hw-rivet-tr{top:3px;right:3px;}
-  .hw-rivet-bl{bottom:3px;left:3px;}
-  .hw-rivet-br{bottom:3px;right:3px;}
+/* ── 시각화: 월운 그리드 ── */
+.month-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  margin:20px 0;
+}
+.month-cell{
+  background:rgba(107,82,51,.12);
+  border:1px solid rgba(107,82,51,.25);
+  border-radius:4px;
+  padding:10px 6px;text-align:center;
+}
+.month-cell .m-num{font-size:11px;color:#6b5233}
+.month-cell .m-icon{font-size:18px;margin:4px 0}
+.month-cell .m-score{font-size:13px;font-weight:700;color:#d4af37}
 
-  /* 현판 (상단 제목) */
-  .hw-plaque{
-    text-align:center;
-    padding:12px 0 16px;
-    position:relative;
-    z-index:1;
-  }
-  .hw-plaque-board{
-    display:inline-block;
-    padding:6px 28px;
-    background:
-      linear-gradient(180deg, #2a1f12 0%, #1a1408 50%, #2a1f12 100%);
-    border:1px solid #4a3a20;
-    box-shadow:
-      0 2px 8px rgba(0,0,0,0.6),
-      inset 0 1px 0 #3a2a18;
-    position:relative;
-  }
-  .hw-plaque-text{
-    font-size:16px;font-weight:900;color:#c8a96e;
-    letter-spacing:6px;
-    text-shadow:0 0 10px #c8a96e33;
-  }
-  /* 현판 밑 방울 */
-  .hw-bell{
-    display:block;margin:8px auto 0;
-    font-size:14px;
-    opacity:0.5;
-  }
+/* ── 시각화: 체크리스트 ── */
+.checklist{margin:20px 0}
+.check-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(107,82,51,.15);
+}
+.check-icon{
+  width:20px;height:20px;flex-shrink:0;
+  border:1.5px solid #6b5233;border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#d4af37;margin-top:2px;
+}
+.check-text{font-size:14px;line-height:1.7;color:#d4c8a8}
 
-  /* 섹션 번호 */
-  .hw-section-num{
-    font-size:10px;color:#5a4a3a;letter-spacing:4px;
-    margin-bottom:6px;text-align:center;
-    position:relative;z-index:1;
-  }
+/* ── 하단 마감 ── */
+.scroll-bottom{
+  background:linear-gradient(0deg,#3a2a1a 0%,#2a1c10 40%,#1e1409 100%);
+  border:2px solid #6b5233;
+  border-top:none;
+  border-radius:0 0 8px 8px;
+  padding:24px 20px 20px;
+  text-align:center;
+  position:relative;
+}
+.scroll-bottom::before{
+  content:'';position:absolute;inset:6px;
+  border:1px solid rgba(212,175,55,.2);
+  border-radius:4px;
+  pointer-events:none;
+}
+.scroll-bottom .seal{
+  font-size:13px;color:#6b5233;letter-spacing:6px;
+}
+.scroll-bottom .stamp{
+  display:inline-block;
+  width:52px;height:52px;line-height:52px;
+  border:2px solid rgba(180,60,30,.4);
+  border-radius:50%;
+  font-size:16px;color:rgba(180,60,30,.6);
+  margin-top:10px;
+  font-weight:700;letter-spacing:2px;
+}
 
-  /* 본문 */
-  .hw-body{
-    font-size:13.5px;line-height:2.1;color:#ccc0aa;
-    word-break:keep-all;
-    position:relative;z-index:1;
-    margin-top:12px;
-  }
+/* ── 애니메이션 ── */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s}
+.fade-up.visible{opacity:1;transform:translateY(0)}
 
-  /* 구분선 (카드 내부) */
-  .hw-inner-divider{
-    height:1px;margin:16px 0;
-    background:linear-gradient(90deg, transparent, #c8a96e22, transparent);
-    position:relative;z-index:1;
-  }
-
-  /* ============================================
-     호왕당 헤더 카드 (특별)
-     ============================================ */
-  .hw-header-card .hw-card-content{
-    padding:36px 22px;
-    text-align:center;
-  }
-  .hw-header-stamp{
-    font-size:48px;margin-bottom:12px;
-    position:relative;z-index:1;
-  }
-  .hw-header-title{
-    font-size:22px;font-weight:900;color:#c8a96e;
-    letter-spacing:8px;
-    text-shadow:0 0 20px #c8a96e22;
-    position:relative;z-index:1;
-  }
-  .hw-header-sub{
-    font-size:11px;color:#8a7a60;margin-top:8px;
-    letter-spacing:4px;
-    position:relative;z-index:1;
-  }
-  .hw-header-badge{
-    display:inline-block;margin-top:16px;
-    padding:5px 18px;
-    border:1px solid #c8a96e33;
-    font-size:12px;color:#c8a96e;
-    letter-spacing:2px;
-    background:#c8a96e08;
-    position:relative;z-index:1;
-  }
-
-  /* ============================================
-     호왕당 호통 카드 (붉은 테두리)
-     ============================================ */
-  .hw-hotong-card{
-    border-color:#4a1a1a;
-    box-shadow:
-      inset 0 0 20px rgba(0,0,0,0.5),
-      0 0 30px rgba(80,20,20,0.3),
-      0 0 2px #5a2020;
-  }
-  .hw-hotong-card::before{
-    border-image: linear-gradient(
-      180deg,
-      #4a2020 0%, #2a1010 20%, #3a1818 40%,
-      #2a1010 60%, #4a2020 80%, #2a1010 100%
-    ) 1;
-  }
-  .hw-hotong-card .hw-card-inner{
-    border-color:#8a3030;
-    box-shadow:inset 0 0 1px #8a3030,0 0 1px #8a3030;
-  }
-  .hw-hotong-card .hw-plaque-board{
-    background:linear-gradient(180deg, #2a1212 0%, #1a0a08 50%, #2a1212 100%);
-    border-color:#5a2020;
-  }
-  .hw-hotong-card .hw-plaque-text{
-    color:#e06050;
-  }
-
-  /* 장식 */
-  .ornament{
-    text-align:center;margin:30px 0;
-    color:#c8a96e33;font-size:12px;letter-spacing:8px;
-  }
-
-  /* 비교용 기존 스타일 */
-  .old-card{
-    width:100%;max-width:440px;
-    background:#110e09;border:1px solid #c8a96e1a;
-    padding:28px 22px;margin:20px 0;
-    position:relative;
-  }
-  .old-card::before,.old-card::after{
-    content:'';position:absolute;width:16px;height:16px;
-    border-color:#c8a96e22;border-style:solid;
-  }
-  .old-card::before{top:6px;left:6px;border-width:1px 0 0 1px;}
-  .old-card::after{bottom:6px;right:6px;border-width:0 1px 1px 0;}
-  .old-num{font-size:10px;color:#5a4a3a;letter-spacing:4px;margin-bottom:8px;}
-  .old-title{font-size:18px;font-weight:700;color:#c8a96e;margin-bottom:16px;}
-  .old-body{font-size:13.5px;line-height:2;color:#ccc0aa;word-break:keep-all;}
+/* ── 반응형 ── */
+@media(max-width:400px){
+  .scroll-inner{padding:0 16px}
+  .scroll-top h1{font-size:22px;letter-spacing:8px}
+  .ch-title{font-size:17px}
+  .ch-body{font-size:14px}
+  .month-grid{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
 
-<div class="sample-label">— 스타일 A : 호왕당 프레임 —</div>
+<div class="scroll-wrap">
 
-<!-- 헤더 카드 -->
-<div class="hw-card hw-header-card">
-  <div class="hw-card-inner">
-    <div class="hw-corner hw-corner-tl"></div>
-    <div class="hw-corner hw-corner-tr"></div>
-    <div class="hw-corner hw-corner-bl"></div>
-    <div class="hw-corner hw-corner-br"></div>
-    <div class="hw-rivet hw-rivet-tl"></div>
-    <div class="hw-rivet hw-rivet-tr"></div>
-    <div class="hw-rivet hw-rivet-bl"></div>
-    <div class="hw-rivet hw-rivet-br"></div>
-    <div class="hw-card-content">
-      <div class="hw-header-stamp">🏺</div>
-      <div class="hw-header-title">재 물 풀 이</div>
-      <div class="hw-header-sub">호왕당 할머니의 재물 감정서</div>
-      <div class="hw-header-badge">테스트님의 재물 감정서</div>
-    </div>
+  <!-- 방울 -->
+  <div class="bell">🔔</div>
+
+  <!-- ━━━ 상단 헤더 ━━━ -->
+  <div class="scroll-top">
+    <h1>호 왕 당</h1>
+    <div class="sub">재 물 풀 이</div>
   </div>
-</div>
 
-<div class="ornament">— ◆ —</div>
+  <!-- ━━━ 본문 (양쪽 테두리 연결) ━━━ -->
+  <div class="scroll-body">
+    <div class="scroll-inner">
 
-<!-- 일반 섹션 카드 -->
-<div class="hw-card">
-  <div class="hw-card-inner">
-    <div class="hw-corner hw-corner-tl"></div>
-    <div class="hw-corner hw-corner-tr"></div>
-    <div class="hw-corner hw-corner-bl"></div>
-    <div class="hw-corner hw-corner-br"></div>
-    <div class="hw-rivet hw-rivet-tl"></div>
-    <div class="hw-rivet hw-rivet-tr"></div>
-    <div class="hw-rivet hw-rivet-bl"></div>
-    <div class="hw-rivet hw-rivet-br"></div>
-    <div class="hw-card-content">
-      <div class="hw-plaque">
-        <div class="hw-plaque-board">
-          <div class="hw-plaque-text">재물 총론</div>
+      <!-- ── 사주 패널 ── -->
+      <div class="chapter fade-up">
+        <div class="ch-number">四 柱 命 式</div>
+        <div style="display:flex;justify-content:center;gap:8px;margin:12px 0 20px">
+          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
+            <div style="font-size:11px;color:#6b5233">시주</div>
+            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">丙</div>
+            <div style="font-size:20px;font-weight:700;color:#e8dcc8">午</div>
+          </div>
+          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
+            <div style="font-size:11px;color:#6b5233">일주</div>
+            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">庚</div>
+            <div style="font-size:20px;font-weight:700;color:#e8dcc8">辰</div>
+          </div>
+          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
+            <div style="font-size:11px;color:#6b5233">월주</div>
+            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">辛</div>
+            <div style="font-size:20px;font-weight:700;color:#e8dcc8">巳</div>
+          </div>
+          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
+            <div style="font-size:11px;color:#6b5233">년주</div>
+            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">庚</div>
+            <div style="font-size:20px;font-weight:700;color:#e8dcc8">午</div>
+          </div>
         </div>
-        <div class="hw-bell">🔔</div>
       </div>
-      <div class="hw-section-num">第 一</div>
-      <div class="hw-inner-divider"></div>
-      <div style="text-align:center;margin-bottom:16px;">
-        <div style="font-size:48px;">🔮</div>
-        <div style="font-size:10px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">재물의 큰 흐름을 읽다</div>
-      </div>
-      <div class="hw-body">
-        벼린 칼은 값어치가 있다. 네 돈은 네 전문성에서 나온다. 남이 못 하는 걸 네가 할 수 있을 때 돈이 된다. 기술직, 전문직, 컨설팅에 인연이 있다. 네 칼날을 갈아라. 자격증 하나, 기술 하나가 네 연봉을 천만 원 올린다. 애매하게 여러 개 하지 말고 하나를 최고로 만들어라. 강한 경금은 이미 벼려진 칼이다. 잘 드는 칼은 비싸다.
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="ornament">— ◆ —</div>
+      <!-- ── 구분선 ── -->
+      <div class="chapter-divider"><span class="diamond">◆</span></div>
 
-<!-- 호통 카드 (붉은 톤) -->
-<div class="hw-card hw-hotong-card">
-  <div class="hw-card-inner">
-    <div class="hw-corner hw-corner-tl"></div>
-    <div class="hw-corner hw-corner-tr"></div>
-    <div class="hw-corner hw-corner-bl"></div>
-    <div class="hw-corner hw-corner-br"></div>
-    <div class="hw-rivet hw-rivet-tl"></div>
-    <div class="hw-rivet hw-rivet-tr"></div>
-    <div class="hw-rivet hw-rivet-bl"></div>
-    <div class="hw-rivet hw-rivet-br"></div>
-    <div class="hw-card-content">
-      <div class="hw-plaque">
-        <div class="hw-plaque-board">
-          <div class="hw-plaque-text">할머니의 재물 호통</div>
+      <!-- ── 第一 재물 총론 ── -->
+      <div class="chapter fade-up">
+        <div class="ch-number">第 一</div>
+        <div class="ch-title">재 물 총 론</div>
+        <div class="ch-subtitle">재물의 큰 흐름을 읽다</div>
+        <div class="ch-body">
+          벼린 칼은 값어치가 있다. 네 돈은 네 전문성에서 나온다. 남이 못 하는 걸 네가 할 수 있을 때 돈이 된다. 기술직, 전문직, 컨설팅에 인연이 있다. 네 칼날을 갈아라. 자격증 하나, 기술 하나가 네 연봉을 천만 원 올린다. 애매하게 여러 개 하지 말고 하나를 최고로 만들어라. 강한 경금은 이미 벼려진 칼이다. 잘 드는 칼은 비싸다.
         </div>
-        <div class="hw-bell">🔔</div>
+        <!-- 등급 시각화 -->
+        <div class="grade-box" style="margin-top:28px">
+          <div style="font-size:12px;color:#6b5233;letter-spacing:4px;margin-bottom:8px">재 물 운 등 급</div>
+          <div class="grade-letter">A</div>
+          <div class="grade-desc">전문성이 곧 재물이 되는 명</div>
+        </div>
       </div>
-      <div class="hw-section-num">第 十</div>
-      <div class="hw-inner-divider"></div>
-      <div style="text-align:center;margin-bottom:16px;">
-        <div style="font-size:48px;">🔥</div>
+
+      <div class="chapter-divider"><span class="diamond">◆</span></div>
+
+      <!-- ── 第二 돈의 그릇 ── -->
+      <div class="chapter fade-up">
+        <div class="ch-number">第 二</div>
+        <div class="ch-title">돈 의 그 릇</div>
+        <div class="ch-subtitle">얼마를 담을 수 있는가</div>
+        <div class="ch-body">
+          경금 일간에 토가 두텁다. 그릇이 단단하다. 한 번 쥔 돈은 잘 놓지 않는 성정이다. 다만 너무 꽉 쥐면 새 돈이 들어올 틈이 없다. 적절히 풀어줄 때 그릇이 커진다.
+        </div>
+        <div class="gauge-group">
+          <div style="font-size:12px;color:#6b5233;letter-spacing:3px;text-align:center;margin-bottom:12px">그 릇 크 기</div>
+          <div class="gauge-row">
+            <div class="gauge-label">용량</div>
+            <div class="gauge-track"><div class="gauge-fill" style="width:72%"></div></div>
+            <div class="gauge-val">72</div>
+          </div>
+        </div>
       </div>
-      <div class="hw-body" style="color:#e8dcc8;">
-        재성이 약하다고 포기하면 진짜 돈 못 번다! 네 팔자가 돈에 인연이 약한 거지 돈을 못 버는 게 아니야. 남보다 두 배 뛰어야 같은 돈을 버는 팔자라고 했잖아. 그러면 두 배 뛰어라! 앉아서 한숨 쉬면 뭐가 달라지냐?
+
+      <div class="chapter-divider"><span class="diamond">◆</span></div>
+
+      <!-- ── 第三 돈의 통로 ── -->
+      <div class="chapter fade-up">
+        <div class="ch-number">第 三</div>
+        <div class="ch-title">돈 의 통 로</div>
+        <div class="ch-subtitle">어디서 돈이 들어오는가</div>
+        <div class="ch-body">
+          관성이 강하니 조직·직장에서 안정적으로 번다. 식상이 약하니 프리랜서·창작 수입은 불안정하다. 네 주력 통로는 '조직'이다.
+        </div>
+        <div class="gauge-group">
+          <div class="gauge-row">
+            <div class="gauge-label">조직</div>
+            <div class="gauge-track"><div class="gauge-fill" style="width:85%"></div></div>
+            <div class="gauge-val">85</div>
+          </div>
+          <div class="gauge-row">
+            <div class="gauge-label">창작</div>
+            <div class="gauge-track"><div class="gauge-fill" style="width:40%"></div></div>
+            <div class="gauge-val">40</div>
+          </div>
+          <div class="gauge-row">
+            <div class="gauge-label">인맥</div>
+            <div class="gauge-track"><div class="gauge-fill" style="width:55%"></div></div>
+            <div class="gauge-val">55</div>
+          </div>
+          <div class="gauge-row">
+            <div class="gauge-label">학문</div>
+            <div class="gauge-track"><div class="gauge-fill" style="width:60%"></div></div>
+            <div class="gauge-val">60</div>
+          </div>
+          <div class="gauge-row">
+            <div class="gauge-label">투자</div>
+            <div class="gauge-track"><div class="gauge-fill" style="width:50%"></div></div>
+            <div class="gauge-val">50</div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div class="chapter-divider"><span class="diamond">◆</span></div>
+
+      <!-- ── 第七 월운 (시각화 샘플) ── -->
+      <div class="chapter fade-up">
+        <div class="ch-number">第 七</div>
+        <div class="ch-title">월 별 재 물 운</div>
+        <div class="ch-subtitle">12개월의 돈 흐름</div>
+        <div class="month-grid">
+          <div class="month-cell"><div class="m-num">1월</div><div class="m-icon">🔥</div><div class="m-score">78</div></div>
+          <div class="month-cell"><div class="m-num">2월</div><div class="m-icon">💧</div><div class="m-score">62</div></div>
+          <div class="month-cell"><div class="m-num">3월</div><div class="m-icon">🌿</div><div class="m-score">85</div></div>
+          <div class="month-cell"><div class="m-num">4월</div><div class="m-icon">⛰️</div><div class="m-score">70</div></div>
+          <div class="month-cell"><div class="m-num">5월</div><div class="m-icon">🔥</div><div class="m-score">90</div></div>
+          <div class="month-cell"><div class="m-num">6월</div><div class="m-icon">💧</div><div class="m-score">55</div></div>
+          <div class="month-cell"><div class="m-num">7월</div><div class="m-icon">🌿</div><div class="m-score">72</div></div>
+          <div class="month-cell"><div class="m-num">8월</div><div class="m-icon">⚒️</div><div class="m-score">68</div></div>
+          <div class="month-cell"><div class="m-num">9월</div><div class="m-icon">⛰️</div><div class="m-score">82</div></div>
+          <div class="month-cell"><div class="m-num">10월</div><div class="m-icon">🔥</div><div class="m-score">75</div></div>
+          <div class="month-cell"><div class="m-num">11월</div><div class="m-icon">💧</div><div class="m-score">60</div></div>
+          <div class="month-cell"><div class="m-num">12월</div><div class="m-icon">⚒️</div><div class="m-score">88</div></div>
+        </div>
+      </div>
+
+      <div class="chapter-divider"><span class="diamond">◆</span></div>
+
+      <!-- ── 第九 돈 습관 처방 (체크리스트) ── -->
+      <div class="chapter fade-up">
+        <div class="ch-number">第 九</div>
+        <div class="ch-title">돈 습 관 처 방</div>
+        <div class="ch-subtitle">지금 당장 실천할 것</div>
+        <div class="checklist">
+          <div class="check-item">
+            <div class="check-icon">✓</div>
+            <div class="check-text">월급의 30%는 자동이체로 저축하라. 경금은 시스템을 만들면 지킨다.</div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon">✓</div>
+            <div class="check-text">충동 구매 전 24시간 규칙을 적용하라. 하루 지나면 안 사게 된다.</div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon">✓</div>
+            <div class="check-text">전문 자격증에 투자하라. 자기 계발비는 경금에게 최고의 투자다.</div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon">✓</div>
+            <div class="check-text">매달 가계부를 기록하라. 숫자를 보면 경금은 자동으로 절제한다.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /scroll-inner -->
+  </div><!-- /scroll-body -->
+
+  <!-- ━━━ 하단 마감 ━━━ -->
+  <div class="scroll-bottom">
+    <div class="seal">호 왕 당</div>
+    <div><div class="stamp">印</div></div>
   </div>
-</div>
 
-<div class="ornament" style="margin:50px 0 20px;">— 비교: 기존 스타일 —</div>
+</div><!-- /scroll-wrap -->
 
-<!-- 기존 스타일 비교용 -->
-<div class="old-card">
-  <div class="old-num">第 一</div>
-  <div class="old-title">재물 총론</div>
-  <div class="old-body">
-    벼린 칼은 값어치가 있다. 네 돈은 네 전문성에서 나온다. 남이 못 하는 걸 네가 할 수 있을 때 돈이 된다. 기술직, 전문직, 컨설팅에 인연이 있다. 네 칼날을 갈아라. 자격증 하나, 기술 하나가 네 연봉을 천만 원 올린다. 애매하게 여러 개 하지 말고 하나를 최고로 만들어라. 강한 경금은 이미 벼려진 칼이다. 잘 드는 칼은 비싸다.
-  </div>
-</div>
-
+<script>
+// 스크롤 페이드업
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.15});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
 </body>
 </html>
