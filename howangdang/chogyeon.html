@@ -138,15 +138,8 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="form-label">연락처</div>
       <input class="form-input" id="userPhone" type="tel" placeholder="010-0000-0000">
     </div>
-    <div>
-      <div class="form-label">생년월일 (음력/양력)</div>
-      <input class="form-input" id="userBirth" type="text" placeholder="예: 1987년 10월 19일 음력">
-    </div>
-    <div>
-      <div class="form-label">태어난 시</div>
-      <input class="form-input" id="userTime" type="text" placeholder="예: 사시 (09~11시)">
-    </div>
 
+    <!-- 재물풀이, 본풀이만 -->
     <div class="hw2-only" id="jobSection">
       <div class="form-label">직업</div>
       <div class="job-row">
@@ -159,13 +152,24 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       </div>
     </div>
 
+    <!-- 본풀이만 -->
     <div class="hw3-only" id="questionSection">
       <div class="form-label">지금 가장 궁금한 것 (질문 1개)</div>
       <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
     </div>
 
+    <!-- 개인정보 동의 -->
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-top:4px">
+      <input type="checkbox" id="agreePrivacy" style="margin-top:3px;accent-color:#c5975b;width:18px;height:18px;cursor:pointer">
+      <label for="agreePrivacy" style="font-size:11px;color:#8a7a5a;line-height:1.6;cursor:pointer">
+        [필수] 개인정보 수집·이용에 동의합니다.<br>
+        <span style="color:#6a5a4a">수집 항목: 이름, 연락처, 생년월일시 | 목적: 사주 풀이 제공 | 보유 기간: 서비스 제공 후 1년</span>
+      </label>
+    </div>
+
     <button class="submit-btn" id="submitBtn" onclick="submitOrder()">결제하기</button>
   </div>
+
 
   <!-- 결제 완료 -->
   <div class="success-section" id="successSection">
@@ -281,32 +285,34 @@ function showToast(msg) {
 async function submitOrder() {
   const name = document.getElementById('userName').value.trim();
   const phone = document.getElementById('userPhone').value.trim();
-  const birth = document.getElementById('userBirth').value.trim();
-  const time = document.getElementById('userTime').value.trim();
   const question = document.getElementById('userQuestion') ? document.getElementById('userQuestion').value.trim() : '';
 
   if (!selectedProduct) { showToast('상품을 선택해주세요'); return; }
   if (!name) { showToast('이름을 입력해주세요'); return; }
   if (!phone) { showToast('연락처를 입력해주세요'); return; }
-  if (!birth) { showToast('생년월일을 입력해주세요'); return; }
   if ((selectedProduct === 'HW2' || selectedProduct === 'HW3') && !selectedJob) {
     showToast('직업을 선택해주세요'); return;
   }
   if (selectedProduct === 'HW3' && !question) {
     showToast('질문을 입력해주세요'); return;
   }
+  if (!document.getElementById('agreePrivacy').checked) {
+    showToast('개인정보 수집·이용에 동의해주세요'); return;
+  }
 
   const orderId = 'HW' + Date.now();
   currentOrderId = orderId;
 
+  const birthInfo = pBirth || '';
+  const timeInfo = pTime || '';
+
   try {
-    // 1. 주문 먼저 저장
     const res = await fetch(API_BASE + '/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         orderId, product: selectedProduct, name, phone,
-        birthDate: birth, birthTime: time,
+        birthDate: birthInfo, birthTime: timeInfo,
         calendarType: pCal || 'solar',
         question, job: selectedJob
       })
@@ -314,7 +320,6 @@ async function submitOrder() {
     const data = await res.json();
     if (!data.success) { showToast('주문 실패: ' + (data.error || '')); return; }
 
-    // 2. 토스페이먼츠 결제창 호출
     const tossPayments = TossPayments(CLIENT_KEY);
     const payment = tossPayments.payment({ customerKey: 'HW_' + phone.replace(/[^0-9]/g, '') });
 
@@ -338,6 +343,7 @@ async function submitOrder() {
     }
   }
 }
+
 
 function showSuccess(orderId) {
   document.getElementById('productList').style.display = 'none';
