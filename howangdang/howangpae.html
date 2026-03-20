@@ -407,10 +407,10 @@ function renderCard(data) {
   const spi = data.spiProperties;
 
   document.getElementById('cardImage').src = cardImageBase64 || card.imageUrl;
-  document.getElementById('cardTag').textContent = card.elementKo + ' ' + card.animalKo + ' · ' + spi.dayGan + ' 일간';
+  document.getElementById('cardTag').textContent = '#호왕패';
   document.getElementById('cardTitle').textContent = card.title;
-  document.getElementById('cardOneliner').textContent = '\u201C' + card.oneLiner + '\u201D';
-  document.getElementById('cardDescription').textContent = card.description;
+  document.getElementById('cardOneliner').textContent = card.viralLine || card.oneLiner;
+  document.getElementById('cardDescription').textContent = '\u201C' + card.oneLiner + '\u201D\n\n' + card.description;
   document.getElementById('cardSeason').textContent = card.seasonLine;
   document.getElementById('cardCta').innerHTML = card.cta.replace('호왕이', '<br>호왕이');
 
