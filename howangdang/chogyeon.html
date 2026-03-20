@@ -49,12 +49,17 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 .job-btn{padding:10px 16px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s}
 .job-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
 .hw2-only,.hw3-only{display:none}
+.new-only{display:block}
 .submit-btn{margin-top:8px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
 .submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
 .toast.show{opacity:1}
 .divider{width:100%;max-width:360px;height:1px;background:#2a1a0a;margin:8px 0}
 .upgrade-badge{display:inline-block;padding:4px 10px;background:rgba(232,80,80,.15);border:1px solid rgba(232,80,80,.3);border-radius:12px;font-size:11px;color:#e85050;font-weight:700;margin-bottom:12px}
+.upgrade-info{max-width:360px;width:100%;padding:16px;background:rgba(26,16,8,.8);border:1px solid #2a1a0a;border-radius:12px;margin-bottom:20px}
+.upgrade-info .ui-label{font-size:11px;color:#6a5a4a;margin-bottom:2px}
+.upgrade-info .ui-value{font-size:14px;color:#a89878;margin-bottom:10px}
+.upgrade-info .ui-value:last-child{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -71,6 +76,16 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
   <div class="intro-box" id="introBox">
     <div class="intro-title">패는 봤다.<br>그 안의 뜻이 궁금하지 않냐?</div>
     <div class="intro-desc">호왕이 네 사주를 직접 풀어주마.<br>듣고 나면 네가 왜 그렇게 살았는지 알게 된다.</div>
+  </div>
+
+  <!-- 업그레이드 시 이전 주문 정보 표시 -->
+  <div class="upgrade-info" id="upgradeInfo" style="display:none">
+    <div class="ui-label">이름</div>
+    <div class="ui-value" id="uiName"></div>
+    <div class="ui-label">연락처</div>
+    <div class="ui-value" id="uiPhone"></div>
+    <div class="ui-label">생년월일</div>
+    <div class="ui-value" id="uiBirth"></div>
   </div>
 
   <div class="product-list" id="productList">
@@ -99,11 +114,11 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 
   <div class="order-section" id="orderSection">
     <div class="divider"></div>
-    <div>
+    <div class="new-only" id="nameField">
       <div class="form-label">이름</div>
       <input class="form-input" id="userName" type="text" placeholder="이름을 알려주거라">
     </div>
-    <div>
+    <div class="new-only" id="phoneField">
       <div class="form-label">연락처</div>
       <input class="form-input" id="userPhone" type="tel" placeholder="010-0000-0000">
     </div>
@@ -122,7 +137,7 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="form-label">지금 가장 궁금한 것 (질문 1개)</div>
       <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
     </div>
-    <div style="display:flex;align-items:flex-start;gap:8px;margin-top:4px">
+    <div id="privacyRow" style="display:flex;align-items:flex-start;gap:8px;margin-top:4px">
       <input type="checkbox" id="agreePrivacy" style="margin-top:3px;accent-color:#c5975b;width:18px;height:18px;cursor:pointer">
       <label for="agreePrivacy" style="font-size:11px;color:#8a7a5a;line-height:1.6;cursor:pointer">
         [필수] 개인정보 수집·이용에 동의합니다.<br>
@@ -151,11 +166,11 @@ var pBirth = params.get('birth');
 var pTime = params.get('time');
 var pCal = params.get('cal');
 
-// 업그레이드 파라미터
 var upgradeTarget = params.get('upgrade');
 var upgradeFromId = params.get('from');
 var isUpgrade = false;
 var upgradePrice = 0;
+var prevOrder = null; // 이전 주문 데이터
 
 if (pTitle) {
   document.getElementById('sajuSummary').classList.remove('hidden');
@@ -163,9 +178,46 @@ if (pTitle) {
   document.getElementById('sumPillars').textContent = pPillars || '';
 }
 
-// 업그레이드 모드 처리
+// ======== 업그레이드 모드: 이전 주문 정보 로드 ========
 if (upgradeTarget && upgradeFromId) {
   isUpgrade = true;
+
+  // 이전 주문 정보 가져오기
+  fetch(API_BASE + '/result/' + upgradeFromId)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.data) {
+        prevOrder = data.data;
+        // 이전 주문 정보 표시
+        document.getElementById('upgradeInfo').style.display = 'block';
+        document.getElementById('uiName').textContent = prevOrder.userName || '';
+        // 전화번호와 생년월일은 원본 주문에서 가져와야 함
+        return fetch(API_BASE + '/result/' + upgradeFromId);
+      }
+    }).catch(function() {});
+
+  // 원본 주문 데이터도 가져오기 (이름, 전화번호, 생년월일)
+  fetch(API_BASE + '/order-info/' + upgradeFromId)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.data) {
+        prevOrder = data.data;
+        document.getElementById('upgradeInfo').style.display = 'block';
+        document.getElementById('uiName').textContent = prevOrder.user.name || '';
+        document.getElementById('uiPhone').textContent = (prevOrder.user.phone || '').replace(/(\d{3})(\d{4})(\d{4})/, '$1-****-$3');
+        document.getElementById('uiBirth').textContent = prevOrder.user.birthDate || '';
+        // 이름, 전화번호 필드 숨기기
+        document.getElementById('nameField').style.display = 'none';
+        document.getElementById('phoneField').style.display = 'none';
+        // 개인정보 동의 이미 했으므로 자동 체크 + 숨김
+        document.getElementById('agreePrivacy').checked = true;
+        document.getElementById('privacyRow').style.display = 'none';
+      }
+    }).catch(function() {
+      // 주문 정보 못 가져오면 일반 모드로 폴백
+      isUpgrade = false;
+    });
+
   if (upgradeTarget === 'HW2') {
     upgradePrice = 14900;
     setTimeout(function() {
@@ -174,7 +226,7 @@ if (upgradeTarget && upgradeFromId) {
       if (hw2Card) {
         selectProduct(hw2Card);
         hw2Card.querySelector('.product-price').innerHTML = '<span style="text-decoration:line-through;color:#6a5a4a;font-size:14px">19,800원</span><br>14,900원';
-        document.getElementById('submitBtn').textContent = '재물풀이 업그레이드 (14,900원)';
+        document.getElementById('submitBtn').textContent = '재물풀이 결제 (14,900원)';
         selectedPrice = 14900;
         document.querySelectorAll('.product-card').forEach(function(c) {
           if (c.dataset.product !== 'HW2') c.style.display = 'none';
@@ -189,7 +241,7 @@ if (upgradeTarget && upgradeFromId) {
       if (hw3Card) {
         selectProduct(hw3Card);
         hw3Card.querySelector('.product-price').innerHTML = '<span style="text-decoration:line-through;color:#6a5a4a;font-size:14px">49,700원</span><br>29,900원';
-        document.getElementById('submitBtn').textContent = '본풀이 업그레이드 (29,900원)';
+        document.getElementById('submitBtn').textContent = '본풀이 결제 (29,900원)';
         selectedPrice = 29900;
         document.querySelectorAll('.product-card').forEach(function(c) {
           if (c.dataset.product !== 'HW3') c.style.display = 'none';
@@ -199,6 +251,7 @@ if (upgradeTarget && upgradeFromId) {
   }
 }
 
+// ======== 결제 콜백 처리 ========
 (function handlePaymentCallback() {
   var urlParams = new URLSearchParams(window.location.search);
 
@@ -220,6 +273,7 @@ if (upgradeTarget && upgradeFromId) {
     document.getElementById('productList').style.display = 'none';
     document.getElementById('introBox').style.display = 'none';
     document.getElementById('orderSection').classList.remove('show');
+    if (document.getElementById('upgradeInfo')) document.getElementById('upgradeInfo').style.display = 'none';
 
     fetch(API_BASE + '/order', {
       method: 'POST',
@@ -240,7 +294,13 @@ if (upgradeTarget && upgradeFromId) {
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
-      if (data.success) { location.href = 'chogyeon-result.html?id=' + orderId; }
+      if (data.success) {
+        // 상품별 결과 페이지 분기
+        var resultPage = 'chogyeon-result.html';
+        if (order.product === 'HW2') resultPage = 'jaemul-result.html';
+        else if (order.product === 'HW3') resultPage = 'bonpuli-result.html';
+        location.href = resultPage + '?id=' + orderId;
+      }
       else { showToast('결제 승인 실패: ' + (data.error || '')); }
     })
     .catch(function(err) { console.error(err); showToast('결제 처리 중 오류가 발생했습니다'); });
@@ -260,6 +320,7 @@ function selectProduct(el) {
     selectedPrice = Number(el.dataset.price);
   }
   document.getElementById('orderSection').classList.add('show');
+  // 직업은 HW2, HW3에서 표시
   document.querySelectorAll('.hw2-only').forEach(function(e) { e.style.display = (selectedProduct === 'HW2' || selectedProduct === 'HW3') ? 'block' : 'none'; });
   document.querySelectorAll('.hw3-only').forEach(function(e) { e.style.display = selectedProduct === 'HW3' ? 'block' : 'none'; });
   if (!isUpgrade) {
@@ -282,8 +343,17 @@ function showToast(msg) {
 }
 
 function submitOrder() {
-  var name = document.getElementById('userName').value.trim();
-  var phone = document.getElementById('userPhone').value.trim();
+  var name, phone;
+
+  if (isUpgrade && prevOrder) {
+    // 업그레이드: 이전 주문에서 이름/전화번호 가져옴
+    name = prevOrder.user.name;
+    phone = prevOrder.user.phone;
+  } else {
+    name = document.getElementById('userName').value.trim();
+    phone = document.getElementById('userPhone').value.trim();
+  }
+
   var questionEl = document.getElementById('userQuestion');
   var question = questionEl ? questionEl.value.trim() : '';
 
@@ -294,11 +364,25 @@ function submitOrder() {
   if (selectedProduct === 'HW3' && !question) { showToast('질문을 입력해주세요'); return; }
   if (!document.getElementById('agreePrivacy').checked) { showToast('개인정보 수집·이용에 동의해주세요'); return; }
 
+  var birthDate = '';
+  var birthTime = '';
+  var calType = 'solar';
+
+  if (isUpgrade && prevOrder) {
+    birthDate = prevOrder.user.birthDate || '';
+    birthTime = prevOrder.user.birthTime || '';
+    calType = prevOrder.user.calendar || 'solar';
+  } else {
+    birthDate = pBirth || '';
+    birthTime = pTime || '';
+    calType = pCal || 'solar';
+  }
+
   var orderId = 'HW' + Date.now();
   sessionStorage.setItem('hw_order', JSON.stringify({
     orderId: orderId, product: selectedProduct, price: selectedPrice,
-    name: name, phone: phone, birthDate: pBirth || '', birthTime: pTime || '',
-    calendarType: pCal || 'solar', question: question, job: selectedJob,
+    name: name, phone: phone, birthDate: birthDate, birthTime: birthTime,
+    calendarType: calType, question: question, job: selectedJob,
     upgradeFrom: upgradeFromId || ''
   }));
 
