@@ -20,7 +20,6 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 
 .result-card{max-width:400px;width:100%;background:linear-gradient(180deg,#1a1208 0%,#0a0a06 100%);border:1px solid #2a1a0a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.1);margin-bottom:24px}
 
-/* 상단 요약 */
 .result-header{padding:28px 24px 20px;text-align:center;border-bottom:1px solid #1a1208;background:radial-gradient(ellipse at center,rgba(197,151,91,.05) 0%,transparent 70%)}
 .result-name{font-size:13px;color:#8a7a5a;margin-bottom:6px}
 .result-daygan{font-size:42px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.3);margin-bottom:4px}
@@ -32,14 +31,12 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 .result-pillar-hangul{font-size:9px;color:#6a5a4a;margin-top:2px}
 .result-summary{font-size:15px;font-weight:700;color:#e8d5b0;line-height:1.7;padding:0 8px}
 
-/* 섹션 공통 */
 .section{padding:24px;border-top:1px solid #1a1208}
 .section-num{font-size:10px;color:#6a5a4a;letter-spacing:2px;margin-bottom:6px}
 .section-title{font-size:16px;font-weight:900;color:#c5975b;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .section-icon{font-size:18px}
 .section-body{font-size:13.5px;color:#a89878;line-height:2}
 
-/* 오행 게이지 */
 .gauge-area{padding:20px 24px;border-top:1px solid #1a1208}
 .gauge-label-text{font-size:10px;color:#6a5a4a;margin-bottom:10px}
 .gauge-row{display:flex;align-items:center;margin-bottom:6px;gap:8px}
@@ -53,12 +50,10 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 .g-metal .gauge-bar{background:#a0a0b0}
 .g-water .gauge-bar{background:#4a6a9c}
 
-/* 호통 섹션 */
 .hotong-section{padding:24px;border-top:1px solid #1a1208;background:rgba(139,26,26,.03)}
 .hotong-title{font-size:16px;font-weight:900;color:#e85050;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .hotong-body{font-size:14px;color:#e8d5b0;line-height:2;font-weight:700}
 
-/* CTA */
 .cta-section{padding:24px;border-top:1px solid #1a1208;text-align:center}
 .cta-text{font-size:13px;color:#8a7a5a;line-height:1.8;margin-bottom:16px}
 .cta-btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;text-decoration:none;letter-spacing:2px;transition:all .3s}
@@ -66,12 +61,10 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 
 .watermark{text-align:center;padding:12px;font-size:11px;color:#2a1a0a}
 
-/* 로딩 */
 .loading{text-align:center;padding:80px 20px}
 .loading-text{font-size:16px;color:#c5975b;animation:pulse 1.5s ease infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* 에러 */
 .error-box{text-align:center;padding:60px 20px}
 .error-text{font-size:14px;color:#8a7a5a;line-height:1.8}
 
@@ -84,21 +77,17 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
   <div class="logo-text">虎王堂</div>
   <div class="logo-sub">초견 初見</div>
 
-  <!-- 로딩 -->
   <div class="loading" id="loadingArea">
     <div class="loading-text">호왕이 네 사주를 보고 있다...</div>
   </div>
 
-  <!-- 에러 -->
   <div class="error-box" id="errorArea" style="display:none">
     <div class="error-text" id="errorText"></div>
     <a class="back-btn" href="howangpae.html">호왕패 다시 뽑기</a>
   </div>
 
-  <!-- 결과 -->
   <div class="result-card" id="resultCard" style="display:none">
 
-    <!-- 상단 요약 -->
     <div class="result-header">
       <div class="result-name" id="rName"></div>
       <div class="result-daygan" id="rDayGan"></div>
@@ -112,14 +101,12 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="result-summary" id="rSummary"></div>
     </div>
 
-    <!-- 성정 -->
     <div class="section">
       <div class="section-num">壹</div>
       <div class="section-title"><span class="section-icon">🐯</span>타고난 성정</div>
       <div class="section-body" id="rPersonality"></div>
     </div>
 
-    <!-- 오행 -->
     <div class="gauge-area">
       <div class="gauge-label-text">오행 분포</div>
       <div class="gauge-row g-wood"><div class="gauge-label">木</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWood"></div></div><div class="gauge-pct" id="gWoodP"></div></div>
@@ -129,30 +116,31 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="gauge-row g-water"><div class="gauge-label">水</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWater"></div></div><div class="gauge-pct" id="gWaterP"></div></div>
     </div>
 
-    <!-- 재물 -->
     <div class="section">
       <div class="section-num">貳</div>
       <div class="section-title"><span class="section-icon">💰</span>재물 성향</div>
       <div class="section-body" id="rWealth"></div>
     </div>
 
-    <!-- 올해 -->
     <div class="section">
       <div class="section-num">參</div>
       <div class="section-title"><span class="section-icon">📅</span>2026년 운</div>
       <div class="section-body" id="rYear2026"></div>
     </div>
 
-    <!-- 호통 -->
     <div class="hotong-section">
       <div class="hotong-title"><span class="section-icon">🔥</span>호왕의 호통</div>
       <div class="hotong-body" id="rHoTong"></div>
     </div>
 
-    <!-- CTA -->
     <div class="cta-section">
       <div class="cta-text">초견은 여기까지다.<br>네 돈 길이 더 궁금하면 재물풀이를 받아라.</div>
-      <a class="cta-btn" href="chogyeon.html">재물풀이 받으러 가기</a>
+      <div style="margin-bottom:12px">
+        <span style="font-size:13px;color:#6a5a4a;text-decoration:line-through">19,800원</span>
+        <span style="font-size:11px;color:#e85050;margin-left:6px">초견 구매자 할인</span>
+      </div>
+      <div style="font-size:24px;font-weight:900;color:#c5975b;margin-bottom:16px">14,900원</div>
+      <a class="cta-btn" id="upgradeBtn" href="chogyeon.html">재물풀이 받으러 가기</a>
     </div>
 
     <div class="watermark">虎王堂 · 호왕당</div>
@@ -180,7 +168,6 @@ const dayGanNames = {
   }
 
   try {
-    // 먼저 저장된 결과가 있는지 확인
     let result = null;
     const existRes = await fetch(API_BASE + '/result/' + orderId);
     const existData = await existRes.json();
@@ -188,7 +175,6 @@ const dayGanNames = {
     if (existData.success && existData.data && existData.data.sections) {
       result = existData.data;
     } else {
-      // 결과 생성 요청
       const genRes = await fetch(API_BASE + '/api/chogyeon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -233,7 +219,6 @@ function renderResult(r) {
   document.getElementById('rYear2026').textContent = r.sections.yearFortune;
   document.getElementById('rHoTong').textContent = r.sections.hoTong;
 
-  // 오행 게이지 애니메이션
   setTimeout(() => {
     const g = r.elementGauge;
     ['wood','fire','earth','metal','water'].forEach(el => {
@@ -242,6 +227,13 @@ function renderResult(r) {
       document.getElementById('g' + id + 'P').textContent = (g[el]||0) + '%';
     });
   }, 300);
+
+  // 업그레이드 링크에 orderId 포함
+  var oid = new URLSearchParams(location.search).get('id');
+  var upgradeBtn = document.getElementById('upgradeBtn');
+  if (upgradeBtn && oid) {
+    upgradeBtn.href = 'chogyeon.html?upgrade=HW2&from=' + oid;
+  }
 }
 
 function showError(msg) {
