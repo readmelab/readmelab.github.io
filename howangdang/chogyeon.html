@@ -1,19 +1,154 @@
-const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
-const TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
-const PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
-const PRODUCT_PRICES = { HW1: 4900, HW2: 19900, HW3: 49900 };
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕당 - 초견·재물풀이·본풀이</title>
+<meta property="og:title" content="호왕당 - 네 사주를 풀어주마">
+<meta property="og:description" content="호왕이 직접 봐주는 사주 풀이. 초견 4,900원부터.">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/door.jpeg">
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%)}
+.logo-text{font-size:36px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.5);letter-spacing:8px;margin-bottom:6px}
+.logo-sub{font-size:13px;color:#8a7a5a;margin-bottom:12px;letter-spacing:2px}
+.intro-box{max-width:360px;text-align:center;margin-bottom:32px}
+.intro-title{font-size:20px;font-weight:900;color:#c5975b;margin-bottom:12px;line-height:1.5}
+.intro-desc{font-size:13px;color:#a89878;line-height:1.8}
+.saju-summary{max-width:360px;width:100%;padding:16px;background:rgba(26,16,8,.8);border:1px solid #2a1a0a;border-radius:12px;margin-bottom:32px;text-align:center}
+.saju-summary .label{font-size:11px;color:#8a7a5a;margin-bottom:4px}
+.saju-summary .title{font-size:18px;font-weight:900;color:#c5975b;margin-bottom:2px}
+.saju-summary .pillars{font-size:14px;color:#a89878;letter-spacing:2px}
+.saju-summary.hidden{display:none}
+.product-list{max-width:360px;width:100%;display:flex;flex-direction:column;gap:16px;margin-bottom:32px}
+.product-card{padding:24px 20px;background:rgba(26,16,8,.9);border:1px solid #2a1a0a;border-radius:12px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.product-card:hover{border-color:#c5975b;transform:translateY(-2px)}
+.product-card.selected{border-color:#c5975b;background:rgba(197,151,91,.08)}
+.product-card.selected::after{content:'✓';position:absolute;top:12px;right:16px;font-size:20px;color:#c5975b}
+.product-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-bottom:8px}
+.badge-first{background:rgba(197,151,91,.2);color:#c5975b}
+.badge-popular{background:rgba(139,26,26,.3);color:#e85050}
+.badge-deep{background:rgba(197,151,91,.1);color:#8a7a5a}
+.product-name{font-size:18px;font-weight:900;color:#e8d5b0;margin-bottom:6px}
+.product-price{font-size:22px;font-weight:900;color:#c5975b;margin-bottom:10px}
+.product-desc{font-size:12px;color:#8a7a5a;line-height:1.7}
+.product-includes{margin-top:10px;font-size:11px;color:#6a5a4a;line-height:1.6}
+.order-section{max-width:360px;width:100%;display:none;flex-direction:column;gap:16px;margin-bottom:24px}
+.order-section.show{display:flex}
+.form-label{font-size:12px;color:#8a7a5a;margin-bottom:4px}
+.form-input{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none}
+.form-input:focus{border-color:#c5975b}
+.form-input::placeholder{color:#4a3a2a}
+.form-textarea{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:14px;outline:none;resize:none;min-height:100px;line-height:1.6}
+.form-textarea:focus{border-color:#c5975b}
+.form-textarea::placeholder{color:#4a3a2a}
+.job-row{display:flex;flex-wrap:wrap;gap:8px}
+.job-btn{padding:10px 16px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s}
+.job-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+.hw2-only,.hw3-only{display:none}
+.submit-btn{margin-top:8px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
+.submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+.divider{width:100%;max-width:360px;height:1px;background:#2a1a0a;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="logo-text">虎王堂</div>
+  <div class="logo-sub">호왕이 직접 봐주마</div>
 
-let selectedProduct = '';
-let selectedPrice = 0;
-let selectedJob = '';
+  <div class="saju-summary hidden" id="sajuSummary">
+    <div class="label">네 호왕패</div>
+    <div class="title" id="sumTitle"></div>
+    <div class="pillars" id="sumPillars"></div>
+  </div>
 
-// 호왕패에서 넘어온 데이터
-const params = new URLSearchParams(location.search);
-const pTitle = params.get('title');
-const pPillars = params.get('pillars');
-const pBirth = params.get('birth');
-const pTime = params.get('time');
-const pCal = params.get('cal');
+  <div class="intro-box" id="introBox">
+    <div class="intro-title">패는 봤다.<br>그 안의 뜻이 궁금하지 않냐?</div>
+    <div class="intro-desc">호왕이 네 사주를 직접 풀어주마.<br>듣고 나면 네가 왜 그렇게 살았는지 알게 된다.</div>
+  </div>
+
+  <div class="product-list" id="productList">
+    <div class="product-card" data-product="HW1" data-price="4900" onclick="selectProduct(this)">
+      <div class="product-badge badge-first">첫 풀이</div>
+      <div class="product-name">초견 初見</div>
+      <div class="product-price">4,900원</div>
+      <div class="product-desc">호왕이 너를 처음 봐주는 자리다.<br>네 사주 핵심, 타고난 성정, 재물 성향, 올해 한마디까지.<br>짧지만 네 급소를 찌른다.</div>
+      <div class="product-includes">포함: 사주 핵심 요약 · 성정 풀이 · 재물 성향 · 올해 운 한마디 · 호왕의 호통</div>
+    </div>
+    <div class="product-card" data-product="HW2" data-price="19900" onclick="selectProduct(this)">
+      <div class="product-badge badge-popular">재물 특화</div>
+      <div class="product-name">재물풀이 財物</div>
+      <div class="product-price">19,900원</div>
+      <div class="product-desc">네 돈 길을 파헤쳐 주마.<br>돈 그릇, 돈이 들어오는 길, 새는 구멍까지.<br>직업에 맞춰서 솔루션을 준다.</div>
+      <div class="product-includes">포함: 초견 전체 + 돈 그릇 분석 · 재물 통로 · 재물 누수 패턴 · 3년 재물 흐름 · 직업별 솔루션 · 질문 1회</div>
+    </div>
+    <div class="product-card" data-product="HW3" data-price="49900" onclick="selectProduct(this)">
+      <div class="product-badge badge-deep">심층 풀이</div>
+      <div class="product-name">본풀이 本</div>
+      <div class="product-price">49,900원</div>
+      <div class="product-desc">네 사주를 통째로 뒤집어 본다.<br>돈, 사람, 건강, 인생 흐름까지.<br>한번 보면 10년이 보인다.</div>
+      <div class="product-includes">포함: 재물풀이 전체 + 대운 흐름 · 관계 패턴 · 건강 주의점 · 질문 1회 + 추가 질문권 1회(카톡)</div>
+    </div>
+  </div>
+
+  <div class="order-section" id="orderSection">
+    <div class="divider"></div>
+    <div>
+      <div class="form-label">이름</div>
+      <input class="form-input" id="userName" type="text" placeholder="이름을 알려주거라">
+    </div>
+    <div>
+      <div class="form-label">연락처</div>
+      <input class="form-input" id="userPhone" type="tel" placeholder="010-0000-0000">
+    </div>
+    <div class="hw2-only" id="jobSection">
+      <div class="form-label">직업</div>
+      <div class="job-row">
+        <button class="job-btn" data-job="사업" onclick="selectJob(this)">사업</button>
+        <button class="job-btn" data-job="직장인" onclick="selectJob(this)">직장인</button>
+        <button class="job-btn" data-job="프리랜서" onclick="selectJob(this)">프리랜서</button>
+        <button class="job-btn" data-job="주부" onclick="selectJob(this)">주부</button>
+        <button class="job-btn" data-job="취준생" onclick="selectJob(this)">취준생</button>
+        <button class="job-btn" data-job="학생" onclick="selectJob(this)">학생</button>
+      </div>
+    </div>
+    <div class="hw3-only" id="questionSection">
+      <div class="form-label">지금 가장 궁금한 것 (질문 1개)</div>
+      <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-top:4px">
+      <input type="checkbox" id="agreePrivacy" style="margin-top:3px;accent-color:#c5975b;width:18px;height:18px;cursor:pointer">
+      <label for="agreePrivacy" style="font-size:11px;color:#8a7a5a;line-height:1.6;cursor:pointer">
+        [필수] 개인정보 수집·이용에 동의합니다.<br>
+        <span style="color:#6a5a4a">수집 항목: 이름, 연락처, 생년월일시 | 목적: 사주 풀이 제공 | 보유 기간: 서비스 제공 후 1년</span>
+      </label>
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="submitOrder()">결제하기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
+
+var selectedProduct = '';
+var selectedPrice = 0;
+var selectedJob = '';
+
+var params = new URLSearchParams(location.search);
+var pTitle = params.get('title');
+var pPillars = params.get('pillars');
+var pBirth = params.get('birth');
+var pTime = params.get('time');
+var pCal = params.get('cal');
 
 if (pTitle) {
   document.getElementById('sajuSummary').classList.remove('hidden');
@@ -21,9 +156,6 @@ if (pTitle) {
   document.getElementById('sumPillars').textContent = pPillars || '';
 }
 
-// ══════════════════════════════════════
-// 결제 성공 콜백 (페이지 돌아왔을 때)
-// ══════════════════════════════════════
 (function handlePaymentCallback() {
   var urlParams = new URLSearchParams(window.location.search);
   var paymentKey = urlParams.get('paymentKey');
@@ -31,45 +163,27 @@ if (pTitle) {
   var amount = urlParams.get('amount');
 
   if (paymentKey && orderId && amount) {
-    // URL 정리
     history.replaceState(null, '', window.location.pathname);
-
     var orderData = sessionStorage.getItem('hw_order');
-    if (!orderData) {
-      showToast('주문 정보를 찾을 수 없습니다. 다시 시도해주세요.');
-      return;
-    }
-
+    if (!orderData) { showToast('주문 정보를 찾을 수 없습니다.'); return; }
     var order = JSON.parse(orderData);
-
-    // 위변조 검증
     if (order.orderId !== orderId || order.price !== parseInt(amount)) {
       showToast('결제 정보가 일치하지 않습니다.');
       sessionStorage.removeItem('hw_order');
       return;
     }
-
     sessionStorage.removeItem('hw_order');
-
-    // UI 숨기기
     document.getElementById('productList').style.display = 'none';
     document.getElementById('introBox').style.display = 'none';
     document.getElementById('orderSection').classList.remove('show');
 
-    // 서버에 주문 저장 + 결제 승인 한번에
     fetch(API_BASE + '/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderId: orderId,
-        product: order.product,
-        name: order.name,
-        phone: order.phone,
-        birthDate: order.birthDate,
-        birthTime: order.birthTime,
-        calendarType: order.calendarType,
-        question: order.question,
-        job: order.job
+        orderId: orderId, product: order.product, name: order.name, phone: order.phone,
+        birthDate: order.birthDate, birthTime: order.birthTime,
+        calendarType: order.calendarType, question: order.question, job: order.job
       })
     })
     .then(function() {
@@ -81,38 +195,26 @@ if (pTitle) {
     })
     .then(function(res) { return res.json(); })
     .then(function(data) {
-      if (data.success) {
-        location.href = 'chogyeon-result.html?id=' + orderId;
-      } else {
-        showToast('결제 승인 실패: ' + (data.error || ''));
-      }
+      if (data.success) { location.href = 'chogyeon-result.html?id=' + orderId; }
+      else { showToast('결제 승인 실패: ' + (data.error || '')); }
     })
-    .catch(function(err) {
-      console.error(err);
-      showToast('결제 처리 중 오류가 발생했습니다');
-    });
+    .catch(function(err) { console.error(err); showToast('결제 처리 중 오류가 발생했습니다'); });
   }
 
-  // 결제 실패
   if (urlParams.get('fail') === 'true') {
     history.replaceState(null, '', window.location.pathname);
     showToast('결제가 취소되었거나 실패했습니다.');
   }
 })();
 
-// ══════════════════════════════════════
-// 상품 선택
-// ══════════════════════════════════════
 function selectProduct(el) {
   document.querySelectorAll('.product-card').forEach(function(c) { c.classList.remove('selected'); });
   el.classList.add('selected');
   selectedProduct = el.dataset.product;
   selectedPrice = Number(el.dataset.price);
   document.getElementById('orderSection').classList.add('show');
-  var hw2Only = document.querySelectorAll('.hw2-only');
-  var hw3Only = document.querySelectorAll('.hw3-only');
-  hw2Only.forEach(function(e) { e.style.display = (selectedProduct === 'HW2' || selectedProduct === 'HW3') ? 'block' : 'none'; });
-  hw3Only.forEach(function(e) { e.style.display = selectedProduct === 'HW3' ? 'block' : 'none'; });
+  document.querySelectorAll('.hw2-only').forEach(function(e) { e.style.display = (selectedProduct === 'HW2' || selectedProduct === 'HW3') ? 'block' : 'none'; });
+  document.querySelectorAll('.hw3-only').forEach(function(e) { e.style.display = selectedProduct === 'HW3' ? 'block' : 'none'; });
   document.getElementById('submitBtn').textContent = PRODUCT_NAMES[selectedProduct] + ' 결제하기 (' + selectedPrice.toLocaleString() + '원)';
   document.getElementById('orderSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -130,9 +232,6 @@ function showToast(msg) {
   setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 
-// ══════════════════════════════════════
-// 결제 요청 (매력카드와 동일 패턴)
-// ══════════════════════════════════════
 function submitOrder() {
   var name = document.getElementById('userName').value.trim();
   var phone = document.getElementById('userPhone').value.trim();
@@ -142,37 +241,20 @@ function submitOrder() {
   if (!selectedProduct) { showToast('상품을 선택해주세요'); return; }
   if (!name) { showToast('이름을 입력해주세요'); return; }
   if (!phone) { showToast('연락처를 입력해주세요'); return; }
-  if ((selectedProduct === 'HW2' || selectedProduct === 'HW3') && !selectedJob) {
-    showToast('직업을 선택해주세요'); return;
-  }
-  if (selectedProduct === 'HW3' && !question) {
-    showToast('질문을 입력해주세요'); return;
-  }
-  if (!document.getElementById('agreePrivacy').checked) {
-    showToast('개인정보 수집·이용에 동의해주세요'); return;
-  }
+  if ((selectedProduct === 'HW2' || selectedProduct === 'HW3') && !selectedJob) { showToast('직업을 선택해주세요'); return; }
+  if (selectedProduct === 'HW3' && !question) { showToast('질문을 입력해주세요'); return; }
+  if (!document.getElementById('agreePrivacy').checked) { showToast('개인정보 수집·이용에 동의해주세요'); return; }
 
   var orderId = 'HW' + Date.now();
-
-  // sessionStorage에 주문 정보 저장 (서버 안 거침)
   sessionStorage.setItem('hw_order', JSON.stringify({
-    orderId: orderId,
-    product: selectedProduct,
-    price: selectedPrice,
-    name: name,
-    phone: phone,
-    birthDate: pBirth || '',
-    birthTime: pTime || '',
-    calendarType: pCal || 'solar',
-    question: question,
-    job: selectedJob
+    orderId: orderId, product: selectedProduct, price: selectedPrice,
+    name: name, phone: phone, birthDate: pBirth || '', birthTime: pTime || '',
+    calendarType: pCal || 'solar', question: question, job: selectedJob
   }));
 
-  // 바로 토스 결제창 열기
   try {
     var tossPayments = TossPayments(TOSS_CLIENT_KEY);
     var payment = tossPayments.payment({ customerKey: 'ANONYMOUS' });
-
     payment.requestPayment({
       method: 'CARD',
       amount: { currency: 'KRW', value: selectedPrice },
@@ -184,15 +266,14 @@ function submitOrder() {
       failUrl: window.location.origin + window.location.pathname + '?fail=true&message={message}',
       card: { flowMode: 'DEFAULT' }
     }).catch(function(e) {
-      if (e.code === 'USER_CANCEL') {
-        showToast('결제가 취소되었습니다');
-      } else {
-        console.error('payment error:', e);
-        showToast('결제 중 오류: ' + (e.message || ''));
-      }
+      if (e.code === 'USER_CANCEL') { showToast('결제가 취소되었습니다'); }
+      else { console.error('payment error:', e); showToast('결제 중 오류: ' + (e.message || '')); }
     });
   } catch (e) {
     console.error(e);
     showToast('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
   }
 }
+</script>
+</body>
+</html>
