@@ -346,13 +346,8 @@ async function submitOrder() {
 
 
 function showSuccess(orderId) {
-  document.getElementById('productList').style.display = 'none';
-  document.getElementById('introBox').style.display = 'none';
-  document.getElementById('orderSection').classList.remove('show');
-  document.getElementById('sajuSummary').classList.add('hidden');
-  document.getElementById('successSection').classList.add('show');
-  document.getElementById('successOrder').textContent = '주문번호: ' + orderId;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 결제 완료 → 바로 결과 페이지로 이동
+  location.href = 'chogyeon-result.html?id=' + orderId;
 }
 </script>
 </body>
