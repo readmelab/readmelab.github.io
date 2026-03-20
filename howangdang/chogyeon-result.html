@@ -59,6 +59,12 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 .cta-btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;text-decoration:none;letter-spacing:2px;transition:all .3s}
 .cta-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
 
+.save-section{padding:20px 24px;border-top:1px solid #1a1208;text-align:center}
+.save-text{font-size:12px;color:#6a5a4a;line-height:1.8;margin-bottom:12px}
+.save-btn{display:inline-block;padding:10px 24px;background:none;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:12px;cursor:pointer;transition:all .3s}
+.save-btn:hover{border-color:#c5975b;color:#c5975b}
+.save-toast{display:none;margin-top:8px;font-size:11px;color:#c5975b}
+
 .watermark{text-align:center;padding:12px;font-size:11px;color:#2a1a0a}
 
 .loading{text-align:center;padding:80px 20px}
@@ -101,12 +107,14 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="result-summary" id="rSummary"></div>
     </div>
 
+    <!-- 壹 타고난 성정 -->
     <div class="section">
       <div class="section-num">壹</div>
       <div class="section-title"><span class="section-icon">🐯</span>타고난 성정</div>
       <div class="section-body" id="rPersonality"></div>
     </div>
 
+    <!-- 오행 게이지 -->
     <div class="gauge-area">
       <div class="gauge-label-text">오행 분포</div>
       <div class="gauge-row g-wood"><div class="gauge-label">木</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWood"></div></div><div class="gauge-pct" id="gWoodP"></div></div>
@@ -116,23 +124,41 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="gauge-row g-water"><div class="gauge-label">水</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWater"></div></div><div class="gauge-pct" id="gWaterP"></div></div>
     </div>
 
+    <!-- 貳 재물 성향 -->
     <div class="section">
       <div class="section-num">貳</div>
       <div class="section-title"><span class="section-icon">💰</span>재물 성향</div>
       <div class="section-body" id="rWealth"></div>
     </div>
 
+    <!-- 參 대인관계 성향 (NEW) -->
     <div class="section">
       <div class="section-num">參</div>
+      <div class="section-title"><span class="section-icon">🤝</span>대인관계 성향</div>
+      <div class="section-body" id="rRelationship"></div>
+    </div>
+
+    <!-- 肆 건강 주의점 (NEW) -->
+    <div class="section">
+      <div class="section-num">肆</div>
+      <div class="section-title"><span class="section-icon">🏥</span>건강 주의점</div>
+      <div class="section-body" id="rHealth"></div>
+    </div>
+
+    <!-- 伍 2026년 운 -->
+    <div class="section">
+      <div class="section-num">伍</div>
       <div class="section-title"><span class="section-icon">📅</span>2026년 운</div>
       <div class="section-body" id="rYear2026"></div>
     </div>
 
+    <!-- 호통 -->
     <div class="hotong-section">
       <div class="hotong-title"><span class="section-icon">🔥</span>호왕의 호통</div>
       <div class="hotong-body" id="rHoTong"></div>
     </div>
 
+    <!-- CTA 업그레이드 -->
     <div class="cta-section">
       <div class="cta-text">초견은 여기까지다.<br>네 돈 길이 더 궁금하면 재물풀이를 받아라.</div>
       <div style="margin-bottom:12px">
@@ -141,6 +167,13 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       </div>
       <div style="font-size:24px;font-weight:900;color:#c5975b;margin-bottom:16px">14,900원</div>
       <a class="cta-btn" id="upgradeBtn" href="chogyeon.html">재물풀이 받으러 가기</a>
+    </div>
+
+    <!-- 링크 저장 안내 -->
+    <div class="save-section">
+      <div class="save-text">이 풀이는 나만의 고유 링크에 영구 저장됩니다.<br>즐겨찾기에 추가하거나 링크를 복사해 평생 간직하세요.</div>
+      <button class="save-btn" id="copyLinkBtn">🔗 내 풀이 링크 복사</button>
+      <div class="save-toast" id="saveToast">링크가 복사되었습니다!</div>
     </div>
 
     <div class="watermark">虎王堂 · 호왕당</div>
@@ -216,9 +249,12 @@ function renderResult(r) {
   document.getElementById('rSummary').textContent = r.sections.summary;
   document.getElementById('rPersonality').textContent = r.sections.personality;
   document.getElementById('rWealth').textContent = r.sections.wealth;
+  document.getElementById('rRelationship').textContent = r.sections.relationship;
+  document.getElementById('rHealth').textContent = r.sections.health;
   document.getElementById('rYear2026').textContent = r.sections.yearFortune;
   document.getElementById('rHoTong').textContent = r.sections.hoTong;
 
+  // 오행 게이지 애니메이션
   setTimeout(() => {
     const g = r.elementGauge;
     ['wood','fire','earth','metal','water'].forEach(el => {
@@ -234,6 +270,38 @@ function renderResult(r) {
   if (upgradeBtn && oid) {
     upgradeBtn.href = 'chogyeon.html?upgrade=HW2&from=' + oid;
   }
+}
+
+// 링크 복사 기능
+document.getElementById('copyLinkBtn').addEventListener('click', function() {
+  var url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      showSaveToast();
+    }).catch(function() {
+      fallbackCopy(url);
+    });
+  } else {
+    fallbackCopy(url);
+  }
+});
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showSaveToast();
+}
+
+function showSaveToast() {
+  var toast = document.getElementById('saveToast');
+  toast.style.display = 'block';
+  setTimeout(function() { toast.style.display = 'none'; }, 2000);
 }
 
 function showError(msg) {
