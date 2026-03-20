@@ -13,329 +13,197 @@ body{
   color:#e8dcc8;
   min-height:100vh;
   display:flex;justify-content:center;
-  padding:20px 12px 60px;
+  padding:20px 8px 60px;
 }
-
-/* ── 전체 두루마리 컨테이너 ── */
-.scroll-wrap{
-  max-width:480px;width:100%;
-  position:relative;
-}
-
-/* ── 방울 ── */
+.scroll-wrap{max-width:500px;width:100%;position:relative}
 .bell{
-  text-align:center;
-  font-size:36px;
-  margin-bottom:-8px;
+  text-align:center;font-size:32px;margin-bottom:-6px;
+  position:relative;z-index:10;
   filter:drop-shadow(0 4px 12px rgba(212,175,55,.5));
   animation:bellSwing 3s ease-in-out infinite;
-  position:relative;z-index:10;
 }
 @keyframes bellSwing{
-  0%,100%{transform:rotate(0)}
-  25%{transform:rotate(6deg)}
-  75%{transform:rotate(-6deg)}
+  0%,100%{transform:rotate(0)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}
 }
 
-/* ── 상단 장식 (호왕당 현판) ── */
-.scroll-top{
-  background:linear-gradient(180deg,#3a2a1a 0%,#2a1c10 40%,#1e1409 100%);
-  border:2px solid #6b5233;
-  border-bottom:none;
-  border-radius:8px 8px 0 0;
-  padding:28px 20px 22px;
-  text-align:center;
-  position:relative;
-  overflow:hidden;
-}
-.scroll-top::before{
-  content:'';position:absolute;inset:6px;
-  border:1px solid rgba(212,175,55,.25);
-  border-radius:4px;
-  pointer-events:none;
-}
-/* 구름 무늬 */
-.scroll-top::after{
-  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-  background:
-    radial-gradient(ellipse 80px 30px at 15% 20%, rgba(212,175,55,.06) 0%, transparent 70%),
-    radial-gradient(ellipse 60px 25px at 80% 60%, rgba(212,175,55,.04) 0%, transparent 70%);
-  pointer-events:none;
-}
-.scroll-top h1{
-  font-size:28px;font-weight:900;
-  color:#d4af37;
-  text-shadow:0 0 20px rgba(212,175,55,.4), 0 2px 4px rgba(0,0,0,.6);
-  letter-spacing:12px;
-  margin-bottom:6px;
-}
-.scroll-top .sub{
-  font-size:13px;color:#a08c6a;letter-spacing:4px;
-}
-
-/* ── 양쪽 테두리 본문 영역 ── */
-.scroll-body{
-  border-left:3px solid #6b5233;
-  border-right:3px solid #6b5233;
-  background:#110e09;
+/* ★ 핵심: 실제 frame.jpeg를 테두리로 사용 ★ */
+.frame-box{
+  border-style:solid;
+  border-width:35px 28px 35px 28px;
+  border-image-source:url('https://audio.readmelab.co.kr/howang/frame.jpeg');
+  border-image-slice:200 180 200 180 fill;
+  border-image-width:35px 28px 35px 28px;
+  border-image-repeat:round;
   position:relative;
 }
-/* 안쪽 붉은 실선 */
-.scroll-body::before{
+.frame-box::after{
   content:'';position:absolute;
-  top:0;bottom:0;left:8px;right:8px;
-  border-left:1px solid rgba(180,60,30,.25);
-  border-right:1px solid rgba(180,60,30,.25);
+  top:4px;bottom:4px;left:6px;right:6px;
+  border:1px solid rgba(180,60,30,.15);
   pointer-events:none;z-index:1;
 }
 .scroll-inner{
-  padding:0 24px;
-  position:relative;z-index:2;
+  padding:10px 18px;position:relative;z-index:2;
+  background:#110e09;
 }
 
-/* ── 챕터 ── */
-.chapter{
-  padding:36px 0;
+/* 헤더 */
+.header-area{text-align:center;padding:24px 0 20px}
+.header-area h1{
+  font-size:26px;font-weight:900;color:#d4af37;
+  text-shadow:0 0 20px rgba(212,175,55,.4),0 2px 4px rgba(0,0,0,.6);
+  letter-spacing:10px;
 }
+.header-area .sub{font-size:12px;color:#a08c6a;letter-spacing:4px;margin-top:4px}
 
-/* 챕터 구분선 */
-.chapter-divider{
-  display:flex;align-items:center;gap:12px;
-  padding:0 10px;
-}
-.chapter-divider::before,
-.chapter-divider::after{
+/* 구분선 */
+.chapter-divider{display:flex;align-items:center;gap:10px;padding:4px 0}
+.chapter-divider::before,.chapter-divider::after{
   content:'';flex:1;height:1px;
   background:linear-gradient(90deg,transparent,#6b5233,transparent);
 }
-.chapter-divider .diamond{
-  color:#d4af37;font-size:10px;
-  text-shadow:0 0 8px rgba(212,175,55,.4);
-}
+.chapter-divider .dia{color:#d4af37;font-size:8px;text-shadow:0 0 6px rgba(212,175,55,.3)}
 
-/* 챕터 번호 */
-.ch-number{
-  text-align:center;
-  font-size:11px;
-  color:#6b5233;
-  letter-spacing:8px;
-  margin-bottom:10px;
-}
-
-/* 챕터 제목 */
+/* 챕터 */
+.chapter{padding:28px 0}
+.ch-number{text-align:center;font-size:11px;color:#6b5233;letter-spacing:8px;margin-bottom:8px}
 .ch-title{
-  text-align:center;
-  font-size:20px;font-weight:700;
-  color:#d4af37;
-  letter-spacing:3px;
-  margin-bottom:6px;
-  text-shadow:0 0 12px rgba(212,175,55,.3);
+  text-align:center;font-size:18px;font-weight:700;color:#d4af37;
+  letter-spacing:3px;margin-bottom:4px;text-shadow:0 0 12px rgba(212,175,55,.3);
 }
-.ch-subtitle{
-  text-align:center;
-  font-size:12px;color:#8a7a60;
-  letter-spacing:2px;
-  margin-bottom:24px;
-}
+.ch-subtitle{text-align:center;font-size:11px;color:#8a7a60;letter-spacing:2px;margin-bottom:20px}
+.ch-body{font-size:14.5px;line-height:1.95;color:#d4c8a8;text-align:justify;word-break:keep-all}
 
-/* 챕터 본문 */
-.ch-body{
-  font-size:15px;line-height:1.95;
-  color:#d4c8a8;
-  text-align:justify;
-  word-break:keep-all;
+/* 사주 패널 */
+.saju-panel{display:flex;justify-content:center;gap:6px;margin:10px 0 16px}
+.saju-pill{
+  text-align:center;background:rgba(107,82,51,.1);
+  border:1px solid rgba(107,82,51,.3);border-radius:4px;
+  padding:8px 12px;flex:1;max-width:72px;
 }
+.saju-pill .lbl{font-size:10px;color:#6b5233}
+.saju-pill .sky{font-size:18px;font-weight:700;color:#d4af37;margin:3px 0}
+.saju-pill .ear{font-size:18px;font-weight:700;color:#e8dcc8}
 
-/* ── 시각화: 바 게이지 ── */
-.gauge-group{margin:24px 0 8px}
-.gauge-row{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:10px;
-}
-.gauge-label{
-  width:56px;font-size:12px;color:#a08c6a;text-align:right;
-  flex-shrink:0;
-}
-.gauge-track{
-  flex:1;height:10px;
-  background:rgba(107,82,51,.25);
-  border-radius:5px;overflow:hidden;
-}
-.gauge-fill{
-  height:100%;border-radius:5px;
-  background:linear-gradient(90deg,#d4af37,#e8c84a);
-  transition:width 1.2s ease;
-}
-.gauge-val{
-  width:32px;font-size:11px;color:#8a7a60;
-}
+/* 바 게이지 */
+.gauge-group{margin:20px 0 4px}
+.gauge-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.gauge-label{width:48px;font-size:11px;color:#a08c6a;text-align:right;flex-shrink:0}
+.gauge-track{flex:1;height:8px;background:rgba(107,82,51,.2);border-radius:4px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#d4af37,#e8c84a);transition:width 1.2s ease}
+.gauge-val{width:28px;font-size:10px;color:#8a7a60}
 
-/* ── 시각화: 등급 ── */
-.grade-box{
-  text-align:center;margin:20px 0;
-}
+/* 등급 */
+.grade-box{text-align:center;margin:20px 0}
 .grade-letter{
-  display:inline-block;
-  font-size:48px;font-weight:900;
-  color:#d4af37;
+  display:inline-block;font-size:42px;font-weight:900;color:#d4af37;
   text-shadow:0 0 30px rgba(212,175,55,.5),0 0 60px rgba(212,175,55,.2);
   border:2px solid rgba(212,175,55,.3);
-  width:80px;height:80px;
-  line-height:80px;
-  border-radius:50%;
+  width:70px;height:70px;line-height:70px;border-radius:50%;
 }
-.grade-desc{
-  font-size:13px;color:#a08c6a;margin-top:8px;letter-spacing:1px;
-}
+.grade-desc{font-size:12px;color:#a08c6a;margin-top:6px;letter-spacing:1px}
 
-/* ── 시각화: 월운 그리드 ── */
-.month-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-  margin:20px 0;
-}
+/* 월운 그리드 */
+.month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0}
 .month-cell{
-  background:rgba(107,82,51,.12);
-  border:1px solid rgba(107,82,51,.25);
-  border-radius:4px;
-  padding:10px 6px;text-align:center;
+  background:rgba(107,82,51,.1);border:1px solid rgba(107,82,51,.2);
+  border-radius:3px;padding:8px 4px;text-align:center;
 }
-.month-cell .m-num{font-size:11px;color:#6b5233}
-.month-cell .m-icon{font-size:18px;margin:4px 0}
-.month-cell .m-score{font-size:13px;font-weight:700;color:#d4af37}
+.month-cell .m-num{font-size:10px;color:#6b5233}
+.month-cell .m-icon{font-size:16px;margin:3px 0}
+.month-cell .m-score{font-size:12px;font-weight:700;color:#d4af37}
 
-/* ── 시각화: 체크리스트 ── */
-.checklist{margin:20px 0}
+/* 체크리스트 */
+.checklist{margin:16px 0}
 .check-item{
-  display:flex;align-items:flex-start;gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid rgba(107,82,51,.15);
+  display:flex;align-items:flex-start;gap:8px;
+  padding:8px 0;border-bottom:1px solid rgba(107,82,51,.12);
 }
 .check-icon{
-  width:20px;height:20px;flex-shrink:0;
+  width:18px;height:18px;flex-shrink:0;
   border:1.5px solid #6b5233;border-radius:3px;
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;color:#d4af37;margin-top:2px;
+  font-size:11px;color:#d4af37;margin-top:2px;
 }
-.check-text{font-size:14px;line-height:1.7;color:#d4c8a8}
+.check-text{font-size:13px;line-height:1.7;color:#d4c8a8}
 
-/* ── 하단 마감 ── */
-.scroll-bottom{
-  background:linear-gradient(0deg,#3a2a1a 0%,#2a1c10 40%,#1e1409 100%);
-  border:2px solid #6b5233;
-  border-top:none;
-  border-radius:0 0 8px 8px;
-  padding:24px 20px 20px;
-  text-align:center;
-  position:relative;
-}
-.scroll-bottom::before{
-  content:'';position:absolute;inset:6px;
-  border:1px solid rgba(212,175,55,.2);
-  border-radius:4px;
-  pointer-events:none;
-}
-.scroll-bottom .seal{
-  font-size:13px;color:#6b5233;letter-spacing:6px;
-}
-.scroll-bottom .stamp{
-  display:inline-block;
-  width:52px;height:52px;line-height:52px;
-  border:2px solid rgba(180,60,30,.4);
-  border-radius:50%;
-  font-size:16px;color:rgba(180,60,30,.6);
-  margin-top:10px;
+/* 하단 도장 */
+.footer-area{text-align:center;padding:20px 0 12px}
+.footer-area .seal{font-size:12px;color:#6b5233;letter-spacing:6px}
+.footer-area .stamp{
+  display:inline-block;width:48px;height:48px;line-height:48px;
+  border:2px solid rgba(180,60,30,.4);border-radius:50%;
+  font-size:15px;color:rgba(180,60,30,.6);margin-top:8px;
   font-weight:700;letter-spacing:2px;
 }
 
-/* ── 애니메이션 ── */
-.fade-up{opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s}
+.fade-up{opacity:0;transform:translateY(18px);transition:opacity .8s,transform .8s}
 .fade-up.visible{opacity:1;transform:translateY(0)}
 
-/* ── 반응형 ── */
 @media(max-width:400px){
-  .scroll-inner{padding:0 16px}
-  .scroll-top h1{font-size:22px;letter-spacing:8px}
-  .ch-title{font-size:17px}
-  .ch-body{font-size:14px}
+  .frame-box{border-width:28px 20px 28px 20px;border-image-width:28px 20px 28px 20px}
+  .scroll-inner{padding:8px 12px}
+  .header-area h1{font-size:22px;letter-spacing:7px}
+  .ch-title{font-size:16px}
+  .ch-body{font-size:13.5px}
   .month-grid{grid-template-columns:repeat(3,1fr)}
+  .saju-pill{padding:6px 8px;max-width:64px}
+  .saju-pill .sky,.saju-pill .ear{font-size:16px}
+}
+@media(max-width:340px){
+  .frame-box{border-width:22px 16px 22px 16px;border-image-width:22px 16px 22px 16px}
+  .scroll-inner{padding:6px 8px}
 }
 </style>
 </head>
 <body>
-
 <div class="scroll-wrap">
-
-  <!-- 방울 -->
   <div class="bell">🔔</div>
 
-  <!-- ━━━ 상단 헤더 ━━━ -->
-  <div class="scroll-top">
-    <h1>호 왕 당</h1>
-    <div class="sub">재 물 풀 이</div>
-  </div>
-
-  <!-- ━━━ 본문 (양쪽 테두리 연결) ━━━ -->
-  <div class="scroll-body">
+  <!-- ★ frame.jpeg 테두리 컨테이너 ★ -->
+  <div class="frame-box">
     <div class="scroll-inner">
 
-      <!-- ── 사주 패널 ── -->
+      <div class="header-area">
+        <h1>호 왕 당</h1>
+        <div class="sub">재 물 풀 이</div>
+      </div>
+
+      <div class="chapter-divider"><span class="dia">◆</span></div>
+
       <div class="chapter fade-up">
         <div class="ch-number">四 柱 命 式</div>
-        <div style="display:flex;justify-content:center;gap:8px;margin:12px 0 20px">
-          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
-            <div style="font-size:11px;color:#6b5233">시주</div>
-            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">丙</div>
-            <div style="font-size:20px;font-weight:700;color:#e8dcc8">午</div>
-          </div>
-          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
-            <div style="font-size:11px;color:#6b5233">일주</div>
-            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">庚</div>
-            <div style="font-size:20px;font-weight:700;color:#e8dcc8">辰</div>
-          </div>
-          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
-            <div style="font-size:11px;color:#6b5233">월주</div>
-            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">辛</div>
-            <div style="font-size:20px;font-weight:700;color:#e8dcc8">巳</div>
-          </div>
-          <div style="text-align:center;background:rgba(107,82,51,.12);border:1px solid rgba(107,82,51,.3);border-radius:4px;padding:10px 14px">
-            <div style="font-size:11px;color:#6b5233">년주</div>
-            <div style="font-size:20px;font-weight:700;color:#d4af37;margin:4px 0">庚</div>
-            <div style="font-size:20px;font-weight:700;color:#e8dcc8">午</div>
-          </div>
+        <div class="saju-panel">
+          <div class="saju-pill"><div class="lbl">시주</div><div class="sky">丙</div><div class="ear">午</div></div>
+          <div class="saju-pill"><div class="lbl">일주</div><div class="sky">庚</div><div class="ear">辰</div></div>
+          <div class="saju-pill"><div class="lbl">월주</div><div class="sky">辛</div><div class="ear">巳</div></div>
+          <div class="saju-pill"><div class="lbl">년주</div><div class="sky">庚</div><div class="ear">午</div></div>
         </div>
       </div>
 
-      <!-- ── 구분선 ── -->
-      <div class="chapter-divider"><span class="diamond">◆</span></div>
+      <div class="chapter-divider"><span class="dia">◆</span></div>
 
-      <!-- ── 第一 재물 총론 ── -->
       <div class="chapter fade-up">
         <div class="ch-number">第 一</div>
         <div class="ch-title">재 물 총 론</div>
         <div class="ch-subtitle">재물의 큰 흐름을 읽다</div>
-        <div class="ch-body">
-          벼린 칼은 값어치가 있다. 네 돈은 네 전문성에서 나온다. 남이 못 하는 걸 네가 할 수 있을 때 돈이 된다. 기술직, 전문직, 컨설팅에 인연이 있다. 네 칼날을 갈아라. 자격증 하나, 기술 하나가 네 연봉을 천만 원 올린다. 애매하게 여러 개 하지 말고 하나를 최고로 만들어라. 강한 경금은 이미 벼려진 칼이다. 잘 드는 칼은 비싸다.
-        </div>
-        <!-- 등급 시각화 -->
-        <div class="grade-box" style="margin-top:28px">
-          <div style="font-size:12px;color:#6b5233;letter-spacing:4px;margin-bottom:8px">재 물 운 등 급</div>
+        <div class="ch-body">벼린 칼은 값어치가 있다. 네 돈은 네 전문성에서 나온다. 남이 못 하는 걸 네가 할 수 있을 때 돈이 된다. 기술직, 전문직, 컨설팅에 인연이 있다. 네 칼날을 갈아라. 자격증 하나, 기술 하나가 네 연봉을 천만 원 올린다. 애매하게 여러 개 하지 말고 하나를 최고로 만들어라. 강한 경금은 이미 벼려진 칼이다. 잘 드는 칼은 비싸다.</div>
+        <div class="grade-box" style="margin-top:24px">
+          <div style="font-size:11px;color:#6b5233;letter-spacing:4px;margin-bottom:6px">재 물 운 등 급</div>
           <div class="grade-letter">A</div>
           <div class="grade-desc">전문성이 곧 재물이 되는 명</div>
         </div>
       </div>
 
-      <div class="chapter-divider"><span class="diamond">◆</span></div>
+      <div class="chapter-divider"><span class="dia">◆</span></div>
 
-      <!-- ── 第二 돈의 그릇 ── -->
       <div class="chapter fade-up">
         <div class="ch-number">第 二</div>
         <div class="ch-title">돈 의 그 릇</div>
         <div class="ch-subtitle">얼마를 담을 수 있는가</div>
-        <div class="ch-body">
-          경금 일간에 토가 두텁다. 그릇이 단단하다. 한 번 쥔 돈은 잘 놓지 않는 성정이다. 다만 너무 꽉 쥐면 새 돈이 들어올 틈이 없다. 적절히 풀어줄 때 그릇이 커진다.
-        </div>
+        <div class="ch-body">경금 일간에 토가 두텁다. 그릇이 단단하다. 한 번 쥔 돈은 잘 놓지 않는 성정이다. 다만 너무 꽉 쥐면 새 돈이 들어올 틈이 없다. 적절히 풀어줄 때 그릇이 커진다.</div>
         <div class="gauge-group">
-          <div style="font-size:12px;color:#6b5233;letter-spacing:3px;text-align:center;margin-bottom:12px">그 릇 크 기</div>
+          <div style="font-size:11px;color:#6b5233;letter-spacing:3px;text-align:center;margin-bottom:10px">그 릇 크 기</div>
           <div class="gauge-row">
             <div class="gauge-label">용량</div>
             <div class="gauge-track"><div class="gauge-fill" style="width:72%"></div></div>
@@ -344,48 +212,24 @@ body{
         </div>
       </div>
 
-      <div class="chapter-divider"><span class="diamond">◆</span></div>
+      <div class="chapter-divider"><span class="dia">◆</span></div>
 
-      <!-- ── 第三 돈의 통로 ── -->
       <div class="chapter fade-up">
         <div class="ch-number">第 三</div>
         <div class="ch-title">돈 의 통 로</div>
         <div class="ch-subtitle">어디서 돈이 들어오는가</div>
-        <div class="ch-body">
-          관성이 강하니 조직·직장에서 안정적으로 번다. 식상이 약하니 프리랜서·창작 수입은 불안정하다. 네 주력 통로는 '조직'이다.
-        </div>
+        <div class="ch-body">관성이 강하니 조직·직장에서 안정적으로 번다. 식상이 약하니 프리랜서·창작 수입은 불안정하다. 네 주력 통로는 '조직'이다.</div>
         <div class="gauge-group">
-          <div class="gauge-row">
-            <div class="gauge-label">조직</div>
-            <div class="gauge-track"><div class="gauge-fill" style="width:85%"></div></div>
-            <div class="gauge-val">85</div>
-          </div>
-          <div class="gauge-row">
-            <div class="gauge-label">창작</div>
-            <div class="gauge-track"><div class="gauge-fill" style="width:40%"></div></div>
-            <div class="gauge-val">40</div>
-          </div>
-          <div class="gauge-row">
-            <div class="gauge-label">인맥</div>
-            <div class="gauge-track"><div class="gauge-fill" style="width:55%"></div></div>
-            <div class="gauge-val">55</div>
-          </div>
-          <div class="gauge-row">
-            <div class="gauge-label">학문</div>
-            <div class="gauge-track"><div class="gauge-fill" style="width:60%"></div></div>
-            <div class="gauge-val">60</div>
-          </div>
-          <div class="gauge-row">
-            <div class="gauge-label">투자</div>
-            <div class="gauge-track"><div class="gauge-fill" style="width:50%"></div></div>
-            <div class="gauge-val">50</div>
-          </div>
+          <div class="gauge-row"><div class="gauge-label">조직</div><div class="gauge-track"><div class="gauge-fill" style="width:85%"></div></div><div class="gauge-val">85</div></div>
+          <div class="gauge-row"><div class="gauge-label">창작</div><div class="gauge-track"><div class="gauge-fill" style="width:40%"></div></div><div class="gauge-val">40</div></div>
+          <div class="gauge-row"><div class="gauge-label">인맥</div><div class="gauge-track"><div class="gauge-fill" style="width:55%"></div></div><div class="gauge-val">55</div></div>
+          <div class="gauge-row"><div class="gauge-label">학문</div><div class="gauge-track"><div class="gauge-fill" style="width:60%"></div></div><div class="gauge-val">60</div></div>
+          <div class="gauge-row"><div class="gauge-label">투자</div><div class="gauge-track"><div class="gauge-fill" style="width:50%"></div></div><div class="gauge-val">50</div></div>
         </div>
       </div>
 
-      <div class="chapter-divider"><span class="diamond">◆</span></div>
+      <div class="chapter-divider"><span class="dia">◆</span></div>
 
-      <!-- ── 第七 월운 (시각화 샘플) ── -->
       <div class="chapter fade-up">
         <div class="ch-number">第 七</div>
         <div class="ch-title">월 별 재 물 운</div>
@@ -406,47 +250,34 @@ body{
         </div>
       </div>
 
-      <div class="chapter-divider"><span class="diamond">◆</span></div>
+      <div class="chapter-divider"><span class="dia">◆</span></div>
 
-      <!-- ── 第九 돈 습관 처방 (체크리스트) ── -->
       <div class="chapter fade-up">
         <div class="ch-number">第 九</div>
         <div class="ch-title">돈 습 관 처 방</div>
         <div class="ch-subtitle">지금 당장 실천할 것</div>
         <div class="checklist">
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-text">월급의 30%는 자동이체로 저축하라. 경금은 시스템을 만들면 지킨다.</div>
-          </div>
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-text">충동 구매 전 24시간 규칙을 적용하라. 하루 지나면 안 사게 된다.</div>
-          </div>
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-text">전문 자격증에 투자하라. 자기 계발비는 경금에게 최고의 투자다.</div>
-          </div>
-          <div class="check-item">
-            <div class="check-icon">✓</div>
-            <div class="check-text">매달 가계부를 기록하라. 숫자를 보면 경금은 자동으로 절제한다.</div>
-          </div>
+          <div class="check-item"><div class="check-icon">✓</div><div class="check-text">월급의 30%는 자동이체로 저축하라. 경금은 시스템을 만들면 지킨다.</div></div>
+          <div class="check-item"><div class="check-icon">✓</div><div class="check-text">충동 구매 전 24시간 규칙을 적용하라. 하루 지나면 안 사게 된다.</div></div>
+          <div class="check-item"><div class="check-icon">✓</div><div class="check-text">전문 자격증에 투자하라. 자기 계발비는 경금에게 최고의 투자다.</div></div>
+          <div class="check-item"><div class="check-icon">✓</div><div class="check-text">매달 가계부를 기록하라. 숫자를 보면 경금은 자동으로 절제한다.</div></div>
         </div>
       </div>
 
-    </div><!-- /scroll-inner -->
-  </div><!-- /scroll-body -->
+      <div class="footer-area">
+        <div class="chapter-divider"><span class="dia">◆</span></div>
+        <div style="padding-top:16px">
+          <div class="seal">호 왕 당</div>
+          <div><div class="stamp">印</div></div>
+        </div>
+      </div>
 
-  <!-- ━━━ 하단 마감 ━━━ -->
-  <div class="scroll-bottom">
-    <div class="seal">호 왕 당</div>
-    <div><div class="stamp">印</div></div>
+    </div>
   </div>
-
-</div><!-- /scroll-wrap -->
+</div>
 
 <script>
-// 스크롤 페이드업
-const obs = new IntersectionObserver((entries)=>{
+const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
 },{threshold:.15});
 document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
