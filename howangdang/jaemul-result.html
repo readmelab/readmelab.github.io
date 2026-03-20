@@ -526,7 +526,6 @@
     }
 
     try {
-      // 먼저 저장된 결과 확인
       let data;
       try {
         const savedRes = await fetch(API_BASE + '/result/' + orderId);
@@ -536,7 +535,6 @@
         }
       } catch(e) {}
 
-      // 없으면 생성
       if (!data) {
         const genRes = await fetch(API_BASE + '/api/jaemul', {
           method: 'POST',
@@ -661,30 +659,47 @@
     document.getElementById('jobLabel').textContent = (d.job || '직장인') + ' × ' + (elKoMap[d.dayElement] || '') + '행';
     document.getElementById('secJob').textContent = s.jobMatch || '';
 
-    // 섹션 7: 월별
-    const mf = s.monthlyFortune || {};
+    // 섹션 7: 월별 (배열 형태 대응)
+    const mf = s.monthlyFortune || [];
     const mcWrap = document.getElementById('monthlyChart');
     mcWrap.innerHTML = '';
-    for (let m = 1; m <= 12; m++) {
-      const mk = String(m) + '월';
-      const entry = mf[mk] || { score: 3, comment: '' };
-      const sc = entry.score || 3;
-      mcWrap.innerHTML += '<div class="monthly-row"><div class="monthly-month">' + m + '월</div>' +
-        '<div class="monthly-bar-bg"><div class="monthly-bar-fill s' + sc +
-        '" style="width:0%" data-w="' + (sc * 20) + '%"></div></div>' +
-        '<div class="monthly-score">' + '★'.repeat(sc) + '</div></div>' +
-        '<div class="monthly-comment">' + (entry.comment || '') + '</div>';
+
+    if (Array.isArray(mf)) {
+      // 배열 형태: [{month, score, text}, ...]
+      mf.forEach(entry => {
+        const m = entry.month || 0;
+        const sc = entry.score || 3;
+        const comment = entry.text || entry.comment || '';
+        mcWrap.innerHTML += '<div class="monthly-row"><div class="monthly-month">' + m + '월</div>' +
+          '<div class="monthly-bar-bg"><div class="monthly-bar-fill s' + sc +
+          '" style="width:0%" data-w="' + (sc * 20) + '%"></div></div>' +
+          '<div class="monthly-score">' + '★'.repeat(sc) + '</div></div>' +
+          '<div class="monthly-comment">' + comment + '</div>';
+      });
+    } else {
+      // 객체 형태: {"1월": {score, comment}, ...}
+      for (let m = 1; m <= 12; m++) {
+        const mk = String(m) + '월';
+        const entry = mf[mk] || { score: 3, comment: '' };
+        const sc = entry.score || 3;
+        mcWrap.innerHTML += '<div class="monthly-row"><div class="monthly-month">' + m + '월</div>' +
+          '<div class="monthly-bar-bg"><div class="monthly-bar-fill s' + sc +
+          '" style="width:0%" data-w="' + (sc * 20) + '%"></div></div>' +
+          '<div class="monthly-score">' + '★'.repeat(sc) + '</div></div>' +
+          '<div class="monthly-comment">' + (entry.comment || entry.text || '') + '</div>';
+      }
     }
 
-    // 섹션 8: 3년
+    // 섹션 8: 3년 흐름 (y2026/y2027/y2028 또는 2026/2027/2028 대응)
     const ty = s.threeYearFlow || {};
     const tyWrap = document.getElementById('threeYearCards');
     tyWrap.innerHTML = '';
     ['2026','2027','2028'].forEach(yr => {
-      const entry = ty[yr] || { score: 3, comment: '' };
+      const entry = ty[yr] || ty['y' + yr] || { score: 3, text: '' };
+      const comment = entry.text || entry.comment || '';
       tyWrap.innerHTML += '<div class="year-card"><div class="yr">' + yr +
         '</div><div class="yr-score">' + (entry.score || 3) +
-        '</div><div class="yr-comment">' + (entry.comment || '') + '</div></div>';
+        '</div><div class="yr-comment">' + comment + '</div></div>';
     });
 
     // 섹션 9: 돈 습관
@@ -696,8 +711,6 @@
       clWrap.innerHTML += '<div class="check-item"><div class="check-box" data-idx="' + i +
         '"></div><div class="check-text">' + item + '</div></div>';
     });
-
-    // 체크박스 토글
     clWrap.querySelectorAll('.check-box').forEach(box => {
       box.addEventListener('click', function(){ this.classList.toggle('checked'); });
     });
@@ -714,29 +727,20 @@
     document.getElementById('secHoTong').textContent = s.wealthHoTong || '';
 
     // CTA
-    document.getElementById('ctaBtn').href = '/order.html?product=HW3&upgradeFrom=' + (d.orderId || '');
+    document.getElementById('ctaBtn').href = '/howangdang/order.html?product=HW3&upgradeFrom=' + (d.orderId || '');
 
     // 표시
     document.getElementById('resultWrap').style.display = 'block';
     document.getElementById('loadingScreen').classList.add('hide');
 
-    // 애니메이션 트리거
     setTimeout(() => animateBars(), 300);
     observeFadeUp();
   }
 
   function animateBars() {
     document.querySelectorAll('[data-w]').forEach(el => {
-      if (el.tagName === 'circle') return;
       el.style.width = el.dataset.w;
     });
-    // 등급 바
-    const gb = document.getElementById('gradeBar');
-    if (gb && gb.dataset.w) gb.style.width = gb.dataset.w;
-    // 그릇 바
-    const vb = document.getElementById('vesselBar');
-    if (vb && vb.dataset.w) vb.style.width = vb.dataset.w;
-    // 직업 링
     const jr = document.getElementById('jobRing');
     if (jr && jr.dataset.offset) {
       jr.style.strokeDashoffset = jr.dataset.offset;
@@ -751,7 +755,6 @@
           if (entry.isIntersecting) {
             entry.target.classList.add('show');
             obs.unobserve(entry.target);
-            // 내부 바 애니메이션도 트리거
             entry.target.querySelectorAll('[data-w]').forEach(bar => {
               bar.style.width = bar.dataset.w;
             });
@@ -767,5 +770,6 @@
   loadResult();
 })();
 </script>
+
 </body>
 </html>
