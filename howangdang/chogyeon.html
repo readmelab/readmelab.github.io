@@ -158,11 +158,12 @@ if (pTitle) {
 
 (function handlePaymentCallback() {
   var urlParams = new URLSearchParams(window.location.search);
-  var paymentKey = urlParams.get('paymentKey');
-  var orderId = urlParams.get('orderId');
-  var amount = urlParams.get('amount');
 
-  if (paymentKey && orderId && amount) {
+  if (urlParams.get('payment') === 'success') {
+    var paymentKey = urlParams.get('paymentKey');
+    var orderId = urlParams.get('orderId');
+    var amount = urlParams.get('amount');
+
     history.replaceState(null, '', window.location.pathname);
     var orderData = sessionStorage.getItem('hw_order');
     if (!orderData) { showToast('주문 정보를 찾을 수 없습니다.'); return; }
@@ -201,7 +202,7 @@ if (pTitle) {
     .catch(function(err) { console.error(err); showToast('결제 처리 중 오류가 발생했습니다'); });
   }
 
-  if (urlParams.get('fail') === 'true') {
+  if (urlParams.get('payment') === 'fail') {
     history.replaceState(null, '', window.location.pathname);
     showToast('결제가 취소되었거나 실패했습니다.');
   }
@@ -262,8 +263,8 @@ function submitOrder() {
       orderName: '호왕당 ' + PRODUCT_NAMES[selectedProduct],
       customerName: name,
       customerMobilePhone: phone.replace(/[^0-9]/g, ''),
-      successUrl: window.location.origin + window.location.pathname + '?paymentKey={paymentKey}&orderId={orderId}&amount={amount}',
-      failUrl: window.location.origin + window.location.pathname + '?fail=true&message={message}',
+successUrl: window.location.origin + window.location.pathname + '?payment=success',
+failUrl: window.location.origin + window.location.pathname + '?payment=fail',
       card: { flowMode: 'DEFAULT' }
     }).catch(function(e) {
       if (e.code === 'USER_CANCEL') { showToast('결제가 취소되었습니다'); }
