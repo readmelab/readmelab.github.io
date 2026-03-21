@@ -2,497 +2,450 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>호왕당 — 사주로 너의 길을 읽어주마</title>
-<meta name="description" content="정통 사주 기반 맞춤 풀이. 초견·재물풀이·본풀이.">
-<meta property="og:title" content="호왕당 — 사주풀이">
-<meta property="og:description" content="사주로 너의 길을 읽어주마">
-<script src="https://js.tosspayments.com/v2/standard"></script>
+<meta name="description" content="호왕당 사주풀이 – 초견·재물풀이·본풀이">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- 토스페이먼츠 SDK -->
+<script src="https://js.tosspayments.com/v1/payment"></script>
 <style>
-:root {
-  --bg-deep: #0a0a0a;
-  --bg-card: #141414;
-  --bg-card-hover: #1a1a1a;
-  --gold: #C5975B;
-  --gold-light: #d4aa6a;
-  --gold-dim: #8a6a3a;
-  --red: #c0392b;
-  --text-primary: #e8e0d0;
-  --text-secondary: #9a9080;
-  --text-dim: #6a6050;
-  --border: #2a2520;
-  --border-gold: rgba(197,151,91,0.3);
-  --radius: 12px;
-  --max-width: 480px;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.7;-webkit-font-smoothing:antialiased}
-.page-wrap{max-width:var(--max-width);margin:0 auto;padding:0 20px 40px}
-.hw-header{text-align:center;padding:50px 0 30px}
-.hw-logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
-.hw-title{font-size:32px;font-weight:800;color:var(--gold);letter-spacing:4px}
-.hw-hanja{font-size:14px;font-weight:400;color:var(--gold-dim);margin-left:6px;vertical-align:middle}
-.hw-tagline{font-size:15px;color:var(--text-secondary);letter-spacing:2px}
-.hw-intro{text-align:center;padding:20px 0 30px;border-bottom:1px solid var(--border);margin-bottom:30px}
-.hw-intro p{font-size:14px;color:var(--text-secondary);line-height:2}
-.hw-intro strong{color:var(--gold-light)}
-.section-title{font-size:18px;color:var(--gold);text-align:center;margin-bottom:24px;letter-spacing:3px;font-weight:600}
-.product-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;margin-bottom:16px;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden}
-.product-card:hover{background:var(--bg-card-hover);border-color:var(--border-gold)}
-.product-card.selected{border-color:var(--gold);background:var(--bg-card-hover);box-shadow:0 0 20px rgba(197,151,91,0.15)}
-.product-card.selected::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim))}
-.product-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;background:var(--border);color:var(--text-secondary);margin-bottom:10px;letter-spacing:1px}
-.product-badge.best{background:var(--gold);color:#0a0a0a;font-weight:700}
-.product-badge.premium{background:linear-gradient(135deg,var(--gold),#e8c87a);color:#0a0a0a;font-weight:700}
-.product-title{font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
-.product-hanja{font-size:13px;font-weight:400;color:var(--gold-dim);margin-left:8px}
-.product-desc{font-size:13px;color:var(--text-secondary);margin-bottom:14px}
-.product-includes{list-style:none;margin-bottom:16px}
-.product-includes li{font-size:13px;color:var(--text-secondary);padding:3px 0 3px 18px;position:relative}
-.product-includes li::before{content:'·';position:absolute;left:4px;color:var(--gold-dim);font-weight:bold}
-.product-price{font-size:26px;font-weight:800;color:var(--gold)}
-.product-price .won{font-size:14px;font-weight:400;color:var(--gold-dim)}
-.product-question-count{font-size:12px;color:var(--gold-dim);margin-top:6px}
+:root{--bg:#0d0906;--card:#1a1410;--gold:#d4af37;--red:#b4391e;--text:#e8dcc8;--sub:#a89a85;--border:#2a2218;--accent:#c8a84e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;}
+.container{max-width:520px;margin:0 auto;padding:24px 16px 80px;}
 
-/* 폼 */
-.hw-form-section{padding-top:24px;border-top:1px solid var(--border);display:none}
-.hw-form-section.show{display:block}
-.form-group{margin-bottom:22px}
-.form-group label{display:block;font-size:14px;color:var(--gold-light);margin-bottom:8px;font-weight:500}
-.form-input{width:100%;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:15px;outline:none;transition:border-color .3s;font-family:inherit}
-.form-input:focus{border-color:var(--gold-dim)}
-.form-input::placeholder{color:#4a3a2a}
-select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9080' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
-select.form-input option{background:#1a1a1a;color:#e8e0d0}
-.date-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.time-row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
-.radio-group{display:flex;gap:8px;flex-wrap:wrap}
-.radio-btn{cursor:pointer}
-.radio-btn input{display:none}
-.radio-btn span{display:inline-block;padding:10px 18px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-secondary);transition:all .25s}
-.radio-btn input:checked+span{border-color:var(--gold);color:var(--gold);background:rgba(197,151,91,0.08)}
-.job-row{display:flex;flex-wrap:wrap;gap:8px}
-.job-btn{padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all .3s;font-family:inherit}
-.job-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(197,151,91,0.1)}
-.form-textarea{width:100%;padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:inherit;font-size:14px;outline:none;resize:none;min-height:100px;line-height:1.6}
-.form-textarea:focus{border-color:var(--gold-dim)}
-.form-textarea::placeholder{color:#4a3a2a}
-.consent{margin-top:30px}
-.checkbox-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text-dim);cursor:pointer}
-.checkbox-label input[type="checkbox"]{width:18px;height:18px;margin-top:2px;accent-color:var(--gold)}
-.hw-submit-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:10px;font-size:17px;font-weight:700;color:#0a0a0a;cursor:pointer;margin-top:10px;transition:all .3s;letter-spacing:2px;font-family:inherit}
-.hw-submit-btn:hover{box-shadow:0 4px 20px rgba(197,151,91,0.4)}
-.hw-submit-btn:disabled{opacity:.5;cursor:not-allowed}
-.hw2-only,.hw3-only{display:none}
+/* 헤더 */
+.header{text-align:center;padding:40px 0 32px;}
+.header h1{font-size:28px;color:var(--gold);letter-spacing:6px;margin-bottom:8px;}
+.header p{color:var(--sub);font-size:13px;line-height:1.8;}
 
-/* 호왕패 링크 */
-.hw-free{text-align:center;margin:32px 0 0;padding-top:24px;border-top:1px solid var(--border)}
-.hw-free-text{font-size:13px;color:var(--text-secondary);margin-bottom:12px}
-.hw-free-btn{display:inline-block;padding:14px 32px;background:none;border:1px solid var(--border-gold);border-radius:10px;color:var(--gold);font-size:15px;font-weight:600;cursor:pointer;transition:all .3s;letter-spacing:2px;text-decoration:none}
-.hw-free-btn:hover{background:rgba(197,151,91,0.08);border-color:var(--gold)}
+/* 상품 카드 */
+.products{display:flex;flex-direction:column;gap:14px;margin-bottom:32px;}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all .3s;position:relative;}
+.product-card:hover,.product-card.selected{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,.15);}
+.product-card.selected{background:#1f1a14;}
+.product-card .badge{position:absolute;top:-8px;right:16px;background:var(--red);color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;}
+.product-card h3{color:var(--gold);font-size:17px;margin-bottom:4px;}
+.product-card .price{font-size:20px;font-weight:900;color:var(--accent);margin:6px 0;}
+.product-card .desc{color:var(--sub);font-size:12px;line-height:1.7;}
+.product-card .includes{color:var(--sub);font-size:11px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
 
-.hw-footer{text-align:center;padding:40px 0 30px;border-top:1px solid var(--border);margin-top:40px}
-.hw-footer p{font-size:11px;color:var(--text-dim);margin-bottom:4px}
-.hw-toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0a0a0a;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;z-index:9999;transition:bottom .4s ease;white-space:nowrap}
-.hw-toast.show{bottom:30px}
-.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
-.fade-in.visible{opacity:1;transform:translateY(0)}
-@media(max-width:400px){.hw-title{font-size:26px}.product-price{font-size:22px}}
+/* 입력 폼 */
+.form-section{display:none;margin-bottom:24px;}
+.form-section.active{display:block;}
+.form-section h2{color:var(--gold);font-size:18px;text-align:center;margin-bottom:20px;letter-spacing:4px;}
+.field{margin-bottom:16px;}
+.field label{display:block;color:var(--sub);font-size:12px;margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:#151210;border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;font-family:inherit;font-size:14px;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);outline:none;}
+.field textarea{resize:vertical;min-height:70px;}
+
+/* 생년월일 행 */
+.birth-row{display:flex;gap:8px;}
+.birth-row select{flex:1;}
+
+/* 성별 / 양음력 버튼 */
+.btn-group{display:flex;gap:8px;}
+.btn-group button{flex:1;padding:10px;background:#151210;border:1px solid var(--border);color:var(--sub);border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;transition:all .2s;}
+.btn-group button.active{border-color:var(--gold);color:var(--gold);background:#1f1a14;}
+
+/* 직업 그리드 */
+.job-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+.job-btn{padding:10px 4px;background:#151210;border:1px solid var(--border);color:var(--sub);border-radius:8px;cursor:pointer;font-size:12px;text-align:center;transition:all .2s;}
+.job-btn.active{border-color:var(--gold);color:var(--gold);background:#1f1a14;}
+.job-extra{display:none;margin-top:8px;}
+.job-extra.show{display:block;}
+
+/* 동의 */
+.consent{display:flex;align-items:flex-start;gap:8px;margin:16px 0;}
+.consent input[type=checkbox]{margin-top:3px;accent-color:var(--gold);}
+.consent label{color:var(--sub);font-size:11px;line-height:1.6;}
+
+/* 결제 버튼 */
+.pay-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--accent));color:#0d0906;border:none;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:2px;transition:all .3s;}
+.pay-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(212,175,55,.3);}
+.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* 무료 호왕패 링크 */
+.free-link{text-align:center;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+.free-link a{color:var(--gold);text-decoration:none;font-size:14px;}
+.free-link p{color:var(--sub);font-size:11px;margin-top:4px;}
+
+/* 토스트 */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#333;color:#fff;padding:12px 24px;border-radius:8px;font-size:13px;opacity:0;transition:all .4s;z-index:9999;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* 반응형 */
+@media(max-width:400px){.container{padding:16px 10px 60px;}.product-card{padding:16px;}.birth-row select{font-size:12px;padding:10px 4px;}}
 </style>
 </head>
 <body>
 
-<div class="page-wrap">
+<div class="container">
 
-<header class="hw-header">
-  <div class="hw-logo-area">
-    <h1 class="hw-title">호왕당<span class="hw-hanja">虎王堂</span></h1>
-  </div>
-  <p class="hw-tagline">사주로 너의 길을 읽어주마</p>
-</header>
-
-<section class="hw-intro fade-in">
-  <p>달콤한 말로 귀를 즐겁게 하지 않는다.<br>
-  타고난 그릇과 흐르는 운의 결을 있는 그대로 짚어,<br>
-  <strong>지금 무엇을 해야 하는지</strong> 방향을 제시한다.</p>
-</section>
-
-<section class="hw-products fade-in">
-  <h2 class="section-title">풀이를 고르시오</h2>
-
-  <div class="product-card" data-code="HW1" data-price="4900" onclick="selectProduct(this)">
-    <div class="product-badge">입문</div>
-    <h3 class="product-title">초견<span class="product-hanja">初見</span></h3>
-    <p class="product-desc">나를 한눈에 읽는 사주 요약과 올해의 흐름</p>
-    <ul class="product-includes">
-      <li>사주 원국 대시보드</li>
-      <li>타고난 성정 요약</li>
-      <li>2026년 운세 핵심</li>
-      <li>호왕의 호통</li>
-    </ul>
-    <div class="product-price">4,900<span class="won">원</span></div>
+  <!-- 헤더 -->
+  <div class="header">
+    <h1>虎王堂</h1>
+    <p>달콤한 말로 귀를 즐겁게 하지 않는다.<br>
+    타고난 그릇과 흐르는 운의 결을 있는 그대로 짚어,<br>
+    <strong>지금 무엇을 해야 하는지</strong> 방향을 제시한다.</p>
   </div>
 
-  <div class="product-card" data-code="HW2" data-price="19800" onclick="selectProduct(this)">
-    <div class="product-badge best">인기</div>
-    <h3 class="product-title">재물풀이<span class="product-hanja">財物解</span></h3>
-    <p class="product-desc">돈의 그릇과 흐름, 구체적 재물 타이밍</p>
-    <ul class="product-includes">
-      <li>재물 총론 + 재물운 등급</li>
-      <li>돈의 그릇 · 통로 · 누수 패턴</li>
-      <li>투자 적성 · 직업 궁합</li>
-      <li>2026 월별 재물 타이밍</li>
-      <li>돈 습관 처방</li>
-    </ul>
-    <div class="product-price">19,800<span class="won">원</span></div>
-  </div>
+  <!-- 상품 선택 -->
+  <h2 style="color:var(--gold);text-align:center;font-size:16px;letter-spacing:4px;margin-bottom:16px;">풀이를 고르시오</h2>
 
-  <div class="product-card" data-code="HW3" data-price="49700" onclick="selectProduct(this)">
-    <div class="product-badge premium">프리미엄</div>
-    <h3 class="product-title">본풀이<span class="product-hanja">本解</span></h3>
-    <p class="product-desc">성정·재물·연애·건강·대운 — 삶의 전체 지도</p>
-    <ul class="product-includes">
-      <li>사주 원국 종합 해석</li>
-      <li>재물운 · 연애혼인운 · 건강운</li>
-      <li>2026 월별 운세</li>
-      <li>향후 10년 대운 흐름</li>
-      <li>호왕 처방전 · 호왕의 밀서</li>
-    </ul>
-    <div class="product-price">49,700<span class="won">원</span></div>
-  </div>
-</section>
+  <div class="products">
+    <div class="product-card" data-code="HW1" onclick="selectProduct('HW1')">
+      <span class="badge" style="background:#555;">입문</span>
+      <h3>초견 初見</h3>
+      <div class="price">4,900원</div>
+      <div class="desc">나를 한눈에 읽는 사주 요약과 올해의 흐름</div>
+      <div class="includes">포함: 사주 원국 대시보드 · 타고난 성정 요약 · 2026년 운세 핵심 · 호왕의 호통</div>
+    </div>
 
-<!-- 정보 입력 폼 -->
-<section class="hw-form-section fade-in" id="formSection">
-  <h2 class="section-title">사주 정보를 알려주시오</h2>
+    <div class="product-card" data-code="HW2" onclick="selectProduct('HW2')">
+      <span class="badge">인기</span>
+      <h3>재물풀이 財物解</h3>
+      <div class="price">19,800원</div>
+      <div class="desc">돈의 그릇과 흐름, 구체적 재물 타이밍</div>
+      <div class="includes">포함: 재물 총론 · 돈의 그릇·통로·누수 · 투자 적성 · 직업 궁합 · 월별 재물 타이밍 · 돈 습관 처방</div>
+    </div>
 
-  <div class="form-group">
-    <label>이름</label>
-    <input class="form-input" type="text" id="userName" placeholder="본명을 입력하세요" maxlength="20">
-  </div>
-
-  <div class="form-group">
-    <label>성별</label>
-    <div class="radio-group">
-      <label class="radio-btn"><input type="radio" name="gender" value="male"><span>남</span></label>
-      <label class="radio-btn"><input type="radio" name="gender" value="female"><span>여</span></label>
+    <div class="product-card" data-code="HW3" onclick="selectProduct('HW3')">
+      <span class="badge" style="background:#8B4513;">프리미엄</span>
+      <h3>본풀이 本解</h3>
+      <div class="price">49,700원</div>
+      <div class="desc">성정·재물·연애·건강·대운 — 삶의 전체 지도</div>
+      <div class="includes">포함: 사주 종합 해석 · 재물운·연애혼인운·건강운 · 월별 운세 · 10년 대운 흐름 · 호왕 처방전 · 호왕의 밀서</div>
     </div>
   </div>
 
-  <div class="form-group">
-    <label>생년월일</label>
-    <div class="date-row">
-      <select class="form-input" id="birthYear"><option value="">년</option></select>
-      <select class="form-input" id="birthMonth"><option value="">월</option></select>
-      <select class="form-input" id="birthDay"><option value="">일</option></select>
-    </div>
-  </div>
+  <!-- 입력 폼 -->
+  <div class="form-section" id="formSection">
+    <h2>사주 정보를 알려주시오</h2>
 
-  <div class="form-group">
-    <label>양력 / 음력</label>
-    <div class="radio-group">
-      <label class="radio-btn"><input type="radio" name="calendar" value="solar" checked><span>양력</span></label>
-      <label class="radio-btn"><input type="radio" name="calendar" value="lunar"><span>음력</span></label>
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="userName" placeholder="홍길동" maxlength="20">
     </div>
-  </div>
 
-  <div class="form-group">
-    <label>태어난 시간</label>
-    <div class="time-row">
-      <select class="form-input" id="birthTime">
-        <option value="">선택</option>
-        <option value="모름">모름</option>
-        <option value="23시">子시 (23:00~01:00)</option>
-        <option value="1시">丑시 (01:00~03:00)</option>
-        <option value="3시">寅시 (03:00~05:00)</option>
-        <option value="5시">卯시 (05:00~07:00)</option>
-        <option value="7시">辰시 (07:00~09:00)</option>
-        <option value="9시">巳시 (09:00~11:00)</option>
-        <option value="11시">午시 (11:00~13:00)</option>
-        <option value="13시">未시 (13:00~15:00)</option>
-        <option value="15시">申시 (15:00~17:00)</option>
-        <option value="17시">酉시 (17:00~19:00)</option>
-        <option value="19시">戌시 (19:00~21:00)</option>
-        <option value="21시">亥시 (21:00~23:00)</option>
+    <div class="field">
+      <label>성별</label>
+      <div class="btn-group" id="genderGroup">
+        <button type="button" onclick="selectGender(this,'M')">남</button>
+        <button type="button" onclick="selectGender(this,'F')">여</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>생년월일</label>
+      <div class="birth-row">
+        <select id="birthYear"></select>
+        <select id="birthMonth"></select>
+        <select id="birthDay"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>양력 / 음력</label>
+      <div class="btn-group" id="calGroup">
+        <button type="button" class="active" onclick="selectCal(this,'solar')">양력</button>
+        <button type="button" onclick="selectCal(this,'lunar')">음력</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>태어난 시간</label>
+      <select id="birthTime">
+        <option value="">모름</option>
+        <option value="23:30">子시 (23:30~01:29)</option>
+        <option value="01:30">丑시 (01:30~03:29)</option>
+        <option value="03:30">寅시 (03:30~05:29)</option>
+        <option value="05:30">卯시 (05:30~07:29)</option>
+        <option value="07:30">辰시 (07:30~09:29)</option>
+        <option value="09:30">巳시 (09:30~11:29)</option>
+        <option value="11:30">午시 (11:30~13:29)</option>
+        <option value="13:30">未시 (13:30~15:29)</option>
+        <option value="15:30">申시 (15:30~17:29)</option>
+        <option value="17:30">酉시 (17:30~19:29)</option>
+        <option value="19:30">戌시 (19:30~21:29)</option>
+        <option value="21:30">亥시 (21:30~23:29)</option>
       </select>
     </div>
-  </div>
 
-  <div class="form-group">
-    <label>연락처</label>
-    <input class="form-input" type="tel" id="userPhone" placeholder="010-0000-0000" maxlength="13">
-  </div>
-
-  <!-- HW2, HW3 전용: 직업 -->
-  <div class="form-group hw2-only" id="jobSection">
-    <label>직업</label>
-    <div class="job-row">
-      <button type="button" class="job-btn" data-job="사업" onclick="selectJob(this)">사업</button>
-      <button type="button" class="job-btn" data-job="직장인" onclick="selectJob(this)">직장인</button>
-      <button type="button" class="job-btn" data-job="프리랜서" onclick="selectJob(this)">프리랜서</button>
-      <button type="button" class="job-btn" data-job="주부" onclick="selectJob(this)">주부</button>
-      <button type="button" class="job-btn" data-job="취준생" onclick="selectJob(this)">취준생</button>
-      <button type="button" class="job-btn" data-job="학생" onclick="selectJob(this)">학생</button>
+    <div class="field">
+      <label>연락처</label>
+      <input type="tel" id="userPhone" placeholder="010-0000-0000" maxlength="13" oninput="formatPhone(this)">
     </div>
+
+    <!-- HW2, HW3 전용: 직업 -->
+    <div class="field" id="jobField" style="display:none;">
+      <label>직업</label>
+      <div class="job-grid" id="jobGrid">
+        <button class="job-btn" onclick="selectJob(this)">직장인</button>
+        <button class="job-btn" onclick="selectJob(this)">자영업</button>
+        <button class="job-btn" onclick="selectJob(this)">프리랜서</button>
+        <button class="job-btn" onclick="selectJob(this)">학생</button>
+        <button class="job-btn" onclick="selectJob(this)">주부</button>
+        <button class="job-btn" onclick="selectJob(this)">구직중</button>
+        <button class="job-btn" onclick="selectJob(this)">공무원</button>
+        <button class="job-btn" onclick="selectJob(this)">투자자</button>
+        <button class="job-btn" onclick="selectJob(this)">기타</button>
+      </div>
+      <div class="job-extra" id="jobExtra">
+        <input type="text" id="jobCustom" placeholder="직업을 입력하세요">
+      </div>
+    </div>
+
+    <!-- HW3 전용: 질문 -->
+    <div class="field" id="questionField" style="display:none;">
+      <label>지금 가장 궁금한 것 (질문 1개)</label>
+      <textarea id="userQuestion" placeholder="예: 이직을 해야 할까요?"></textarea>
+    </div>
+
+    <div class="consent">
+      <input type="checkbox" id="agreeCheck">
+      <label for="agreeCheck">개인정보 수집·이용에 동의합니다 (사주풀이 목적, 서비스 완료 후 1년 보관)</label>
+    </div>
+
+    <button class="pay-btn" id="payBtn" onclick="submitOrder()" disabled>결제하기</button>
   </div>
 
-  <!-- HW3 전용: 질문 -->
-  <div class="form-group hw3-only" id="questionSection">
-    <label>지금 가장 궁금한 것 (질문 1개)</label>
-    <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
+  <!-- 무료 호왕패 -->
+  <div class="free-link">
+    <a href="howangpae.html">🐯 무료 호왕패 뽑기 →</a>
+    <p>결제 전, 무료로 사주 카드를 먼저 뽑아보세요</p>
   </div>
 
-  <div class="form-group consent">
-    <label class="checkbox-label">
-      <input type="checkbox" id="agreePrivacy">
-      <span>개인정보 수집·이용에 동의합니다 (사주풀이 목적, 서비스 완료 후 1년 보관)</span>
-    </label>
-  </div>
-
-  <button class="hw-submit-btn" id="submitBtn" onclick="submitOrder()">결제하기</button>
-</section>
-
-<div class="hw-free fade-in">
-  <p class="hw-free-text">먼저 무료로 네 사주를 한 장에 담아보거라</p>
-  <a class="hw-free-btn" href="howangpae.html">호왕패 무료 뽑기</a>
 </div>
 
-<footer class="hw-footer">
-  <p>운영: 나를읽다연구소 | 사업자등록번호: 347-12-03156</p>
-  <p>대표: 오동훈 | 문의: 카카오톡 채널 @howangdang</p>
-</footer>
-
-</div>
-
-<div id="toast" class="hw-toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-var API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
-var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
-var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
+const HW_SERVER = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const TOSS_CLIENT_KEY = 'live_ck_LBa5PzR0ArnoADly4GvVVmYnNeDM';
 
-var selectedProductCode = '';
-var selectedPrice = 0;
+const PRICES = { HW1: 4900, HW2: 19800, HW3: 49700 };
+const PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
+const RESULT_PAGES = {
+  HW1: 'chogyeon-result.html',
+  HW2: 'jaemul-result.html',
+  HW3: 'bonpuli-result.html'
+};
+
+var selectedProduct = '';
+var selectedGender = '';
+var selectedCal = 'solar';
 var selectedJob = '';
 
-// ======== 드롭다운 초기화 ========
-(function initDropdowns() {
-  var y = document.getElementById('birthYear');
-  var m = document.getElementById('birthMonth');
-  var d = document.getElementById('birthDay');
-  for (var i = 2025; i >= 1940; i--) y.innerHTML += '<option value="'+i+'">'+i+'년</option>';
-  for (var i = 1; i <= 12; i++) m.innerHTML += '<option value="'+i+'">'+i+'월</option>';
-  for (var i = 1; i <= 31; i++) d.innerHTML += '<option value="'+i+'">'+i+'일</option>';
-})();
-
-// ======== 전화번호 자동 하이픈 ========
-document.getElementById('userPhone').addEventListener('input', function(e) {
-  var v = e.target.value.replace(/[^0-9]/g, '');
-  if (v.length > 3 && v.length <= 7) v = v.slice(0,3)+'-'+v.slice(3);
-  else if (v.length > 7) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
-  e.target.value = v;
+/* ── 초기화 ── */
+document.addEventListener('DOMContentLoaded', () => {
+  initBirthDropdowns();
+  handlePaymentCallback();
 });
 
-// ======== 상품 선택 ========
-function selectProduct(el) {
-  document.querySelectorAll('.product-card').forEach(function(c) { c.classList.remove('selected'); });
-  el.classList.add('selected');
-  selectedProductCode = el.dataset.code;
-  selectedPrice = Number(el.dataset.price);
+function initBirthDropdowns() {
+  const yy = document.getElementById('birthYear');
+  const mm = document.getElementById('birthMonth');
+  const dd = document.getElementById('birthDay');
 
-  document.getElementById('formSection').classList.add('show');
-  // HW2, HW3일 때 직업 표시
-  document.querySelectorAll('.hw2-only').forEach(function(e) {
-    e.style.display = (selectedProductCode === 'HW2' || selectedProductCode === 'HW3') ? 'block' : 'none';
-  });
-  // HW3일 때 질문 표시
-  document.querySelectorAll('.hw3-only').forEach(function(e) {
-    e.style.display = selectedProductCode === 'HW3' ? 'block' : 'none';
-  });
-
-  document.getElementById('submitBtn').textContent = PRODUCT_NAMES[selectedProductCode] + ' 결제하기 (' + selectedPrice.toLocaleString() + '원)';
-
-  setTimeout(function() {
-    document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 200);
+  yy.innerHTML = '<option value="">년</option>';
+  for (let y = 2010; y >= 1940; y--) {
+    yy.innerHTML += `<option value="${y}">${y}년</option>`;
+  }
+  mm.innerHTML = '<option value="">월</option>';
+  for (let m = 1; m <= 12; m++) {
+    mm.innerHTML += `<option value="${m}">${m}월</option>`;
+  }
+  dd.innerHTML = '<option value="">일</option>';
+  for (let d = 1; d <= 31; d++) {
+    dd.innerHTML += `<option value="${d}">${d}일</option>`;
+  }
 }
 
-function selectJob(btn) {
-  document.querySelectorAll('.job-btn').forEach(function(b) { b.classList.remove('active'); });
+/* ── 상품 선택 ── */
+function selectProduct(code) {
+  selectedProduct = code;
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`.product-card[data-code="${code}"]`).classList.add('selected');
+
+  // 폼 표시
+  document.getElementById('formSection').classList.add('active');
+
+  // HW2, HW3 → 직업 필드 표시
+  document.getElementById('jobField').style.display = (code === 'HW2' || code === 'HW3') ? 'block' : 'none';
+  // HW3 → 질문 필드 표시
+  document.getElementById('questionField').style.display = (code === 'HW3') ? 'block' : 'none';
+
+  // 결제 버튼 텍스트
+  document.getElementById('payBtn').textContent = `${PRODUCT_NAMES[code]} 결제하기 · ${PRICES[code].toLocaleString()}원`;
+  updatePayBtn();
+}
+
+/* ── 성별 ── */
+function selectGender(btn, val) {
+  selectedGender = val;
+  document.querySelectorAll('#genderGroup button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  selectedJob = btn.dataset.job;
+  updatePayBtn();
 }
 
-// ======== 결제 콜백 처리 ========
-(function handlePaymentCallback() {
-  var urlParams = new URLSearchParams(window.location.search);
+/* ── 양음력 ── */
+function selectCal(btn, val) {
+  selectedCal = val;
+  document.querySelectorAll('#calGroup button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
 
-  if (urlParams.get('payment') === 'success') {
-    var paymentKey = urlParams.get('paymentKey');
-    var orderId = urlParams.get('orderId');
-    var amount = urlParams.get('amount');
+/* ── 직업 ── */
+function selectJob(btn) {
+  document.querySelectorAll('.job-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedJob = btn.textContent;
+  document.getElementById('jobExtra').classList.toggle('show', selectedJob === '기타');
+  updatePayBtn();
+}
 
-    // URL 정리
-    history.replaceState(null, '', window.location.pathname);
+/* ── 전화번호 포맷 ── */
+function formatPhone(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (v.length > 3 && v.length <= 7) v = v.slice(0,3) + '-' + v.slice(3);
+  else if (v.length > 7) v = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+  el.value = v;
+}
 
-    var orderData = sessionStorage.getItem('hw_order_index');
-    if (!orderData) { showToast('주문 정보를 찾을 수 없습니다.'); return; }
-    var order = JSON.parse(orderData);
+/* ── 결제 버튼 활성화 체크 ── */
+function updatePayBtn() {
+  const name = document.getElementById('userName').value.trim();
+  const year = document.getElementById('birthYear').value;
+  const month = document.getElementById('birthMonth').value;
+  const day = document.getElementById('birthDay').value;
+  const phone = document.getElementById('userPhone').value.replace(/\D/g,'');
+  const agree = document.getElementById('agreeCheck').checked;
 
-    if (order.orderId !== orderId || order.price !== parseInt(amount)) {
-      showToast('결제 정보가 일치하지 않습니다.');
-      sessionStorage.removeItem('hw_order_index');
-      return;
-    }
-    sessionStorage.removeItem('hw_order_index');
+  let ok = selectedProduct && name && selectedGender && year && month && day && phone.length >= 10 && agree;
 
-    // 화면 숨기기
-    document.querySelector('.hw-products').style.display = 'none';
-    document.querySelector('.hw-intro').style.display = 'none';
-    document.getElementById('formSection').classList.remove('show');
-    document.querySelector('.hw-free').style.display = 'none';
+  // HW2, HW3 → 직업 필수
+  if ((selectedProduct === 'HW2' || selectedProduct === 'HW3') && !selectedJob) ok = false;
+  if (selectedJob === '기타' && !document.getElementById('jobCustom').value.trim()) ok = false;
 
-    // 로딩 표시
-    var wrap = document.querySelector('.page-wrap');
-    var loadingDiv = document.createElement('div');
-    loadingDiv.style.cssText = 'text-align:center;padding:80px 20px;';
-    loadingDiv.innerHTML = '<div style="font-size:16px;color:var(--gold);animation:pulse 1.5s ease infinite">결제 확인 중...</div>';
-    wrap.insertBefore(loadingDiv, wrap.querySelector('.hw-footer'));
+  document.getElementById('payBtn').disabled = !ok;
+}
 
-    // 1) 서버에 주문 등록
-    fetch(API_BASE + '/order', {
+// 입력값 변경 시 체크
+document.addEventListener('input', updatePayBtn);
+document.addEventListener('change', updatePayBtn);
+document.addEventListener('click', () => setTimeout(updatePayBtn, 50));
+
+/* ── 주문 ID 생성 ── */
+function genId() {
+  return 'HW' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase();
+}
+
+/* ── 주문 제출 & 결제 ── */
+async function submitOrder() {
+  const btn = document.getElementById('payBtn');
+  btn.disabled = true;
+  btn.textContent = '처리 중...';
+
+  try {
+    const name = document.getElementById('userName').value.trim();
+    const year = document.getElementById('birthYear').value;
+    const month = document.getElementById('birthMonth').value;
+    const day = document.getElementById('birthDay').value;
+    const time = document.getElementById('birthTime').value;
+    const phone = document.getElementById('userPhone').value.trim();
+    const job = selectedJob === '기타' ? document.getElementById('jobCustom').value.trim() : selectedJob;
+    const question = document.getElementById('userQuestion') ? document.getElementById('userQuestion').value.trim() : '';
+
+    const birthDate = `${year}년 ${month}월 ${day}일`;
+    const orderId = genId();
+    const amount = PRICES[selectedProduct];
+
+    // 서버에 주문 저장
+    const res = await fetch(HW_SERVER + '/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderId: orderId,
-        product: order.product,
-        name: order.name,
-        phone: order.phone,
-        birthDate: order.birthDate,
-        birthTime: order.birthTime,
-        calendarType: order.calendarType,
-        question: order.question || '',
-        job: order.job || '',
-        gender: order.gender || ''
+        orderId,
+        product: selectedProduct,
+        amount,
+        name,
+        gender: selectedGender,
+        birthDate,
+        birthTime: time || '모름',
+        calType: selectedCal,
+        phone,
+        job: job || '',
+        question: question || '',
+        source: 'index'
       })
+    });
+
+    if (!res.ok) throw new Error('주문 저장 실패');
+
+    // 토스페이먼츠 결제 요청
+    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    await tossPayments.requestPayment('카드', {
+      amount,
+      orderId,
+      orderName: `호왕당 ${PRODUCT_NAMES[selectedProduct]}`,
+      customerName: name,
+      successUrl: window.location.origin + window.location.pathname + `?payment=success&orderId=${orderId}&product=${selectedProduct}`,
+      failUrl: window.location.origin + window.location.pathname + `?payment=fail&orderId=${orderId}`
+    });
+
+  } catch (e) {
+    console.error(e);
+    showToast('결제 요청 중 오류가 발생했습니다.');
+    btn.disabled = false;
+    btn.textContent = `${PRODUCT_NAMES[selectedProduct]} 결제하기 · ${PRICES[selectedProduct].toLocaleString()}원`;
+  }
+}
+
+/* ── 결제 콜백 처리 ── */
+function handlePaymentCallback() {
+  const params = new URLSearchParams(location.search);
+
+  if (params.get('payment') === 'success') {
+    const orderId = params.get('orderId');
+    const product = params.get('product');
+    const paymentKey = params.get('paymentKey');
+    const amount = params.get('amount');
+
+    // 결제 승인 요청
+    fetch(HW_SERVER + '/payment/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, paymentKey, amount: Number(amount) })
     })
-    // 2) 토스 결제 승인
-    .then(function() {
-      return fetch(API_BASE + '/payment/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentKey: paymentKey,
-          orderId: orderId,
-          amount: parseInt(amount)
-        })
-      });
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (data.success) {
-        // 상품별 결과 페이지 분기
-        var resultPage = 'chogyeon-result.html?id=' + orderId;
-        if (order.product === 'HW2') resultPage = 'jaemul-result.html?orderId=' + orderId;
-        else if (order.product === 'HW3') resultPage = 'bonpuli-result.html?orderId=' + orderId;
-        location.href = resultPage;
+    .then(r => r.json())
+    .then(data => {
+      if (data.success || data.status === 'DONE') {
+        // 결과 페이지로 이동
+        const resultPage = RESULT_PAGES[product] || 'chogyeon-result.html';
+        location.href = resultPage + '?orderId=' + orderId;
       } else {
-        loadingDiv.innerHTML = '<div style="color:#e85050;font-size:14px">결제 승인 실패: ' + (data.error || '') + '<br><br><a href="index.html" style="color:var(--gold)">다시 시도하기</a></div>';
+        showToast('결제 승인 실패: ' + (data.message || '다시 시도해주세요'));
       }
     })
-    .catch(function(err) {
-      console.error(err);
-      loadingDiv.innerHTML = '<div style="color:#e85050;font-size:14px">결제 처리 중 오류가 발생했습니다.<br><br><a href="index.html" style="color:var(--gold)">다시 시도하기</a></div>';
+    .catch(() => {
+      showToast('결제 승인 중 오류가 발생했습니다.');
     });
   }
 
-  if (urlParams.get('payment') === 'fail') {
-    history.replaceState(null, '', window.location.pathname);
-    showToast('결제가 취소되었거나 실패했습니다.');
-  }
-})();
-
-// ======== 주문 제출 → 토스 결제 ========
-function submitOrder() {
-  var name = document.getElementById('userName').value.trim();
-  var gender = (document.querySelector('input[name="gender"]:checked') || {}).value || '';
-  var year = document.getElementById('birthYear').value;
-  var month = document.getElementById('birthMonth').value;
-  var day = document.getElementById('birthDay').value;
-  var calType = (document.querySelector('input[name="calendar"]:checked') || {}).value || 'solar';
-  var birthTime = document.getElementById('birthTime').value;
-  var phone = document.getElementById('userPhone').value.trim();
-  var agree = document.getElementById('agreePrivacy').checked;
-  var question = '';
-
-  if (!selectedProductCode) return showToast('상품을 선택해주세요');
-  if (!name) return showToast('이름을 입력해주세요');
-  if (!gender) return showToast('성별을 선택해주세요');
-  if (!year || !month || !day) return showToast('생년월일을 선택해주세요');
-  if (!birthTime) return showToast('태어난 시간을 선택해주세요');
-  if (!phone || phone.replace(/-/g,'').length < 10) return showToast('연락처를 정확히 입력해주세요');
-  if ((selectedProductCode === 'HW2' || selectedProductCode === 'HW3') && !selectedJob) return showToast('직업을 선택해주세요');
-  if (selectedProductCode === 'HW3') {
-    question = document.getElementById('userQuestion').value.trim();
-    if (!question) return showToast('질문을 입력해주세요');
-  }
-  if (!agree) return showToast('개인정보 수집·이용에 동의해주세요');
-
-  var birthDate = year + '년 ' + month + '월 ' + day + '일';
-  var orderId = 'HW' + Date.now();
-
-  // 세션에 주문 정보 저장
-  sessionStorage.setItem('hw_order_index', JSON.stringify({
-    orderId: orderId,
-    product: selectedProductCode,
-    price: selectedPrice,
-    name: name,
-    gender: gender,
-    phone: phone.replace(/-/g, ''),
-    birthDate: birthDate,
-    birthTime: birthTime,
-    calendarType: calType,
-    question: question,
-    job: selectedJob
-  }));
-
-  // 토스 결제 요청
-  try {
-    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
-    var payment = tossPayments.payment({ customerKey: 'ANONYMOUS' });
-    payment.requestPayment({
-      method: 'CARD',
-      amount: { currency: 'KRW', value: selectedPrice },
-      orderId: orderId,
-      orderName: '호왕당 ' + PRODUCT_NAMES[selectedProductCode],
-      customerName: name,
-      customerMobilePhone: phone.replace(/[^0-9]/g, ''),
-      successUrl: window.location.origin + window.location.pathname + '?payment=success',
-      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
-      card: { flowMode: 'DEFAULT' }
-    }).catch(function(e) {
-      if (e.code === 'USER_CANCEL') showToast('결제가 취소되었습니다');
-      else { console.error(e); showToast('결제 중 오류: ' + (e.message || '')); }
-    });
-  } catch(e) {
-    console.error(e);
-    showToast('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
+  if (params.get('payment') === 'fail') {
+    showToast('결제가 취소되었습니다.');
   }
 }
 
+/* ── 토스트 ── */
 function showToast(msg) {
-  var t = document.getElementById('toast');
+  const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
-
-(function initFadeIn() {
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, {threshold:0.1});
-  document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
-})();
 </script>
 </body>
 </html>
