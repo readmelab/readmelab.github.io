@@ -182,21 +182,7 @@ if (pTitle) {
 if (upgradeTarget && upgradeFromId) {
   isUpgrade = true;
 
-  // 이전 주문 정보 가져오기
-  fetch(API_BASE + '/result/' + upgradeFromId)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.success && data.data) {
-        prevOrder = data.data;
-        // 이전 주문 정보 표시
-        document.getElementById('upgradeInfo').style.display = 'block';
-        document.getElementById('uiName').textContent = prevOrder.userName || '';
-        // 전화번호와 생년월일은 원본 주문에서 가져와야 함
-        return fetch(API_BASE + '/result/' + upgradeFromId);
-      }
-    }).catch(function() {});
-
-  // 원본 주문 데이터도 가져오기 (이름, 전화번호, 생년월일)
+  // 원본 주문 데이터 가져오기 (이름, 전화번호, 생년월일)
   fetch(API_BASE + '/order-info/' + upgradeFromId)
     .then(function(r) { return r.json(); })
     .then(function(data) {
@@ -214,7 +200,6 @@ if (upgradeTarget && upgradeFromId) {
         document.getElementById('privacyRow').style.display = 'none';
       }
     }).catch(function() {
-      // 주문 정보 못 가져오면 일반 모드로 폴백
       isUpgrade = false;
     });
 
@@ -250,6 +235,7 @@ if (upgradeTarget && upgradeFromId) {
     }, 100);
   }
 }
+
 
 // ======== 결제 콜백 처리 ========
 (function handlePaymentCallback() {
