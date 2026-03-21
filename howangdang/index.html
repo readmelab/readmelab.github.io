@@ -203,6 +203,33 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       <textarea id="userQuestion" placeholder="예: 이직을 해야 할까요?"></textarea>
     </div>
 
+     <!-- HW3 전용: 추가 정보 -->
+    <div id="hw3Fields" style="display:none;">
+      <div class="field">
+        <label>혼인 상태</label>
+        <div class="job-grid">
+          <button type="button" class="job-btn" onclick="selectMarriage(this)" data-val="미혼">미혼</button>
+          <button type="button" class="job-btn" onclick="selectMarriage(this)" data-val="연애중">연애중</button>
+          <button type="button" class="job-btn" onclick="selectMarriage(this)" data-val="기혼">기혼</button>
+          <button type="button" class="job-btn" onclick="selectMarriage(this)" data-val="이혼·사별">이혼·사별</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>가장 궁금한 분야</label>
+        <div class="job-grid">
+          <button type="button" class="job-btn" onclick="selectInterest(this)" data-val="재물">재물</button>
+          <button type="button" class="job-btn" onclick="selectInterest(this)" data-val="연애·결혼">연애·결혼</button>
+          <button type="button" class="job-btn" onclick="selectInterest(this)" data-val="건강">건강</button>
+          <button type="button" class="job-btn" onclick="selectInterest(this)" data-val="직업·진로">직업·진로</button>
+          <button type="button" class="job-btn" onclick="selectInterest(this)" data-val="대인관계">대인관계</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>추가 질문 (선택)</label>
+        <textarea id="hw3Question2" placeholder="예: 남편과의 관계가 나아질까요?"></textarea>
+      </div>
+    </div>
+    
     <div class="consent">
       <input type="checkbox" id="agreeCheck">
       <label for="agreeCheck">개인정보 수집·이용에 동의합니다 (사주풀이 목적, 서비스 완료 후 1년 보관)</label>
@@ -237,6 +264,8 @@ var selectedProduct = '';
 var selectedGender = '';
 var selectedCal = 'solar';
 var selectedJob = '';
+var selectedMarriage = '';
+var selectedInterest = '';  
 
 /* ── 초기화 ── */
 document.addEventListener('DOMContentLoaded', () => {
@@ -276,6 +305,8 @@ function selectProduct(code) {
   document.getElementById('jobField').style.display = (code === 'HW2' || code === 'HW3') ? 'block' : 'none';
   // HW3 → 질문 필드 표시
   document.getElementById('questionField').style.display = (code === 'HW3') ? 'block' : 'none';
+    // HW3 → 추가 정보 표시
+  document.getElementById('hw3Fields').style.display = (code === 'HW3') ? 'block' : 'none';
 
   // 결제 버튼 텍스트
   document.getElementById('payBtn').textContent = `${PRODUCT_NAMES[code]} 결제하기 · ${PRICES[code].toLocaleString()}원`;
@@ -306,6 +337,20 @@ function selectJob(btn) {
   updatePayBtn();
 }
 
+/* ── 혼인 상태 ── */
+function selectMarriage(btn) {
+  btn.parentElement.querySelectorAll('.job-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedMarriage = btn.dataset.val;
+}
+
+/* ── 관심 분야 ── */
+function selectInterest(btn) {
+  btn.parentElement.querySelectorAll('.job-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedInterest = btn.dataset.val;
+}  
+  
 /* ── 전화번호 포맷 ── */
 function formatPhone(el) {
   let v = el.value.replace(/\D/g, '');
@@ -378,6 +423,9 @@ async function submitOrder() {
         phone,
         job: job || '',
         question: question || '',
+        marriage: selectedMarriage || '미입력',
+        interest: selectedInterest || '전체',
+        question2: document.getElementById('hw3Question2') ? document.getElementById('hw3Question2').value.trim() : '',
         source: 'index'
       })
     });
