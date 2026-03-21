@@ -137,6 +137,32 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <div class="form-label">지금 가장 궁금한 것 (질문 1개)</div>
       <textarea class="form-textarea" id="userQuestion" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
     </div>
+       <div class="hw3-only" id="hw3Fields" style="display:none;">
+      <div style="margin-bottom:16px">
+        <div class="form-label">혼인 상태</div>
+        <div class="job-row">
+          <button class="job-btn" data-val="미혼" onclick="selectMarriage(this)">미혼</button>
+          <button class="job-btn" data-val="연애중" onclick="selectMarriage(this)">연애중</button>
+          <button class="job-btn" data-val="기혼" onclick="selectMarriage(this)">기혼</button>
+          <button class="job-btn" data-val="이혼·사별" onclick="selectMarriage(this)">이혼·사별</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div class="form-label">가장 궁금한 분야</div>
+        <div class="job-row">
+          <button class="job-btn" data-val="재물" onclick="selectInterest(this)">재물</button>
+          <button class="job-btn" data-val="연애·결혼" onclick="selectInterest(this)">연애·결혼</button>
+          <button class="job-btn" data-val="건강" onclick="selectInterest(this)">건강</button>
+          <button class="job-btn" data-val="직업·진로" onclick="selectInterest(this)">직업·진로</button>
+          <button class="job-btn" data-val="대인관계" onclick="selectInterest(this)">대인관계</button>
+        </div>
+      </div>
+      <div>
+        <div class="form-label">추가 질문 (선택)</div>
+        <textarea class="form-textarea" id="hw3Question2" placeholder="예: 남편과의 관계가 나아질까요?"></textarea>
+      </div>
+    </div>
+ 
     <div id="privacyRow" style="display:flex;align-items:flex-start;gap:8px;margin-top:4px">
       <input type="checkbox" id="agreePrivacy" style="margin-top:3px;accent-color:#c5975b;width:18px;height:18px;cursor:pointer">
       <label for="agreePrivacy" style="font-size:11px;color:#8a7a5a;line-height:1.6;cursor:pointer">
@@ -158,6 +184,8 @@ var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
 var selectedProduct = '';
 var selectedPrice = 0;
 var selectedJob = '';
+var selectedMarriage = '';
+var selectedInterest = '';
 
 var params = new URLSearchParams(location.search);
 var pTitle = params.get('title');
@@ -238,6 +266,9 @@ document.getElementById('questionSection').style.display = 'none';
         document.querySelectorAll('.product-card').forEach(function(c) {
           if (c.dataset.product !== 'HW3') c.style.display = 'none';
         });
+        // HW3 전용 필드 표시
+        document.getElementById('questionSection').style.display = 'block';
+        document.getElementById('hw3Fields').style.display = 'block';
       }
     }, 100);
   }
@@ -275,6 +306,9 @@ document.getElementById('questionSection').style.display = 'none';
         orderId: orderId, product: order.product, name: order.name, phone: order.phone,
         birthDate: order.birthDate, birthTime: order.birthTime,
         calendarType: order.calendarType, question: order.question, job: order.job,
+        marriage: order.marriage || '미입력',
+        interest: order.interest || '전체',
+        question2: order.question2 || '',
         upgradeFrom: order.upgradeFrom || ''
       })
     })
@@ -328,6 +362,18 @@ function selectJob(btn) {
   selectedJob = btn.dataset.job;
 }
 
+function selectMarriage(btn) {
+  btn.parentElement.querySelectorAll('.job-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  selectedMarriage = btn.dataset.val;
+}
+
+function selectInterest(btn) {
+  btn.parentElement.querySelectorAll('.job-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  selectedInterest = btn.dataset.val;
+}
+  
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg;
@@ -384,6 +430,9 @@ function submitOrder() {
     orderId: orderId, product: selectedProduct, price: selectedPrice,
     name: name, phone: phone, birthDate: birthDate, birthTime: birthTime,
     calendarType: calType, question: question, job: selectedJob,
+    marriage: selectedMarriage || '미입력',
+    interest: selectedInterest || '전체',
+    question2: document.getElementById('hw3Question2') ? document.getElementById('hw3Question2').value.trim() : '',
     upgradeFrom: upgradeFromId || ''
   }));
 
