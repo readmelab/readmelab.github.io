@@ -477,7 +477,7 @@ function handlePaymentCallback() {
       if (data.success || data.status === 'DONE') {
         // 결과 페이지로 이동
         const resultPage = RESULT_PAGES[product] || 'chogyeon-result.html';
-        location.href = resultPage + '?orderId=' + orderId;
+        location.href = resultPage + '?id=' + orderId;
       } else {
         showToast('결제 승인 실패: ' + (data.message || '다시 시도해주세요'));
       }
