@@ -231,8 +231,7 @@ if (prevOrder.job) {
   selectedJob = prevOrder.job;
   document.getElementById('jobSection').style.display = 'none';
 }
-// 업그레이드: 질문 필드도 숨김 (HW3 전용 질문은 별도 처리)
-document.getElementById('questionSection').style.display = 'none';
+
       }
     }).catch(function() {
       isUpgrade = false;
@@ -270,7 +269,7 @@ document.getElementById('questionSection').style.display = 'none';
         document.getElementById('questionSection').style.display = 'block';
         document.getElementById('hw3Fields').style.display = 'block';
       }
-    }, 100);
+    }, 500);
   }
 }
 
