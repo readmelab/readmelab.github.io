@@ -198,6 +198,13 @@ if (upgradeTarget && upgradeFromId) {
         // 개인정보 동의 이미 했으므로 자동 체크 + 숨김
         document.getElementById('agreePrivacy').checked = true;
         document.getElementById('privacyRow').style.display = 'none';
+        // 업그레이드: 직업이 이미 있으면 직업 필드 숨김
+if (prevOrder.job) {
+  selectedJob = prevOrder.job;
+  document.getElementById('jobSection').style.display = 'none';
+}
+// 업그레이드: 질문 필드도 숨김 (HW3 전용 질문은 별도 처리)
+document.getElementById('questionSection').style.display = 'none';
       }
     }).catch(function() {
       isUpgrade = false;
