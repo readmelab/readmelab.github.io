@@ -1,774 +1,582 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>호왕 수호패 — 虎王堂</title>
-  <meta name="description" content="호왕이 내리는 수호패. 부족한 기운을 채워줄 수호신을 만나보거라.">
-  <meta property="og:title" content="호왕 수호패 — 虎王堂">
-  <meta property="og:description" content="부족한 기운을 채워줄 수호신을 만나보거라.">
-  <meta property="og:image" content="https://audio.readmelab.co.kr/howang/suhopae/wood.jpeg">
-  <meta property="og:url" content="https://readmelab.github.io/howangdang/suhopae.html">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>호왕 수호패 – 虎王堂</title>
+<meta property="og:title" content="호왕 수호패 – 虎王堂">
+<meta property="og:description" content="네게 부족한 기운, 호왕이 채워주마.">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/suhopae/wood.jpeg">
+<meta property="og:url" content="https://readmelab.github.io/howangdang/suhopae.html">
 
-  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #000;
-      --gold: #c5975b;
-      --gold-light: #d4ab6a;
-      --gold-dim: #8a6a3a;
-      --text: #e8dcc8;
-      --text-dim: #9a8e7a;
-    }
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#151515;--gold:#c9a84c;--gold-dim:#8a7230;
+  --text:#e8e0d0;--text-sub:#a89880;
+  --wood:#4a8c6f;--fire:#c4453a;--earth:#b8963e;--metal:#a8a8b0;--water:#3a6b8c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── 입력 섹션 ── */
+#input-section{width:100%;max-width:420px;padding:40px 20px;text-align:center}
+.brand{font-family:'Nanum Brush Script',cursive;font-size:2.4rem;color:var(--gold);letter-spacing:6px}
+.page-title{font-family:'Nanum Brush Script',cursive;font-size:1.5rem;color:var(--text-sub);margin:8px 0 30px}
+.form-group{margin-bottom:18px;text-align:left}
+.form-group label{display:block;font-size:.85rem;color:var(--text-sub);margin-bottom:6px;font-family:'Noto Serif KR',serif}
+.form-group select,
+.form-group input[type="date"]{
+  width:100%;padding:12px;background:var(--surface);border:1px solid var(--gold-dim);
+  border-radius:8px;color:var(--text);font-size:1rem;font-family:'Noto Serif KR',serif;
+  -webkit-appearance:none;appearance:none}
+.form-group select option{background:var(--surface);color:var(--text)}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Noto Serif KR', serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
+/* 라디오 그룹 (양력/음력, 성별) */
+.radio-row{display:flex;gap:10px}
+.radio-row label{
+  flex:1;text-align:center;padding:12px;background:var(--surface);
+  border:1px solid var(--gold-dim);border-radius:8px;font-size:.95rem;
+  color:var(--text-sub);cursor:pointer;transition:all .2s}
+.radio-row input{display:none}
+.radio-row input:checked+span{color:var(--gold)}
+.radio-row label.active{border-color:var(--gold);background:#1a1508}
 
-    /* ===== INPUT ===== */
-    .input-section {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
+.btn-submit{
+  width:100%;padding:16px;margin-top:24px;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  border:none;border-radius:10px;font-family:'Nanum Brush Script',cursive;
+  font-size:1.4rem;color:#0a0a0a;cursor:pointer;letter-spacing:4px}
 
-    .brand-title {
-      font-weight: 900;
-      font-size: 13px;
-      color: var(--gold-dim);
-      letter-spacing: 8px;
-      margin-bottom: 12px;
-    }
+/* ── 로딩 ── */
+#loading-section{display:none;width:100%;max-width:420px;padding:40px 20px;text-align:center}
+.loading-img{width:60%;border-radius:12px;opacity:.8}
+.loading-text{font-family:'Nanum Brush Script',cursive;font-size:1.3rem;color:var(--gold);margin-top:16px}
 
-    .page-title {
-      font-weight: 700;
-      font-size: 22px;
-      color: var(--text);
-      margin-bottom: 8px;
-      text-align: center;
-    }
+/* ── 결과 ── */
+#result-section{display:none;width:100%;max-width:420px;padding:20px;text-align:center}
 
-    .page-subtitle {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-bottom: 40px;
-    }
+/* 카드 */
+.card{
+  position:relative;width:100%;aspect-ratio:3/4;border-radius:12px;overflow:hidden;
+  background-size:cover;background-position:center;margin-bottom:24px}
+.card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 35%,transparent 60%,rgba(0,0,0,.55) 100%);
+  display:flex;flex-direction:column;justify-content:space-between;padding:24px;text-align:left}
+.card-top .card-brand{font-family:'Nanum Brush Script',cursive;font-size:1.1rem;color:var(--gold);opacity:.8}
+.card-top .card-title{font-family:'Nanum Brush Script',cursive;font-size:1.6rem;color:#fff;margin-top:2px}
+.card-bottom .element-big{font-family:'Noto Serif KR',serif;font-size:3.5rem;font-weight:900;line-height:1}
+.card-bottom .guardian-name{font-family:'Nanum Brush Script',cursive;font-size:1.4rem;color:#fff;margin-top:4px}
+.card-bottom .prescription{font-family:'Noto Serif KR',serif;font-size:.85rem;color:var(--text);margin-top:6px;opacity:.9}
 
-    .input-form {
-      width: 100%;
-      max-width: 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+/* 사주 원국 */
+.saju-title{font-family:'Nanum Brush Script',cursive;font-size:1.3rem;color:var(--gold);margin:20px 0 10px}
+.saju-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.saju-pillar{background:var(--surface);border:1px solid var(--gold-dim);border-radius:8px;padding:10px 4px;text-align:center}
+.saju-pillar .pillar-label{font-size:.7rem;color:var(--text-sub)}
+.saju-pillar .pillar-hanja{font-family:'Noto Serif KR',serif;font-size:1.3rem;color:var(--gold);margin:4px 0}
+.saju-pillar .pillar-hangul{font-size:.75rem;color:var(--text-sub)}
 
-    .form-label {
-      font-size: 13px;
-      color: var(--gold-dim);
-      margin-bottom: 6px;
-      display: block;
-    }
+/* 오행 게이지 */
+.gauge-title{font-family:'Nanum Brush Script',cursive;font-size:1.3rem;color:var(--gold);margin:20px 0 10px}
+.gauge-row{display:flex;align-items:center;margin-bottom:8px;gap:8px}
+.gauge-label{width:28px;font-family:'Noto Serif KR',serif;font-size:.9rem;font-weight:700;text-align:center}
+.gauge-track{flex:1;height:14px;background:var(--surface);border-radius:7px;overflow:hidden;position:relative}
+.gauge-fill{height:100%;border-radius:7px;transition:width 1.2s ease}
+.gauge-pct{width:36px;font-size:.75rem;color:var(--text-sub);text-align:right}
+.badge-weak{
+  display:inline-block;font-size:.6rem;background:var(--fire);color:#fff;
+  padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
 
-    .form-select {
-      width: 100%;
-      padding: 14px 16px;
-      background: rgba(197, 151, 91, 0.08);
-      border: 1px solid rgba(197, 151, 91, 0.25);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'Noto Serif KR', serif;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.3s;
-      -webkit-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c5975b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-    }
+/* 호왕의 한마디 */
+.hotong-box{
+  background:var(--surface);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;
+  padding:16px;margin:20px 0;text-align:left}
+.hotong-box .hotong-label{font-family:'Nanum Brush Script',cursive;font-size:1.1rem;color:var(--gold);margin-bottom:6px}
+.hotong-box .hotong-text{font-family:'Noto Serif KR',serif;font-size:.9rem;color:var(--text);line-height:1.7}
 
-    .form-select:focus { border-color: var(--gold); }
-    .form-select option { background: #1a1008; color: var(--text); }
+/* CTA */
+.cta-box{
+  background:linear-gradient(135deg,#1a1508,#0a0a0a);border:1px solid var(--gold);
+  border-radius:12px;padding:20px;margin:24px 0;text-align:center}
+.cta-box p{font-family:'Noto Serif KR',serif;font-size:.9rem;color:var(--text);margin-bottom:12px;line-height:1.6}
+.cta-btn{
+  display:inline-block;padding:12px 32px;background:var(--gold);color:#0a0a0a;
+  border:none;border-radius:8px;font-family:'Nanum Brush Script',cursive;
+  font-size:1.2rem;text-decoration:none;cursor:pointer}
 
-    .form-row {
-      display: flex;
-      gap: 8px;
-    }
+/* ── 공유 버튼 (색상별) ── */
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+.share-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 0;border:none;border-radius:10px;font-family:'Noto Serif KR',serif;
+  font-size:.9rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+.share-btn:active{opacity:.8}
 
-    .form-row > div { flex: 1; }
+/* 카카오톡 – 노란색 */
+.share-kakao{background:#FEE500;color:#3C1E1E}
+/* 이미지 저장 – 보라색 */
+.share-save{background:#8B5CF6;color:#fff}
+/* 링크 복사 – 진한 회색 */
+.share-link{background:#333;color:#fff;border:1px solid #555}
+/* 인스타 스토리 – 그라데이션 */
+.share-insta{background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);color:#fff}
 
-    .radio-group {
-      display: flex;
-      gap: 8px;
-    }
+.btn-retry{
+  display:inline-block;margin-top:16px;padding:10px 28px;
+  background:transparent;border:1px solid var(--gold-dim);border-radius:8px;
+  color:var(--text-sub);font-size:.85rem;cursor:pointer;font-family:'Noto Serif KR',serif}
 
-    .radio-btn {
-      flex: 1;
-      padding: 12px;
-      text-align: center;
-      border: 1px solid rgba(197, 151, 91, 0.25);
-      border-radius: 8px;
-      font-size: 14px;
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.3s;
-      background: transparent;
-    }
+.footer{font-size:.7rem;color:var(--text-sub);padding:20px;opacity:.5}
 
-    .radio-btn.active {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: rgba(197, 151, 91, 0.1);
-    }
-
-    .submit-btn {
-      margin-top: 12px;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-      border: none;
-      border-radius: 8px;
-      color: #1a1008;
-      font-family: 'Noto Serif KR', serif;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.3s;
-    }
-
-    .submit-btn:active { opacity: 0.8; }
-    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* ===== LOADING ===== */
-    .loading-section {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 100;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .loading-section.show { display: flex; }
-
-    .loading-door {
-      width: 200px;
-      height: 280px;
-      object-fit: cover;
-      border-radius: 4px;
-      animation: doorZoom 2.5s ease-in-out forwards;
-      opacity: 0;
-    }
-
-    @keyframes doorZoom {
-      0% { opacity: 0; transform: scale(0.8); }
-      30% { opacity: 1; transform: scale(1); }
-      70% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(1.5); }
-    }
-
-    .loading-text {
-      font-size: 16px;
-      color: var(--gold);
-      margin-top: 24px;
-      animation: fadeInOut 2.5s ease-in-out;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      30% { opacity: 1; }
-      70% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    /* ===== RESULT ===== */
-    .result-section {
-      display: none;
-      padding: 20px;
-      padding-bottom: 100px;
-      max-width: 420px;
-      margin: 0 auto;
-    }
-
-    .result-section.show { display: block; }
-
-    /* Card */
-    .suhopae-card {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3/4.2;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 36px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-    }
-
-    .card-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-bg-fallback {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, #d4c5a0 0%, #c8b890 100%);
-      z-index: 0;
-    }
-
-    .card-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px 20px;
-      z-index: 1;
-    }
-
-    /* 카드 상단 — 왼쪽 상단 구석 */
-    .card-top {
-      text-align: left;
-    }
-
-    .card-top-label {
-      font-size: 9px;
-      color: rgba(80, 60, 30, 0.5);
-      letter-spacing: 4px;
-    }
-
-    .card-top-title {
-      font-weight: 900;
-      font-size: 16px;
-      color: rgba(50, 35, 15, 0.7);
-      letter-spacing: 6px;
-      margin-top: 2px;
-    }
-
-    /* 카드 하단 — 왼쪽 하단 구석 */
-    .card-bottom {
-      text-align: left;
-    }
-
-    .card-element-line {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .card-element-char {
-      font-weight: 900;
-      font-size: 36px;
-      line-height: 1;
-    }
-
-    .card-element-char.wood { color: rgba(74, 122, 90, 0.8); }
-    .card-element-char.fire { color: rgba(184, 84, 80, 0.8); }
-    .card-element-char.earth { color: rgba(160, 120, 60, 0.8); }
-    .card-element-char.metal { color: rgba(140, 148, 160, 0.8); }
-    .card-element-char.water { color: rgba(74, 106, 138, 0.8); }
-
-    .card-guardian-name {
-      font-size: 14px;
-      color: rgba(60, 40, 20, 0.7);
-      letter-spacing: 1px;
-    }
-
-    .card-prescription {
-      font-size: 13px;
-      color: rgba(60, 40, 20, 0.6);
-      margin-top: 8px;
-      line-height: 1.5;
-    }
-
-    .card-date {
-      font-size: 10px;
-      color: rgba(100, 80, 50, 0.4);
-      margin-top: 6px;
-    }
-
-    /* Guardian Section */
-    .guardian-section {
-      margin-bottom: 28px;
-    }
-
-    .guardian-name {
-      font-weight: 700;
-      font-size: 17px;
-      color: var(--gold);
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(197, 151, 91, 0.2);
-    }
-
-    .guardian-desc {
-      font-size: 14px;
-      color: var(--text);
-      line-height: 1.9;
-    }
-
-    /* Hotong */
-    .hotong-section {
-      margin-bottom: 36px;
-      padding: 20px;
-      border: 1px solid rgba(197, 151, 91, 0.15);
-      border-radius: 8px;
-      background: rgba(197, 151, 91, 0.03);
-    }
-
-    .hotong-label {
-      font-size: 12px;
-      color: var(--gold-dim);
-      margin-bottom: 10px;
-    }
-
-    .hotong-text {
-      font-size: 15px;
-      color: var(--gold-light);
-      line-height: 1.8;
-    }
-
-    /* CTA */
-    .cta-section {
-      text-align: center;
-      margin: 0 0 28px;
-      padding: 28px 20px;
-      border: 1px solid rgba(197, 151, 91, 0.15);
-      border-radius: 12px;
-      background: rgba(197, 151, 91, 0.04);
-    }
-
-    .cta-main {
-      font-weight: 700;
-      font-size: 17px;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .cta-sub {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    .cta-btn {
-      display: inline-block;
-      padding: 14px 40px;
-      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-      border: none;
-      border-radius: 8px;
-      color: #1a1008;
-      font-family: 'Noto Serif KR', serif;
-      font-size: 15px;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    /* Share */
-    .share-section {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 24px 0;
-      flex-wrap: wrap;
-    }
-
-    .share-btn {
-      padding: 10px 16px;
-      border: 1px solid rgba(197, 151, 91, 0.25);
-      border-radius: 8px;
-      background: transparent;
-      color: var(--gold);
-      font-family: 'Noto Serif KR', serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .share-btn:active { background: rgba(197, 151, 91, 0.15); }
-
-    .footer {
-      text-align: center;
-      padding: 20px 0;
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(197, 151, 91, 0.95);
-      color: #1a1008;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      z-index: 200;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .toast.show { opacity: 1; }
-
-    .retry-link {
-      display: block;
-      text-align: center;
-      color: var(--text-dim);
-      font-size: 13px;
-      margin-top: 8px;
-      cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-  </style>
+/* 토스트 */
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#0a0a0a;padding:10px 24px;border-radius:20px;
+  font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+</style>
 </head>
 <body>
 
-  <!-- ===== INPUT ===== -->
-  <section class="input-section" id="inputSection">
-    <div class="brand-title">虎王堂</div>
-    <div class="page-title">수호패를 내려주마</div>
-    <div class="page-subtitle">부족한 기운을 채울 수호신을 만나거라</div>
+<!-- ═══ 입력 ═══ -->
+<div id="input-section">
+  <div class="brand">虎王堂</div>
+  <div class="page-title">수호패를 내려주마</div>
 
-    <div class="input-form">
-      <div>
-        <label class="form-label">생년월일</label>
-        <div class="form-row">
-          <div><select class="form-select" id="birthYear"></select></div>
-          <div><select class="form-select" id="birthMonth"></select></div>
-          <div><select class="form-select" id="birthDay"></select></div>
-        </div>
-      </div>
-
-      <div>
-        <label class="form-label">태어난 시각</label>
-        <select class="form-select" id="birthTime">
-          <option value="">모름</option>
-          <option value="23:00">자시 (23:00~01:00)</option>
-          <option value="01:00">축시 (01:00~03:00)</option>
-          <option value="03:00">인시 (03:00~05:00)</option>
-          <option value="05:00">묘시 (05:00~07:00)</option>
-          <option value="07:00">진시 (07:00~09:00)</option>
-          <option value="09:00">사시 (09:00~11:00)</option>
-          <option value="11:00">오시 (11:00~13:00)</option>
-          <option value="13:00">미시 (13:00~15:00)</option>
-          <option value="15:00">신시 (15:00~17:00)</option>
-          <option value="17:00">유시 (17:00~19:00)</option>
-          <option value="19:00">술시 (19:00~21:00)</option>
-          <option value="21:00">해시 (21:00~23:00)</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="form-label">양력 / 음력</label>
-        <div class="radio-group" id="calendarType">
-          <div class="radio-btn active" data-value="solar">양력</div>
-          <div class="radio-btn" data-value="lunar">음력</div>
-        </div>
-      </div>
-
-      <button class="submit-btn" id="submitBtn">수호패 받기</button>
+  <div class="form-group">
+    <label>생년월일</label>
+    <div style="display:flex;gap:8px">
+      <select id="birthYear" style="flex:1.2"></select>
+      <select id="birthMonth" style="flex:1"></select>
+      <select id="birthDay" style="flex:1"></select>
     </div>
-  </section>
+  </div>
 
-  <!-- ===== LOADING ===== -->
-  <section class="loading-section" id="loadingSection">
-    <img src="https://audio.readmelab.co.kr/howang/door.jpeg" class="loading-door" alt="호왕당 문">
-    <div class="loading-text">수호신을 부르는 중이니라...</div>
-    <audio id="doorSound" src="https://audio.readmelab.co.kr/howang/door_creak.mp3" preload="auto"></audio>
-  </section>
+  <div class="form-group">
+    <label>태어난 시각</label>
+    <select id="birthTime"></select>
+  </div>
 
-  <!-- ===== RESULT ===== -->
-  <section class="result-section" id="resultSection">
+  <div class="form-group">
+    <label>양력 / 음력</label>
+    <div class="radio-row">
+      <label class="active"><input type="radio" name="calendar" value="solar" checked><span>양력</span></label>
+      <label><input type="radio" name="calendar" value="lunar"><span>음력</span></label>
+    </div>
+  </div>
 
-    <div class="suhopae-card" id="suhopaeCard">
-      <div class="card-bg-fallback"></div>
-      <img class="card-bg" id="cardBg" src="" alt="수호패">
-      <div class="card-overlay">
-        <div class="card-top">
-          <div class="card-top-label">虎王堂</div>
-          <div class="card-top-title">守護牌</div>
-        </div>
-        <div class="card-bottom">
-          <div class="card-element-line">
-            <span class="card-element-char" id="cardElement"></span>
-            <span class="card-guardian-name" id="cardGuardian"></span>
-          </div>
-          <div class="card-prescription" id="cardPrescription"></div>
-          <div class="card-date" id="cardDate"></div>
-        </div>
+  <div class="form-group">
+    <label>성별</label>
+    <div class="radio-row">
+      <label class="active"><input type="radio" name="gender" value="male" checked><span>남자</span></label>
+      <label><input type="radio" name="gender" value="female"><span>여자</span></label>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="btnSubmit">수호패 받기</button>
+</div>
+
+<!-- ═══ 로딩 ═══ -->
+<div id="loading-section">
+  <img src="https://audio.readmelab.co.kr/howang/door.jpeg" class="loading-img" alt="호왕당 문">
+  <div class="loading-text">호왕이 너의 기운을 살피고 있다…</div>
+</div>
+
+<!-- ═══ 결과 ═══ -->
+<div id="result-section">
+
+  <!-- 카드 -->
+  <div class="card" id="suhoCard">
+    <div class="card-overlay">
+      <div class="card-top">
+        <div class="card-brand">虎王堂</div>
+        <div class="card-title">守護牌</div>
+      </div>
+      <div class="card-bottom">
+        <div class="element-big" id="elementBig"></div>
+        <div class="guardian-name" id="guardianName"></div>
+        <div class="prescription" id="prescription"></div>
       </div>
     </div>
+  </div>
 
-    <!-- Guardian -->
-    <div class="guardian-section">
-      <div class="guardian-name" id="guardianName"></div>
-      <div class="guardian-desc" id="guardianDesc"></div>
-    </div>
+  <!-- 사주 원국 -->
+  <div class="saju-title">사주 원국 (四柱)</div>
+  <div class="saju-grid">
+    <div class="saju-pillar"><div class="pillar-label">시주</div><div class="pillar-hanja" id="pHour"></div><div class="pillar-hangul" id="pHourH"></div></div>
+    <div class="saju-pillar"><div class="pillar-label">일주</div><div class="pillar-hanja" id="pDay"></div><div class="pillar-hangul" id="pDayH"></div></div>
+    <div class="saju-pillar"><div class="pillar-label">월주</div><div class="pillar-hanja" id="pMonth"></div><div class="pillar-hangul" id="pMonthH"></div></div>
+    <div class="saju-pillar"><div class="pillar-label">년주</div><div class="pillar-hanja" id="pYear"></div><div class="pillar-hangul" id="pYearH"></div></div>
+  </div>
 
-    <!-- Hotong -->
-    <div class="hotong-section">
-      <div class="hotong-label">호왕의 한마디</div>
-      <div class="hotong-text" id="hotongText"></div>
-    </div>
+  <!-- 오행 게이지 -->
+  <div class="gauge-title">오행 분포</div>
+  <div id="gaugeWrap"></div>
 
-    <!-- CTA -->
-    <div class="cta-section">
-      <div class="cta-main">네 사주를 더 깊이 들여다보겠느냐?</div>
-      <div class="cta-sub">수호신만으론 부족하니라.<br>초견을 받아야 네 운명의 흐름이 보이느니라.</div>
-      <a href="chogyeon.html" class="cta-btn">초견 받으러 가기 →</a>
-    </div>
+  <!-- 호왕의 한마디 -->
+  <div class="hotong-box">
+    <div class="hotong-label">호왕의 한마디</div>
+    <div class="hotong-text" id="hotongText"></div>
+  </div>
 
-    <!-- Share -->
-    <div class="share-section">
-      <button class="share-btn" id="btnKakao">카카오톡 공유</button>
-      <button class="share-btn" id="btnSave">이미지 저장</button>
-      <button class="share-btn" id="btnLink">링크 복사</button>
-      <button class="share-btn" id="btnInsta">인스타 공유</button>
-    </div>
+  <!-- CTA -->
+  <div class="cta-box">
+    <p id="ctaText"></p>
+    <a class="cta-btn" href="chogyeon.html">초견 보러가기</a>
+  </div>
 
-    <div class="retry-link" id="retryBtn">다시 뽑기</div>
-    <div class="footer">@howangdang · 虎王堂</div>
-  </section>
+  <!-- 공유 버튼 -->
+  <div class="share-grid">
+    <button class="share-btn share-kakao" id="btnKakao">💬 카카오톡 공유</button>
+    <button class="share-btn share-save" id="btnSave">📷 이미지 저장</button>
+    <button class="share-btn share-link" id="btnLink">🔗 링크 복사</button>
+    <button class="share-btn share-insta" id="btnInsta">✨ 인스타 스토리</button>
+  </div>
 
-  <div class="toast" id="toast"></div>
+  <button class="btn-retry" onclick="location.reload()">다시 뽑기</button>
+</div>
 
-  <script>
-    const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app';
-    const IMG_BASE = 'https://audio.readmelab.co.kr/howang/suhopae';
-    const KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
+<div class="footer">@howangdang · 虎王堂</div>
+<div class="toast" id="toast"></div>
 
-    const GUARDIANS = {
-      wood: {
-        element: '木', hanja: '靑龍', name: '청룡', color: 'wood',
-        desc: '청룡은 동방을 지키는 수호신이니라. 나무의 기운은 시작과 성장의 힘을 품고 있느니, 네 안에 부족한 생명력을 채워줄 것이니라. 새벽녘 동쪽에서 불어오는 바람처럼, 막혔던 기운이 트이리라.',
-        hotong: '나무가 뿌리를 내리지 못하면 바람 한 번에 쓰러지느니라. 네 안에 잠든 푸른 기운을 깨워야 하느니, 새벽에 일어나 동쪽을 향해 크게 숨을 들이쉬거라.',
-        prescription: '잠든 푸른 기운을 깨워야 하느니라'
-      },
-      fire: {
-        element: '火', hanja: '朱雀', name: '주작', color: 'fire',
-        desc: '주작은 남방을 지키는 불새이니라. 불의 기운은 열정과 표현의 힘을 품고 있느니, 네 안에 부족한 활력을 되살릴 것이니라. 한낮의 태양처럼, 식어버린 가슴에 불을 지피리라.',
-        hotong: '불씨 없는 아궁이에서 밥이 되겠느냐. 네 가슴에 꺼진 불을 다시 지펴야 하느니, 망설이지 말고 하고 싶은 말을 뱉어내거라. 뜨거워야 살아있는 것이니라.',
-        prescription: '꺼진 불씨를 다시 살려야 하느니라'
-      },
-      earth: {
-        element: '土', hanja: '麒麟', name: '기린', color: 'earth',
-        desc: '기린은 중앙을 지키는 성스러운 짐승이니라. 흙의 기운은 안정과 포용의 힘을 품고 있느니, 네 안에 부족한 중심을 잡아줄 것이니라. 대지처럼 흔들리지 않는 뿌리를 내려주리라.',
-        hotong: '뿌리 없는 풀이 어찌 풍파를 버티겠느냐. 이것저것 기웃거리지 말고 한 곳에 발을 붙이거라. 네 안에 단단한 땅을 만들어야 하느니, 흔들려도 돌아올 중심을 잡거라.',
-        prescription: '흔들리는 중심을 바로 잡아야 하느니라'
-      },
-      metal: {
-        element: '金', hanja: '白虎', name: '백호', color: 'metal',
-        desc: '백호는 서방을 지키는 호랑이이니라. 쇠의 기운은 결단과 정리의 힘을 품고 있느니, 네 안에 부족한 단호함을 채워줄 것이니라. 가을바람처럼 불필요한 것을 쳐내리라.',
-        hotong: '무딘 칼로는 아무것도 베지 못하느니라. 아까운 것을 붙잡고 있으면 새것이 올 자리가 없느니, 과감히 쳐내거라. 날카로워야 네 것을 지킬 수 있느니라.',
-        prescription: '무딘 칼날을 다시 세워야 하느니라'
-      },
-      water: {
-        element: '水', hanja: '玄武', name: '현무', color: 'water',
-        desc: '현무는 북방을 지키는 거북과 뱀이니라. 물의 기운은 지혜와 유연함의 힘을 품고 있느니, 네 안에 부족한 깊이를 채워줄 것이니라. 깊은 샘물처럼, 마른 곳에 지혜를 적셔주리라.',
-        hotong: '마른 우물에서 어찌 물을 길겠느냐. 머리가 굳으면 길이 보이지 않느니, 고여있지 말고 흘러가거라. 물은 낮은 곳으로 흘러야 바다에 이르느니라.',
-        prescription: '마른 샘에 물을 채워야 하느니라'
-      }
-    };
+<script>
+/* ═══ CONFIG ═══ */
+const API_URL  = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const IMG_BASE = 'https://audio.readmelab.co.kr/howang/suhopae';
+const KAKAO_KEY= 'e10b076b8b32f081e2563cc1b3f6c815';
 
-    const $ = id => document.getElementById(id);
+/* ═══ 수호신 데이터 ═══ */
+const GUARDIANS = {
+  wood:  {element:'木',hanja:'靑龍',name:'청룡',color:'var(--wood)',
+           direction:'동쪽',goodColor:'청록색',season:'봄',numbers:'3, 8',
+           desc:'청룡은 동쪽을 지키는 신수로, 생장과 시작의 기운을 관장한다.',
+           weakDesc:'목(木)의 기운이 부족하구나. 시작하는 힘, 성장하는 에너지가 약하다. 청룡이 네 곁에서 푸른 기운을 불어넣어 줄 것이다.',
+           hotong:'네 안에 싹트는 기운이 약하다. 청룡의 푸른 숨결을 받아라. 새로 시작할 용기가 필요할 때, 이 패를 꺼내 보거라.'},
+  fire:  {element:'火',hanja:'朱雀',name:'주작',color:'var(--fire)',
+           direction:'남쪽',goodColor:'붉은색',season:'여름',numbers:'2, 7',
+           desc:'주작은 남쪽을 지키는 신수로, 열정과 빛의 기운을 관장한다.',
+           weakDesc:'화(火)의 기운이 부족하구나. 열정, 표현력, 추진력이 약하다. 주작이 네 가슴에 불씨를 되살려 줄 것이다.',
+           hotong:'네 안의 불꽃이 사그라들었다. 주작의 날갯짓이 네 안에 다시 불을 지필 것이다. 뜨겁게 살아라.'},
+  earth: {element:'土',hanja:'麒麟',name:'기린',color:'var(--earth)',
+           direction:'중앙',goodColor:'황금색',season:'환절기',numbers:'5, 10',
+           desc:'기린은 중앙을 지키는 신수로, 균형과 안정의 기운을 관장한다.',
+           weakDesc:'토(土)의 기운이 부족하구나. 중심을 잡는 힘, 안정감이 약하다. 기린이 네 발밑에 단단한 땅을 깔아 줄 것이다.',
+           hotong:'네 중심이 흔들리고 있다. 기린이 네 발 아래 대지를 다져줄 것이니, 흔들릴 때 이 패를 꺼내 보거라.'},
+  metal: {element:'金',hanja:'白虎',name:'백호',color:'var(--metal)',
+           direction:'서쪽',goodColor:'흰색',season:'가을',numbers:'4, 9',
+           desc:'백호는 서쪽을 지키는 신수로, 결단과 정화의 기운을 관장한다.',
+           weakDesc:'금(金)의 기운이 부족하구나. 결단력, 실행력, 마무리 짓는 힘이 약하다. 백호가 네게 서릿발 같은 기운을 내려줄 것이다.',
+           hotong:'우유부단함이 너를 갉아먹고 있다. 백호의 이빨처럼 날카롭게 끊어내야 할 것이 있다. 이 패가 네 결단을 도울 것이다.'},
+  water: {element:'水',hanja:'玄武',name:'현무',color:'var(--water)',
+           direction:'북쪽',goodColor:'검은색',season:'겨울',numbers:'1, 6',
+           desc:'현무는 북쪽을 지키는 신수로, 지혜와 유연함의 기운을 관장한다.',
+           weakDesc:'수(水)의 기운이 부족하구나. 지혜, 유연함, 적응력이 약하다. 현무가 깊은 물의 지혜를 네게 흘려보내 줄 것이다.',
+           hotong:'네 안에 흐르는 물이 말랐다. 현무의 깊은 물줄기가 네 안을 다시 적셔줄 것이다. 유연해져라.'}
+};
 
-    // ===== INIT DROPDOWNS =====
-    function initDropdowns() {
-      const yearSel = $('birthYear');
-      const monthSel = $('birthMonth');
-      const daySel = $('birthDay');
+const PRESCRIPTIONS = {
+  wood: '잠든 푸른 기운을 깨워야 하느니라',
+  fire: '식어버린 불꽃을 되살려야 하느니라',
+  earth:'흔들리는 중심을 다잡아야 하느니라',
+  metal:'무뎌진 칼날을 다시 세워야 하느니라',
+  water:'마른 물줄기를 다시 흘려야 하느니라'
+};
 
-      for (let y = 1940; y <= 2025; y++) {
-        const opt = document.createElement('option');
-        opt.value = y;
-        opt.textContent = y + '년';
-        if (y === 1980) opt.selected = true;
-        yearSel.appendChild(opt);
-      }
+const ELEMENT_COLORS = {wood:'var(--wood)',fire:'var(--fire)',earth:'var(--earth)',metal:'var(--metal)',water:'var(--water)'};
+const ELEMENT_KO = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'};
 
-      for (let m = 1; m <= 12; m++) {
-        const opt = document.createElement('option');
-        opt.value = String(m).padStart(2, '0');
-        opt.textContent = m + '월';
-        if (m === 6) opt.selected = true;
-        monthSel.appendChild(opt);
-      }
+/* ═══ 드롭다운 초기화 ═══ */
+(function initDropdowns(){
+  // 생년 (1940~2025, 기본 1980)
+  const ySel = document.getElementById('birthYear');
+  for(let y=1940;y<=2025;y++){
+    const o = document.createElement('option');
+    o.value=y; o.textContent=y+'년';
+    if(y===1980) o.selected=true;
+    ySel.appendChild(o);
+  }
+  // 월 (1~12, 기본 6)
+  const mSel = document.getElementById('birthMonth');
+  for(let m=1;m<=12;m++){
+    const o = document.createElement('option');
+    o.value=String(m).padStart(2,'0'); o.textContent=m+'월';
+    if(m===6) o.selected=true;
+    mSel.appendChild(o);
+  }
+  // 일 (1~31, 기본 15)
+  const dSel = document.getElementById('birthDay');
+  for(let d=1;d<=31;d++){
+    const o = document.createElement('option');
+    o.value=String(d).padStart(2,'0'); o.textContent=d+'일';
+    if(d===15) o.selected=true;
+    dSel.appendChild(o);
+  }
+  // 시간
+  const tSel = document.getElementById('birthTime');
+  const times = [
+    {v:'',l:'모름'},
+    {v:'23:00',l:'자시 (23:00~01:00)'},
+    {v:'01:00',l:'축시 (01:00~03:00)'},
+    {v:'03:00',l:'인시 (03:00~05:00)'},
+    {v:'05:00',l:'묘시 (05:00~07:00)'},
+    {v:'07:00',l:'진시 (07:00~09:00)'},
+    {v:'09:00',l:'사시 (09:00~11:00)'},
+    {v:'11:00',l:'오시 (11:00~13:00)'},
+    {v:'13:00',l:'미시 (13:00~15:00)'},
+    {v:'15:00',l:'신시 (15:00~17:00)'},
+    {v:'17:00',l:'유시 (17:00~19:00)'},
+    {v:'19:00',l:'술시 (19:00~21:00)'},
+    {v:'21:00',l:'해시 (21:00~23:00)'}
+  ];
+  times.forEach(t=>{
+    const o=document.createElement('option');
+    o.value=t.v; o.textContent=t.l;
+    tSel.appendChild(o);
+  });
+})();
 
-      for (let d = 1; d <= 31; d++) {
-        const opt = document.createElement('option');
-        opt.value = String(d).padStart(2, '0');
-        opt.textContent = d + '일';
-        if (d === 15) opt.selected = true;
-        daySel.appendChild(opt);
-      }
-    }
-
-    initDropdowns();
-
-    // ===== RADIO =====
-    document.querySelectorAll('.radio-group').forEach(group => {
-      group.querySelectorAll('.radio-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          group.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-        });
-      });
+/* ═══ 라디오 활성화 ═══ */
+document.querySelectorAll('.radio-row').forEach(row=>{
+  row.querySelectorAll('label').forEach(lbl=>{
+    lbl.addEventListener('click',()=>{
+      row.querySelectorAll('label').forEach(l=>l.classList.remove('active'));
+      lbl.classList.add('active');
     });
+  });
+});
 
-    // ===== TOAST =====
-    function showToast(msg) {
-      const t = $('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2000);
-    }
+/* ═══ 토스트 ═══ */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
 
-    // ===== SUBMIT =====
-    $('submitBtn').addEventListener('click', async () => {
-      const year = $('birthYear').value;
-      const month = $('birthMonth').value;
-      const day = $('birthDay').value;
-      const birthDate = `${year}-${month}-${day}`;
-      const birthTime = $('birthTime').value;
-      const calendarType = document.querySelector('#calendarType .radio-btn.active')?.dataset.value;
+/* ═══ 제출 ═══ */
+document.getElementById('btnSubmit').addEventListener('click', async()=>{
+  const year = document.getElementById('birthYear').value;
+  const month = document.getElementById('birthMonth').value;
+  const day = document.getElementById('birthDay').value;
+  const birthDate = `${year}-${month}-${day}`;
+  const birthTime = document.getElementById('birthTime').value;
+  const calendarType = document.querySelector('input[name="calendar"]:checked').value;
+  const gender = document.querySelector('input[name="gender"]:checked').value;
 
-      const btn = $('submitBtn');
-      btn.disabled = true;
-      $('loadingSection').classList.add('show');
-      $('inputSection').style.display = 'none';
+  document.getElementById('input-section').style.display='none';
+  document.getElementById('loading-section').style.display='block';
 
-      try { $('doorSound').play().catch(() => {}); } catch(e) {}
+  // 문 소리
+  try{ new Audio('https://audio.readmelab.co.kr/howang/door_creak.mp3').play(); }catch(e){}
 
-      try {
-        const res = await fetch(`${API_URL}/api/howangpae`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ birthDate, birthTime, calendarType, gender: 'male' })
-        });
-
-        const data = await res.json();
-        await new Promise(r => setTimeout(r, 2800));
-
-        $('loadingSection').classList.remove('show');
-        renderResult(data, birthDate);
-
-      } catch(err) {
-        console.error(err);
-        $('loadingSection').classList.remove('show');
-        $('inputSection').style.display = 'flex';
-        btn.disabled = false;
-        showToast('오류가 발생했느니라. 다시 시도하거라.');
-      }
+  try{
+    const res = await fetch(`${API_URL}/api/howangpae`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({birthDate,birthTime,calendarType,gender})
     });
+    if(!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
 
-    // ===== RENDER =====
-    function renderResult(data, birthDate) {
-      const saju = data.spiProperties || data;
-      const oheng = saju.ohengRatio || saju.elementGauge || {};
+    setTimeout(()=>{
+      document.getElementById('loading-section').style.display='none';
+      document.getElementById('result-section').style.display='block';
+      renderResult(data);
+    },2500);
+  }catch(e){
+    console.error(e);
+    document.getElementById('loading-section').style.display='none';
+    document.getElementById('input-section').style.display='block';
+    showToast('호왕이 응답하지 않습니다. 다시 시도해주세요.');
+  }
+});
 
-      const elements = ['wood', 'fire', 'earth', 'metal', 'water'];
-      const koMap = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
-      const hjMap = { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' };
+/* ═══ 결과 렌더링 ═══ */
+function renderResult(data){
+  const sp = data.spiProperties;
+  const gauge = sp.elementGauge;
 
-      let weakest = 'wood';
-      let weakestVal = 999;
-      elements.forEach(el => {
-        const val = Number(oheng[el] ?? oheng[koMap[el]] ?? oheng[hjMap[el]] ?? 0);
-        if (val < weakestVal) { weakestVal = val; weakest = el; }
-      });
+  // 부족한 오행 찾기
+  let weakEl='wood', weakVal=Infinity;
+  for(const [k,v] of Object.entries(gauge)){
+    if(v < weakVal){weakVal=v; weakEl=k;}
+  }
 
-      const g = GUARDIANS[weakest];
+  const g = GUARDIANS[weakEl];
 
-      // Card image — try loading, fallback to proxy if CORS fails
-      const img = $('cardBg');
-      const imgUrl = `${IMG_BASE}/${weakest}.jpeg`;
-      img.onerror = () => {
-        // Try proxy
-        img.onerror = null;
-        img.src = `${API_URL}/proxy-image?url=${encodeURIComponent(imgUrl)}`;
+  // 카드 배경 이미지
+  const card = document.getElementById('suhoCard');
+  card.style.backgroundImage = `url(${IMG_BASE}/${weakEl}.jpeg)`;
+
+  // 카드 텍스트
+  document.getElementById('elementBig').textContent = g.element;
+  document.getElementById('elementBig').style.color = g.color;
+  document.getElementById('guardianName').textContent = `${g.hanja} · ${g.name}`;
+  document.getElementById('prescription').textContent = PRESCRIPTIONS[weakEl];
+
+  // 사주 사기둥
+  const fp = sp.fourPillars;
+  const fph = sp.fourPillarsHangul;
+  document.getElementById('pYear').textContent = fp.year;
+  document.getElementById('pYearH').textContent = fph.year;
+  document.getElementById('pMonth').textContent = fp.month;
+  document.getElementById('pMonthH').textContent = fph.month;
+  document.getElementById('pDay').textContent = fp.day;
+  document.getElementById('pDayH').textContent = fph.day;
+  document.getElementById('pHour').textContent = fp.hour || '—';
+  document.getElementById('pHourH').textContent = fph.hour || '모름';
+
+  // 오행 게이지
+  const wrap = document.getElementById('gaugeWrap');
+  wrap.innerHTML='';
+  const order=['wood','fire','earth','metal','water'];
+  order.forEach(el=>{
+    const pct = gauge[el];
+    const isWeak = (el===weakEl);
+    const row = document.createElement('div');
+    row.className='gauge-row';
+    row.innerHTML=`
+      <div class="gauge-label" style="color:${ELEMENT_COLORS[el]}">${ELEMENT_KO[el]}</div>
+      <div class="gauge-track">
+        <div class="gauge-fill" style="width:0%;background:${ELEMENT_COLORS[el]}"></div>
+      </div>
+      <div class="gauge-pct">${pct}%${isWeak?'<span class="badge-weak">부족</span>':''}</div>`;
+    wrap.appendChild(row);
+    // 애니메이션
+    setTimeout(()=>{
+      row.querySelector('.gauge-fill').style.width = pct+'%';
+    },200);
+  });
+
+  // 호왕의 한마디
+  document.getElementById('hotongText').textContent = g.hotong;
+
+  // CTA
+  document.getElementById('ctaText').textContent = data.card.cta || '네 사주는 봤다. 그 안의 뜻은 아직 모르지? 호왕이 풀어주마.';
+
+  // 저장용 데이터
+  window.__suhoData = {weakEl, g, data};
+}
+
+/* ═══ 공유 – 카카오 ═══ */
+Kakao.init(KAKAO_KEY);
+document.getElementById('btnKakao').addEventListener('click',()=>{
+  const d = window.__suhoData;
+  if(!d) return;
+  Kakao.Share.sendDefault({
+    objectType:'feed',
+    content:{
+      title:`호왕 수호패 – ${d.g.hanja} ${d.g.name}`,
+      description:PRESCRIPTIONS[d.weakEl],
+      imageUrl:`${IMG_BASE}/${d.weakEl}.jpeg`,
+      link:{mobileWebUrl:location.href,webUrl:location.href}
+    },
+    buttons:[{title:'나도 뽑아보기',link:{mobileWebUrl:location.href,webUrl:location.href}}]
+  });
+});
+
+/* ═══ 공유 – 이미지 저장 (Canvas API) ═══ */
+document.getElementById('btnSave').addEventListener('click', async()=>{
+  const d = window.__suhoData;
+  if(!d) return;
+  showToast('이미지 생성 중…');
+
+  try{
+    const W=900, H=1200;
+    const canvas = document.createElement('canvas');
+    canvas.width=W; canvas.height=H;
+    const ctx = canvas.getContext('2d');
+
+    // 배경 이미지 로드 (프록시 경유)
+    const img = new Image();
+    img.crossOrigin='anonymous';
+    const imgUrl = `${API_URL}/proxy-image?url=${encodeURIComponent(IMG_BASE+'/'+d.weakEl+'.jpeg')}`;
+    
+    await new Promise((resolve,reject)=>{
+      img.onload=resolve;
+      img.onerror=()=>{
+        // 프록시 실패 시 직접 로드 시도
+        img.crossOrigin='';
+        img.src=`${IMG_BASE}/${d.weakEl}.jpeg`;
+        img.onload=resolve;
+        img.onerror=reject;
       };
-      img.src = imgUrl;
-
-      $('cardElement').textContent = g.element;
-      $('cardElement').className = `card-element-char ${g.color}`;
-      $('cardGuardian').textContent = `${g.hanja} ${g.name}`;
-      $('cardPrescription').textContent = g.prescription;
-
-      if (birthDate) {
-        const [y, m, d] = birthDate.split('-');
-        $('cardDate').textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일생`;
-      }
-
-      $('guardianName').textContent = `${g.hanja} ${g.name} — ${g.element}의 수호신`;
-      $('guardianDesc').textContent = g.desc;
-      $('hotongText').textContent = g.hotong;
-
-      $('resultSection').classList.add('show');
-      window.scrollTo(0, 0);
-    }
-
-    // ===== RETRY =====
-    $('retryBtn').addEventListener('click', () => {
-      $('resultSection').classList.remove('show');
-      $('inputSection').style.display = 'flex';
-      $('submitBtn').disabled = false;
-      window.scrollTo(0, 0);
+      img.src=imgUrl;
     });
 
-    // ===== SHARE: KAKAO =====
-    try { Kakao.init(KAKAO_KEY); } catch(e) {}
+    // 배경 그리기
+    const scale = Math.max(W/img.width, H/img.height);
+    const sw = W/scale, sh = H/scale;
+    const sx = (img.width-sw)/2, sy = (img.height-sh)/2;
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
 
-    $('btnKakao').addEventListener('click', () => {
-      const guardianLabel = $('cardGuardian')?.textContent || '';
-      try {
-        Kakao.Share.sendDefault({
-          objectType: 'feed',
-          content: {
-            title: `내 수호신은 ${guardianLabel}`,
-            description: '호왕이 내린 수호패. 당신의 수호신도 확인해보세요!',
-            imageUrl: $('cardBg').src,
-            link: {
-              mobileWebUrl: location.href.split('?')[0],
-              webUrl: location.href.split('?')[0]
-            }
-          },
-          buttons: [{
-            title: '내 수호패 뽑기',
-            link: {
-              mobileWebUrl: location.href.split('?')[0],
-              webUrl: location.href.split('?')[0]
-            }
-          }]
-        });
-      } catch(e) { showToast('카카오톡 공유 실패'); }
-    });
+    // 상단 오버레이
+    const grdTop = ctx.createLinearGradient(0,0,0,300);
+    grdTop.addColorStop(0,'rgba(0,0,0,0.5)');
+    grdTop.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=grdTop; ctx.fillRect(0,0,W,300);
 
-undefined
-  </script>
+    // 하단 오버레이
+    const grdBot = ctx.createLinearGradient(0,H-350,0,H);
+    grdBot.addColorStop(0,'rgba(0,0,0,0)');
+    grdBot.addColorStop(1,'rgba(0,0,0,0.6)');
+    ctx.fillStyle=grdBot; ctx.fillRect(0,H-350,W,350);
+
+    // 상단 텍스트
+    ctx.fillStyle='#c9a84c';
+    ctx.font='36px "Nanum Brush Script", cursive';
+    ctx.fillText('虎王堂',40,60);
+    ctx.fillStyle='#ffffff';
+    ctx.font='48px "Nanum Brush Script", cursive';
+    ctx.fillText('守護牌',40,110);
+
+    // 하단 텍스트
+    const colorMap = {wood:'#4a8c6f',fire:'#c4453a',earth:'#b8963e',metal:'#a8a8b0',water:'#3a6b8c'};
+    ctx.fillStyle = colorMap[d.weakEl];
+    ctx.font='bold 120px "Noto Serif KR", serif';
+    ctx.fillText(d.g.element, 40, H-160);
+    ctx.fillStyle='#ffffff';
+    ctx.font='48px "Nanum Brush Script", cursive';
+    ctx.fillText(`${d.g.hanja} · ${d.g.name}`, 40, H-100);
+    ctx.fillStyle='#e8e0d0';
+    ctx.font='28px "Noto Serif KR", serif';
+    ctx.fillText(PRESCRIPTIONS[d.weakEl], 40, H-55);
+
+    // 다운로드
+    const link = document.createElement('a');
+    link.download='호왕수호패.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    showToast('저장 완료!');
+  }catch(e){
+    console.error(e);
+    showToast('이미지 저장에 실패했습니다.');
+  }
+});
+
+/* ═══ 공유 – 링크 복사 ═══ */
+document.getElementById('btnLink').addEventListener('click',()=>{
+  navigator.clipboard.writeText(location.href)
+    .then(()=>showToast('링크가 복사되었습니다!'))
+    .catch(()=>showToast('복사에 실패했습니다.'));
+});
+
+/* ═══ 공유 – 인스타 스토리 ═══ */
+document.getElementById('btnInsta').addEventListener('click', async()=>{
+  if(navigator.share){
+    try{
+      await navigator.share({title:'호왕 수호패',text:'나의 수호패를 확인해봐!',url:location.href});
+    }catch(e){}
+  }else{
+    showToast('공유 기능을 지원하지 않는 브라우저입니다.');
+  }
+});
+</script>
 </body>
 </html>
