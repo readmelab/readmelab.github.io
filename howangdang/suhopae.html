@@ -768,43 +768,7 @@
       } catch(e) { showToast('카카오톡 공유 실패'); }
     });
 
-    // ===== SHARE: SAVE =====
-    $('btnSave').addEventListener('click', async () => {
-      try {
-        const canvas = await html2canvas($('suhopaeCard'), {
-          useCORS: true, allowTaint: true, scale: 2, backgroundColor: '#000'
-        });
-        const link = document.createElement('a');
-        link.download = '호왕수호패.png';
-        link.href = canvas.toDataURL();
-        link.click();
-        showToast('이미지가 저장되었느니라');
-      } catch(e) { showToast('저장 실패'); }
-    });
-
-    // ===== SHARE: LINK =====
-    $('btnLink').addEventListener('click', () => {
-      navigator.clipboard.writeText(location.href.split('?')[0])
-        .then(() => showToast('링크가 복사되었느니라'))
-        .catch(() => showToast('복사 실패'));
-    });
-
-    // ===== SHARE: INSTA =====
-    $('btnInsta').addEventListener('click', async () => {
-      try {
-        const canvas = await html2canvas($('suhopaeCard'), {
-          useCORS: true, allowTaint: true, scale: 2, backgroundColor: '#000'
-        });
-        canvas.toBlob(async (blob) => {
-          if (navigator.share && blob) {
-            const file = new File([blob], '호왕수호패.png', { type: 'image/png' });
-            await navigator.share({ files: [file] });
-          } else {
-            showToast('이 기기에서는 지원되지 않느니라');
-          }
-        });
-      } catch(e) { showToast('공유 실패'); }
-    });
+undefined
   </script>
 </body>
 </html>
