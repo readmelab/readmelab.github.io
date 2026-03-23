@@ -227,86 +227,93 @@
       object-fit: cover;
     }
 
+    .card-bg-fallback {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #d4c5a0 0%, #c8b890 100%);
+      z-index: 0;
+    }
+
     .card-overlay {
       position: absolute;
       inset: 0;
       display: flex;
       flex-direction: column;
-      padding: 24px 20px;
+      justify-content: space-between;
+      padding: 20px 20px;
+      z-index: 1;
     }
 
+    /* 카드 상단 — 왼쪽 상단 구석 */
     .card-top {
-      text-align: center;
-      flex-shrink: 0;
+      text-align: left;
     }
 
     .card-top-label {
-      font-size: 10px;
-      color: rgba(80, 60, 30, 0.6);
-      letter-spacing: 6px;
+      font-size: 9px;
+      color: rgba(80, 60, 30, 0.5);
+      letter-spacing: 4px;
     }
 
     .card-top-title {
       font-weight: 900;
-      font-size: 20px;
-      color: rgba(50, 35, 15, 0.8);
-      letter-spacing: 8px;
+      font-size: 16px;
+      color: rgba(50, 35, 15, 0.7);
+      letter-spacing: 6px;
       margin-top: 2px;
     }
 
-    .card-middle {
-      flex: 1;
+    /* 카드 하단 — 왼쪽 하단 구석 */
+    .card-bottom {
+      text-align: left;
+    }
+
+    .card-element-line {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
     }
 
     .card-element-char {
       font-weight: 900;
-      font-size: 52px;
+      font-size: 36px;
       line-height: 1;
-      opacity: 0.7;
     }
 
-    .card-element-char.wood { color: #3a6a4a; }
-    .card-element-char.fire { color: #8a3a38; }
-    .card-element-char.earth { color: #8a7040; }
-    .card-element-char.metal { color: #7a8088; }
-    .card-element-char.water { color: #3a5a7a; }
+    .card-element-char.wood { color: rgba(74, 122, 90, 0.8); }
+    .card-element-char.fire { color: rgba(184, 84, 80, 0.8); }
+    .card-element-char.earth { color: rgba(160, 120, 60, 0.8); }
+    .card-element-char.metal { color: rgba(140, 148, 160, 0.8); }
+    .card-element-char.water { color: rgba(74, 106, 138, 0.8); }
 
-    .card-guardian-label {
-      font-size: 16px;
-      color: rgba(60, 40, 20, 0.75);
-      margin-top: 6px;
-      letter-spacing: 2px;
-    }
-
-    .card-bottom {
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .card-bottom-text {
+    .card-guardian-name {
       font-size: 14px;
       color: rgba(60, 40, 20, 0.7);
-      line-height: 1.6;
+      letter-spacing: 1px;
     }
 
-    .card-bottom-date {
-      font-size: 11px;
-      color: rgba(100, 80, 50, 0.5);
+    .card-prescription {
+      font-size: 13px;
+      color: rgba(60, 40, 20, 0.6);
       margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .card-date {
+      font-size: 10px;
+      color: rgba(100, 80, 50, 0.4);
+      margin-top: 6px;
     }
 
     /* Guardian Section */
     .guardian-section {
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
 
     .guardian-name {
       font-weight: 700;
-      font-size: 18px;
+      font-size: 17px;
       color: var(--gold);
       margin-bottom: 12px;
       padding-bottom: 8px;
@@ -427,7 +434,6 @@
 
     .toast.show { opacity: 1; }
 
-    /* Retry */
     .retry-link {
       display: block;
       text-align: center;
@@ -452,15 +458,9 @@
       <div>
         <label class="form-label">생년월일</label>
         <div class="form-row">
-          <div>
-            <select class="form-select" id="birthYear"></select>
-          </div>
-          <div>
-            <select class="form-select" id="birthMonth"></select>
-          </div>
-          <div>
-            <select class="form-select" id="birthDay"></select>
-          </div>
+          <div><select class="form-select" id="birthYear"></select></div>
+          <div><select class="form-select" id="birthMonth"></select></div>
+          <div><select class="form-select" id="birthDay"></select></div>
         </div>
       </div>
 
@@ -468,18 +468,18 @@
         <label class="form-label">태어난 시각</label>
         <select class="form-select" id="birthTime">
           <option value="">모름</option>
-          <option value="23:00">子시 (23:00~01:00)</option>
-          <option value="01:00">丑시 (01:00~03:00)</option>
-          <option value="03:00">寅시 (03:00~05:00)</option>
-          <option value="05:00">卯시 (05:00~07:00)</option>
-          <option value="07:00">辰시 (07:00~09:00)</option>
-          <option value="09:00">巳시 (09:00~11:00)</option>
-          <option value="11:00">午시 (11:00~13:00)</option>
-          <option value="13:00">未시 (13:00~15:00)</option>
-          <option value="15:00">申시 (15:00~17:00)</option>
-          <option value="17:00">酉시 (17:00~19:00)</option>
-          <option value="19:00">戌시 (19:00~21:00)</option>
-          <option value="21:00">亥시 (21:00~23:00)</option>
+          <option value="23:00">자시 (23:00~01:00)</option>
+          <option value="01:00">축시 (01:00~03:00)</option>
+          <option value="03:00">인시 (03:00~05:00)</option>
+          <option value="05:00">묘시 (05:00~07:00)</option>
+          <option value="07:00">진시 (07:00~09:00)</option>
+          <option value="09:00">사시 (09:00~11:00)</option>
+          <option value="11:00">오시 (11:00~13:00)</option>
+          <option value="13:00">미시 (13:00~15:00)</option>
+          <option value="15:00">신시 (15:00~17:00)</option>
+          <option value="17:00">유시 (17:00~19:00)</option>
+          <option value="19:00">술시 (19:00~21:00)</option>
+          <option value="21:00">해시 (21:00~23:00)</option>
         </select>
       </div>
 
@@ -506,19 +506,20 @@
   <section class="result-section" id="resultSection">
 
     <div class="suhopae-card" id="suhopaeCard">
-      <img class="card-bg" id="cardBg" src="" alt="수호패" crossorigin="anonymous">
+      <div class="card-bg-fallback"></div>
+      <img class="card-bg" id="cardBg" src="" alt="수호패">
       <div class="card-overlay">
         <div class="card-top">
           <div class="card-top-label">虎王堂</div>
-          <div class="card-top-title">守 護 牌</div>
-        </div>
-        <div class="card-middle">
-          <div class="card-element-char" id="cardElement"></div>
-          <div class="card-guardian-label" id="cardGuardian"></div>
+          <div class="card-top-title">守護牌</div>
         </div>
         <div class="card-bottom">
-          <div class="card-bottom-text" id="cardBottomText"></div>
-          <div class="card-bottom-date" id="cardBottomDate"></div>
+          <div class="card-element-line">
+            <span class="card-element-char" id="cardElement"></span>
+            <span class="card-guardian-name" id="cardGuardian"></span>
+          </div>
+          <div class="card-prescription" id="cardPrescription"></div>
+          <div class="card-date" id="cardDate"></div>
         </div>
       </div>
     </div>
@@ -531,7 +532,7 @@
 
     <!-- Hotong -->
     <div class="hotong-section">
-      <div class="hotong-label">호왕의 호통</div>
+      <div class="hotong-label">호왕의 한마디</div>
       <div class="hotong-text" id="hotongText"></div>
     </div>
 
@@ -557,46 +558,43 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ===== CONFIG =====
     const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app';
     const IMG_BASE = 'https://audio.readmelab.co.kr/howang/suhopae';
     const KAKAO_KEY = 'e10b076b8b32f081e2563cc1b3f6c815';
 
-    // ===== GUARDIAN DATA (간소화) =====
     const GUARDIANS = {
       wood: {
         element: '木', hanja: '靑龍', name: '청룡', color: 'wood',
         desc: '청룡은 동방을 지키는 수호신이니라. 나무의 기운은 시작과 성장의 힘을 품고 있느니, 네 안에 부족한 생명력을 채워줄 것이니라. 새벽녘 동쪽에서 불어오는 바람처럼, 막혔던 기운이 트이리라.',
-        hotong: '이놈아, 나무가 뿌리를 내리지 못하면 바람 한 번에 쓰러지느니라! 네 안에 잠든 푸른 기운을 깨워야 하느니, 새벽에 일어나 동쪽을 향해 크게 숨을 들이쉬거라!',
+        hotong: '나무가 뿌리를 내리지 못하면 바람 한 번에 쓰러지느니라. 네 안에 잠든 푸른 기운을 깨워야 하느니, 새벽에 일어나 동쪽을 향해 크게 숨을 들이쉬거라.',
         prescription: '잠든 푸른 기운을 깨워야 하느니라'
       },
       fire: {
         element: '火', hanja: '朱雀', name: '주작', color: 'fire',
         desc: '주작은 남방을 지키는 불새이니라. 불의 기운은 열정과 표현의 힘을 품고 있느니, 네 안에 부족한 활력을 되살릴 것이니라. 한낮의 태양처럼, 식어버린 가슴에 불을 지피리라.',
-        hotong: '이놈아, 불씨 없는 아궁이에서 밥이 되겠느냐! 네 가슴에 꺼진 불을 다시 지펴야 하느니, 망설이지 말고 하고 싶은 말을 뱉어내거라! 뜨거워야 살아있는 것이니라!',
+        hotong: '불씨 없는 아궁이에서 밥이 되겠느냐. 네 가슴에 꺼진 불을 다시 지펴야 하느니, 망설이지 말고 하고 싶은 말을 뱉어내거라. 뜨거워야 살아있는 것이니라.',
         prescription: '꺼진 불씨를 다시 살려야 하느니라'
       },
       earth: {
         element: '土', hanja: '麒麟', name: '기린', color: 'earth',
         desc: '기린은 중앙을 지키는 성스러운 짐승이니라. 흙의 기운은 안정과 포용의 힘을 품고 있느니, 네 안에 부족한 중심을 잡아줄 것이니라. 대지처럼 흔들리지 않는 뿌리를 내려주리라.',
-        hotong: '이놈아, 뿌리 없는 풀이 어찌 풍파를 버티겠느냐! 이것저것 기웃거리지 말고 한 곳에 발을 붙이거라! 네 안에 단단한 땅을 만들어야 하느니, 흔들려도 돌아올 중심을 잡거라!',
+        hotong: '뿌리 없는 풀이 어찌 풍파를 버티겠느냐. 이것저것 기웃거리지 말고 한 곳에 발을 붙이거라. 네 안에 단단한 땅을 만들어야 하느니, 흔들려도 돌아올 중심을 잡거라.',
         prescription: '흔들리는 중심을 바로 잡아야 하느니라'
       },
       metal: {
         element: '金', hanja: '白虎', name: '백호', color: 'metal',
         desc: '백호는 서방을 지키는 호랑이이니라. 쇠의 기운은 결단과 정리의 힘을 품고 있느니, 네 안에 부족한 단호함을 채워줄 것이니라. 가을바람처럼 불필요한 것을 쳐내리라.',
-        hotong: '이놈아, 무딘 칼로는 아무것도 베지 못하느니라! 아까운 것을 붙잡고 있으면 새것이 올 자리가 없느니, 과감히 쳐내거라! 날카로워야 네 것을 지킬 수 있느니라!',
+        hotong: '무딘 칼로는 아무것도 베지 못하느니라. 아까운 것을 붙잡고 있으면 새것이 올 자리가 없느니, 과감히 쳐내거라. 날카로워야 네 것을 지킬 수 있느니라.',
         prescription: '무딘 칼날을 다시 세워야 하느니라'
       },
       water: {
         element: '水', hanja: '玄武', name: '현무', color: 'water',
         desc: '현무는 북방을 지키는 거북과 뱀이니라. 물의 기운은 지혜와 유연함의 힘을 품고 있느니, 네 안에 부족한 깊이를 채워줄 것이니라. 깊은 샘물처럼, 마른 곳에 지혜를 적셔주리라.',
-        hotong: '이놈아, 마른 우물에서 어찌 물을 길겠느냐! 머리가 굳으면 길이 보이지 않느니, 고여있지 말고 흘러가거라! 물은 낮은 곳으로 흘러야 바다에 이르느니라!',
+        hotong: '마른 우물에서 어찌 물을 길겠느냐. 머리가 굳으면 길이 보이지 않느니, 고여있지 말고 흘러가거라. 물은 낮은 곳으로 흘러야 바다에 이르느니라.',
         prescription: '마른 샘에 물을 채워야 하느니라'
       }
     };
 
-    // ===== DOM =====
     const $ = id => document.getElementById(id);
 
     // ===== INIT DROPDOWNS =====
@@ -605,7 +603,6 @@
       const monthSel = $('birthMonth');
       const daySel = $('birthDay');
 
-      // Year: 1940 ~ 2025, default scroll to 1980
       for (let y = 1940; y <= 2025; y++) {
         const opt = document.createElement('option');
         opt.value = y;
@@ -614,7 +611,6 @@
         yearSel.appendChild(opt);
       }
 
-      // Month: 1~12, default 6
       for (let m = 1; m <= 12; m++) {
         const opt = document.createElement('option');
         opt.value = String(m).padStart(2, '0');
@@ -623,7 +619,6 @@
         monthSel.appendChild(opt);
       }
 
-      // Day: 1~31, default 15
       for (let d = 1; d <= 31; d++) {
         const opt = document.createElement('option');
         opt.value = String(d).padStart(2, '0');
@@ -662,7 +657,6 @@
       const birthTime = $('birthTime').value;
       const calendarType = document.querySelector('#calendarType .radio-btn.active')?.dataset.value;
 
-      // Show loading
       const btn = $('submitBtn');
       btn.disabled = true;
       $('loadingSection').classList.add('show');
@@ -697,7 +691,6 @@
       const saju = data.spiProperties || data;
       const oheng = saju.ohengRatio || saju.elementGauge || {};
 
-      // Find weakest
       const elements = ['wood', 'fire', 'earth', 'metal', 'water'];
       const koMap = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
       const hjMap = { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' };
@@ -711,26 +704,30 @@
 
       const g = GUARDIANS[weakest];
 
-      // Card
-      $('cardBg').src = `${IMG_BASE}/${weakest}.jpeg`;
+      // Card image — try loading, fallback to proxy if CORS fails
+      const img = $('cardBg');
+      const imgUrl = `${IMG_BASE}/${weakest}.jpeg`;
+      img.onerror = () => {
+        // Try proxy
+        img.onerror = null;
+        img.src = `${API_URL}/proxy-image?url=${encodeURIComponent(imgUrl)}`;
+      };
+      img.src = imgUrl;
+
       $('cardElement').textContent = g.element;
       $('cardElement').className = `card-element-char ${g.color}`;
       $('cardGuardian').textContent = `${g.hanja} ${g.name}`;
-      $('cardBottomText').textContent = g.prescription;
+      $('cardPrescription').textContent = g.prescription;
 
       if (birthDate) {
         const [y, m, d] = birthDate.split('-');
-        $('cardBottomDate').textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일생`;
+        $('cardDate').textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일생`;
       }
 
-      // Guardian desc
       $('guardianName').textContent = `${g.hanja} ${g.name} — ${g.element}의 수호신`;
       $('guardianDesc').textContent = g.desc;
-
-      // Hotong
       $('hotongText').textContent = g.hotong;
 
-      // Show
       $('resultSection').classList.add('show');
       window.scrollTo(0, 0);
     }
@@ -775,7 +772,7 @@
     $('btnSave').addEventListener('click', async () => {
       try {
         const canvas = await html2canvas($('suhopaeCard'), {
-          useCORS: true, scale: 2, backgroundColor: '#000'
+          useCORS: true, allowTaint: true, scale: 2, backgroundColor: '#000'
         });
         const link = document.createElement('a');
         link.download = '호왕수호패.png';
@@ -796,7 +793,7 @@
     $('btnInsta').addEventListener('click', async () => {
       try {
         const canvas = await html2canvas($('suhopaeCard'), {
-          useCORS: true, scale: 2, backgroundColor: '#000'
+          useCORS: true, allowTaint: true, scale: 2, backgroundColor: '#000'
         });
         canvas.toBlob(async (blob) => {
           if (navigator.share && blob) {
