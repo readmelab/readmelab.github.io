@@ -278,7 +278,7 @@ tr:hover td{background:rgba(197,151,91,.03)}
 var API = 'https://hw-server-1075269376260.asia-northeast3.run.app';
 var PW = localStorage.getItem('hw_admin_pw') || '';
 if(PW){
-  fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=30d')
+  fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=1d')
     .then(function(r){return r.json()})
     .then(function(d){
       if(d.success){
@@ -291,7 +291,7 @@ if(PW){
     })
     .catch(function(){ localStorage.removeItem('hw_admin_pw'); PW=''; });
 }
-var period = '30d';
+var period = '1d';
 var allOrders = [];
 var currentFilter = 'all';
 var dashData = null;
@@ -300,7 +300,7 @@ var dashData = null;
 function doLogin(){
   PW = document.getElementById('pwInput').value;
   if(!PW) return;
-  fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=30d')
+  fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=1d')
     .then(function(r){return r.json()})
     .then(function(d){
       if(d.success){
