@@ -159,6 +159,8 @@ tr:hover td{background:rgba(197,151,91,.03)}
   <div class="tab-row">
     <button class="tab-btn active" onclick="switchTab('overview',this)">대시보드</button>
     <button class="tab-btn" onclick="switchTab('orders',this)">주문 관리</button>
+    <button class="tab-btn" onclick="switchTab('monitor',this)">모니터링</button>
+    <button class="tab-btn" onclick="switchTab('test',this)">테스트</button>
   </div>
 
   <!-- ════ 탭 1: 대시보드 ════ -->
@@ -217,6 +219,55 @@ tr:hover td{background:rgba(197,151,91,.03)}
     <div id="orderList"><div class="empty">불러오는 중...</div></div>
   </div>
 
+  <!-- ════ 탭 3: 모니터링 ════ -->
+  <div class="tab-content" id="tab-monitor">
+    <div class="section-title">실시간 상태</div>
+    <div class="stat-grid" id="monitorStatus"></div>
+
+    <div class="section-title">오늘 시간별 추이 (방문 / 카드 / 결제)</div>
+    <div class="chart-wrap" id="hourlyChart"></div>
+
+    <div class="section-title">무료 콘텐츠별 현황</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>콘텐츠</th><th>오늘</th><th>어제</th><th>7일 합계</th><th>전일 대비</th></tr></thead>
+        <tbody id="cardTypeTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════ 탭 4: 테스트 ════ -->
+  <div class="tab-content" id="tab-test">
+    <div class="section-title">1. 서버 상태 체크</div>
+    <button class="action-btn btn-done" onclick="runHealthCheck()" style="margin-bottom:16px">전체 상태 체크</button>
+    <div id="healthResult" style="margin-bottom:24px"></div>
+
+    <div class="section-title">2. 무료 콘텐츠 테스트</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <select id="testGender" class="login-input" style="width:auto;padding:8px 12px"><option value="male">남</option><option value="female">여</option></select>
+      <input id="testYear" class="login-input" style="width:80px;padding:8px" type="number" value="1990" placeholder="년">
+      <input id="testMonth" class="login-input" style="width:60px;padding:8px" type="number" value="5" placeholder="월">
+      <input id="testDay" class="login-input" style="width:60px;padding:8px" type="number" value="15" placeholder="일">
+      <input id="testHour" class="login-input" style="width:60px;padding:8px" type="number" value="12" placeholder="시">
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="action-btn btn-result" onclick="testAPI('howangpae')">호왕패</button>
+      <button class="action-btn btn-result" onclick="testAPI('suhopae')">수호패</button>
+    </div>
+    <div id="freeTestResult" style="margin-bottom:24px"></div>
+
+    <div class="section-title">3. 유료 결과 페이지 테스트</div>
+    <div id="paidTestBtns" style="margin-bottom:12px"><span style="color:var(--sub);font-size:12px">로딩 중...</span></div>
+    <div id="paidTestResult" style="margin-bottom:24px"></div>
+
+    <div class="section-title">4. 알림톡 테스트</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <input id="testPhone" class="login-input" style="width:160px;padding:8px" placeholder="전화번호 (01012345678)">
+      <button class="action-btn btn-copy" onclick="testAlimtalk()">테스트 발송</button>
+    </div>
+    <div id="alimtalkResult" style="margin-bottom:24px"></div>
+  </div>
+  
 </div>
 </div>
 
@@ -498,6 +549,255 @@ function sc(label,value,unit,rev){
 }
 function fmt(n){return n===undefined||n===null?'0':Number(n).toLocaleString('ko-KR')}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+
+// ══════ 모니터링 탭 ══════
+function loadMonitor(){
+  fetch(API+'/admin/hourly?pw='+encodeURIComponent(PW))
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!d.success) return;
+      renderMonitorStatus(d);
+      renderHourlyChart(d);
+      renderCardTypes(d);
+    });
+}
+
+function renderMonitorStatus(d){
+  var todayData=d.daily[d.today]||{};
+  var h=todayData.hourly||{};
+  var now=new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul',hour:'2-digit',hour12:false}).padStart(2,'0');
+  var prevH=String(Number(now)-1).padStart(2,'0');
+  var curVisits=(h[now]&&h[now].visits)||0;
+  var prevVisits=(h[prevH]&&h[prevH].visits)||0;
+  var curCards=(h[now]&&h[now].cards)||0;
+  var curOrders=(h[now]&&h[now].orders)||0;
+
+  var visitColor=curVisits>0?'var(--green)':(prevVisits>0?'#c5975b':'#c44a4a');
+  var visitLabel=curVisits>0?'정상':(prevVisits>0?'주의':'경고');
+
+  var el=document.getElementById('monitorStatus');
+  el.innerHTML=
+    '<div class="stat-card" style="border-top:3px solid '+visitColor+'"><div class="label">이번 시간 방문</div><div class="value" style="color:'+visitColor+'">'+curVisits+'</div><div class="unit">'+visitLabel+'</div></div>'+
+    '<div class="stat-card"><div class="label">이번 시간 카드</div><div class="value">'+curCards+'</div><div class="unit">회</div></div>'+
+    '<div class="stat-card"><div class="label">이번 시간 결제</div><div class="value">'+curOrders+'</div><div class="unit">건</div></div>'+
+    '<div class="stat-card"><div class="label">오늘 총 방문</div><div class="value">'+(todayData.totalVisits||0)+'</div><div class="unit">명</div></div>'+
+    '<div class="stat-card"><div class="label">오늘 총 카드</div><div class="value">'+(todayData.totalCards||0)+'</div><div class="unit">회</div></div>';
+}
+
+function renderHourlyChart(d){
+  var todayData=d.daily[d.today]||{};
+  var h=todayData.hourly||{};
+  var W=800,H=200,pL=48,pR=16,pT=28,pB=32;
+  var pW=W-pL-pR,pH=H-pT-pB;
+  var mx=1;
+  for(var i=0;i<24;i++){
+    var k=String(i).padStart(2,'0');
+    var hd=h[k]||{};
+    var v=(hd.visits||0);
+    if(v>mx) mx=v;
+  }
+  mx=Math.ceil(mx/5)*5||5;
+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'">';
+  for(var g=0;g<=4;g++){
+    var y=pT+pH-(pH*g/4);
+    var v2=Math.round(mx*g/4);
+    svg+='<line x1="'+pL+'" y1="'+y+'" x2="'+(W-pR)+'" y2="'+y+'" stroke="#2a1a0a" stroke-width="1"/>';
+    svg+='<text x="'+(pL-6)+'" y="'+(y+4)+'" fill="#8a7a5a" font-size="9" text-anchor="end">'+v2+'</text>';
+  }
+
+  var bw=(pW/24)*0.7;
+  var gap=(pW/24)*0.3;
+  var nowH=Number(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul',hour:'2-digit',hour12:false}));
+
+  for(var i=0;i<24;i++){
+    var k=String(i).padStart(2,'0');
+    var hd=h[k]||{};
+    var visits=hd.visits||0;
+    var cards=hd.cards||0;
+    var orders=hd.orders||0;
+    var x=pL+(pW/24)*i;
+    var barH=visits>0?(visits/mx)*pH:0;
+    var opacity=i<=nowH?1:0.3;
+
+    svg+='<rect x="'+x+'" y="'+(pT+pH-barH)+'" width="'+bw+'" height="'+barH+'" fill="#c5975b" opacity="'+opacity+'" rx="2"/>';
+    if(cards>0){
+      var cH=(cards/mx)*pH;
+      svg+='<rect x="'+(x+bw*0.15)+'" y="'+(pT+pH-cH)+'" width="'+(bw*0.35)+'" height="'+cH+'" fill="#4a8c5c" opacity="0.7" rx="1"/>';
+    }
+    if(orders>0){
+      var oH=Math.max((orders/mx)*pH,4);
+      svg+='<circle cx="'+(x+bw/2)+'" cy="'+(pT+pH-oH)+'" r="4" fill="#c44a4a"/>';
+    }
+    if(i%2===0) svg+='<text x="'+(x+bw/2)+'" y="'+(H-6)+'" fill="#8a7a5a" font-size="8" text-anchor="middle">'+k+'</text>';
+  }
+
+  svg+='<rect x="'+(pL+8)+'" y="10" width="8" height="8" fill="#c5975b" rx="1"/><text x="'+(pL+20)+'" y="18" fill="#c5975b" font-size="9">방문</text>';
+  svg+='<rect x="'+(pL+60)+'" y="10" width="8" height="8" fill="#4a8c5c" rx="1"/><text x="'+(pL+72)+'" y="18" fill="#4a8c5c" font-size="9">카드</text>';
+  svg+='<circle cx="'+(pL+116)+'" cy="14" r="4" fill="#c44a4a"/><text x="'+(pL+124)+'" y="18" fill="#c44a4a" font-size="9">결제</text>';
+  svg+='</svg>';
+
+  document.getElementById('hourlyChart').innerHTML=svg;
+}
+
+function renderCardTypes(d){
+  var ct=d.cardTypes||{};
+  var names={'howangpae':'호왕패','suhopae':'수호패'};
+  var tbody=document.getElementById('cardTypeTbody');
+  var keys=Object.keys(ct).sort();
+  if(!keys.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--sub)">데이터 없음</td></tr>';return}
+  var html='';
+  keys.forEach(function(k){
+    var c=ct[k];
+    var diff=c.yesterday>0?((c.today-c.yesterday)/c.yesterday*100).toFixed(0):'--';
+    var diffColor=diff==='--'?'var(--sub)':(Number(diff)>=0?'var(--green)':'#c44a4a');
+    var warn=c.yesterday>0&&c.today<c.yesterday*0.5?' style="background:rgba(196,74,74,.1)"':'';
+    html+='<tr'+warn+'><td style="font-weight:700">'+(names[k]||k)+'</td><td>'+c.today+'</td><td>'+c.yesterday+'</td><td>'+c.week+'</td><td style="color:'+diffColor+'">'+(diff==='--'?'-':diff+'%')+'</td></tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+// ══════ 테스트 탭 ══════
+function runHealthCheck(){
+  var el=document.getElementById('healthResult');
+  el.innerHTML='<div style="color:var(--sub);font-size:12px">체크 중...</div>';
+  var checks=[
+    {name:'서버 응답',url:API+'/',method:'GET'},
+    {name:'Firestore 연결',url:API+'/test-firestore',method:'GET'},
+    {name:'대시보드 API',url:API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=7d',method:'GET'},
+    {name:'시간별 API',url:API+'/admin/hourly?pw='+encodeURIComponent(PW),method:'GET'}
+  ];
+  var results=[];
+  var done=0;
+  checks.forEach(function(c,i){
+    var start=Date.now();
+    fetch(c.url).then(function(r){return r.json().then(function(d){
+      results[i]={name:c.name,ok:true,ms:Date.now()-start,detail:r.status};
+    })}).catch(function(e){
+      results[i]={name:c.name,ok:false,ms:Date.now()-start,detail:e.message};
+    }).finally(function(){
+      done++;
+      if(done===checks.length) showHealthResults(results);
+    });
+  });
+}
+
+function showHealthResults(results){
+  var html='';
+  results.forEach(function(r){
+    var color=r.ok?'var(--green)':'#c44a4a';
+    var icon=r.ok?'●':'✖';
+    html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px"><span style="color:'+color+';font-size:16px">'+icon+'</span><span>'+r.name+'</span><span style="color:var(--sub);font-size:11px">'+r.ms+'ms</span></div>';
+  });
+  document.getElementById('healthResult').innerHTML=html;
+}
+
+function testAPI(type){
+  var el=document.getElementById('freeTestResult');
+  el.innerHTML='<div style="color:var(--sub);font-size:12px">호출 중...</div>';
+  var body={
+    gender:document.getElementById('testGender').value,
+    birthYear:Number(document.getElementById('testYear').value),
+    birthMonth:Number(document.getElementById('testMonth').value),
+    birthDay:Number(document.getElementById('testDay').value),
+    birthHour:Number(document.getElementById('testHour').value),
+    birthMinute:0,
+    calendarType:'solar'
+  };
+  var url=type==='suhopae'?API+'/api/howangpae':API+'/api/howangpae';
+  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.success){
+        var c=d.card||{};
+        el.innerHTML='<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px">'+
+          '<div style="color:var(--green);margin-bottom:6px">● 성공</div>'+
+          '<div><strong>ID:</strong> '+(c.id||'')+'</div>'+
+          '<div><strong>제목:</strong> '+(c.title||'')+'</div>'+
+          '<div><strong>이미지:</strong> <a href="https://audio.readmelab.co.kr/howang/howangpae/'+(c.id||'')+'.jpeg" target="_blank" style="color:var(--gold)">확인</a></div>'+
+          '<div style="margin-top:6px;color:var(--sub);font-size:10px;max-height:60px;overflow:auto">'+JSON.stringify(d).slice(0,300)+'...</div>'+
+        '</div>';
+      } else {
+        el.innerHTML='<div style="color:#c44a4a">✖ 실패: '+(d.error||'')+'</div>';
+      }
+    })
+    .catch(function(e){el.innerHTML='<div style="color:#c44a4a">✖ 에러: '+e.message+'</div>'});
+}
+
+function loadPaidTests(){
+  fetch(API+'/admin/orders?pw='+encodeURIComponent(PW))
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!d.success||!d.orders.length) return;
+      var pages={HW1:'chogyeon-result.html',HW2:'jaemul-result.html',HW3:'bonpuli-result.html'};
+      var names={HW1:'초견',HW2:'재물풀이',HW3:'본풀이'};
+      var found={};
+      d.orders.forEach(function(o){
+        if(o.paymentStatus==='confirmed'&&!found[o.product]){found[o.product]=o}
+      });
+      var html='';
+      Object.keys(found).forEach(function(p){
+        var o=found[p];
+        var url='https://readmelab.github.io/howangdang/'+pages[p]+'?id='+o.orderId;
+        html+='<a class="action-btn btn-result" href="'+url+'" target="_blank" style="margin-right:6px">'+(names[p]||p)+' ('+o.orderId.slice(-6)+')</a>';
+      });
+      html+='<button class="action-btn btn-copy" onclick="testResultAPIs()" style="margin-left:8px">결과 API 일괄 체크</button>';
+      document.getElementById('paidTestBtns').innerHTML=html||'<span style="color:var(--sub);font-size:12px">결제 주문 없음</span>';
+    });
+}
+
+function testResultAPIs(){
+  var el=document.getElementById('paidTestResult');
+  el.innerHTML='<div style="color:var(--sub);font-size:12px">체크 중...</div>';
+  fetch(API+'/admin/orders?pw='+encodeURIComponent(PW))
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!d.success) return;
+      var found={};
+      d.orders.forEach(function(o){if(o.paymentStatus==='confirmed'&&!found[o.product]) found[o.product]=o});
+      var keys=Object.keys(found);
+      var results=[];var done=0;
+      var names={HW1:'초견',HW2:'재물풀이',HW3:'본풀이'};
+      keys.forEach(function(p,i){
+        fetch(API+'/result/'+found[p].orderId)
+          .then(function(r){return r.json().then(function(j){results[i]={name:names[p],ok:!j.error,id:found[p].orderId}})})
+          .catch(function(){results[i]={name:names[p],ok:false,id:found[p].orderId}})
+          .finally(function(){
+            done++;
+            if(done===keys.length){
+              var h='';results.forEach(function(r2){
+                h+='<div style="font-size:13px;margin-bottom:4px"><span style="color:'+(r2.ok?'var(--green)':'#c44a4a')+'">'+(r2.ok?'●':'✖')+'</span> '+r2.name+' ('+r2.id.slice(-6)+')</div>';
+              });
+              el.innerHTML=h;
+            }
+          });
+      });
+    });
+}
+
+function testAlimtalk(){
+  var phone=document.getElementById('testPhone').value.replace(/\D/g,'');
+  var el=document.getElementById('alimtalkResult');
+  if(!phone||phone.length<10){el.innerHTML='<div style="color:#c44a4a">전화번호를 입력하세요</div>';return}
+  el.innerHTML='<div style="color:var(--sub);font-size:12px">발송 중...</div>';
+  fetch(API+'/admin/test-alimtalk',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({pw:PW,phone:phone})
+  }).then(function(r){return r.json()})
+    .then(function(d){
+      if(d.success) el.innerHTML='<div style="color:var(--green)">● 발송 성공</div>';
+      else el.innerHTML='<div style="color:#c44a4a">✖ 실패: '+(d.error||'')+'</div>';
+    })
+    .catch(function(e){el.innerHTML='<div style="color:#c44a4a">✖ 에러: '+e.message+'</div>'});
+}
+
+// 탭 전환 시 모니터링/테스트 데이터 로드
+var origSwitchTab=switchTab;
+switchTab=function(id,btn){
+  origSwitchTab(id,btn);
+  if(id==='monitor') loadMonitor();
+  if(id==='test') loadPaidTests();
+};
 </script>
 </body>
 </html>
