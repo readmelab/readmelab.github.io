@@ -276,7 +276,21 @@ tr:hover td{background:rgba(197,151,91,.03)}
 
 <script>
 var API = 'https://hw-server-1075269376260.asia-northeast3.run.app';
-var PW = '';
+var PW = localStorage.getItem('hw_admin_pw') || '';
+if(PW){
+  fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=30d')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.success){
+        document.getElementById('loginBox').style.display='none';
+        document.getElementById('dashboard').style.display='block';
+        dashData=d;
+        renderOverview(d);
+        loadOrders();
+      } else { localStorage.removeItem('hw_admin_pw'); PW=''; }
+    })
+    .catch(function(){ localStorage.removeItem('hw_admin_pw'); PW=''; });
+}
 var period = '30d';
 var allOrders = [];
 var currentFilter = 'all';
@@ -290,6 +304,7 @@ function doLogin(){
     .then(function(r){return r.json()})
     .then(function(d){
       if(d.success){
+        localStorage.setItem('hw_admin_pw', PW);
         document.getElementById('loginBox').style.display='none';
         document.getElementById('dashboard').style.display='block';
         dashData=d;
