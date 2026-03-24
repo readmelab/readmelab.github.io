@@ -500,5 +500,16 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
+<script>
+fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    page: 'index',
+    referrer: document.referrer,
+    userAgent: navigator.userAgent
+  })
+}).catch(() => {});
+</script>
 </body>
 </html>
