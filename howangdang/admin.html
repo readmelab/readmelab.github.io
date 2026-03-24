@@ -542,6 +542,8 @@ function renderOrders(){
       '</div>'+
       '<div class="order-actions">'+
         (o.paymentStatus==='confirmed'&&o.status!=='done'?'<button class="action-btn btn-done" onclick="markDone(\''+o.orderId+'\')">풀이 완료</button>':'')+
+        (o.product==='HW3'&&o.status==='error'?'<button class="action-btn btn-done" onclick="retryBonpuri(\''+o.orderId+'\')">본풀이 재생성</button>':'')+
+        (o.paymentStatus==='confirmed'?'<button class="action-btn btn-copy" onclick="resendAlimtalk(\''+o.orderId+'\')">알림톡 재발송</button>':'')+
         '<button class="action-btn btn-copy" onclick="copyInfo(\''+o.orderId+'\')">정보 복사</button>'+
         (o.paymentStatus==='confirmed'?'<a class="action-btn btn-result" href="'+resultUrl+'" target="_blank">결과 보기</a>':'')+
       '</div>'+
@@ -815,6 +817,28 @@ function testAlimtalk(){
     .catch(function(e){el.innerHTML='<div style="color:#c44a4a">✖ 에러: '+e.message+'</div>'});
 }
 
+function retryBonpuri(orderId){
+  if(!confirm('본풀이를 재생성할까요?')) return;
+  fetch(API+'/admin/retry-bonpuri',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orderId:orderId,pw:PW})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d.success){showToast('재생성 시작됨 (1~2분 소요)');loadOrders()}
+    else showToast('실패: '+(d.error||''));
+  }).catch(function(){showToast('서버 오류')});
+}
+
+function resendAlimtalk(orderId){
+  if(!confirm('알림톡을 재발송할까요?')) return;
+  fetch(API+'/admin/resend-alimtalk',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orderId:orderId,pw:PW})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d.success) showToast('알림톡 발송 완료');
+    else showToast('실패: '+(d.error||''));
+  }).catch(function(){showToast('서버 오류')});
+}
+  
 // 탭 전환 시 모니터링/테스트 데이터 로드
 var origSwitchTab=switchTab;
 switchTab=function(id,btn){
