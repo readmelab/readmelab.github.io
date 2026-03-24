@@ -211,9 +211,9 @@ tr:hover td{background:rgba(197,151,91,.03)}
 
     <div class="filter-row">
       <button class="filter-btn active" data-f="all" onclick="filterOrders(this)">전체</button>
-      <button class="filter-btn" data-f="confirmed" onclick="filterOrders(this)">결제완료</button>
-      <button class="filter-btn" data-f="processing" onclick="filterOrders(this)">처리중</button>
-      <button class="filter-btn" data-f="done" onclick="filterOrders(this)">완료</button>
+      <button class="filter-btn" data-f="confirmed" onclick="filterOrders(this)">풀이완료</button>
+      <button class="filter-btn" data-f="processing" onclick="filterOrders(this)">풀이생성중</button>
+      <button class="filter-btn" data-f="done" onclick="filterOrders(this)">알림발송완료</button>
       <button class="filter-btn" data-f="waiting" onclick="filterOrders(this)">대기</button>
     </div>
 
@@ -411,8 +411,10 @@ function renderOverview(data){
   var rh='';
   ro.forEach(function(o){
     var bc=o.product==='HW1'?'hw1':o.product==='HW2'?'hw2':'hw3';
-    var sc2=o.status==='done'?'st-done':o.status==='processing'?'st-processing':'st-confirmed';
-    var st2=o.status==='done'?'완료':o.status==='processing'?'처리중':'결제완료';
+    var sc2='st-confirmed';var st2='결제완료';
+    if(o.status==='done'){sc2='st-done';st2='알림발송완료'}
+    else if(o.status==='processing'&&o.product==='HW3'){sc2='st-processing';st2='풀이생성중'}
+    else if(o.status==='processing'){sc2='st-confirmed';st2='풀이완료'}
     var dt=o.createdAt?new Date(o.createdAt).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
     rh+='<tr><td style="font-size:10px;color:var(--sub)">'+(o.orderId||'').slice(-8)+'</td><td><span class="badge badge-'+bc+'">'+(o.productName||'')+'</span>'+(o.isUpgrade?'<span class="badge badge-up">UP</span>':'')+'</td><td>'+fmt(o.price||0)+'원</td><td>'+(o.userName||'')+'</td><td><span class="status-badge '+sc2+'">'+st2+'</span></td><td style="font-size:10px;color:var(--sub)">'+dt+'</td></tr>';
   });
@@ -513,8 +515,14 @@ function renderOrders(){
 
   list.innerHTML=orders.map(function(o){
     var sc=o.status==='done'?'s-done':(o.status==='processing'?'s-processing':(o.paymentStatus==='confirmed'?'s-confirmed':'s-waiting'));
-    var stText=o.status==='done'?'완료':(o.paymentStatus==='confirmed'?(o.status==='processing'?'처리중':'결제완료'):'대기');
-    var stBadge=o.status==='done'?'st-done':(o.status==='processing'?'st-processing':(o.paymentStatus==='confirmed'?'st-confirmed':'st-waiting'));
+    var stText='대기';
+    var stBadge='st-waiting';
+    if(o.paymentStatus==='waiting'){stText='대기';stBadge='st-waiting'}
+    else if(o.status==='done'&&o.alimtalkFailed){stText='알림발송실패';stBadge='st-processing'}
+    else if(o.status==='done'){stText='알림발송완료';stBadge='st-done'}
+    else if(o.status==='error'){stText='생성실패';stBadge='st-processing'}
+    else if(o.status==='processing'&&o.product==='HW3'){stText='풀이생성중';stBadge='st-confirmed'}
+    else if(o.paymentStatus==='confirmed'){stText='풀이완료';stBadge='st-confirmed'}
     var resultUrl='https://readmelab.github.io/howangdang/'+(resultPages[o.product]||'chogyeon-result.html')+'?id='+o.orderId;
 
     return '<div class="order-card '+sc+'">'+
