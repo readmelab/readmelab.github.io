@@ -387,6 +387,13 @@ async function submitForm() {
 
     renderCard(data);
 
+        // 카드 생성 트래킹
+    fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'howangpae' })
+    }).catch(() => {});
+
     loadingScreen.style.display = 'none';
     const resultScreen = document.getElementById('screen-result');
     resultScreen.style.display = 'flex';
@@ -529,6 +536,17 @@ function retry() {
 }
 
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+<script>
+fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    page: 'howangpae',
+    referrer: document.referrer,
+    userAgent: navigator.userAgent
+  })
+}).catch(() => {});
 </script>
 </body>
 </html>
