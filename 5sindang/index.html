@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>오신당 — 다섯 신이 보는 사주</title>
+<meta property="og:title" content="오신당 — 다섯 신이 보는 사주">
+<meta property="og:description" content="관성제군, 산신할머니, 신장군, 선녀신, 대감신. 다섯 신이 직접 전하는 사주 풀이.">
+<meta name="description" content="오신당 - 다섯 신이 직접 전하는 사주 풀이 서비스. 초견, 재물풀이, 오신 본풀이.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08060a;
+  --card:#12101a;
+  --gold:#c9a84c;
+  --red:#a83232;
+  --text:#e0d8cc;
+  --sub:#7a7068;
+  --border:#1e1a28;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Serif KR',serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(26,18,40,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 100%, rgba(40,18,18,0.4) 0%, transparent 50%);
+}
+.container{max-width:480px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+/* 헤더 */
+.header{text-align:center;padding:48px 0 32px;}
+.logo{font-size:36px;font-weight:900;color:var(--gold);letter-spacing:8px;text-shadow:0 0 30px rgba(201,168,76,0.3);}
+.logo-hanja{font-size:14px;color:var(--sub);letter-spacing:6px;margin-top:4px;}
+.tagline{font-size:13px;color:var(--sub);margin-top:16px;line-height:1.8;letter-spacing:1px;}
+
+.divider{
+  height:1px;margin:32px 0;
+  background:linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+  opacity:0.2;
+}
+
+/* 신 소개 */
+.gods-section{text-align:center;margin-bottom:32px;}
+.gods-title{font-size:11px;color:var(--sub);letter-spacing:6px;margin-bottom:20px;}
+.gods-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.god-chip{
+  padding:8px 14px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:12px;
+  color:var(--text);
+  letter-spacing:1px;
+}
+.god-chip.guan{border-color:#8b1a1a;color:#e85050;}
+.god-chip.sansin{border-color:#2a4a6a;color:#8ab8d8;}
+.god-chip.sinjang{border-color:#1a1a3a;color:#9090c0;}
+.god-chip.seonnye{border-color:#6a2a5a;color:#d88abf;}
+.god-chip.daegam{border-color:#6a5a1a;color:#e8d060;}
+
+/* 서비스 설명 */
+.service-intro{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:28px 22px;
+  margin-bottom:32px;
+  line-height:2.2;
+  font-size:13.5px;
+  color:var(--sub);
+}
+.service-intro strong{color:var(--gold);}
+
+/* 상품 카드 */
+.product-list{display:flex;flex-direction:column;gap:16px;margin-bottom:32px;}
+.product-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px 20px;
+  position:relative;
+  cursor:pointer;
+  transition:border-color 0.3s, box-shadow 0.3s;
+}
+.product-card:hover{border-color:var(--gold);}
+.product-card.selected{border-color:var(--gold);box-shadow:0 0 20px rgba(201,168,76,0.15);}
+.product-badge{
+  position:absolute;top:-10px;left:20px;
+  background:var(--gold);color:var(--bg);
+  font-size:10px;font-weight:700;
+  padding:3px 12px;border-radius:10px;
+  letter-spacing:2px;
+}
+.product-label{font-size:11px;color:var(--sub);letter-spacing:4px;margin-bottom:6px;}
+.product-name{font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px;}
+.product-desc{font-size:12px;color:var(--sub);line-height:1.8;margin-bottom:14px;}
+.product-includes{font-size:11px;color:var(--sub);line-height:1.8;margin-bottom:14px;padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;}
+.product-includes span{color:var(--text);}
+.product-price{display:flex;align-items:baseline;gap:10px;margin-top:8px;}
+.price-main{font-size:22px;font-weight:900;color:var(--gold);}
+.price-original{font-size:13px;color:var(--sub);text-decoration:line-through;}
+.price-discount{font-size:10px;color:var(--red);font-weight:700;}
+
+/* 주문 폼 */
+.order-section{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:28px 22px;
+  margin-bottom:32px;
+  display:none;
+}
+.order-section.show{display:block;}
+.order-title{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:20px;letter-spacing:2px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:11px;color:var(--sub);margin-bottom:6px;letter-spacing:1px;}
+.form-input{
+  width:100%;padding:12px 14px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:'Noto Serif KR',serif;
+  font-size:14px;
+  outline:none;
+  transition:border-color 0.3s;
+}
+.form-input:focus{border-color:var(--gold);}
+.form-input::placeholder{color:#4a4040;}
+.form-row{display:flex;gap:10px;}
+.form-row .form-group{flex:1;}
+.form-select{
+  width:100%;padding:12px 14px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:'Noto Serif KR',serif;
+  font-size:14px;
+  outline:none;
+  appearance:none;
+  cursor:pointer;
+}
+.form-select:focus{border-color:var(--gold);}
+
+.privacy-check{display:flex;align-items:flex-start;gap:10px;margin:20px 0;font-size:11px;color:var(--sub);line-height:1.6;}
+.privacy-check input{margin-top:2px;accent-color:var(--gold);}
+
+.pay-btn{
+  width:100%;padding:16px;
+  background:var(--gold);
+  color:var(--bg);
+  border:none;
+  border-radius:8px;
+  font-family:'Noto Serif KR',serif;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:3px;
+  cursor:pointer;
+  transition:background 0.3s, transform 0.2s;
+}
+.pay-btn:hover{background:#d4b85a;transform:translateY(-1px);}
+.pay-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+/* 사업자 정보 */
+.biz-info{
+  text-align:center;
+  padding:32px 0;
+  font-size:11px;
+  color:#3a3030;
+  line-height:2;
+  border-top:1px solid var(--border);
+}
+.biz-info strong{color:var(--sub);}
+
+/* 안내 */
+.notice{
+  font-size:11px;
+  color:#4a4040;
+  line-height:1.8;
+  text-align:center;
+  margin-bottom:24px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="logo">오신당</div>
+    <div class="logo-hanja">五 神 堂</div>
+    <div class="tagline">다섯 신이 직접 전하는 사주 풀이</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 5신 소개 -->
+  <div class="gods-section">
+    <div class="gods-title">다 섯 의 신</div>
+    <div class="gods-row">
+      <div class="god-chip guan">관성제군</div>
+      <div class="god-chip sansin">산신할머니</div>
+      <div class="god-chip sinjang">신장군</div>
+      <div class="god-chip seonnye">선녀신</div>
+      <div class="god-chip daegam">대감신</div>
+    </div>
+  </div>
+
+  <!-- 서비스 설명 -->
+  <div class="service-intro">
+    <strong>오신당</strong>은 다섯 신의 기운을 빌어 사주를 풀어드리는 곳입니다.<br><br>
+    생년월일과 태어난 시를 바탕으로 사주 명식을 세우고,<br>
+    <strong>관성제군</strong>은 재물과 승부를,<br>
+    <strong>산신할머니</strong>는 건강과 가족을,<br>
+    <strong>신장군</strong>은 액운과 경고를,<br>
+    <strong>선녀신</strong>은 인연과 사랑을,<br>
+    <strong>대감신</strong>은 횡재와 행운을 살펴드립니다.<br><br>
+    신이 전하는 말씀을 귀 기울여 들어보시기 바랍니다.
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 상품 목록 -->
+  <div class="product-list">
+
+    <!-- OS1: 초견 -->
+    <div class="product-card" data-product="OS1" onclick="selectProduct('OS1')">
+      <div class="product-label">O S 1</div>
+      <div class="product-name">초견 初見</div>
+      <div class="product-desc">수호신이 처음으로 살펴보는 당신의 사주 핵심</div>
+      <div class="product-includes">
+        <span>사주 핵심 요약</span> · 타고난 성정 · 재물 성향 ·<br>
+        대인관계 · 건강 체질 · 2026년 운세 · <span>수호신의 신탁</span>
+      </div>
+      <div class="product-price">
+        <div class="price-main">4,900원</div>
+      </div>
+    </div>
+
+    <!-- OS2: 재물풀이 -->
+    <div class="product-card" data-product="OS2" onclick="selectProduct('OS2')">
+      <div class="product-badge">인기</div>
+      <div class="product-label">O S 2</div>
+      <div class="product-name">재물풀이</div>
+      <div class="product-desc">수호신이 밝혀주는 당신의 돈 길과 재물 흐름</div>
+      <div class="product-includes">
+        <span>초견 전체 내용 포함</span><br>
+        돈 그릇 분석 · 재물 통로 · 누수 패턴 · 투자 적성 ·<br>
+        직업 궁합 · 월별 재물 흐름 · 3년 재물 전망 ·<br>
+        돈 습관 처방 · <span>수호신의 재물 경고</span>
+      </div>
+      <div class="product-price">
+        <div class="price-main">19,800원</div>
+        <div class="price-original" style="display:none;">19,800원</div>
+        <div class="price-discount" style="display:none;">초견 구매자 14,900원</div>
+      </div>
+    </div>
+
+    <!-- OS3: 오신 본풀이 -->
+    <div class="product-card" data-product="OS3" onclick="selectProduct('OS3')">
+      <div class="product-badge">최고 상품</div>
+      <div class="product-label">O S 3</div>
+      <div class="product-name">오신 본풀이</div>
+      <div class="product-desc">다섯 신이 각각 살펴보는 당신의 인생 종합 해석</div>
+      <div class="product-includes">
+        <span>재물풀이 전체 내용 포함</span><br>
+        명식총론 · 성정론 · 재물론 · 관록론(직업) ·<br>
+        인연론(사랑) · 건강론 · 대운론(10년 흐름) ·<br>
+        세운론(3년) · 월운론 · 오신 처방전 ·<br>
+        <span>五神의 밀서</span> · <span>신에게 묻다(질문 3회)</span>
+      </div>
+      <div class="product-price">
+        <div class="price-main">49,700원</div>
+        <div class="price-original" style="display:none;">49,700원</div>
+        <div class="price-discount" style="display:none;">재물풀이 구매자 29,900원</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 주문 폼 -->
+  <div class="order-section" id="orderSection">
+    <div class="order-title" id="orderTitle">주문 정보 입력</div>
+
+    <div class="form-group">
+      <div class="form-label">이름</div>
+      <input class="form-input" type="text" id="inputName" placeholder="이름을 입력하세요">
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">연락처</div>
+      <input class="form-input" type="tel" id="inputPhone" placeholder="010-0000-0000">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <div class="form-label">생년월일</div>
+        <input class="form-input" type="text" id="inputBirth" placeholder="예: 1990-03-15">
+      </div>
+      <div class="form-group">
+        <div class="form-label">양력 / 음력</div>
+        <select class="form-select" id="inputCal">
+          <option value="solar">양력</option>
+          <option value="lunar">음력</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">태어난 시 (모르면 비워두세요)</div>
+      <select class="form-select" id="inputTime">
+        <option value="">모름</option>
+        <option value="23:00">자시 (23:00~01:00)</option>
+        <option value="01:00">축시 (01:00~03:00)</option>
+        <option value="03:00">인시 (03:00~05:00)</option>
+        <option value="05:00">묘시 (05:00~07:00)</option>
+        <option value="07:00">진시 (07:00~09:00)</option>
+        <option value="09:00">사시 (09:00~11:00)</option>
+        <option value="11:00">오시 (11:00~13:00)</option>
+        <option value="13:00">미시 (13:00~15:00)</option>
+        <option value="15:00">신시 (15:00~17:00)</option>
+        <option value="17:00">유시 (17:00~19:00)</option>
+        <option value="19:00">술시 (19:00~21:00)</option>
+        <option value="21:00">해시 (21:00~23:00)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">성별</div>
+      <select class="form-select" id="inputGender">
+        <option value="male">남성</option>
+        <option value="female">여성</option>
+      </select>
+    </div>
+
+    <div class="privacy-check">
+      <input type="checkbox" id="privacyCheck">
+      <label for="privacyCheck">개인정보 수집 및 이용에 동의합니다. 수집 항목: 이름, 연락처, 생년월일. 이용 목적: 사주 풀이 제공. 보유 기간: 서비스 제공 완료 후 1년.</label>
+    </div>
+
+    <button class="pay-btn" id="payBtn" disabled onclick="requestPayment()">결제하기</button>
+  </div>
+
+  <!-- 안내 -->
+  <div class="notice">
+    결제 완료 후 카카오톡으로 결과 링크를 보내드립니다.<br>
+    문의: 카카오톡 채널 <strong style="color:var(--gold);">@5sindang</strong>
+  </div>
+
+<!-- 사업자 정보 -->
+<div class="biz-info">
+  <strong>오신당</strong> | 운영: 나를읽다연구소<br>
+  사업자등록번호: 347-12-03156<br>
+  대표: 오동훈 | 이메일: abkomp400@gmail.com<br>
+  주소: 부산광역시 서구 대영로38번길 11, 103동 1601호 (서대신동1가, 대신 푸르지오)<br>
+  통신판매업신고번호: 제2026-부산서구-0040호<br><br>
+  ⓒ 오신당 · 五神堂 · 이 서비스는 참고용이며 전문 상담을 대체하지 않습니다.
+</div>
+
+</div>
+
+<script>
+let selectedProduct = null;
+
+function selectProduct(code) {
+  selectedProduct = code;
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('[data-product="'+code+'"]').classList.add('selected');
+  document.getElementById('orderSection').classList.add('show');
+
+  var names = {OS1:'초견 결제', OS2:'재물풀이 결제', OS3:'오신 본풀이 결제'};
+  document.getElementById('orderTitle').textContent = names[code] || '주문 정보 입력';
+  checkForm();
+}
+
+// 폼 유효성
+['inputName','inputPhone','inputBirth'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', checkForm);
+});
+document.getElementById('privacyCheck').addEventListener('change', checkForm);
+
+function checkForm(){
+  var name = document.getElementById('inputName').value.trim();
+  var phone = document.getElementById('inputPhone').value.trim();
+  var birth = document.getElementById('inputBirth').value.trim();
+  var privacy = document.getElementById('privacyCheck').checked;
+  document.getElementById('payBtn').disabled = !(name && phone && birth && privacy && selectedProduct);
+}
+
+function requestPayment(){
+  // 비즈니스 채널 심사용 — 실제 결제 미연동
+  alert('현재 서비스 준비 중입니다. 곧 오픈 예정입니다.');
+}
+</script>
+
+</body>
+</html>
