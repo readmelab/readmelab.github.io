@@ -241,8 +241,8 @@ function renderResult(d) {
   const s1 = s[1];
   const strongChips = (s1.ganSubjects?.strong || []).map(s => `<span class="chip">${s}</span>`).join('');
   const weakChips = (s1.ganSubjects?.weak || []).map(s => `<span class="chip weak">${s}</span>`).join('');
-  const ohengStrongChips = (s1.ohengSubjects?.strong?.subjects || []).map(s => `<span class="chip">${s}</span>`).join('');
-  const ohengWeakChips = (s1.ohengSubjects?.weak?.subjects || []).map(s => `<span class="chip weak">${s}</span>`).join('');
+  const ohengStrongChips = (s1.strong?.subjects || []).map(s => `<span class="chip">${s}</span>`).join('');
+  const ohengWeakChips = (s1.weak?.subjects || []).map(s => `<span class="chip weak">${s}</span>`).join('');
   document.getElementById('sec1').innerHTML = `
     <div class="section-emoji">${s1.emoji || '🎯'}</div>
     <div class="section-title">${s1.title}</div>
@@ -253,12 +253,14 @@ function renderResult(d) {
       <div class="subject-chips">${weakChips}</div>
     </div>
     <div class="subject-group" style="margin-top:16px;">
-      <div class="subject-label">🔥 오행 기반 강점 (${s1.ohengSubjects?.strong?.element || ''})</div>
+      <div class="subject-label">🔥 오행 기반 강점 (${s1.strong?.oheng || ''} ${s1.strong?.pct || 0}%)</div>
       <div class="subject-chips">${ohengStrongChips}</div>
-      <div class="subject-label">💧 오행 기반 보완 (${s1.ohengSubjects?.weak?.element || ''})</div>
+      <div class="subject-label">💧 오행 기반 보완 (${s1.weak?.oheng || ''} ${s1.weak?.pct || 0}%)</div>
       <div class="subject-chips">${ohengWeakChips}</div>
     </div>
-    ${s1.ohengSubjects?.strong?.desc ? `<div class="tip-box" style="margin-top:12px;">${s1.ohengSubjects.strong.desc}</div>` : ''}
+    ${s1.strong?.desc ? `<div class="tip-box" style="margin-top:12px;">🔥 <b>강점:</b> ${s1.strong.desc}</div>` : ''}
+    ${s1.weak?.desc ? `<div class="tip-box" style="margin-top:8px;">💧 <b>보완:</b> ${s1.weak.desc}</div>` : ''}
+    ${s1.ganSubjects?.tip ? `<div class="tip-box" style="margin-top:8px;">📝 <b>일간 학습 팁:</b> ${s1.ganSubjects.tip}</div>` : ''}
   `;
 
   // 섹션 2: 학습 동기 + 신강/신약
