@@ -160,6 +160,23 @@ body {
   border-top:1px solid var(--border);
 }
 .footer-text { font-size:11px; color:var(--text-dim); }
+
+  .reason-box {
+  background:rgba(155,111,212,0.08); border-left:3px solid var(--accent-purple);
+  padding:10px 14px; border-radius:0 8px 8px 0;
+  font-size:12px; line-height:1.7; color:var(--text-dim); margin-bottom:12px;
+}
+.job-chips { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+.job-chip {
+  background:rgba(76,175,122,0.12); border:1px solid var(--accent-green);
+  padding:4px 10px; border-radius:20px; font-size:12px; color:var(--accent-green);
+}
+.closing-box {
+  background:rgba(212,168,83,0.04); border:1px solid var(--border);
+  border-radius:12px; padding:16px; margin-top:16px;
+  font-size:13px; line-height:1.9; color:var(--text-dim); text-align:center;
+}
+
 </style>
 </head>
 <body>
@@ -181,6 +198,8 @@ body {
   <div class="section-card" id="sec2"></div>
   <div class="section-card" id="sec3"></div>
   <div class="section-card" id="sec4"></div>
+  <div class="section-card" id="sec5"></div>
+  <div class="closing-box" id="closingBox"></div>
 
   <div class="summary-box" id="summaryBox"></div>
 
@@ -246,6 +265,7 @@ function renderResult(d) {
   document.getElementById('sec1').innerHTML = `
     <div class="section-emoji">${s1.emoji || '🎯'}</div>
     <div class="section-title">${s1.title}</div>
+    ${s1.reason ? `<div class="reason-box">🔮 ${s1.reason}</div>` : ''}
     <div class="subject-group">
       <div class="subject-label">✅ 일간 기반 강점 과목</div>
       <div class="subject-chips">${strongChips}</div>
@@ -263,15 +283,17 @@ function renderResult(d) {
     ${s1.ganSubjects?.tip ? `<div class="tip-box" style="margin-top:8px;">📝 <b>일간 학습 팁:</b> ${s1.ganSubjects.tip}</div>` : ''}
   `;
 
-  // 섹션 2: 학습 동기 + 신강/신약
+  // 섹션 2: 학습 유형 & 동기
   const s2 = s[2];
   document.getElementById('sec2').innerHTML = `
     <div class="section-emoji">${s2.emoji || '💡'}</div>
     <div class="section-title">${s2.title}</div>
+    ${s2.reason ? `<div class="reason-box">🔮 ${s2.reason}</div>` : ''}
     <div class="motivation-box">
       <div class="motivation-type">${s2.motivation?.type || ''}</div>
       <div class="motivation-desc">${s2.motivation?.desc || ''}</div>
     </div>
+    ${s2.gyeokguk ? `<div class="tip-box">📚 <b>${s2.gyeokguk.name} (${s2.gyeokguk.type}):</b> ${s2.gyeokguk.desc}<br><br>💡 ${s2.gyeokguk.tip}</div>` : ''}
     <div class="strength-box">
       <div class="strength-item strong">
         <div class="strength-label">📊 ${s2.strength?.result || ''}</div>
@@ -288,7 +310,6 @@ function renderResult(d) {
   // 섹션 3: 월별 학업 에너지
   const s3 = s[3];
   const months = s3.months || [];
-  const maxScore = 100;
   let barHTML = '';
   months.forEach(m => {
     const hPct = Math.max(((m.score - 60) / 40) * 100, 5);
@@ -307,6 +328,7 @@ function renderResult(d) {
   document.getElementById('sec3').innerHTML = `
     <div class="section-emoji">${s3.emoji || '📅'}</div>
     <div class="section-title">${s3.title}</div>
+    ${s3.reason ? `<div class="reason-box">🔮 ${s3.reason}</div>` : ''}
     <div class="month-chart">${barHTML}</div>
     <div class="month-highlight">
       <div class="month-best">🟢 최고의 달: ${best.month || ''}월 (${best.score || ''}점) — ${best.desc || ''}</div>
@@ -326,11 +348,37 @@ function renderResult(d) {
   document.getElementById('sec4').innerHTML = `
     <div class="section-emoji">${s4.emoji || '⭐'}</div>
     <div class="section-title">${s4.title}</div>
-    ${sinsalHTML}
+    ${s4.reason ? `<div class="reason-box">🔮 ${s4.reason}</div>` : ''}
+    ${s4.noSinsal ? `<div class="tip-box">${s4.noSinsal}</div>` : sinsalHTML}
   `;
+
+  // 섹션 5: 미래 유망 진로
+  const s5 = s[5];
+  if (s5) {
+    const jobChips = (s5.jobs || []).map(j => `<span class="job-chip">${j}</span>`).join('');
+    document.getElementById('sec5').innerHTML = `
+      <div class="section-emoji">${s5.emoji || '🚀'}</div>
+      <div class="section-title">${s5.title}</div>
+      <div class="section-subtitle">${s5.subtitle || ''}</div>
+      <div class="reason-box">🔮 ${s5.reason || ''}</div>
+      <div class="subject-label" style="margin-top:12px;">🎯 어울리는 진로 분야</div>
+      <div class="job-chips">${jobChips}</div>
+      <div class="tip-box">🏢 <b>최적 환경:</b> ${s5.environment || ''}</div>
+      <div class="tip-box" style="margin-top:8px;">🔭 <b>미래 전망:</b> ${s5.future || ''}</div>
+      <div class="tip-box" style="margin-top:8px;">📊 <b>오행 기반 유망 분야:</b> ${s5.ohengCareer || ''}</div>
+      <div class="tip-box" style="margin-top:8px;">⚡ <b>진로 접근법:</b> ${s5.strengthApproach || ''}</div>
+      <div class="tip-box" style="margin-top:8px;">⚠️ <b>주의점:</b> ${s5.strengthRisk || ''}</div>
+      <div class="tip-box" style="margin-top:8px;">💝 <b>부모 실천 팁:</b> ${s5.parentTip || ''}</div>
+    `;
+  }
 
   // 요약
   document.getElementById('summaryBox').textContent = d.summary || '';
+
+  // 클로징
+  if (d.closing) {
+    document.getElementById('closingBox').textContent = d.closing;
+  }
 
   // 표시 & 애니메이션
   document.getElementById('loadingArea').style.display = 'none';
@@ -340,7 +388,6 @@ function renderResult(d) {
     setTimeout(() => card.classList.add('show'), 200 * i);
   });
 
-  // 막대 애니메이션
   setTimeout(() => {
     document.querySelectorAll('.month-bar').forEach(bar => {
       bar.style.height = bar.dataset.h + '%';
