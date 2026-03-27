@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>복신당 — 우리 아이 기질 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #1a1028;
+  --bg-card: #2a1f3d;
+  --gold: #c9a84c;
+  --gold-light: #f5e6b8;
+  --purple: #6b4c9a;
+  --purple-light: #9b7fc4;
+  --text: #f0e6d3;
+  --text-dim: #a89bb5;
+  --accent-red: #c75050;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Noto Serif KR', serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ==================== SCREEN 1: 입력 ==================== */
+.screen { display:none; }
+.screen.active { display:block; }
+
+.input-screen {
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+  background: linear-gradient(180deg, #1a1028 0%, #2d1b4e 50%, #1a1028 100%);
+}
+
+.brand-header {
+  text-align: center;
+  padding: 30px 0 20px;
+}
+
+.brand-header h1 {
+  font-size: 28px;
+  color: var(--gold);
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(201,168,76,0.3);
+}
+
+.brand-header p {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  letter-spacing: 2px;
+}
+
+.input-section {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 15px;
+  color: var(--gold);
+  margin: 28px 0 14px;
+  padding-left: 4px;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 16px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.form-row {
+  margin-bottom: 12px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.form-row input,
+.form-row select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 10px;
+  background: rgba(42,31,61,0.8);
+  color: var(--text);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s;
+  -webkit-appearance: none;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  border-color: var(--gold);
+}
+
+.form-row select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.radio-row {
+  display: flex;
+  gap: 10px;
+}
+
+.radio-btn {
+  flex: 1;
+  padding: 11px;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 10px;
+  background: rgba(42,31,61,0.8);
+  color: var(--text-dim);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.radio-btn.selected {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+}
+
+.time-select-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.submit-btn {
+  width: 100%;
+  max-width: 420px;
+  display: block;
+  margin: 36px auto 0;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--gold) 0%, #d4af37 100%);
+  border: none;
+  border-radius: 12px;
+  color: #1a1028;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submit-btn:active {
+  transform: scale(0.97);
+}
+
+.notice-text {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 14px;
+  line-height: 1.6;
+}
+
+/* ==================== SCREEN 2: 로딩 ==================== */
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #1a1028 0%, #2d1b4e 50%, #1a1028 100%);
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-particles {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.loading-particles span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: floatUp 3s infinite;
+  opacity: 0;
+}
+
+@keyframes floatUp {
+  0% { opacity:0; transform: translateY(100vh) scale(0); }
+  30% { opacity:1; }
+  100% { opacity:0; transform: translateY(-20vh) scale(1); }
+}
+
+.loading-text {
+  font-size: 17px;
+  color: var(--gold-light);
+  letter-spacing: 1px;
+  line-height: 1.8;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.loading-text.show { opacity: 1; }
+
+.loading-bar-wrap {
+  width: 200px;
+  height: 3px;
+  background: rgba(201,168,76,0.15);
+  border-radius: 2px;
+  margin-top: 30px;
+  overflow: hidden;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ==================== SCREEN 3: 결과 ==================== */
+.result-screen {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1028 0%, #2d1b4e 30%, #1a1028 100%);
+  padding: 0 0 60px;
+}
+
+/* 카드 */
+.card-container {
+  position: relative;
+  width: 92%;
+  max-width: 400px;
+  margin: 20px auto;
+  aspect-ratio: 9 / 16;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 30px rgba(201,168,76,0.1);
+}
+
+.card-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 15%;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, rgba(26,16,40,0.5) 0%, transparent 100%);
+}
+
+.card-top .card-label {
+  font-size: 11px;
+  color: var(--gold-light);
+  letter-spacing: 3px;
+  opacity: 0.9;
+}
+
+.card-top .card-title {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 900;
+  margin-top: 4px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.card-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(26,16,40,0.7) 25%, rgba(26,16,40,0.92) 100%);
+  padding: 40px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.card-oneliner {
+  font-size: 14px;
+  color: var(--gold-light);
+  text-align: center;
+  margin-bottom: 14px;
+  line-height: 1.7;
+}
+
+/* 오행 게이지 (카드 내부) */
+.card-element-gauge {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.card-element-item {
+  text-align: center;
+}
+
+.card-element-item .el-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.card-element-item .el-bar-wrap {
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.card-element-item .el-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+.card-keywords {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-keywords span {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 20px;
+  color: var(--gold-light);
+  background: rgba(201,168,76,0.08);
+}
+
+/* CTA 섹션 */
+.cta-section {
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.cta-section p {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.cta-section .price-highlight {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.cta-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--gold) 0%, #d4af37 100%);
+  border: none;
+  border-radius: 12px;
+  color: #1a1028;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+  text-decoration: none;
+}
+
+/* 공유 버튼 */
+.share-section {
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.share-section h3 {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.share-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.share-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  background: rgba(42,31,61,0.6);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.share-btn:active {
+  background: rgba(201,168,76,0.15);
+}
+
+.share-btn .share-icon {
+  font-size: 22px;
+}
+
+.share-btn .share-label {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* 블라인드 상품 목차 */
+.blind-section {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.blind-section h3 {
+  font-size: 15px;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.blind-section .blind-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.blind-card {
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 14px;
+  background: rgba(42,31,61,0.5);
+  padding: 18px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.blind-card .blind-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(201,168,76,0.2);
+  color: var(--gold);
+}
+
+.blind-card h4 {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.blind-card .blind-items {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+.blind-card .blind-items .locked {
+  color: rgba(168,155,181,0.4);
+  filter: blur(2px);
+  user-select: none;
+}
+
+.blind-card .blind-price {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.blind-card .blind-price strong {
+  color: var(--gold);
+  font-size: 17px;
+}
+
+.blind-card .blind-price del {
+  font-size: 12px;
+  color: rgba(168,155,181,0.5);
+  margin-right: 6px;
+}
+
+/* 푸터 */
+.footer {
+  max-width: 400px;
+  margin: 40px auto 0;
+  padding: 20px;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  text-align: center;
+  font-size: 10px;
+  color: rgba(168,155,181,0.5);
+  line-height: 1.8;
+}
+
+/* 애니메이션 */
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 토스트 */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(42,31,61,0.95);
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== 화면 1: 입력 ==================== -->
+<div id="inputScreen" class="screen active input-screen">
+  <div class="brand-header">
+    <h1>福神堂</h1>
+    <p>복신당 · 우리 아이 기질 카드</p>
+  </div>
+
+  <div class="input-section">
+    <!-- 자녀 정보 -->
+    <div class="section-title">자녀 정보</div>
+
+    <div class="form-row">
+      <label>자녀 이름</label>
+      <input type="text" id="childName" placeholder="예) 김하늘" maxlength="10">
+    </div>
+
+    <div class="form-row">
+      <label>생년월일</label>
+      <div class="date-row">
+        <select id="childYear"></select>
+        <select id="childMonth"></select>
+        <select id="childDay"></select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>양력 / 음력</label>
+      <div class="radio-row">
+        <div class="radio-btn selected" data-group="cal" data-value="양력">양력</div>
+        <div class="radio-btn" data-group="cal" data-value="음력">음력</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>태어난 시간</label>
+      <div class="time-select-row">
+        <select id="childHour">
+          <option value="">모름</option>
+          <option value="子">子시 (23:00~01:00)</option>
+          <option value="丑">丑시 (01:00~03:00)</option>
+          <option value="寅">寅시 (03:00~05:00)</option>
+          <option value="卯">卯시 (05:00~07:00)</option>
+          <option value="辰">辰시 (07:00~09:00)</option>
+          <option value="巳">巳시 (09:00~11:00)</option>
+          <option value="午">午시 (11:00~13:00)</option>
+          <option value="未">未시 (13:00~15:00)</option>
+          <option value="申">申시 (15:00~17:00)</option>
+          <option value="酉">酉시 (17:00~19:00)</option>
+          <option value="戌">戌시 (19:00~21:00)</option>
+          <option value="亥">亥시 (21:00~23:00)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>성별</label>
+      <div class="radio-row">
+        <div class="radio-btn selected" data-group="gender" data-value="남">남자아이</div>
+        <div class="radio-btn" data-group="gender" data-value="여">여자아이</div>
+      </div>
+    </div>
+
+    <!-- 보호자 정보 -->
+    <div class="section-title">보호자 정보</div>
+
+    <div class="form-row">
+      <label>보호자 이름</label>
+      <input type="text" id="parentName" placeholder="예) 김민정" maxlength="10">
+    </div>
+
+    <div class="form-row">
+      <label>생년월일 <span style="font-size:11px; color:var(--text-dim);">(양력으로 입력해 주세요)</span></label>
+      <div class="date-row">
+        <select id="parentYear"></select>
+        <select id="parentMonth"></select>
+        <select id="parentDay"></select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>연락처 (카카오톡 발송용)</label>
+      <input type="tel" id="parentPhone" placeholder="010-0000-0000" maxlength="13">
+    </div>
+
+    <button class="submit-btn" onclick="startReading()">무료 기질 카드 받기</button>
+
+    <p class="notice-text">
+      입력하신 정보는 결과 발송 외 다른 용도로 사용되지 않습니다.<br>
+      사주 결과는 참고용이며, 전문 상담을 대체하지 않습니다.
+    </p>
+  </div>
+</div>
+
+<!-- ==================== 화면 2: 로딩 ==================== -->
+<div id="loadingScreen" class="screen loading-screen">
+  <div class="loading-particles" id="particles"></div>
+  <div class="loading-text" id="loadingText"></div>
+  <div class="loading-bar-wrap">
+    <div class="loading-bar" id="loadingBar"></div>
+  </div>
+</div>
+
+<!-- ==================== 화면 3: 결과 ==================== -->
+<div id="resultScreen" class="screen result-screen">
+
+  <!-- 카드 -->
+  <div class="card-container fade-up" id="cardContainer">
+    <img class="card-bg" id="cardImage" src="" alt="기질 카드">
+    <div class="card-top">
+      <span class="card-label" id="cardLabel">봄에 태어난</span>
+      <span class="card-title" id="cardTitle">아기 쥐</span>
+    </div>
+    <div class="card-bottom">
+      <div class="card-oneliner" id="cardOneliner">
+        재빠른 관찰력과 영리한 적응력을 타고난 아이
+      </div>
+      <div class="card-element-gauge" id="cardGauge">
+        <!-- JS로 생성 -->
+      </div>
+      <div class="card-keywords" id="cardKeywords">
+        <!-- JS로 생성 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section fade-up">
+    <p>
+      아이의 타고난 기질을 더 깊이 알고 싶다면?<br>
+      <span style="font-size:12px;">성격, 월별 에너지, 양육 키워드까지 한눈에</span>
+    </p>
+    <p>
+      커피 한 잔 가격으로<br>
+      <span class="price-highlight">₩4,900</span>
+    </p>
+    <a class="cta-btn" id="ctaBtn" href="#">기본 사주풀이 보러가기 →</a>
+  </div>
+
+  <!-- 공유 -->
+  <div class="share-section fade-up">
+    <h3>우리 아이 카드 공유하기</h3>
+    <div class="share-buttons">
+      <div class="share-btn" onclick="shareKakao()">
+        <span class="share-icon">💬</span>
+        <span class="share-label">카카오톡</span>
+      </div>
+      <div class="share-btn" onclick="shareInstagram()">
+        <span class="share-icon">📸</span>
+        <span class="share-label">인스타그램</span>
+      </div>
+      <div class="share-btn" onclick="saveImage()">
+        <span class="share-icon">💾</span>
+        <span class="share-label">이미지 저장</span>
+      </div>
+      <div class="share-btn" onclick="copyLink()">
+        <span class="share-icon">🔗</span>
+        <span class="share-label">링크 복사</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 블라인드 목차 -->
+  <div class="blind-section fade-up">
+    <h3>더 깊이 들여다보기</h3>
+    <p class="blind-sub">아이에게 꼭 필요한 분석을 골라보세요</p>
+
+    <!-- C1 기본 -->
+    <div class="blind-card">
+      <span class="blind-badge">STEP 1</span>
+      <h4>📜 기본 사주풀이</h4>
+      <div class="blind-items">
+        ✅ 타고난 기질 상세 분석<br>
+        ✅ 오행 에너지 균형<br>
+        ✅ 월별 에너지 흐름<br>
+        ✅ 양육 핵심 키워드<br>
+        <span class="locked">🔒 매력 유형 & 수호 부적</span>
+      </div>
+      <div class="blind-price">
+        <strong>₩4,900</strong>
+      </div>
+    </div>
+
+    <!-- C2 학업운 -->
+    <div class="blind-card">
+      <span class="blind-badge">인기</span>
+      <h4>📚 학업운 정밀 분석</h4>
+      <div class="blind-items">
+        <span class="locked">🔒 학업 등급 & 두뇌 유형</span><br>
+        <span class="locked">🔒 과목별 적합도</span><br>
+        <span class="locked">🔒 학습 환경 점수</span><br>
+        <span class="locked">🔒 월별 학업 에너지</span><br>
+        <span class="locked">🔒 시험운 캘린더</span>
+      </div>
+      <div class="blind-price">
+        <del>₩14,900</del> <strong>₩9,900</strong>
+        <span style="font-size:11px; color:var(--accent-red);"> (기본 구매 시)</span>
+      </div>
+    </div>
+
+    <!-- C2 부모 궁합 -->
+    <div class="blind-card">
+      <span class="blind-badge">추천</span>
+      <h4>💕 보호자↔자녀 궁합</h4>
+      <div class="blind-items">
+        <span class="locked">🔒 기질 궁합 등급</span><br>
+        <span class="locked">🔒 소통 스타일 분석</span><br>
+        <span class="locked">🔒 갈등 포인트 & 해법</span><br>
+        <span class="locked">🔒 궁합별 양육 전략</span><br>
+        <span class="locked">🔒 함께하면 좋은 활동</span>
+      </div>
+      <div class="blind-price">
+        <del>₩14,900</del> <strong>₩9,900</strong>
+        <span style="font-size:11px; color:var(--accent-red);"> (기본 구매 시)</span>
+      </div>
+    </div>
+
+    <!-- C3 종합 -->
+    <div class="blind-card" style="border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.06);">
+      <span class="blind-badge" style="background:var(--gold); color:#1a1028;">ALL-IN-ONE</span>
+      <h4>👑 종합 패키지</h4>
+      <div class="blind-items">
+        ✅ 기본 사주풀이 포함<br>
+        ✅ 학업운 + 교우관계 + 부모궁합<br>
+        ✅ 삼재·주의시기 분석<br>
+        <span class="locked">🔒 연령대별 맞춤 구성</span><br>
+        <span class="locked">🔒 종합 보너스 리포트</span>
+      </div>
+      <div class="blind-price">
+        <del>₩64,500</del> <strong>₩39,000</strong>
+        <span style="font-size:11px; color:var(--accent-red);"> (40% 할인)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <div class="footer">
+    복신당 福神堂 | 나를읽다연구소<br>
+    대표: 오동훈 | 사업자등록번호: 347-12-03166<br>
+    통신판매업: 제2026-부산서구-0040호<br>
+    부산광역시 서구 대영로38번길 11 103동 1601호<br>
+    문의: abkomp400@gmail.com
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+// ==================== 설정 ====================
+const IMAGE_BASE = 'https://audio.readmelab.co.kr/boksindang/child';
+const ORDER_PAGE = 'child-order.html';
+
+// 12간지 매핑
+const ZODIAC_MAP = {
+  0: { key: 'monkey', name: '원숭이', emoji: '🐵' },
+  1: { key: 'rooster', name: '닭', emoji: '🐔' },
+  2: { key: 'dog', name: '강아지', emoji: '🐶' },
+  3: { key: 'pig', name: '돼지', emoji: '🐷' },
+  4: { key: 'rat', name: '쥐', emoji: '🐭' },
+  5: { key: 'ox', name: '소', emoji: '🐄' },
+  6: { key: 'tiger', name: '호랑이', emoji: '🐯' },
+  7: { key: 'rabbit', name: '토끼', emoji: '🐰' },
+  8: { key: 'dragon', name: '용', emoji: '🐲' },
+  9: { key: 'snake', name: '뱀', emoji: '🐍' },
+  10: { key: 'horse', name: '말', emoji: '🐴' },
+  11: { key: 'sheep', name: '양', emoji: '🐑' }
+};
+
+// 계절 매핑 (음력 기준 월)
+function getSeason(month) {
+  if (month >= 2 && month <= 4) return { key: 'spring', name: '봄' };
+  if (month >= 5 && month <= 7) return { key: 'summer', name: '여름' };
+  if (month >= 8 && month <= 10) return { key: 'autumn', name: '가을' };
+  return { key: 'winter', name: '겨울' };
+}
+
+// 목업 한줄평 (나중에 서버 대체)
+const ONELINER_MAP = {
+  rat: '재빠른 관찰력과 영리한 적응력을 타고난 아이',
+  ox: '묵묵한 끈기와 따뜻한 심성을 지닌 아이',
+  tiger: '당당한 용기와 리더십을 품고 태어난 아이',
+  rabbit: '섬세한 감성과 부드러운 매력을 가진 아이',
+  dragon: '비범한 기운과 큰 그릇을 타고난 아이',
+  snake: '깊은 지혜와 신비로운 직관력의 아이',
+  horse: '자유로운 영혼과 넘치는 에너지를 가진 아이',
+  sheep: '순수한 마음과 예술적 감성을 품은 아이',
+  monkey: '빛나는 재치와 끊임없는 호기심의 아이',
+  rooster: '빈틈없는 관찰력과 당찬 자신감의 아이',
+  dog: '깊은 충성심과 정의로운 마음을 가진 아이',
+  pig: '넉넉한 복과 낙천적 에너지를 타고난 아이'
+};
+
+// 목업 키워드
+const KEYWORD_MAP = {
+  rat: ['영리함', '적응력', '관찰력'],
+  ox: ['끈기', '성실함', '안정감'],
+  tiger: ['용기', '리더십', '추진력'],
+  rabbit: ['감성', '배려심', '창의력'],
+  dragon: ['카리스마', '자신감', '큰뜻'],
+  snake: ['지혜', '직관력', '집중력'],
+  horse: ['활동적', '자유로움', '열정'],
+  sheep: ['순수함', '예술성', '상냥함'],
+  monkey: ['재치', '호기심', '유연함'],
+  rooster: ['꼼꼼함', '자신감', '정직함'],
+  dog: ['충성심', '정의감', '따뜻함'],
+  pig: ['낙천적', '관대함', '복덕']
+};
+
+// 목업 오행 (나중에 서버 계산)
+const ELEMENT_MOCK = {
+  wood: { label: '木', color: '#4CAF50', pct: 25 },
+  fire: { label: '火', color: '#e57373', pct: 20 },
+  earth: { label: '土', color: '#c9a84c', pct: 20 },
+  metal: { label: '金', color: '#b0bec5', pct: 15 },
+  water: { label: '水', color: '#64b5f6', pct: 20 }
+};
+
+// ==================== 드롭박스 초기화 ====================
+function initDropdowns() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+
+  // 자녀 연도 (2005~2025, 기본 중간값 = 약 10세)
+  const childYearSel = document.getElementById('childYear');
+  const defaultChildYear = currentYear - 10;
+  for (let y = currentYear - 1; y >= 2005; y--) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y + '년';
+    if (y === defaultChildYear) opt.selected = true;
+    childYearSel.appendChild(opt);
+  }
+
+  // 보호자 연도 (1960~2000, 기본 1985)
+  const parentYearSel = document.getElementById('parentYear');
+  for (let y = 2000; y >= 1960; y--) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y + '년';
+    if (y === 1985) opt.selected = true;
+    parentYearSel.appendChild(opt);
+  }
+
+  // 월 (1~12, 기본 6)
+  ['childMonth', 'parentMonth'].forEach(id => {
+    const sel = document.getElementById(id);
+    for (let m = 1; m <= 12; m++) {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m + '월';
+      if (m === 6) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  });
+
+  // 일 (1~31, 기본 15)
+  ['childDay', 'parentDay'].forEach(id => {
+    const sel = document.getElementById(id);
+    for (let d = 1; d <= 31; d++) {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d + '일';
+      if (d === 15) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  });
+}
+
+// ==================== 라디오 버튼 ====================
+document.querySelectorAll('.radio-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const group = this.dataset.group;
+    document.querySelectorAll(`.radio-btn[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
+
+// ==================== 전화번호 자동 포맷 ====================
+document.getElementById('parentPhone').addEventListener('input', function(e) {
+  let v = this.value.replace(/[^0-9]/g, '');
+  if (v.length > 3 && v.length <= 7) v = v.slice(0,3) + '-' + v.slice(3);
+  else if (v.length > 7) v = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+  this.value = v;
+});
+
+// ==================== 시작 ====================
+function startReading() {
+  // 유효성 검사
+  const childName = document.getElementById('childName').value.trim();
+  const parentName = document.getElementById('parentName').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+
+  if (!childName) { showToast('자녀 이름을 입력해 주세요'); return; }
+  if (!parentName) { showToast('보호자 이름을 입력해 주세요'); return; }
+  if (!parentPhone || parentPhone.replace(/-/g,'').length < 10) { showToast('연락처를 확인해 주세요'); return; }
+
+  // 데이터 수집
+  const data = {
+    childName,
+    childYear: +document.getElementById('childYear').value,
+    childMonth: +document.getElementById('childMonth').value,
+    childDay: +document.getElementById('childDay').value,
+    calendar: document.querySelector('.radio-btn[data-group="cal"].selected').dataset.value,
+    childHour: document.getElementById('childHour').value,
+    gender: document.querySelector('.radio-btn[data-group="gender"].selected').dataset.value,
+    parentName,
+    parentYear: +document.getElementById('parentYear').value,
+    parentMonth: +document.getElementById('parentMonth').value,
+    parentDay: +document.getElementById('parentDay').value,
+    parentPhone
+  };
+
+  // 12간지 계산
+  const zodiacIdx = data.childYear % 12;
+  const zodiac = ZODIAC_MAP[zodiacIdx];
+  const season = getSeason(data.childMonth);
+
+  // 결과 데이터 저장
+  window._result = { ...data, zodiac, season };
+
+  // 로딩 시작
+  showScreen('loadingScreen');
+  runLoading();
+}
+
+// ==================== 로딩 연출 ====================
+function runLoading() {
+  const textEl = document.getElementById('loadingText');
+  const barEl = document.getElementById('loadingBar');
+
+  // 파티클 생성
+  const particleWrap = document.getElementById('particles');
+  particleWrap.innerHTML = '';
+  for (let i = 0; i < 20; i++) {
+    const sp = document.createElement('span');
+    sp.style.left = Math.random() * 100 + '%';
+    sp.style.animationDelay = Math.random() * 3 + 's';
+    sp.style.animationDuration = (2 + Math.random() * 2) + 's';
+    particleWrap.appendChild(sp);
+  }
+
+  const steps = [
+    { text: '아이의 사주원국을 펼치고 있습니다...', pct: 30 },
+    { text: '타고난 오행의 기운을 읽고 있습니다...', pct: 65 },
+    { text: '수호 동물을 찾고 있습니다...', pct: 100 }
+  ];
+
+  let i = 0;
+  function nextStep() {
+    if (i >= steps.length) {
+      setTimeout(() => showResult(), 300);
+      return;
+    }
+    textEl.classList.remove('show');
+    setTimeout(() => {
+      textEl.textContent = steps[i].text;
+      textEl.classList.add('show');
+      barEl.style.width = steps[i].pct + '%';
+      i++;
+      setTimeout(nextStep, 1100);
+    }, 200);
+  }
+  nextStep();
+}
+
+// ==================== 결과 화면 ====================
+function showResult() {
+  const r = window._result;
+  const z = r.zodiac;
+  const s = r.season;
+
+  // 이미지
+  document.getElementById('cardImage').src = `${IMAGE_BASE}/${z.key}_${s.key}.jpeg`;
+
+  // 텍스트
+  document.getElementById('cardLabel').textContent = `${s.name}에 태어난`;
+  document.getElementById('cardTitle').textContent = `${r.childName}의 수호 동물 — 아기 ${z.name} ${z.emoji}`;
+
+  // 한줄평
+  document.getElementById('cardOneliner').textContent = ONELINER_MAP[z.key];
+
+  // 오행 게이지
+  const gaugeEl = document.getElementById('cardGauge');
+  gaugeEl.innerHTML = '';
+  Object.values(ELEMENT_MOCK).forEach(el => {
+    gaugeEl.innerHTML += `
+      <div class="card-element-item">
+        <div class="el-label">${el.label}</div>
+        <div class="el-bar-wrap">
+          <div class="el-bar" style="width:0%; background:${el.color};" data-pct="${el.pct}"></div>
+        </div>
+      </div>`;
+  });
+
+  // 키워드
+  const kwEl = document.getElementById('cardKeywords');
+  kwEl.innerHTML = KEYWORD_MAP[z.key].map(k => `<span>${k}</span>`).join('');
+
+  // CTA 링크
+  const params = new URLSearchParams({
+    childName: r.childName,
+    childYear: r.childYear,
+    childMonth: r.childMonth,
+    childDay: r.childDay,
+    calendar: r.calendar,
+    childHour: r.childHour,
+    gender: r.gender,
+    parentName: r.parentName,
+    parentYear: r.parentYear,
+    parentMonth: r.parentMonth,
+    parentDay: r.parentDay,
+    parentPhone: r.parentPhone
+  });
+  document.getElementById('ctaBtn').href = `${ORDER_PAGE}?${params.toString()}`;
+
+  // 화면 전환
+  showScreen('resultScreen');
+
+  // 게이지 애니메이션
+  setTimeout(() => {
+    document.querySelectorAll('.el-bar').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  }, 500);
+
+  // 스크롤 애니메이션
+  initScrollAnimation();
+}
+
+// ==================== 화면 전환 ====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ==================== 스크롤 애니메이션 ====================
+function initScrollAnimation() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+}
+
+// ==================== 공유 기능 ====================
+function shareKakao() {
+  showToast('카카오톡 공유 준비 중입니다');
+}
+
+function shareInstagram() {
+  saveImage();
+  showToast('이미지를 저장 후 인스타그램에 공유해 주세요');
+}
+
+function saveImage() {
+  const card = document.getElementById('cardContainer');
+  html2canvas(card, { useCORS: true, scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `복신당_${window._result.childName}_기질카드.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast('이미지가 저장되었습니다');
+  }).catch(() => {
+    showToast('이미지 저장에 실패했습니다');
+  });
+}
+
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('링크가 복사되었습니다');
+  }).catch(() => {
+    showToast('링크 복사에 실패했습니다');
+  });
+}
+
+// ==================== 토스트 ====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ==================== 초기화 ====================
+document.addEventListener('DOMContentLoaded', () => {
+  initDropdowns();
+});
+</script>
+</body>
+</html>
