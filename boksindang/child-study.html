@@ -231,11 +231,10 @@ function renderResult(d) {
     <div class="section-title">${s0.title}</div>
     <div class="section-subtitle">${s0.subtitle || ''}</div>
     <div class="info-row"><span class="info-label">학습 스타일</span><span class="info-value">${s0.style || ''}</span></div>
-    <div class="info-row"><span class="info-label">일간</span><span class="info-value">${s0.dayGan || ''} (${s0.element || ''})</span></div>
-    <div class="tip-box">${s0.description || ''}</div>
+    <div class="tip-box">${s0.desc || ''}</div>
     ${s0.method ? `<div class="tip-box" style="margin-top:8px;">📝 <b>학습법:</b> ${s0.method}</div>` : ''}
     ${s0.focus_time ? `<div class="tip-box" style="margin-top:8px;">⏰ <b>집중 시간대:</b> ${s0.focus_time}</div>` : ''}
-    ${s0.environment_tip ? `<div class="tip-box" style="margin-top:8px;">🏠 <b>학습 환경:</b> ${s0.environment_tip}</div>` : ''}
+    ${s0.env_tip ? `<div class="tip-box" style="margin-top:8px;">🏠 <b>학습 환경:</b> ${s0.env_tip}</div>` : ''}
   `;
 
   // 섹션 1: 과목 적성
