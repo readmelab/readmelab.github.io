@@ -122,6 +122,8 @@ body{font-family:'Noto Serif KR',serif;background:var(--bg);color:var(--text);mi
 .divider{border:none;border-top:1px solid var(--border);margin:24px 0;}
 .footer{text-align:center;padding:24px 0;margin-top:20px;border-top:1px solid var(--border);}
 .footer-text{font-size:11px;color:var(--text-dim);}
+.gauge-wrap{margin-top:20px;}  
+  
 </style>
 </head>
 <body>
@@ -300,10 +302,11 @@ function renderC1(c1) {
   const months4 = s4.months || [];
   let barHTML4 = '';
   months4.forEach(m => {
-    const hPct = Math.max(((m.energy - 10) / 90) * 100, 5);
-    const color = m.energy >= 80 ? 'var(--accent-green)' : m.energy >= 50 ? 'var(--gold)' : 'var(--accent-red)';
+    const sc = m.score || m.energy || 0;
+    const hPct = Math.max(((sc - 10) / 90) * 100, 5);
+    const color = sc >= 80 ? 'var(--accent-green)' : sc >= 50 ? 'var(--gold)' : 'var(--accent-red)';
     barHTML4 += `<div class="month-col">
-      <div class="month-score">${m.energy}</div>
+      <div class="month-score">${sc}</div>
       <div class="month-bar-wrap"><div class="month-bar" data-h="${hPct}" style="height:0%;background:${color};"></div></div>
       <div class="month-label">${m.month}월</div>
     </div>`;
@@ -314,8 +317,8 @@ function renderC1(c1) {
     <div class="section-title">${s4.title}</div>
     <div class="month-chart">${barHTML4}</div>
     <div class="month-highlight">
-      ${hi4.best ? `<div class="month-best">🟢 최고: ${hi4.best.month}월 (${hi4.best.energy}점) — ${hi4.best.desc || ''}</div>` : ''}
-      ${hi4.worst ? `<div class="month-caution" style="margin-top:6px;">🔴 주의: ${hi4.worst.month}월 (${hi4.worst.energy}점) — ${hi4.worst.desc || ''}</div>` : ''}
+      ${hi4.best ? `<div class="month-best">🟢 최고: ${hi4.best.month}월 (${hi4.best.score || hi4.best.energy}점) — ${hi4.best.desc || ''}</div>` : ''}
+      ${hi4.caution || hi4.worst ? `<div class="month-caution" style="margin-top:6px;">🔴 주의: ${(hi4.caution||hi4.worst).month}월 (${(hi4.caution||hi4.worst).score||(hi4.caution||hi4.worst).energy}점) — ${(hi4.caution||hi4.worst).desc || ''}</div>` : ''}
     </div>
   </div>`;
 
