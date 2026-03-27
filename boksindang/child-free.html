@@ -684,6 +684,7 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 </style>
+<script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 <body>
 
@@ -902,6 +903,7 @@ body {
       <div class="blind-price">
         <strong>₩4,900</strong>
       </div>
+<button onclick="requestBoksinPayment('C1', 4900, '기본 사주풀이')" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#c9a84c,#d4af37);border:none;border-radius:10px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:#1a1028;cursor:pointer;">기본 사주풀이 결제 →</button>      
     </div>
 
     <!-- C2-A 학업운 -->
@@ -919,6 +921,7 @@ body {
       <div class="blind-price">
         <strong>₩14,800</strong>
       </div>
+<button onclick="requestBoksinPayment('C2A', 14800, '학업운 정밀 분석')" style="width:100%;margin-top:12px;padding:12px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:10px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:#c9a84c;cursor:pointer;">학업운 분석 결제 →</button>      
     </div>
 
     <!-- C2-B 부모 궁합 -->
@@ -936,6 +939,7 @@ body {
       <div class="blind-price">
         <strong>₩14,800</strong>
       </div>
+<button onclick="requestBoksinPayment('C2B', 14800, '보호자↔자녀 궁합')" style="width:100%;margin-top:12px;padding:12px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:10px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:#c9a84c;cursor:pointer;">궁합 분석 결제 →</button>    
     </div>
 
     <!-- C3 종합 -->
@@ -953,6 +957,7 @@ body {
         <del>₩34,500</del> <strong>₩29,900</strong>
         <span style="font-size:11px; color:var(--accent-red);"> 13% 할인</span>
       </div>
+<button onclick="requestBoksinPayment('C3', 29900, '종합 패키지')" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#c9a84c,#d4af37);border:none;border-radius:10px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:#1a1028;cursor:pointer;">종합 패키지 결제 →</button>      
     </div>
   </div>
 
@@ -974,10 +979,119 @@ body {
 <script>
 // ==================== 설정 ====================
 const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+Copyvar TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+var BOK_API = API_BASE;
 const IMAGE_BASE = 'https://audio.readmelab.co.kr/boksindang/child';
 const ORDER_PAGE = 'child-order.html';
 
+// ===== 결제 콜백 처리 =====
+(function handlePaymentCallback() {
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('payment') === 'success') {
+    var paymentKey = urlParams.get('paymentKey');
+    var orderId = urlParams.get('orderId');
+    var amount = urlParams.get('amount');
+    history.replaceState(null, '', window.location.pathname);
+    var orderData = sessionStorage.getItem('bok_order');
+    if (!orderData) { alert('주문 정보를 찾을 수 없습니다.'); return; }
+    var order = JSON.parse(orderData);
+    if (order.orderId !== orderId || order.price !== parseInt(amount)) {
+      alert('결제 정보가 일치하지 않습니다.');
+      sessionStorage.removeItem('bok_order');
+      return;
+    }
+    sessionStorage.removeItem('bok_order');
+    fetch(BOK_API + '/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderId, product: order.product, productName: order.productName,
+        price: order.price, childName: order.childName, childYear: order.childYear,
+        childMonth: order.childMonth, childDay: order.childDay, calendar: order.calendar,
+        childHour: order.childHour, gender: order.gender, parentName: order.parentName,
+        parentYear: order.parentYear, parentMonth: order.parentMonth, parentDay: order.parentDay,
+        parentPhone: order.parentPhone
+      })
+    })
+    .then(function() {
+      return fetch(BOK_API + '/payment/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentKey: paymentKey, orderId: orderId, amount: parseInt(amount) })
+      });
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var resultPage = 'child-result.html';
+        if (order.product === 'C2A') resultPage = 'child-study.html';
+        else if (order.product === 'C2B') resultPage = 'child-compat.html';
+        else if (order.product === 'C3') resultPage = 'child-full.html';
+        var qs = '?childName=' + encodeURIComponent(order.childName)
+          + '&childYear=' + order.childYear + '&childMonth=' + order.childMonth
+          + '&childDay=' + order.childDay + '&calendar=' + encodeURIComponent(order.calendar)
+          + '&childHour=' + encodeURIComponent(order.childHour)
+          + '&gender=' + encodeURIComponent(order.gender);
+        if (order.product === 'C2B' || order.product === 'C3') {
+          qs += '&parentName=' + encodeURIComponent(order.parentName || '')
+            + '&parentYear=' + (order.parentYear || '') + '&parentMonth=' + (order.parentMonth || '')
+            + '&parentDay=' + (order.parentDay || '');
+        }
+        location.href = resultPage + qs;
+      } else { alert('결제 승인 실패: ' + (data.error || '')); }
+    })
+    .catch(function(err) { console.error(err); alert('결제 처리 중 오류가 발생했습니다.'); });
+    return;
+  }
+  if (urlParams.get('payment') === 'fail') {
+    history.replaceState(null, '', window.location.pathname);
+    alert('결제가 취소되었거나 실패했습니다.');
+  }
+})();
 
+// ===== 결제 요청 함수 =====
+function requestBoksinPayment(product, price, productName) {
+  var childName = document.getElementById('childName').value.trim();
+  var childYear = document.getElementById('childYear').value;
+  var childMonth = document.getElementById('childMonth').value;
+  var childDay = document.getElementById('childDay').value;
+  var calendar = document.querySelector('.radio-btn[data-group="cal"].selected')?.dataset.value || '양력';
+  var childHour = document.getElementById('childHour').value || '';
+  var gender = document.querySelector('.radio-btn[data-group="gender"].selected')?.dataset.value || '남';
+  var parentName = document.getElementById('parentName').value.trim();
+  var parentYear = document.getElementById('parentYear').value;
+  var parentMonth = document.getElementById('parentMonth').value;
+  var parentDay = document.getElementById('parentDay').value;
+  var parentPhone = document.getElementById('parentPhone').value.trim();
+  if (!childName) { showToast('자녀 이름을 입력해 주세요'); return; }
+  var orderId = 'BOK' + Date.now();
+  sessionStorage.setItem('bok_order', JSON.stringify({
+    orderId: orderId, product: product, productName: productName, price: price,
+    childName: childName, childYear: childYear, childMonth: childMonth, childDay: childDay,
+    calendar: calendar, childHour: childHour, gender: gender,
+    parentName: parentName, parentYear: parentYear, parentMonth: parentMonth,
+    parentDay: parentDay, parentPhone: parentPhone
+  }));
+  try {
+    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    var payment = tossPayments.payment({ customerKey: 'ANONYMOUS' });
+    payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: price },
+      orderId: orderId,
+      orderName: '복신당 ' + productName,
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card: { flowMode: 'DEFAULT' }
+    }).catch(function(e) {
+      if (e.code === 'USER_CANCEL') return;
+      alert('결제 오류: ' + (e.message || ''));
+    });
+  } catch(e) {
+    console.error(e);
+    alert('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
+  }
+}
 // ==================== 드롭박스 초기화 ====================
 function initDropdowns() {
   const now = new Date();
@@ -1196,7 +1310,10 @@ function showResult() {
     parentDay: pi.parentDay || '',
     parentPhone: pi.parentPhone || ''
   });
-  document.getElementById('ctaBtn').href = `${ORDER_PAGE}?${params.toString()}`;
+  document.getElementById('ctaBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  requestBoksinPayment('C1', 4900, '기본 사주풀이');
+});
 
   // 화면 전환
   showScreen('resultScreen');
