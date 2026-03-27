@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>복신당 - 기본 사주풀이</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #1a1028;
+  --bg-card: #2a1f3d;
+  --gold: #c9a84c;
+  --gold-light: #f0e6d3;
+  --text: #e8e0f0;
+  --text-dim: #a89bb5;
+  --accent-red: #e57373;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Serif KR', serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 헤더 */
+.header {
+  text-align:center;
+  padding: 40px 20px 20px;
+  background: linear-gradient(180deg, #2d1b4e 0%, var(--bg-dark) 100%);
+}
+.header h1 { font-size:20px; color:var(--gold); margin-bottom:6px; }
+.header .child-name { font-size:28px; color:var(--gold-light); font-weight:900; }
+.header .summary { font-size:13px; color:var(--text-dim); line-height:1.8; margin-top:12px; max-width:400px; margin-left:auto; margin-right:auto; }
+
+/* 섹션 공통 */
+.section-card {
+  max-width:420px;
+  margin:20px auto;
+  padding:24px 20px;
+  background: rgba(42,31,61,0.7);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:16px;
+  opacity:0; transform:translateY(20px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+.section-card.visible { opacity:1; transform:translateY(0); }
+.section-title {
+  font-size:17px; color:var(--gold); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-title .emoji { font-size:22px; }
+
+/* 사주원국 테이블 */
+.saju-table {
+  width:100%; border-collapse:collapse; margin:12px 0;
+  text-align:center; font-size:14px;
+}
+.saju-table th {
+  padding:8px; color:var(--gold); font-weight:400;
+  border-bottom:1px solid rgba(201,168,76,0.2);
+  font-size:12px;
+}
+.saju-table td {
+  padding:10px 8px;
+  border-bottom:1px solid rgba(201,168,76,0.1);
+}
+.saju-table .hanja { font-size:20px; color:var(--gold-light); }
+.saju-table .hangul { font-size:12px; color:var(--text-dim); }
+.day-master-badge {
+  display:inline-block; margin-top:10px;
+  padding:6px 16px; border-radius:20px;
+  background:rgba(201,168,76,0.15);
+  border:1px solid rgba(201,168,76,0.3);
+  font-size:13px; color:var(--gold-light);
+}
+
+/* 기질 분석 */
+.temperament-subtitle {
+  font-size:15px; color:var(--gold-light); margin-bottom:10px;
+}
+.desc-text {
+  font-size:13px; color:var(--text); line-height:1.9; margin-bottom:14px;
+}
+.tip-box {
+  padding:14px; border-radius:10px; margin-bottom:10px;
+  font-size:13px; line-height:1.8;
+}
+.tip-box.strength { background:rgba(76,175,80,0.1); border-left:3px solid #4CAF50; }
+.tip-box.weak { background:rgba(100,181,246,0.1); border-left:3px solid #64b5f6; }
+.tip-box .tip-label { font-size:11px; font-weight:700; margin-bottom:4px; }
+.tip-box.strength .tip-label { color:#4CAF50; }
+.tip-box.weak .tip-label { color:#64b5f6; }
+
+.gyeokguk-box {
+  margin-top:14px; padding:14px;
+  background:rgba(201,168,76,0.08);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:10px;
+}
+.gyeokguk-box .gk-title { font-size:14px; color:var(--gold); margin-bottom:6px; }
+.gyeokguk-box .gk-desc { font-size:12px; color:var(--text-dim); line-height:1.8; }
+.gyeokguk-box .gk-tip { font-size:12px; color:var(--gold-light); margin-top:8px; font-style:italic; }
+
+/* 오행 게이지 */
+.oheng-bar-wrap { margin:10px 0; }
+.oheng-row {
+  display:flex; align-items:center; gap:8px; margin:8px 0;
+}
+.oheng-label { width:40px; font-size:13px; color:var(--text-dim); text-align:right; }
+.oheng-bar-bg {
+  flex:1; height:20px; background:rgba(255,255,255,0.08);
+  border-radius:10px; overflow:hidden;
+}
+.oheng-bar-fill {
+  height:100%; border-radius:10px; transition: width 1s ease;
+}
+.oheng-pct { width:35px; font-size:12px; color:var(--text-dim); }
+.oheng-colors-wood { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+.oheng-colors-fire { background: linear-gradient(90deg, #e57373, #ef5350); }
+.oheng-colors-earth { background: linear-gradient(90deg, #c9a84c, #d4af37); }
+.oheng-colors-metal { background: linear-gradient(90deg, #b0bec5, #cfd8dc); }
+.oheng-colors-water { background: linear-gradient(90deg, #64b5f6, #42a5f5); }
+
+.yongshin-box {
+  margin-top:16px; padding:14px;
+  background:rgba(201,168,76,0.08);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:10px;
+}
+.yongshin-box h4 { font-size:14px; color:var(--gold); margin-bottom:8px; }
+.yongshin-box .ys-desc { font-size:12px; color:var(--text-dim); line-height:1.8; margin-bottom:8px; }
+.yongshin-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+}
+.yongshin-item {
+  padding:8px 10px; border-radius:8px;
+  background:rgba(26,16,40,0.5);
+  font-size:11px; color:var(--text-dim); line-height:1.6;
+}
+.yongshin-item strong { color:var(--gold-light); display:block; margin-bottom:2px; }
+
+/* 신강/신약 */
+.strategy-desc { font-size:13px; color:var(--text); line-height:1.9; margin-bottom:14px; }
+.do-dont { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.do-col, .dont-col { padding:12px; border-radius:10px; font-size:12px; line-height:1.8; }
+.do-col { background:rgba(76,175,80,0.1); border:1px solid rgba(76,175,80,0.2); }
+.dont-col { background:rgba(229,115,115,0.1); border:1px solid rgba(229,115,115,0.2); }
+.do-col h4 { color:#4CAF50; font-size:13px; margin-bottom:6px; }
+.dont-col h4 { color:#e57373; font-size:13px; margin-bottom:6px; }
+.do-col li, .dont-col li { color:var(--text-dim); margin-left:14px; margin-bottom:4px; }
+
+/* 월별 에너지 */
+.month-chart { display:flex; align-items:flex-end; gap:6px; height:160px; margin:16px 0; padding:0 4px; }
+.month-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.month-bar-wrap { width:100%; flex:1; display:flex; align-items:flex-end; }
+.month-bar {
+  width:100%; border-radius:6px 6px 0 0;
+  transition: height 1s ease;
+  min-height:4px;
+}
+.month-label { font-size:10px; color:var(--text-dim); }
+.month-score { font-size:10px; color:var(--gold-light); }
+.month-highlight {
+  margin-top:12px; padding:12px;
+  border-radius:10px; font-size:12px; line-height:1.8;
+}
+.month-highlight.best { background:rgba(76,175,80,0.1); border-left:3px solid #4CAF50; color:var(--text); }
+.month-highlight.caution { background:rgba(100,181,246,0.1); border-left:3px solid #64b5f6; color:var(--text); }
+
+/* 양육 가이드 */
+.words-section { margin:12px 0; }
+.words-section h4 { font-size:13px; margin-bottom:8px; }
+.words-section h4.good { color:#4CAF50; }
+.words-section h4.bad { color:#e57373; }
+.word-chip {
+  display:inline-block; padding:5px 12px; margin:3px;
+  border-radius:20px; font-size:12px;
+}
+.word-chip.good { background:rgba(76,175,80,0.12); color:#81C784; border:1px solid rgba(76,175,80,0.3); }
+.word-chip.bad { background:rgba(229,115,115,0.12); color:#e57373; border:1px solid rgba(229,115,115,0.3); }
+
+.sinsal-card {
+  margin:10px 0; padding:14px;
+  background:rgba(26,16,40,0.5);
+  border-radius:10px;
+  border-left:3px solid var(--gold);
+}
+.sinsal-card .sinsal-title { font-size:14px; color:var(--gold-light); margin-bottom:4px; }
+.sinsal-card .sinsal-desc { font-size:12px; color:var(--text-dim); line-height:1.8; margin-bottom:6px; }
+.sinsal-card .sinsal-tip { font-size:12px; color:var(--gold); font-style:italic; }
+
+/* CTA */
+.cta-bottom {
+  max-width:420px; margin:30px auto; padding:20px;
+  text-align:center;
+}
+.cta-bottom .cta-text { font-size:13px; color:var(--text-dim); margin-bottom:14px; line-height:1.8; }
+.cta-btn {
+  display:block; width:100%; padding:16px;
+  background:linear-gradient(135deg,#c9a84c,#d4af37);
+  border:none; border-radius:12px;
+  font-family:'Noto Serif KR',serif;
+  font-size:16px; font-weight:700;
+  color:#1a1028; cursor:pointer;
+  text-decoration:none; text-align:center;
+}
+
+/* 푸터 */
+.footer {
+  max-width:400px; margin:40px auto 0; padding:20px;
+  border-top:1px solid rgba(201,168,76,0.1);
+  text-align:center; font-size:10px;
+  color:rgba(168,155,181,0.5); line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>복신당 ✦ 기본 사주풀이</h1>
+  <div class="child-name" id="childNameHeader"></div>
+  <div class="summary" id="summaryText"></div>
+</div>
+
+<!-- 섹션 1: 사주원국 -->
+<div class="section-card" id="sec-saju-chart">
+  <div class="section-title"><span class="emoji">📜</span><span id="sec1Title"></span></div>
+  <table class="saju-table">
+    <thead><tr><th>시주</th><th>일주</th><th>월주</th><th>연주</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="hanja" id="hourHanja"></div><div class="hangul" id="hourHangul"></div></td>
+        <td><div class="hanja" id="dayHanja"></div><div class="hangul" id="dayHangul"></div></td>
+        <td><div class="hanja" id="monthHanja"></div><div class="hangul" id="monthHangul"></div></td>
+        <td><div class="hanja" id="yearHanja"></div><div class="hangul" id="yearHangul"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="text-align:center;">
+    <span class="day-master-badge" id="dayMasterBadge"></span>
+  </div>
+  <p class="desc-text" id="sec1Desc" style="margin-top:12px;"></p>
+</div>
+
+<!-- 섹션 2: 기질 상세 -->
+<div class="section-card" id="sec-temperament">
+  <div class="section-title"><span class="emoji">🧒</span><span id="sec2Title"></span></div>
+  <div class="temperament-subtitle" id="sec2Subtitle"></div>
+  <p class="desc-text" id="sec2Desc"></p>
+  <div class="tip-box strength">
+    <div class="tip-label">💪 에너지가 강할 때</div>
+    <div id="sec2StrengthTip"></div>
+  </div>
+  <div class="tip-box weak">
+    <div class="tip-label">🌙 에너지가 약할 때</div>
+    <div id="sec2WeakTip"></div>
+  </div>
+  <div class="gyeokguk-box">
+    <div class="gk-title" id="gkTitle"></div>
+    <div class="gk-desc" id="gkDesc"></div>
+    <div class="gk-tip" id="gkTip"></div>
+  </div>
+</div>
+
+<!-- 섹션 3: 오행 균형 -->
+<div class="section-card" id="sec-oheng">
+  <div class="section-title"><span class="emoji">⚖️</span><span id="sec3Title"></span></div>
+  <div class="oheng-bar-wrap" id="ohengBars"></div>
+  <p class="desc-text" id="sec3Analysis"></p>
+  <div class="yongshin-box">
+    <h4 id="ysTitle"></h4>
+    <div class="ys-desc" id="ysDesc"></div>
+    <div class="yongshin-grid" id="ysGrid"></div>
+  </div>
+</div>
+
+<!-- 섹션 4: 신강/신약 전략 -->
+<div class="section-card" id="sec-strength">
+  <div class="section-title"><span class="emoji" id="sec4Emoji"></span><span id="sec4Title"></span></div>
+  <p class="strategy-desc" id="sec4Desc"></p>
+  <p class="strategy-desc" id="sec4Strategy"></p>
+  <div class="do-dont">
+    <div class="do-col"><h4>✅ 이렇게 해주세요</h4><ul id="doList"></ul></div>
+    <div class="dont-col"><h4>❌ 피해주세요</h4><ul id="dontList"></ul></div>
+  </div>
+</div>
+
+<!-- 섹션 5: 월별 에너지 -->
+<div class="section-card" id="sec-monthly">
+  <div class="section-title"><span class="emoji">📅</span><span id="sec5Title"></span></div>
+  <div class="month-chart" id="monthChart"></div>
+  <div id="monthHighlights"></div>
+</div>
+
+<!-- 섹션 6: 양육 가이드 -->
+<div class="section-card" id="sec-parenting">
+  <div class="section-title"><span class="emoji">💝</span><span id="sec6Title"></span></div>
+  <div class="words-section">
+    <h4 class="good">💚 이 아이에게 힘이 되는 말</h4>
+    <div id="goodWords"></div>
+  </div>
+  <div class="words-section">
+    <h4 class="bad">🚫 이 아이에게 상처가 되는 말</h4>
+    <div id="badWords"></div>
+  </div>
+  <div id="sinsalList"></div>
+</div>
+
+<!-- CTA -->
+<div class="cta-bottom">
+  <p class="cta-text">더 깊은 분석이 궁금하시다면</p>
+  <a class="cta-btn" id="ctaBtn">학업운 정밀 분석 보기 →</a>
+</div>
+
+<div class="footer">
+  복신당 ✦ AI 사주 분석 서비스<br>
+  본 결과는 참고용이며, 전문 상담을 대체하지 않습니다.
+</div>
+<script>
+const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+
+async function loadResult() {
+  const params = new URLSearchParams(window.location.search);
+  const childName = params.get('childName');
+  const childYear = parseInt(params.get('childYear'));
+  const childMonth = parseInt(params.get('childMonth'));
+  const childDay = parseInt(params.get('childDay'));
+  const calendar = params.get('calendar') || '양력';
+  const childHour = params.get('childHour') || '';
+  const gender = params.get('gender') || '남';
+
+  if (!childName) {
+    document.body.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#a89bb5;">잘못된 접근입니다.</div>';
+    return;
+  }
+
+  document.getElementById('childNameHeader').textContent = childName;
+  document.getElementById('summaryText').textContent = '분석 중입니다...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/child-basic`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ childName, childYear, childMonth, childDay, calendar, childHour, gender })
+    });
+    if (!res.ok) throw new Error('서버 오류');
+    const json = await res.json();
+    const d = json.data.c1Reading;
+    renderResult(d);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('summaryText').textContent = '분석 중 오류가 발생했습니다. 다시 시도해 주세요.';
+  }
+}
+
+function renderResult(d) {
+  const s = d.sections;
+
+  // 헤더
+  document.getElementById('childNameHeader').textContent = d.childName + '의 사주풀이';
+  document.getElementById('summaryText').textContent = d.summary;
+
+  // 섹션 1: 사주원국
+  const s1 = s[0];
+  document.getElementById('sec1Title').textContent = s1.title;
+  const fp = s1.fourPillars;
+  document.getElementById('hourHanja').textContent = fp.hour.hanja;
+  document.getElementById('hourHangul').textContent = fp.hour.hangul;
+  document.getElementById('dayHanja').textContent = fp.day.hanja;
+  document.getElementById('dayHangul').textContent = fp.day.hangul;
+  document.getElementById('monthHanja').textContent = fp.month.hanja;
+  document.getElementById('monthHangul').textContent = fp.month.hangul;
+  document.getElementById('yearHanja').textContent = fp.year.hanja;
+  document.getElementById('yearHangul').textContent = fp.year.hangul;
+  const dm = s1.dayMaster;
+  document.getElementById('dayMasterBadge').textContent = `일간 ${dm.gan} (${dm.oheng}, ${dm.yinyang})`;
+  document.getElementById('sec1Desc').textContent = s1.desc;
+
+  // 섹션 2: 기질 상세
+  const s2 = s[1];
+  document.getElementById('sec2Title').textContent = s2.title;
+  document.getElementById('sec2Subtitle').textContent = s2.subtitle;
+  document.getElementById('sec2Desc').textContent = s2.desc;
+  document.getElementById('sec2StrengthTip').textContent = s2.strength_tip;
+  document.getElementById('sec2WeakTip').textContent = s2.weak_tip;
+  if (s2.gyeokguk) {
+    document.getElementById('gkTitle').textContent = `📐 ${s2.gyeokguk.name} — ${s2.gyeokguk.title}`;
+    document.getElementById('gkDesc').textContent = s2.gyeokguk.desc;
+    document.getElementById('gkTip').textContent = `💡 ${s2.gyeokguk.tip}`;
+  }
+
+  // 섹션 3: 오행 균형
+  const s3 = s[2];
+  document.getElementById('sec3Title').textContent = s3.title;
+  document.getElementById('sec3Analysis').textContent = s3.analysis;
+
+  const ohengNames = ['목', '화', '토', '금', '수'];
+  const ohengClasses = ['wood', 'fire', 'earth', 'metal', 'water'];
+  const ohengEl = document.getElementById('ohengBars');
+  ohengEl.innerHTML = '';
+  ohengNames.forEach((name, i) => {
+    const pct = s3.gauge[name] || 0;
+    ohengEl.innerHTML += `
+      <div class="oheng-row">
+        <div class="oheng-label">${name}</div>
+        <div class="oheng-bar-bg">
+          <div class="oheng-bar-fill oheng-colors-${ohengClasses[i]}" style="width:0%" data-pct="${pct}"></div>
+        </div>
+        <div class="oheng-pct">${pct}%</div>
+      </div>`;
+  });
+
+  if (s3.yongShin) {
+    const ys = s3.yongShin;
+    document.getElementById('ysTitle').textContent = ys.title;
+    document.getElementById('ysDesc').textContent = ys.desc;
+    document.getElementById('ysGrid').innerHTML = `
+      <div class="yongshin-item"><strong>🎨 추천 색상</strong>${ys.colors}</div>
+      <div class="yongshin-item"><strong>⚽ 추천 활동</strong>${ys.activity}</div>
+      <div class="yongshin-item"><strong>🍎 추천 음식</strong>${ys.food}</div>
+      <div class="yongshin-item"><strong>🌤️ 계절 팁</strong>${ys.season}</div>`;
+  }
+
+  // 섹션 4: 신강/신약
+  const s4 = s[3];
+  document.getElementById('sec4Emoji').textContent = s4.emoji;
+  document.getElementById('sec4Title').textContent = s4.title;
+  document.getElementById('sec4Desc').textContent = s4.desc;
+  document.getElementById('sec4Strategy').textContent = s4.strategy;
+  document.getElementById('doList').innerHTML = (s4.do_list || []).map(t => `<li>${t}</li>`).join('');
+  document.getElementById('dontList').innerHTML = (s4.dont_list || []).map(t => `<li>${t}</li>`).join('');
+
+  // 섹션 5: 월별 에너지
+  const s5 = s[4];
+  document.getElementById('sec5Title').textContent = s5.title;
+  const chartEl = document.getElementById('monthChart');
+  chartEl.innerHTML = '';
+  const maxScore = Math.max(...s5.months.map(m => m.score));
+  s5.months.forEach(m => {
+    const hPct = (m.score / maxScore) * 100;
+    const color = m.score >= 85 ? '#4CAF50' : m.score >= 70 ? '#c9a84c' : '#64b5f6';
+    chartEl.innerHTML += `
+      <div class="month-col">
+        <div class="month-score">${m.score}</div>
+        <div class="month-bar-wrap">
+          <div class="month-bar" style="height:0%;background:${color};" data-h="${hPct}"></div>
+        </div>
+        <div class="month-label">${m.month}월</div>
+      </div>`;
+  });
+
+  const hlEl = document.getElementById('monthHighlights');
+  hlEl.innerHTML = '';
+  if (s5.highlight) {
+    if (s5.highlight.best) {
+      hlEl.innerHTML += `<div class="month-highlight best">🌟 <strong>${s5.highlight.best.month}월</strong> — ${s5.highlight.best.desc}</div>`;
+    }
+    if (s5.highlight.caution) {
+      hlEl.innerHTML += `<div class="month-highlight caution" style="margin-top:8px;">💙 <strong>${s5.highlight.caution.month}월</strong> — ${s5.highlight.caution.desc}</div>`;
+    }
+  }
+
+  // 섹션 6: 양육 가이드
+  const s6 = s[5];
+  document.getElementById('sec6Title').textContent = s6.title;
+  document.getElementById('goodWords').innerHTML = (s6.good_words || []).map(w => `<span class="word-chip good">"${w}"</span>`).join('');
+  document.getElementById('badWords').innerHTML = (s6.bad_words || []).map(w => `<span class="word-chip bad">"${w}"</span>`).join('');
+
+  const sinsalEl = document.getElementById('sinsalList');
+  sinsalEl.innerHTML = '';
+  (s6.sinsal || []).forEach(ss => {
+    sinsalEl.innerHTML += `
+      <div class="sinsal-card">
+        <div class="sinsal-title">${ss.title}</div>
+        <div class="sinsal-desc">${ss.desc}</div>
+        ${ss.tip ? `<div class="sinsal-tip">💡 ${ss.tip}</div>` : ''}
+      </div>`;
+  });
+
+  // 애니메이션
+  setTimeout(() => {
+    document.querySelectorAll('.section-card').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 200);
+    });
+    setTimeout(animateBars, 600);
+  }, 100);
+}
+
+function animateBars() {
+  document.querySelectorAll('.oheng-bar-fill').forEach(el => {
+    el.style.width = el.dataset.pct + '%';
+  });
+  document.querySelectorAll('.month-bar').forEach(el => {
+    el.style.height = el.dataset.h + '%';
+  });
+}
+
+window.addEventListener('DOMContentLoaded', loadResult);
+</script>
+</body>
+</html>
