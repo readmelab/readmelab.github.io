@@ -32,7 +32,6 @@ body {
 /* ==================== SCREEN 1: 입력 ==================== */
 .screen { display:none; }
 .screen.active { display:block; }
-.loading-screen.active { display:flex; }
 
 .input-screen {
   min-height: 100vh;
@@ -1213,8 +1212,13 @@ function showResult() {
 
 // ==================== 화면 전환 ====================
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  target.classList.add('active');
+  target.style.display = id === 'loadingScreen' ? 'flex' : 'block';
   window.scrollTo(0, 0);
 }
 
