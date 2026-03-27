@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>복신당 - 종합 사주 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;
+  --gold:#d4a853;--gold-dim:#b8943f;
+  --text:#e8e4dc;--text-dim:#9a9690;
+  --accent-blue:#5b8fd4;--accent-green:#4caf7a;
+  --accent-red:#d45b5b;--accent-purple:#9b6fd4;--accent-pink:#d4749b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Serif KR',serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px;}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:16px;}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{color:var(--gold);font-size:14px;}
+.result-wrap{max-width:440px;margin:0 auto;padding:16px;display:none;}
+.header{text-align:center;padding:32px 0 24px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.header-icon{font-size:40px;margin-bottom:8px;}
+.header-title{font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;}
+.header-sub{font-size:13px;color:var(--text-dim);}
+
+/* 탭 네비게이션 */
+.tab-nav{display:flex;gap:4px;padding:12px 0;position:sticky;top:0;background:var(--bg);z-index:100;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.tab-btn{flex:1;padding:10px 4px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text-dim);font-size:12px;font-weight:700;text-align:center;cursor:pointer;transition:all .3s;font-family:'Noto Serif KR',serif;}
+.tab-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* 섹션 카드 */
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s;}
+.section-card.show{opacity:1;transform:translateY(0);}
+.section-emoji{font-size:28px;margin-bottom:8px;}
+.section-title{font-size:17px;font-weight:700;color:var(--gold);margin-bottom:12px;line-height:1.4;}
+
+/* 공통 박스 */
+.tip-box{background:rgba(212,168,83,0.08);border-left:3px solid var(--gold);padding:12px 14px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7;margin-top:12px;color:var(--text);}
+.reason-box{background:rgba(155,111,212,0.08);border-left:3px solid var(--accent-purple);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;color:var(--text-dim);margin-bottom:12px;}
+
+/* C1 전용 */
+.saju-table{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
+.saju-col{text-align:center;padding:10px 4px;border-radius:10px;background:rgba(212,168,83,0.06);border:1px solid var(--border);}
+.saju-label{font-size:11px;color:var(--text-dim);margin-bottom:4px;}
+.saju-hanja{font-size:20px;font-weight:900;color:var(--gold);}
+.saju-hangul{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.gauge-wrap{display:flex;gap:6px;align-items:flex-end;height:100px;margin:12px 0;}
+.gauge-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.gauge-bar-wrap{width:100%;height:80px;display:flex;align-items:flex-end;}
+.gauge-bar{width:100%;border-radius:4px 4px 0 0;min-height:2px;transition:height 1s ease;}
+.gauge-label{font-size:10px;color:var(--text-dim);}
+.gauge-pct{font-size:10px;font-weight:700;color:var(--text-dim);}
+.do-item{padding:8px 12px;background:rgba(76,175,122,0.08);border-left:3px solid var(--accent-green);border-radius:0 8px 8px 0;margin-bottom:6px;font-size:13px;color:var(--accent-green);}
+.dont-item{padding:8px 12px;background:rgba(212,91,91,0.08);border-left:3px solid var(--accent-red);border-radius:0 8px 8px 0;margin-bottom:6px;font-size:13px;color:var(--accent-red);}
+.word-good{display:inline-block;padding:4px 10px;margin:3px;border-radius:20px;font-size:12px;background:rgba(76,175,122,0.1);border:1px solid var(--accent-green);color:var(--accent-green);}
+.word-bad{display:inline-block;padding:4px 10px;margin:3px;border-radius:20px;font-size:12px;background:rgba(212,91,91,0.1);border:1px solid var(--accent-red);color:var(--accent-red);}
+.sinsal-item{padding:12px;background:rgba(155,111,212,0.06);border:1px solid var(--accent-purple);border-radius:10px;margin-bottom:8px;}
+.sinsal-title{font-size:14px;font-weight:700;color:var(--accent-purple);margin-bottom:4px;}
+.sinsal-desc{font-size:12px;color:var(--text-dim);line-height:1.6;}
+.sinsal-tip{font-size:12px;color:var(--text);margin-top:4px;}
+
+/* 월별 차트 (C1 & C2-A 공용) */
+.month-chart{display:flex;gap:4px;align-items:flex-end;height:200px;padding:12px 0;border-bottom:1px solid var(--border);}
+.month-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.month-bar-wrap{width:100%;height:150px;display:flex;align-items:flex-end;}
+.month-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height 1s ease;}
+.month-score{font-size:10px;color:var(--text-dim);font-weight:700;}
+.month-label{font-size:10px;color:var(--text-dim);}
+.month-highlight{margin-top:10px;font-size:13px;line-height:1.7;}
+.month-best{color:var(--accent-green);}
+.month-caution{color:var(--accent-red);}
+
+/* C2-A 전용 */
+.chip{display:inline-block;padding:4px 10px;margin:3px;border-radius:20px;font-size:12px;background:rgba(212,168,83,0.12);border:1px solid var(--gold);color:var(--gold);}
+.chip.weak{background:rgba(91,143,212,0.12);border-color:var(--accent-blue);color:var(--accent-blue);}
+.subject-label{font-size:13px;font-weight:700;margin:10px 0 6px;color:var(--text);}
+.subject-chips{margin-bottom:8px;}
+.motivation-box{text-align:center;padding:16px;border-radius:12px;background:rgba(155,111,212,0.1);border:1px solid var(--accent-purple);margin:12px 0;}
+.motivation-type{font-size:24px;font-weight:900;color:var(--accent-purple);}
+.motivation-desc{font-size:13px;color:var(--text-dim);margin-top:6px;line-height:1.6;}
+.career-jobs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+.career-chip{background:rgba(76,175,122,0.12);border:1px solid var(--accent-green);padding:4px 10px;border-radius:20px;font-size:12px;color:var(--accent-green);}
+
+/* C2-B 전용 */
+.compat-pair{display:flex;gap:12px;margin-bottom:16px;}
+.compat-person{flex:1;padding:12px;border-radius:10px;text-align:center;}
+.compat-person.parent{background:rgba(91,143,212,0.1);border:1px solid var(--accent-blue);}
+.compat-person.child{background:rgba(212,116,155,0.1);border:1px solid var(--accent-pink);}
+.compat-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.compat-person.parent .compat-name{color:var(--accent-blue);}
+.compat-person.child .compat-name{color:var(--accent-pink);}
+.compat-info{font-size:12px;color:var(--text-dim);line-height:1.5;}
+.relation-badge{text-align:center;padding:16px;border-radius:12px;background:rgba(212,168,83,0.08);margin-bottom:12px;}
+.relation-title{font-size:16px;font-weight:900;color:var(--gold);margin-bottom:6px;}
+.relation-score{font-size:28px;font-weight:900;color:var(--accent-pink);}
+.relation-desc{font-size:13px;color:var(--text-dim);line-height:1.7;margin-top:8px;}
+.complement-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;}
+.complement-item{text-align:center;padding:10px 6px;border-radius:10px;background:rgba(76,175,122,0.08);border:1px solid var(--accent-green);}
+.complement-label{font-size:11px;color:var(--text-dim);margin-bottom:4px;}
+.complement-value{font-size:13px;font-weight:700;color:var(--accent-green);}
+.role-box{text-align:center;padding:16px;border-radius:12px;background:rgba(91,143,212,0.08);margin-bottom:12px;}
+.role-title{font-size:20px;font-weight:900;color:var(--accent-blue);margin-bottom:4px;}
+.role-desc{font-size:13px;color:var(--text-dim);line-height:1.6;}
+.total-score-box{text-align:center;padding:24px;border-radius:16px;background:linear-gradient(135deg,rgba(212,116,155,0.1),rgba(212,168,83,0.1));border:1px solid var(--accent-pink);}
+.total-grade{font-size:48px;font-weight:900;color:var(--accent-pink);}
+.total-score-num{font-size:18px;color:var(--gold);margin-top:4px;}
+.total-message{font-size:14px;color:var(--text);line-height:1.8;margin-top:12px;}
+.seasonal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.seasonal-item{background:rgba(155,111,212,0.06);border:1px solid var(--accent-purple);border-radius:10px;padding:12px;text-align:center;}
+.seasonal-item .season-label{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--accent-purple);}
+.seasonal-item .season-activity{font-size:12px;color:var(--text-dim);line-height:1.6;}
+
+/* 종합 요약 & 마무리 */
+.full-summary{background:rgba(212,168,83,0.06);border:1px solid var(--gold-dim);border-radius:12px;padding:16px;margin-top:20px;font-size:14px;line-height:1.8;color:var(--text);}
+.full-summary-title{font-size:16px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:12px;}
+.full-summary p{margin-bottom:10px;}
+.closing-box{background:rgba(155,111,212,0.04);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:16px;font-size:13px;line-height:1.9;color:var(--text-dim);text-align:center;}
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0;}
+.footer{text-align:center;padding:24px 0;margin-top:20px;border-top:1px solid var(--border);}
+.footer-text{font-size:11px;color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingArea">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">종합 사주 분석 중입니다...</div>
+</div>
+
+<div class="result-wrap" id="resultArea">
+  <div class="header">
+    <div class="header-icon">🏆</div>
+    <div class="header-title" id="headerTitle"></div>
+    <div class="header-sub">사주 기반 종합 분석 리포트</div>
+  </div>
+
+  <div class="tab-nav">
+    <div class="tab-btn active" data-tab="tab-c1">📜 기본사주</div>
+    <div class="tab-btn" data-tab="tab-c2a">📖 학업운</div>
+    <div class="tab-btn" data-tab="tab-c2b">💞 궁합</div>
+    <div class="tab-btn" data-tab="tab-summary">🏆 종합</div>
+  </div>
+
+  <div class="tab-panel active" id="tab-c1"></div>
+  <div class="tab-panel" id="tab-c2a"></div>
+  <div class="tab-panel" id="tab-c2b"></div>
+  <div class="tab-panel" id="tab-summary"></div>
+
+  <div class="footer">
+    <div class="footer-text">복신당 · 종합 사주 분석</div>
+  </div>
+</div>
+<script>
+const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+const params = new URLSearchParams(location.search);
+const payload = {
+  childName: params.get('childName'),
+  childYear: Number(params.get('childYear')),
+  childMonth: Number(params.get('childMonth')),
+  childDay: Number(params.get('childDay')),
+  calendar: params.get('calendar') || '양력',
+  childHour: params.get('childHour') || '',
+  gender: params.get('gender') || '남',
+  parentName: params.get('parentName'),
+  parentYear: Number(params.get('parentYear')),
+  parentMonth: Number(params.get('parentMonth')),
+  parentDay: Number(params.get('parentDay')),
+  parentCalendar: params.get('parentCalendar') || '양력',
+  parentHour: params.get('parentHour') || '',
+  parentGender: params.get('parentGender') || '여'
+};
+
+// 탭 전환
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo(0, document.querySelector('.tab-nav').offsetTop - 10);
+    setTimeout(() => animateBars(), 300);
+  });
+});
+
+function animateBars() {
+  document.querySelectorAll('.month-bar, .gauge-bar').forEach(bar => {
+    if (bar.dataset.h) bar.style.height = bar.dataset.h + '%';
+  });
+}
+
+(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/api/child-full`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    renderFull(json.data);
+  } catch (e) {
+    document.getElementById('loadingArea').innerHTML =
+      `<div style="color:#d45b5b;font-size:14px;">오류: ${e.message}</div>`;
+  }
+})();
+
+function renderFull(d) {
+  document.getElementById('headerTitle').textContent = `${d.childName} 종합 사주 분석`;
+
+  renderC1(d.c1Reading);
+  renderC2A(d.c2Study);
+  if (d.c2Compat) renderC2B(d.c2Compat);
+  else document.querySelector('[data-tab="tab-c2b"]').style.display = 'none';
+  renderSummary(d);
+
+  document.getElementById('loadingArea').style.display = 'none';
+  document.getElementById('resultArea').style.display = 'block';
+
+  setTimeout(() => {
+    document.querySelectorAll('.section-card').forEach((card, i) => {
+      setTimeout(() => card.classList.add('show'), 150 * i);
+    });
+    setTimeout(animateBars, 600);
+  }, 100);
+}
+
+// ========== C1 기본사주 ==========
+function renderC1(c1) {
+  const s = c1.sections;
+  let html = '';
+
+  // 섹션0: 사주원국
+  const s0 = s[0];
+  const fp = s0.fourPillars || {};
+  const dm = s0.dayMaster || {};
+  html += `<div class="section-card">
+    <div class="section-emoji">${s0.emoji || '📜'}</div>
+    <div class="section-title">${s0.title}</div>
+    <div class="saju-table">
+      ${['year','month','day','hour'].map(k => {
+        const p = fp[k] || {};
+        return `<div class="saju-col">
+          <div class="saju-label">${k==='year'?'년주':k==='month'?'월주':k==='day'?'일주':'시주'}</div>
+          <div class="saju-hanja">${p.hanja || ''}</div>
+          <div class="saju-hangul">${p.hangul || ''}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="tip-box">${s0.desc || ''}</div>
+  </div>`;
+
+  // 섹션1: 기질
+  const s1 = s[1];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s1.emoji || '🧒'}</div>
+    <div class="section-title">${s1.title}</div>
+    ${s1.subtitle ? `<div class="reason-box">🔮 ${s1.subtitle}</div>` : ''}
+    <div class="tip-box">${s1.desc || ''}</div>
+    ${s1.strength_tip ? `<div class="tip-box" style="margin-top:8px;">💪 ${s1.strength_tip}</div>` : ''}
+    ${s1.weak_tip ? `<div class="tip-box" style="margin-top:8px;">🌙 ${s1.weak_tip}</div>` : ''}
+  </div>`;
+
+  // 섹션2: 오행 균형
+  const s2 = s[2];
+  const gauge = s2.gauge || {};
+  const ohengColors = {'목':'#4caf7a','화':'#d45b5b','토':'#d4a853','금':'#e8e4dc','수':'#5b8fd4'};
+  let gaugeHTML = '';
+  ['목','화','토','금','수'].forEach(k => {
+    const v = gauge[k] || 0;
+    gaugeHTML += `<div class="gauge-col">
+      <div class="gauge-pct">${v}%</div>
+      <div class="gauge-bar-wrap"><div class="gauge-bar" data-h="${v}" style="height:0%;background:${ohengColors[k]};"></div></div>
+      <div class="gauge-label">${k}</div>
+    </div>`;
+  });
+  html += `<div class="section-card">
+    <div class="section-emoji">${s2.emoji || '⚖️'}</div>
+    <div class="section-title">${s2.title}</div>
+    <div class="gauge-wrap">${gaugeHTML}</div>
+    <div class="tip-box">${s2.analysis || ''}</div>
+  </div>`;
+
+  // 섹션3: 신강/신약
+  const s3 = s[3];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s3.emoji || '💪'}</div>
+    <div class="section-title">${s3.title}</div>
+    <div class="tip-box">${s3.desc || ''}</div>
+    <div class="tip-box" style="margin-top:8px;">📋 ${s3.strategy || ''}</div>
+    ${(s3.do_list || []).map(d => `<div class="do-item">✅ ${d}</div>`).join('')}
+    ${(s3.dont_list || []).map(d => `<div class="dont-item">❌ ${d}</div>`).join('')}
+  </div>`;
+
+  // 섹션4: 월별 에너지
+  const s4 = s[4];
+  const months4 = s4.months || [];
+  let barHTML4 = '';
+  months4.forEach(m => {
+    const hPct = Math.max(((m.energy - 10) / 90) * 100, 5);
+    const color = m.energy >= 80 ? 'var(--accent-green)' : m.energy >= 50 ? 'var(--gold)' : 'var(--accent-red)';
+    barHTML4 += `<div class="month-col">
+      <div class="month-score">${m.energy}</div>
+      <div class="month-bar-wrap"><div class="month-bar" data-h="${hPct}" style="height:0%;background:${color};"></div></div>
+      <div class="month-label">${m.month}월</div>
+    </div>`;
+  });
+  const hi4 = s4.highlight || {};
+  html += `<div class="section-card">
+    <div class="section-emoji">${s4.emoji || '📅'}</div>
+    <div class="section-title">${s4.title}</div>
+    <div class="month-chart">${barHTML4}</div>
+    <div class="month-highlight">
+      ${hi4.best ? `<div class="month-best">🟢 최고: ${hi4.best.month}월 (${hi4.best.energy}점) — ${hi4.best.desc || ''}</div>` : ''}
+      ${hi4.worst ? `<div class="month-caution" style="margin-top:6px;">🔴 주의: ${hi4.worst.month}월 (${hi4.worst.energy}점) — ${hi4.worst.desc || ''}</div>` : ''}
+    </div>
+  </div>`;
+
+  // 섹션5: 양육 가이드
+  const s5 = s[5];
+  const goodWords = (s5.good_words || []).map(w => `<span class="word-good">${w}</span>`).join('');
+  const badWords = (s5.bad_words || []).map(w => `<span class="word-bad">${w}</span>`).join('');
+  const sinsalHTML = (s5.sinsal || []).map(ss => `<div class="sinsal-item">
+    <div class="sinsal-title">${ss.title || ''}</div>
+    <div class="sinsal-desc">${ss.desc || ''}</div>
+    ${ss.tip ? `<div class="sinsal-tip">💡 ${ss.tip}</div>` : ''}
+  </div>`).join('');
+  html += `<div class="section-card">
+    <div class="section-emoji">${s5.emoji || '💝'}</div>
+    <div class="section-title">${s5.title}</div>
+    <div class="subject-label">💚 이 아이에게 힘이 되는 말</div>
+    <div style="margin-bottom:12px;">${goodWords}</div>
+    <div class="subject-label">❌ 이 아이에게 피해야 할 말</div>
+    <div style="margin-bottom:12px;">${badWords}</div>
+    ${sinsalHTML ? `<div class="subject-label" style="margin-top:16px;">⭐ 특수 재능 (신살)</div>${sinsalHTML}` : ''}
+  </div>`;
+
+  document.getElementById('tab-c1').innerHTML = html;
+}
+
+// ========== C2-A 학업운 ==========
+function renderC2A(c2) {
+  const s = c2.sections;
+  let html = '';
+
+  // 섹션0: 학습 스타일
+  const s0 = s[0];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s0.emoji || '📖'}</div>
+    <div class="section-title">${s0.title}</div>
+    <div class="reason-box">🔮 ${s0.desc || ''}</div>
+    ${s0.method ? `<div class="tip-box">📝 <b>학습법:</b> ${s0.method}</div>` : ''}
+    ${s0.focus_time ? `<div class="tip-box" style="margin-top:8px;">⏰ <b>집중 시간대:</b> ${s0.focus_time}</div>` : ''}
+    ${s0.env_tip ? `<div class="tip-box" style="margin-top:8px;">🏠 <b>학습 환경:</b> ${s0.env_tip}</div>` : ''}
+  </div>`;
+
+  // 섹션1: 과목 적성
+  const s1 = s[1];
+  const strongChips = (s1.strong?.subjects || []).map(s => `<span class="chip">${s}</span>`).join('');
+  const weakChips = (s1.weak?.subjects || []).map(s => `<span class="chip weak">${s}</span>`).join('');
+  const ganStrongChips = (s1.ganSubjects?.strong || []).map(s => `<span class="chip">${s}</span>`).join('');
+  const ganWeakChips = (s1.ganSubjects?.weak || []).map(s => `<span class="chip weak">${s}</span>`).join('');
+  html += `<div class="section-card">
+    <div class="section-emoji">${s1.emoji || '📊'}</div>
+    <div class="section-title">${s1.title}</div>
+    ${s1.reason ? `<div class="reason-box">🔮 ${s1.reason}</div>` : ''}
+    <div class="subject-label">🔥 오행 기반 강점 (${s1.strong?.oheng || ''} ${s1.strong?.pct || 0}%)</div>
+    <div class="subject-chips">${strongChips}</div>
+    <div class="subject-label">💧 오행 기반 보완 (${s1.weak?.oheng || ''} ${s1.weak?.pct || 0}%)</div>
+    <div class="subject-chips">${weakChips}</div>
+    ${s1.strong?.desc ? `<div class="tip-box">🔥 <b>강점:</b> ${s1.strong.desc}</div>` : ''}
+    ${s1.weak?.desc ? `<div class="tip-box" style="margin-top:8px;">💧 <b>보완:</b> ${s1.weak.desc}</div>` : ''}
+    ${ganStrongChips ? `<div class="subject-label">📝 일간 기반 강점 과목</div><div class="subject-chips">${ganStrongChips}</div>` : ''}
+    ${ganWeakChips ? `<div class="subject-label">📝 일간 기반 보완 과목</div><div class="subject-chips">${ganWeakChips}</div>` : ''}
+    ${s1.ganSubjects?.tip ? `<div class="tip-box" style="margin-top:8px;">📝 ${s1.ganSubjects.tip}</div>` : ''}
+  </div>`;
+
+  // 섹션2: 학습 유형 & 동기
+  const s2 = s[2];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s2.emoji || '🎯'}</div>
+    <div class="section-title">${s2.title}</div>
+    ${s2.reason ? `<div class="reason-box">🔮 ${s2.reason}</div>` : ''}
+    <div class="tip-box">📚 <b>${s2.gyeokguk?.name || ''}:</b> ${s2.gyeokguk?.desc || ''}</div>
+    <div class="motivation-box">
+      <div class="motivation-type">${s2.motivation?.type || ''}</div>
+      <div class="motivation-desc">${s2.motivation?.desc || ''}</div>
+    </div>
+    <div class="tip-box">💪 <b>${s2.strength?.title || ''}</b><br>${s2.strength?.strategy || ''}</div>
+    ${s2.strength?.exam_tip ? `<div class="tip-box" style="margin-top:8px;">📝 <b>시험 전략:</b> ${s2.strength.exam_tip}</div>` : ''}
+    ${s2.strength?.parent_role ? `<div class="tip-box" style="margin-top:8px;">👨‍👩‍👧 <b>추천 부모 역할:</b> ${s2.strength.parent_role}</div>` : ''}
+  </div>`;
+
+  // 섹션3: 월별 학업 에너지
+  const s3 = s[3];
+  const months3 = s3.months || [];
+  let barHTML3 = '';
+  months3.forEach(m => {
+    const hPct = Math.max(((m.score - 50) / 50) * 100, 5);
+    const color = m.score >= 85 ? 'var(--accent-green)' : m.score >= 70 ? 'var(--gold)' : 'var(--accent-red)';
+    barHTML3 += `<div class="month-col">
+      <div class="month-score">${m.score}</div>
+      <div class="month-bar-wrap"><div class="month-bar" data-h="${hPct}" style="height:0%;background:${color};"></div></div>
+      <div class="month-label">${m.month}월</div>
+    </div>`;
+  });
+  html += `<div class="section-card">
+    <div class="section-emoji">${s3.emoji || '📅'}</div>
+    <div class="section-title">${s3.title}</div>
+    ${s3.reason ? `<div class="reason-box">🔮 ${s3.reason}</div>` : ''}
+    <div class="month-chart">${barHTML3}</div>
+  </div>`;
+
+  // 섹션4: 학업 신살
+  const s4 = s[4];
+  const studySinsal = (s4.sinsal || []).map(ss => `<div class="sinsal-item">
+    <div class="sinsal-title">${ss.title || ''}</div>
+    <div class="sinsal-desc">${ss.desc || ''}</div>
+    ${ss.studyTip ? `<div class="sinsal-tip">💡 ${ss.studyTip}</div>` : ''}
+  </div>`).join('');
+  html += `<div class="section-card">
+    <div class="section-emoji">${s4.emoji || '⭐'}</div>
+    <div class="section-title">${s4.title}</div>
+    ${s4.reason ? `<div class="reason-box">🔮 ${s4.reason}</div>` : ''}
+    ${studySinsal || `<div class="tip-box">${s4.noSinsal || '특수 신살은 없지만, 꾸준한 노력이 가장 강한 재능입니다.'}</div>`}
+  </div>`;
+
+  // 섹션5: 미래 진로
+  const s5 = s[5];
+  if (s5) {
+    const jobChips = (s5.jobs || []).map(j => `<span class="career-chip">${j}</span>`).join('');
+    html += `<div class="section-card">
+      <div class="section-emoji">${s5.emoji || '🚀'}</div>
+      <div class="section-title">${s5.title}</div>
+      ${s5.reason ? `<div class="reason-box">🔮 ${s5.reason}</div>` : ''}
+      <div class="tip-box">${s5.desc || ''}</div>
+      ${jobChips ? `<div class="subject-label">🎯 유망 직업군</div><div class="career-jobs">${jobChips}</div>` : ''}
+      ${s5.environment ? `<div class="tip-box" style="margin-top:8px;">🏢 <b>어울리는 환경:</b> ${s5.environment}</div>` : ''}
+      ${s5.ohengCareer ? `<div class="tip-box" style="margin-top:8px;">🔥 <b>오행 유망 분야:</b> ${s5.ohengCareer}</div>` : ''}
+      ${s5.strengthApproach ? `<div class="tip-box" style="margin-top:8px;">💪 ${s5.strengthApproach}</div>` : ''}
+      ${s5.parentTip ? `<div class="tip-box" style="margin-top:8px;">👨‍👩‍👧 ${s5.parentTip}</div>` : ''}
+    </div>`;
+  }
+
+  document.getElementById('tab-c2a').innerHTML = html;
+}
+
+// ========== C2-B 궁합 ==========
+function renderC2B(compat) {
+  const s = compat.sections;
+  let html = '';
+
+  // 섹션0: 일간 궁합
+  const s0 = s[0];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s0.emoji || '🔮'}</div>
+    <div class="section-title">${s0.title}</div>
+    ${s0.reason ? `<div class="reason-box">🔮 ${s0.reason}</div>` : ''}
+    <div class="compat-pair">
+      <div class="compat-person parent">
+        <div class="compat-name">${compat.parentName}</div>
+        <div class="compat-info">${s0.parent?.gan || ''} · ${s0.parent?.label || ''}<br>${s0.parent?.element || ''} · ${s0.parent?.nature || ''}</div>
+      </div>
+      <div class="compat-person child">
+        <div class="compat-name">${compat.childName}</div>
+        <div class="compat-info">${s0.child?.gan || ''} · ${s0.child?.label || ''}<br>${s0.child?.element || ''} · ${s0.child?.nature || ''}</div>
+      </div>
+    </div>
+    <div class="relation-badge">
+      <div class="relation-title">${s0.relation?.title || ''}</div>
+      <div class="relation-score">${s0.relation?.score || ''}점</div>
+      <div class="relation-desc">${s0.relation?.desc || ''}</div>
+    </div>
+    <div class="tip-box">💡 ${s0.relation?.tip || ''}</div>
+    ${s0.yinYang ? `<div class="tip-box" style="margin-top:8px;">☯️ ${s0.yinYang}</div>` : ''}
+  </div>`;
+
+  // 섹션1: 오행 보완
+  const s1 = s[1];
+  const comp = s1.complement || {};
+  html += `<div class="section-card">
+    <div class="section-emoji">${s1.emoji || '⚖️'}</div>
+    <div class="section-title">${s1.title}</div>
+    ${s1.reason ? `<div class="reason-box">🔮 ${s1.reason}</div>` : ''}
+    <div class="tip-box">${s1.parentHelpsChild || ''}</div>
+    ${s1.childHelpsParent ? `<div class="tip-box" style="margin-top:8px;">${s1.childHelpsParent}</div>` : ''}
+    <div class="complement-grid">
+      <div class="complement-item"><div class="complement-label">보완 오행</div><div class="complement-value">${comp.element || ''}</div></div>
+      <div class="complement-item"><div class="complement-label">추천 색상</div><div class="complement-value">${comp.color || ''}</div></div>
+      <div class="complement-item"><div class="complement-label">추천 음식</div><div class="complement-value">${comp.food || ''}</div></div>
+    </div>
+    <div class="tip-box">🎯 <b>함께하는 활동:</b> ${comp.activity || ''}</div>
+    ${s1.tip ? `<div class="tip-box" style="margin-top:8px;">💡 ${s1.tip}</div>` : ''}
+  </div>`;
+
+  // 섹션2: 소통
+  const s2 = s[2];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s2.emoji || '💬'}</div>
+    <div class="section-title">${s2.title}</div>
+    ${s2.reason ? `<div class="reason-box">🔮 ${s2.reason}</div>` : ''}
+    <div class="role-box"><div class="role-title">${s2.parentRole || ''}</div><div class="role-desc">${s2.roleDesc || ''}</div></div>
+    ${s2.roleTip ? `<div class="tip-box">💡 ${s2.roleTip}</div>` : ''}
+  </div>`;
+
+  // 섹션3: 시너지
+  const s3 = s[3];
+  html += `<div class="section-card">
+    <div class="section-emoji">${s3.emoji || '✨'}</div>
+    <div class="section-title">${s3.title}</div>
+    ${s3.reason ? `<div class="reason-box">🔮 ${s3.reason}</div>` : ''}
+    <div class="tip-box">✨ <b>시너지:</b> ${s3.synergy || ''}</div>
+    <div class="tip-box" style="margin-top:8px;">⚠️ <b>주의점:</b> ${s3.caution || ''}</div>
+  </div>`;
+
+  // 섹션4: 월별
+  const s4 = s[4];
+  const months = s4.months || [];
+  let barHTML = '';
+  months.forEach(m => {
+    const hPct = Math.max(((m.score - 50) / 50) * 100, 5);
+    const color = m.score >= 85 ? 'var(--accent-green)' : m.score >= 70 ? 'var(--accent-pink)' : 'var(--accent-red)';
+    barHTML += `<div class="month-col">
+      <div class="month-score">${m.score}</div>
+      <div class="month-bar-wrap"><div class="month-bar" data-h="${hPct}" style="height:0%;background:${color};"></div></div>
+      <div class="month-label">${m.month}월</div>
+    </div>`;
+  });
+  const best = s4.highlight?.best || {};
+  const caution = s4.highlight?.caution || {};
+  html += `<div class="section-card">
+    <div class="section-emoji">${s4.emoji || '📅'}</div>
+    <div class="section-title">${s4.title}</div>
+    ${s4.reason ? `<div class="reason-box">🔮 ${s4.reason}</div>` : ''}
+    <div class="month-chart">${barHTML}</div>
+    <div class="month-highlight">
+      <div class="month-best">🟢 최고의 달: ${best.month || ''}월 (${best.score || ''}점) — ${best.note || ''}</div>
+      <div class="month-caution" style="margin-top:6px;">🔴 주의의 달: ${caution.month || ''}월 (${caution.score || ''}점) — ${caution.note || ''}</div>
+    </div>
+  </div>`;
+
+  // 섹션5: 계절
+  const s5 = s[5];
+  if (s5 && s5.id === 'seasonal-activity') {
+    const seasons = [s5.spring, s5.summer, s5.autumn, s5.winter].filter(Boolean);
+    const icons = ['🌸','☀️','🍂','❄️'];
+    const grid = seasons.map((item, i) => `<div class="seasonal-item">
+      <div class="season-label">${icons[i]} ${item.season}</div>
+      <div class="season-activity">${item.activity}</div>
+    </div>`).join('');
+    html += `<div class="section-card">
+      <div class="section-emoji">🗓️</div>
+      <div class="section-title">${s5.title}</div>
+      ${s5.reason ? `<div class="reason-box">🔮 ${s5.reason}</div>` : ''}
+      <div class="seasonal-grid">${grid}</div>
+    </div>`;
+  }
+
+  // 섹션6: 종합점수
+  const s6 = s[6];
+  if (s6) {
+    html += `<div class="section-card">
+      <div class="section-emoji">${s6.emoji || '💯'}</div>
+      <div class="section-title">${s6.title}</div>
+      <div class="total-score-box">
+        <div class="total-grade">${s6.grade || ''}</div>
+        <div class="total-score-num">종합 ${s6.score || ''}점</div>
+        <div class="total-message">${s6.message || ''}</div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('tab-c2b').innerHTML = html;
+}
+
+// ========== 종합 요약 ==========
+function renderSummary(d) {
+  const fs = d.fullSummary || {};
+  const parts = fs.sections || [];
+  let html = '<div class="full-summary"><div class="full-summary-title">🏆 종합 분석 요약</div>';
+  parts.forEach(p => { if (p) html += `<p>${p}</p>`; });
+  html += '</div>';
+  if (fs.closing) {
+    html += `<div class="closing-box">${fs.closing}</div>`;
+  }
+  document.getElementById('tab-summary').innerHTML = html;
+}
+</script>
+</body>
+</html>
