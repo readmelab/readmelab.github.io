@@ -838,6 +838,7 @@ body {
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
 // ==================== 설정 ====================
+const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
 const IMAGE_BASE = 'https://audio.readmelab.co.kr/boksindang/child';
 const ORDER_PAGE = 'child-order.html';
 
@@ -971,44 +972,46 @@ document.getElementById('parentPhone').addEventListener('input', function(e) {
 });
 
 // ==================== 시작 ====================
-function startReading() {
-  // 유효성 검사
-  const childName = document.getElementById('childName').value.trim();
-  const parentName = document.getElementById('parentName').value.trim();
-  const parentPhone = document.getElementById('parentPhone').value.trim();
+function runLoading() {
+  window._loadingDone = new Promise((resolve) => {
+    const textEl = document.getElementById('loadingText');
+    const barEl = document.getElementById('loadingBar');
 
-  if (!childName) { showToast('자녀 이름을 입력해 주세요'); return; }
-  if (!parentName) { showToast('보호자 이름을 입력해 주세요'); return; }
-  if (!parentPhone || parentPhone.replace(/-/g,'').length < 10) { showToast('연락처를 확인해 주세요'); return; }
+    const particleWrap = document.getElementById('particles');
+    particleWrap.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+      const sp = document.createElement('span');
+      sp.style.left = Math.random() * 100 + '%';
+      sp.style.animationDelay = Math.random() * 3 + 's';
+      sp.style.animationDuration = (2 + Math.random() * 2) + 's';
+      particleWrap.appendChild(sp);
+    }
 
-  // 데이터 수집
-  const data = {
-    childName,
-    childYear: +document.getElementById('childYear').value,
-    childMonth: +document.getElementById('childMonth').value,
-    childDay: +document.getElementById('childDay').value,
-    calendar: document.querySelector('.radio-btn[data-group="cal"].selected').dataset.value,
-    childHour: document.getElementById('childHour').value,
-    gender: document.querySelector('.radio-btn[data-group="gender"].selected').dataset.value,
-    parentName,
-    parentYear: +document.getElementById('parentYear').value,
-    parentMonth: +document.getElementById('parentMonth').value,
-    parentDay: +document.getElementById('parentDay').value,
-    parentPhone
-  };
+    const steps = [
+      { text: '아이의 사주원국을 펼치고 있습니다...', pct: 30 },
+      { text: '타고난 오행의 기운을 읽고 있습니다...', pct: 65 },
+      { text: '수호 동물을 찾고 있습니다...', pct: 100 }
+    ];
 
-  // 12간지 계산
-  const zodiacIdx = data.childYear % 12;
-  const zodiac = ZODIAC_MAP[zodiacIdx];
-  const season = getSeason(data.childMonth);
-
-  // 결과 데이터 저장
-  window._result = { ...data, zodiac, season };
-
-  // 로딩 시작
-  showScreen('loadingScreen');
-  runLoading();
+    let i = 0;
+    function nextStep() {
+      if (i >= steps.length) {
+        setTimeout(resolve, 300);
+        return;
+      }
+      textEl.classList.remove('show');
+      setTimeout(() => {
+        textEl.textContent = steps[i].text;
+        textEl.classList.add('show');
+        barEl.style.width = steps[i].pct + '%';
+        i++;
+        setTimeout(nextStep, 1100);
+      }, 200);
+    }
+    nextStep();
+  });
 }
+
 
 // ==================== 로딩 연출 ====================
 function runLoading() {
@@ -1053,35 +1056,36 @@ function runLoading() {
 // ==================== 결과 화면 ====================
 function showResult() {
   const r = window._result;
-  const z = r.zodiac;
-  const s = r.season;
+  const card = r.card;
 
   // 이미지
-  document.getElementById('cardImage').src = `${IMAGE_BASE}/${z.key}_${s.key}.jpeg`;
+  document.getElementById('cardImage').src = card.imageUrl;
 
   // 텍스트
-  document.getElementById('cardLabel').textContent = `${s.name}에 태어난`;
-  document.getElementById('cardTitle').textContent = `${r.childName}의 수호 동물 — 아기 ${z.name} ${z.emoji}`;
+  document.getElementById('cardLabel').textContent = `${card.season.name}에 태어난`;
+  document.getElementById('cardTitle').textContent = `${card.childName}의 수호 동물 — 아기 ${card.zodiac.name} ${card.zodiac.emoji}`;
 
   // 한줄평
-  document.getElementById('cardOneliner').textContent = ONELINER_MAP[z.key];
+  document.getElementById('cardOneliner').textContent = card.oneliner;
 
   // 오행 게이지
   const gaugeEl = document.getElementById('cardGauge');
   gaugeEl.innerHTML = '';
-  Object.values(ELEMENT_MOCK).forEach(el => {
+  const OHENG_COLOR = { '목': '#4CAF50', '화': '#e57373', '토': '#c9a84c', '금': '#b0bec5', '수': '#64b5f6' };
+  const OHENG_HANJA = { '목': '木', '화': '火', '토': '土', '금': '金', '수': '水' };
+  for (const [key, pct] of Object.entries(card.ohengGauge)) {
     gaugeEl.innerHTML += `
       <div class="card-element-item">
-        <div class="el-label">${el.label}</div>
+        <div class="el-label">${OHENG_HANJA[key]}</div>
         <div class="el-bar-wrap">
-          <div class="el-bar" style="width:0%; background:${el.color};" data-pct="${el.pct}"></div>
+          <div class="el-bar" style="width:0%; background:${OHENG_COLOR[key]};" data-pct="${pct}"></div>
         </div>
       </div>`;
-  });
+  }
 
   // 키워드
   const kwEl = document.getElementById('cardKeywords');
-  kwEl.innerHTML = KEYWORD_MAP[z.key].map(k => `<span>${k}</span>`).join('');
+  kwEl.innerHTML = card.keywords.map(k => `<span>${k}</span>`).join('');
 
   // CTA 링크
   const params = new URLSearchParams({
