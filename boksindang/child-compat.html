@@ -39,9 +39,7 @@ body {
 }
 @keyframes spin { to { transform:rotate(360deg); } }
 .loading-text { color:var(--accent-pink); font-size:14px; }
-
 .result-wrap { max-width:440px; margin:0 auto; padding:16px; display:none; }
-
 .header {
   text-align:center; padding:32px 0 24px;
   border-bottom:1px solid var(--border); margin-bottom:24px;
@@ -49,7 +47,6 @@ body {
 .header-icon { font-size:40px; margin-bottom:8px; }
 .header-title { font-size:20px; font-weight:900; color:var(--accent-pink); margin-bottom:4px; }
 .header-sub { font-size:13px; color:var(--text-dim); }
-
 .section-card {
   background:var(--card); border:1px solid var(--border);
   border-radius:16px; padding:20px; margin-bottom:20px;
@@ -62,24 +59,14 @@ body {
   font-size:17px; font-weight:700; color:var(--gold);
   margin-bottom:12px; line-height:1.4;
 }
-
-.compat-pair {
-  display:flex; gap:12px; margin-bottom:16px;
-}
-.compat-person {
-  flex:1; padding:12px; border-radius:10px; text-align:center;
-}
-.compat-person.parent {
-  background:rgba(91,143,212,0.1); border:1px solid var(--accent-blue);
-}
-.compat-person.child {
-  background:rgba(212,116,155,0.1); border:1px solid var(--accent-pink);
-}
+.compat-pair { display:flex; gap:12px; margin-bottom:16px; }
+.compat-person { flex:1; padding:12px; border-radius:10px; text-align:center; }
+.compat-person.parent { background:rgba(91,143,212,0.1); border:1px solid var(--accent-blue); }
+.compat-person.child { background:rgba(212,116,155,0.1); border:1px solid var(--accent-pink); }
 .compat-name { font-size:14px; font-weight:700; margin-bottom:4px; }
 .compat-person.parent .compat-name { color:var(--accent-blue); }
 .compat-person.child .compat-name { color:var(--accent-pink); }
 .compat-info { font-size:12px; color:var(--text-dim); line-height:1.5; }
-
 .relation-badge {
   text-align:center; padding:16px; border-radius:12px;
   background:rgba(212,168,83,0.08); margin-bottom:12px;
@@ -87,7 +74,6 @@ body {
 .relation-title { font-size:16px; font-weight:900; color:var(--gold); margin-bottom:6px; }
 .relation-score { font-size:28px; font-weight:900; color:var(--accent-pink); }
 .relation-desc { font-size:13px; color:var(--text-dim); line-height:1.7; margin-top:8px; }
-
 .tip-box {
   background:rgba(212,168,83,0.08); border-left:3px solid var(--gold);
   padding:12px 14px; border-radius:0 8px 8px 0;
@@ -98,31 +84,24 @@ body {
   padding:10px 14px; border-radius:0 8px 8px 0;
   font-size:12px; line-height:1.7; color:var(--text-dim); margin-bottom:12px;
 }
-
-.complement-grid {
-  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:12px 0;
-}
+.complement-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:12px 0; }
 .complement-item {
   text-align:center; padding:10px 6px; border-radius:10px;
   background:rgba(76,175,122,0.08); border:1px solid var(--accent-green);
 }
 .complement-label { font-size:11px; color:var(--text-dim); margin-bottom:4px; }
 .complement-value { font-size:13px; font-weight:700; color:var(--accent-green); }
-
 .role-box {
   text-align:center; padding:16px; border-radius:12px;
   background:rgba(91,143,212,0.08); margin-bottom:12px;
 }
 .role-title { font-size:20px; font-weight:900; color:var(--accent-blue); margin-bottom:4px; }
 .role-desc { font-size:13px; color:var(--text-dim); line-height:1.6; }
-
 .month-chart {
   display:flex; gap:4px; align-items:flex-end; height:200px;
   padding:12px 0; border-bottom:1px solid var(--border);
 }
-.month-col {
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
-}
+.month-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .month-bar-wrap { width:100%; height:150px; display:flex; align-items:flex-end; }
 .month-bar {
   width:100%; border-radius:4px 4px 0 0; min-height:4px;
@@ -133,7 +112,6 @@ body {
 .month-highlight { margin-top:10px; font-size:13px; line-height:1.7; }
 .month-best { color:var(--accent-green); }
 .month-caution { color:var(--accent-red); }
-
 .total-score-box {
   text-align:center; padding:24px; border-radius:16px;
   background: linear-gradient(135deg, rgba(212,116,155,0.1), rgba(212,168,83,0.1));
@@ -142,13 +120,18 @@ body {
 .total-grade { font-size:48px; font-weight:900; color:var(--accent-pink); }
 .total-score-num { font-size:18px; color:var(--gold); margin-top:4px; }
 .total-message { font-size:14px; color:var(--text); line-height:1.8; margin-top:12px; }
-
 .summary-box {
   background:rgba(212,168,83,0.06); border:1px solid var(--gold-dim);
   border-radius:12px; padding:16px; margin-top:20px;
   font-size:14px; line-height:1.8; color:var(--text); text-align:center;
 }
-
+.seasonal-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.seasonal-item {
+  background:rgba(155,111,212,0.06); border:1px solid var(--accent-purple);
+  border-radius:10px; padding:12px; text-align:center;
+}
+.seasonal-item .season-label { font-size:13px; font-weight:700; margin-bottom:6px; color:var(--accent-purple); }
+.seasonal-item .season-activity { font-size:12px; color:var(--text-dim); line-height:1.6; }
 .footer {
   text-align:center; padding:24px 0; margin-top:20px;
   border-top:1px solid var(--border);
@@ -176,6 +159,7 @@ body {
   <div class="section-card" id="sec3"></div>
   <div class="section-card" id="sec4"></div>
   <div class="section-card" id="sec5"></div>
+  <div class="section-card" id="sec6"></div>
 
   <div class="summary-box" id="summaryBox"></div>
 
@@ -183,6 +167,7 @@ body {
     <div class="footer-text">복신당 · 보호자-자녀 궁합 분석 · 2025</div>
   </div>
 </div>
+
 <script>
 const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
 
@@ -225,11 +210,12 @@ function renderResult(d) {
 
   document.getElementById('headerTitle').textContent = `${d.parentName} ♥ ${d.childName} 궁합`;
 
-  // 섹션 0: 일간 궁합
+  // === 섹션 0: 일간 궁합 ===
   const s0 = s[0];
   document.getElementById('sec0').innerHTML = `
     <div class="section-emoji">${s0.emoji || '🔮'}</div>
     <div class="section-title">${s0.title}</div>
+    ${s0.reason ? `<div class="reason-box">🔮 ${s0.reason}</div>` : ''}
     <div class="compat-pair">
       <div class="compat-person parent">
         <div class="compat-name">${d.parentName}</div>
@@ -246,15 +232,16 @@ function renderResult(d) {
       <div class="relation-desc">${s0.relation?.desc || ''}</div>
     </div>
     <div class="tip-box">💡 ${s0.relation?.tip || ''}</div>
-    <div class="tip-box" style="margin-top:8px;">☯️ ${s0.yinYang || ''}</div>
+    ${s0.yinYang ? `<div class="tip-box" style="margin-top:8px;">☯️ ${s0.yinYang}</div>` : ''}
   `;
 
-  // 섹션 1: 오행 보완
+  // === 섹션 1: 오행 보완 ===
   const s1 = s[1];
   const comp = s1.complement || {};
   document.getElementById('sec1').innerHTML = `
     <div class="section-emoji">${s1.emoji || '⚖️'}</div>
     <div class="section-title">${s1.title}</div>
+    ${s1.reason ? `<div class="reason-box">🔮 ${s1.reason}</div>` : ''}
     <div class="tip-box">${s1.parentHelpsChild || ''}</div>
     ${s1.childHelpsParent ? `<div class="tip-box" style="margin-top:8px;">${s1.childHelpsParent}</div>` : ''}
     <div class="complement-grid">
@@ -272,36 +259,38 @@ function renderResult(d) {
       </div>
     </div>
     <div class="tip-box">🎯 <b>함께하는 활동:</b> ${comp.activity || ''}</div>
-    <div class="tip-box" style="margin-top:8px;">💡 ${s1.tip || ''}</div>
+    ${s1.tip ? `<div class="tip-box" style="margin-top:8px;">💡 ${s1.tip}</div>` : ''}
   `;
 
-  // 섹션 2: 소통 스타일
+  // === 섹션 2: 소통 스타일 ===
   const s2 = s[2];
   document.getElementById('sec2').innerHTML = `
     <div class="section-emoji">${s2.emoji || '💬'}</div>
     <div class="section-title">${s2.title}</div>
+    ${s2.reason ? `<div class="reason-box">🔮 ${s2.reason}</div>` : ''}
     <div class="role-box">
       <div class="role-title">${s2.parentRole || ''}</div>
       <div class="role-desc">${s2.roleDesc || ''}</div>
     </div>
-    <div class="tip-box">💡 ${s2.roleTip || ''}</div>
+    ${s2.roleTip ? `<div class="tip-box">💡 ${s2.roleTip}</div>` : ''}
   `;
 
-  // 섹션 3: 시너지 & 주의점
+  // === 섹션 3: 시너지 & 주의점 ===
   const s3 = s[3];
   document.getElementById('sec3').innerHTML = `
     <div class="section-emoji">${s3.emoji || '✨'}</div>
     <div class="section-title">${s3.title}</div>
+    ${s3.reason ? `<div class="reason-box">🔮 ${s3.reason}</div>` : ''}
     <div class="tip-box">✨ <b>시너지:</b> ${s3.synergy || ''}</div>
     <div class="tip-box" style="margin-top:8px;">⚠️ <b>주의점:</b> ${s3.caution || ''}</div>
   `;
 
-  // 섹션 4: 월별 관계 에너지
+  // === 섹션 4: 월별 관계 에너지 ===
   const s4 = s[4];
   const months = s4.months || [];
   let barHTML = '';
   months.forEach(m => {
-    const hPct = Math.max(((m.score - 60) / 40) * 100, 5);
+    const hPct = Math.max(((m.score - 50) / 50) * 100, 5);
     const color = m.score >= 85 ? 'var(--accent-green)' : m.score >= 70 ? 'var(--accent-pink)' : 'var(--accent-red)';
     barHTML += `
       <div class="month-col">
@@ -317,6 +306,7 @@ function renderResult(d) {
   document.getElementById('sec4').innerHTML = `
     <div class="section-emoji">${s4.emoji || '📅'}</div>
     <div class="section-title">${s4.title}</div>
+    ${s4.reason ? `<div class="reason-box">🔮 ${s4.reason}</div>` : ''}
     <div class="month-chart">${barHTML}</div>
     <div class="month-highlight">
       <div class="month-best">🟢 최고의 달: ${best.month || ''}월 (${best.score || ''}점) — ${best.note || ''}</div>
@@ -324,17 +314,38 @@ function renderResult(d) {
     </div>
   `;
 
-  // 섹션 5: 종합 점수
+  // === 섹션 5: 계절별 함께하면 좋은 활동 ===
   const s5 = s[5];
-  document.getElementById('sec5').innerHTML = `
-    <div class="section-emoji">${s5.emoji || '💯'}</div>
-    <div class="section-title">${s5.title}</div>
-    <div class="total-score-box">
-      <div class="total-grade">${s5.grade || ''}</div>
-      <div class="total-score-num">종합 ${s5.score || ''}점</div>
-      <div class="total-message">${s5.message || ''}</div>
-    </div>
-  `;
+  if (s5 && s5.id === 'seasonal-activity') {
+    const seasons = [s5.spring, s5.summer, s5.autumn, s5.winter].filter(Boolean);
+    const seasonIcons = ['🌸','☀️','🍂','❄️'];
+    const seasonGrid = seasons.map((item, i) => `
+      <div class="seasonal-item">
+        <div class="season-label">${seasonIcons[i]} ${item.season}</div>
+        <div class="season-activity">${item.activity}</div>
+      </div>
+    `).join('');
+    document.getElementById('sec5').innerHTML = `
+      <div class="section-emoji">🗓️</div>
+      <div class="section-title">${s5.title}</div>
+      ${s5.reason ? `<div class="reason-box">🔮 ${s5.reason}</div>` : ''}
+      <div class="seasonal-grid">${seasonGrid}</div>
+    `;
+  }
+
+  // === 섹션 6: 종합 점수 ===
+  const s6 = s[6];
+  if (s6) {
+    document.getElementById('sec6').innerHTML = `
+      <div class="section-emoji">${s6.emoji || '💯'}</div>
+      <div class="section-title">${s6.title}</div>
+      <div class="total-score-box">
+        <div class="total-grade">${s6.grade || ''}</div>
+        <div class="total-score-num">종합 ${s6.score || ''}점</div>
+        <div class="total-message">${s6.message || ''}</div>
+      </div>
+    `;
+  }
 
   // 요약
   document.getElementById('summaryBox').textContent = d.summary || '';
