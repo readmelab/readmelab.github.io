@@ -214,6 +214,62 @@ body {
   text-align:center; font-size:10px;
   color:rgba(168,155,181,0.5); line-height:1.8;
 }
+
+/* 업셀 섹션 */
+.upsell-section {
+  max-width:420px; margin:30px auto; padding:0 20px;
+}
+.upsell-header {
+  text-align:center; font-size:15px; color:var(--gold-light);
+  margin-bottom:16px; line-height:1.6;
+}
+.upsell-card, .upsell-bundle {
+  padding:18px; margin-bottom:12px;
+  background:rgba(42,31,61,0.7);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:14px; position:relative;
+}
+.upsell-bundle {
+  background:linear-gradient(135deg, rgba(42,31,61,0.9), rgba(201,168,76,0.08));
+  border:1px solid rgba(201,168,76,0.35);
+}
+.upsell-badge {
+  position:absolute; top:-8px; right:16px;
+  background:var(--accent-red); color:#fff;
+  font-size:10px; padding:2px 10px;
+  border-radius:10px; font-weight:700;
+}
+.upsell-title { font-size:14px; color:var(--gold-light); margin-bottom:4px; }
+.upsell-desc { font-size:12px; color:var(--text-dim); margin-bottom:10px; }
+.upsell-price { margin-bottom:12px; font-size:13px; }
+.upsell-price del { color:var(--text-dim); margin-right:6px; }
+.upsell-price strong { color:var(--gold); font-size:16px; }
+.upsell-discount {
+  display:inline-block; margin-left:6px;
+  font-size:10px; color:var(--accent-red);
+  background:rgba(229,115,115,0.1);
+  padding:2px 8px; border-radius:8px;
+}
+.upsell-btn {
+  display:block; width:100%; padding:12px;
+  text-align:center; text-decoration:none;
+  border-radius:10px; font-family:'Noto Serif KR',serif;
+  font-size:13px; font-weight:700; cursor:pointer; border:none;
+}
+.upsell-btn {
+  background:rgba(201,168,76,0.15);
+  color:var(--gold); border:1px solid rgba(201,168,76,0.3);
+}
+.upsell-btn.secondary {
+  background:rgba(201,168,76,0.08);
+  color:var(--gold-light); border:1px solid rgba(201,168,76,0.2);
+}
+.upsell-btn.bundle {
+  background:linear-gradient(135deg,#c9a84c,#d4af37);
+  color:#1a1028; border:none;
+}
+
+  
 </style>
 </head>
 <body>
@@ -308,11 +364,47 @@ body {
   <div id="sinsalList"></div>
 </div>
 
-<!-- CTA -->
-<div class="cta-bottom">
-  <p class="cta-text">더 깊은 분석이 궁금하시다면</p>
-  <a class="cta-btn" id="ctaBtn">학업운 정밀 분석 보기 →</a>
+<!-- 추가 분석 안내 -->
+<div class="upsell-section">
+  <div class="upsell-header">
+    <span id="upsellName"></span>의 사주, 더 깊이 들여다볼까요?
+  </div>
+
+  <div class="upsell-card">
+    <div class="upsell-badge">인기</div>
+    <div class="upsell-title">📚 학업운 정밀 분석</div>
+    <div class="upsell-desc">과목별 적성, 집중력 리듬, 학습 스타일까지</div>
+    <div class="upsell-price">
+      <del>₩14,900</del>
+      <strong>₩9,900</strong>
+      <span class="upsell-discount">기본풀이 구매 감사 할인</span>
+    </div>
+    <a class="upsell-btn" id="ctaStudy">학업운 분석 보기 →</a>
+  </div>
+
+  <div class="upsell-card">
+    <div class="upsell-title">💕 보호자↔자녀 궁합</div>
+    <div class="upsell-desc">소통 방식, 에너지 충돌 포인트, 맞춤 대화법</div>
+    <div class="upsell-price">
+      <del>₩14,900</del>
+      <strong>₩9,900</strong>
+      <span class="upsell-discount">기본풀이 구매 감사 할인</span>
+    </div>
+    <a class="upsell-btn secondary" id="ctaCompat">궁합 분석 보기 →</a>
+  </div>
+
+  <div class="upsell-bundle">
+    <div class="upsell-title">✦ 종합 패키지</div>
+    <div class="upsell-desc">기본풀이 + 학업운 + 궁합 모두 포함</div>
+    <div class="upsell-price">
+      <del>₩34,700</del>
+      <strong>₩24,900</strong>
+      <span class="upsell-discount">28% 할인</span>
+    </div>
+    <a class="upsell-btn bundle" id="ctaBundle">종합 패키지 보기 →</a>
+  </div>
 </div>
+
 
 <div class="footer">
   복신당 ✦ AI 사주 분석 서비스<br>
@@ -479,6 +571,10 @@ function renderResult(d) {
       </div>`;
   });
 
+
+  // 업셀 이름
+  document.getElementById('upsellName').textContent = d.childName;
+  
   // 애니메이션
   setTimeout(() => {
     document.querySelectorAll('.section-card').forEach((el, i) => {
