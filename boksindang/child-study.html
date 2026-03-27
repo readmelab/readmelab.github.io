@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>복신당 - 학업운 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --card: #13131a;
+  --border: #2a2a3a;
+  --gold: #d4a853;
+  --gold-dim: #b8943f;
+  --text: #e8e4dc;
+  --text-dim: #9a9690;
+  --accent-blue: #5b8fd4;
+  --accent-green: #4caf7a;
+  --accent-red: #d45b5b;
+  --accent-purple: #9b6fd4;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Noto Serif KR', serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:60px;
+}
+.loading {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:80vh; gap:16px;
+}
+.loading-spinner {
+  width:48px; height:48px; border:3px solid var(--border);
+  border-top-color:var(--gold); border-radius:50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { color:var(--gold); font-size:14px; }
+
+.result-wrap { max-width:440px; margin:0 auto; padding:16px; display:none; }
+
+.header {
+  text-align:center; padding:32px 0 24px;
+  border-bottom:1px solid var(--border); margin-bottom:24px;
+}
+.header-icon { font-size:40px; margin-bottom:8px; }
+.header-title { font-size:22px; font-weight:900; color:var(--gold); margin-bottom:4px; }
+.header-sub { font-size:13px; color:var(--text-dim); }
+
+.section-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:20px; margin-bottom:20px;
+  opacity:0; transform:translateY(20px);
+  transition: opacity .5s, transform .5s;
+}
+.section-card.show { opacity:1; transform:translateY(0); }
+.section-emoji { font-size:28px; margin-bottom:8px; }
+.section-title {
+  font-size:17px; font-weight:700; color:var(--gold);
+  margin-bottom:12px; line-height:1.4;
+}
+.section-subtitle {
+  font-size:14px; color:var(--accent-purple);
+  margin-bottom:12px; font-weight:700;
+}
+
+.info-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 0; border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.info-row:last-child { border-bottom:none; }
+.info-label { color:var(--text-dim); }
+.info-value { color:var(--text); font-weight:700; }
+
+.tip-box {
+  background:rgba(212,168,83,0.08); border-left:3px solid var(--gold);
+  padding:12px 14px; border-radius:0 8px 8px 0;
+  font-size:13px; line-height:1.7; margin-top:12px; color:var(--text);
+}
+
+.subject-group { margin-top:12px; }
+.subject-label {
+  font-size:12px; color:var(--text-dim); margin-bottom:6px; font-weight:700;
+}
+.subject-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+.chip {
+  background:rgba(212,168,83,0.12); border:1px solid var(--gold-dim);
+  padding:4px 10px; border-radius:20px; font-size:12px; color:var(--gold);
+}
+.chip.weak {
+  background:rgba(91,143,212,0.12); border-color:var(--accent-blue);
+  color:var(--accent-blue);
+}
+
+.motivation-box {
+  text-align:center; padding:16px;
+  background:rgba(155,111,212,0.08); border-radius:12px;
+  margin-bottom:12px;
+}
+.motivation-type {
+  font-size:24px; font-weight:900; color:var(--accent-purple); margin-bottom:4px;
+}
+.motivation-desc { font-size:13px; color:var(--text-dim); line-height:1.6; }
+
+.strength-box {
+  display:flex; gap:12px; margin-top:12px;
+}
+.strength-item {
+  flex:1; padding:12px; border-radius:10px; font-size:12px; line-height:1.6;
+}
+.strength-item.strong {
+  background:rgba(76,175,122,0.1); border:1px solid var(--accent-green);
+}
+.strength-item.weak-s {
+  background:rgba(212,91,91,0.1); border:1px solid var(--accent-red);
+}
+.strength-label {
+  font-weight:700; margin-bottom:4px; font-size:13px;
+}
+.strength-item.strong .strength-label { color:var(--accent-green); }
+.strength-item.weak-s .strength-label { color:var(--accent-red); }
+
+.month-chart {
+  display:flex; gap:4px; align-items:flex-end; height:200px;
+  padding:12px 0; border-bottom:1px solid var(--border);
+}
+.month-col {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.month-bar-wrap { width:100%; height:150px; display:flex; align-items:flex-end; }
+.month-bar {
+  width:100%; border-radius:4px 4px 0 0; min-height:4px;
+  transition: height 1s ease;
+}
+.month-score { font-size:10px; color:var(--text-dim); font-weight:700; }
+.month-label { font-size:10px; color:var(--text-dim); }
+.month-highlight { margin-top:10px; font-size:13px; line-height:1.7; }
+.month-best { color:var(--accent-green); }
+.month-caution { color:var(--accent-red); }
+
+.sinsal-item {
+  padding:10px 0; border-bottom:1px solid var(--border);
+}
+.sinsal-item:last-child { border-bottom:none; }
+.sinsal-title { font-size:14px; font-weight:700; color:var(--gold); margin-bottom:4px; }
+.sinsal-desc { font-size:12px; color:var(--text-dim); line-height:1.6; margin-bottom:4px; }
+.sinsal-tip { font-size:12px; color:var(--accent-blue); line-height:1.6; }
+
+.summary-box {
+  background:rgba(212,168,83,0.06); border:1px solid var(--gold-dim);
+  border-radius:12px; padding:16px; margin-top:20px;
+  font-size:14px; line-height:1.8; color:var(--text); text-align:center;
+}
+
+.footer {
+  text-align:center; padding:24px 0; margin-top:20px;
+  border-top:1px solid var(--border);
+}
+.footer-text { font-size:11px; color:var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loadingArea">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">학업운을 분석하고 있습니다...</div>
+</div>
+
+<div class="result-wrap" id="resultArea">
+  <div class="header">
+    <div class="header-icon">📚</div>
+    <div class="header-title" id="headerTitle"></div>
+    <div class="header-sub">사주 기반 학업 성향 · 과목 적성 · 학습 전략</div>
+  </div>
+
+  <div class="section-card" id="sec0"></div>
+  <div class="section-card" id="sec1"></div>
+  <div class="section-card" id="sec2"></div>
+  <div class="section-card" id="sec3"></div>
+  <div class="section-card" id="sec4"></div>
+
+  <div class="summary-box" id="summaryBox"></div>
+
+  <div class="footer">
+    <div class="footer-text">복신당 · 학업운 분석 · 2025</div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+
+const params = new URLSearchParams(location.search);
+const payload = {
+  childName: params.get('childName'),
+  childYear: Number(params.get('childYear')),
+  childMonth: Number(params.get('childMonth')),
+  childDay: Number(params.get('childDay')),
+  calendar: params.get('calendar') || '양력',
+  childHour: params.get('childHour') || '',
+  gender: params.get('gender') || '남'
+};
+
+(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/api/child-study`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    renderResult(json.data.c2Study);
+  } catch (e) {
+    document.getElementById('loadingArea').innerHTML =
+      `<div style="color:#d45b5b;font-size:14px;">오류: ${e.message}</div>`;
+  }
+})();
+
+function renderResult(d) {
+  const s = d.sections;
+
+  document.getElementById('headerTitle').textContent = `${d.childName}의 학업운 분석`;
+
+  // 섹션 0: 학습 스타일
+  const s0 = s[0];
+  document.getElementById('sec0').innerHTML = `
+    <div class="section-emoji">${s0.emoji || '📖'}</div>
+    <div class="section-title">${s0.title}</div>
+    <div class="section-subtitle">${s0.subtitle || ''}</div>
+    <div class="info-row"><span class="info-label">학습 스타일</span><span class="info-value">${s0.style || ''}</span></div>
+    <div class="info-row"><span class="info-label">일간</span><span class="info-value">${s0.dayGan || ''} (${s0.element || ''})</span></div>
+    <div class="tip-box">${s0.description || ''}</div>
+    ${s0.method ? `<div class="tip-box" style="margin-top:8px;">📝 <b>학습법:</b> ${s0.method}</div>` : ''}
+    ${s0.focus_time ? `<div class="tip-box" style="margin-top:8px;">⏰ <b>집중 시간대:</b> ${s0.focus_time}</div>` : ''}
+    ${s0.environment_tip ? `<div class="tip-box" style="margin-top:8px;">🏠 <b>학습 환경:</b> ${s0.environment_tip}</div>` : ''}
+  `;
+
+  // 섹션 1: 과목 적성
+  const s1 = s[1];
+  const strongChips = (s1.ganSubjects?.strong || []).map(s => `<span class="chip">${s}</span>`).join('');
+  const weakChips = (s1.ganSubjects?.weak || []).map(s => `<span class="chip weak">${s}</span>`).join('');
+  const ohengStrongChips = (s1.ohengSubjects?.strong?.subjects || []).map(s => `<span class="chip">${s}</span>`).join('');
+  const ohengWeakChips = (s1.ohengSubjects?.weak?.subjects || []).map(s => `<span class="chip weak">${s}</span>`).join('');
+  document.getElementById('sec1').innerHTML = `
+    <div class="section-emoji">${s1.emoji || '🎯'}</div>
+    <div class="section-title">${s1.title}</div>
+    <div class="subject-group">
+      <div class="subject-label">✅ 일간 기반 강점 과목</div>
+      <div class="subject-chips">${strongChips}</div>
+      <div class="subject-label">⚠️ 보완 필요 과목</div>
+      <div class="subject-chips">${weakChips}</div>
+    </div>
+    <div class="subject-group" style="margin-top:16px;">
+      <div class="subject-label">🔥 오행 기반 강점 (${s1.ohengSubjects?.strong?.element || ''})</div>
+      <div class="subject-chips">${ohengStrongChips}</div>
+      <div class="subject-label">💧 오행 기반 보완 (${s1.ohengSubjects?.weak?.element || ''})</div>
+      <div class="subject-chips">${ohengWeakChips}</div>
+    </div>
+    ${s1.ohengSubjects?.strong?.desc ? `<div class="tip-box" style="margin-top:12px;">${s1.ohengSubjects.strong.desc}</div>` : ''}
+  `;
+
+  // 섹션 2: 학습 동기 + 신강/신약
+  const s2 = s[2];
+  document.getElementById('sec2').innerHTML = `
+    <div class="section-emoji">${s2.emoji || '💡'}</div>
+    <div class="section-title">${s2.title}</div>
+    <div class="motivation-box">
+      <div class="motivation-type">${s2.motivation?.type || ''}</div>
+      <div class="motivation-desc">${s2.motivation?.desc || ''}</div>
+    </div>
+    <div class="strength-box">
+      <div class="strength-item strong">
+        <div class="strength-label">📊 ${s2.strength?.result || ''}</div>
+        <div>${s2.strength?.strategy || ''}</div>
+      </div>
+      <div class="strength-item weak-s">
+        <div class="strength-label">📝 시험 전략</div>
+        <div>${s2.strength?.exam_tip || ''}</div>
+      </div>
+    </div>
+    ${s2.strength?.parent_role ? `<div class="tip-box" style="margin-top:12px;">👨‍👩‍👧 <b>부모 역할:</b> ${s2.strength.parent_role}</div>` : ''}
+  `;
+
+  // 섹션 3: 월별 학업 에너지
+  const s3 = s[3];
+  const months = s3.months || [];
+  const maxScore = 100;
+  let barHTML = '';
+  months.forEach(m => {
+    const hPct = Math.max(((m.score - 60) / 40) * 100, 5);
+    const color = m.score >= 85 ? 'var(--accent-green)' : m.score >= 70 ? 'var(--accent-blue)' : 'var(--accent-red)';
+    barHTML += `
+      <div class="month-col">
+        <div class="month-score">${m.score}</div>
+        <div class="month-bar-wrap">
+          <div class="month-bar" data-h="${hPct}" style="height:0%;background:${color};"></div>
+        </div>
+        <div class="month-label">${m.month}월</div>
+      </div>`;
+  });
+  const best = s3.highlight?.best || {};
+  const caution = s3.highlight?.caution || {};
+  document.getElementById('sec3').innerHTML = `
+    <div class="section-emoji">${s3.emoji || '📅'}</div>
+    <div class="section-title">${s3.title}</div>
+    <div class="month-chart">${barHTML}</div>
+    <div class="month-highlight">
+      <div class="month-best">🟢 최고의 달: ${best.month || ''}월 (${best.score || ''}점) — ${best.desc || ''}</div>
+      <div class="month-caution" style="margin-top:6px;">🔴 충전의 달: ${caution.month || ''}월 (${caution.score || ''}점) — ${caution.desc || ''}</div>
+    </div>
+  `;
+
+  // 섹션 4: 학업 신살
+  const s4 = s[4];
+  const sinsalHTML = (s4.sinsal || []).map(ss => `
+    <div class="sinsal-item">
+      <div class="sinsal-title">${ss.title || ss.name || ''}</div>
+      <div class="sinsal-desc">${ss.desc || ''}</div>
+      ${ss.tip ? `<div class="sinsal-tip">💡 ${ss.tip}</div>` : ''}
+    </div>
+  `).join('');
+  document.getElementById('sec4').innerHTML = `
+    <div class="section-emoji">${s4.emoji || '⭐'}</div>
+    <div class="section-title">${s4.title}</div>
+    ${sinsalHTML}
+  `;
+
+  // 요약
+  document.getElementById('summaryBox').textContent = d.summary || '';
+
+  // 표시 & 애니메이션
+  document.getElementById('loadingArea').style.display = 'none';
+  document.getElementById('resultArea').style.display = 'block';
+
+  document.querySelectorAll('.section-card').forEach((card, i) => {
+    setTimeout(() => card.classList.add('show'), 200 * i);
+  });
+
+  // 막대 애니메이션
+  setTimeout(() => {
+    document.querySelectorAll('.month-bar').forEach(bar => {
+      bar.style.height = bar.dataset.h + '%';
+    });
+  }, 800);
+}
+</script>
+</body>
+</html>
