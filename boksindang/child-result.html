@@ -439,7 +439,7 @@ function renderResult(d) {
   chartEl.innerHTML = '';
   const maxScore = Math.max(...s5.months.map(m => m.score));
   s5.months.forEach(m => {
-    const hPct = (m.score / maxScore) * 100;
+    const hPct = ((m.score - 60) / 40) * 100;
     const color = m.score >= 85 ? '#4CAF50' : m.score >= 70 ? '#c9a84c' : '#64b5f6';
     chartEl.innerHTML += `
       <div class="month-col">
