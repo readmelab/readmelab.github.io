@@ -234,6 +234,7 @@ body {
 
   
 </style>
+<script src="https://js.tosspayments.com/v2/standard"></script>  
 </head>
   
 <body>
@@ -399,6 +400,8 @@ body {
 </div>
 <script>
 const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+var BOK_API = API_BASE;  
 
 async function loadResult() {
   const params = new URLSearchParams(window.location.search);
