@@ -137,6 +137,22 @@ body {
   border-top:1px solid var(--border);
 }
 .footer-text { font-size:11px; color:var(--text-dim); }
+
+  /* 업셀링 */
+.upsell-section { max-width:440px; margin:30px auto; padding:0 16px; }
+.upsell-header { text-align:center; font-size:15px; color:var(--accent-pink); margin-bottom:16px; line-height:1.6; }
+.upsell-card, .upsell-bundle { padding:18px; margin-bottom:12px; background:var(--card); border:1px solid var(--border); border-radius:14px; position:relative; }
+.upsell-bundle { background:linear-gradient(135deg, var(--card), rgba(212,168,83,0.06)); border:1px solid var(--gold-dim); }
+.upsell-badge { position:absolute; top:-8px; right:16px; background:var(--accent-red); color:#fff; font-size:10px; padding:2px 10px; border-radius:10px; font-weight:700; }
+.upsell-title { font-size:14px; color:var(--gold); margin-bottom:4px; font-weight:700; }
+.upsell-desc { font-size:12px; color:var(--text-dim); margin-bottom:10px; line-height:1.6; }
+.upsell-price { margin-bottom:12px; font-size:13px; }
+.upsell-price del { color:var(--text-dim); margin-right:6px; }
+.upsell-price strong { color:var(--gold); font-size:16px; }
+.upsell-discount { display:inline-block; margin-left:6px; font-size:10px; color:var(--accent-red); background:rgba(212,91,91,0.1); padding:2px 8px; border-radius:8px; }
+.upsell-btn { display:block; width:100%; padding:12px; text-align:center; text-decoration:none; border-radius:10px; font-family:'Noto Serif KR',serif; font-size:13px; font-weight:700; cursor:pointer; border:none; background:rgba(212,168,83,0.15); color:var(--gold); border:1px solid rgba(212,168,83,0.3); }
+.upsell-btn.bundle { background:linear-gradient(135deg,var(--gold),#d4af37); color:#0a0a0f; border:none; }
+
 </style>
 </head>
 <body>
@@ -162,6 +178,55 @@ body {
   <div class="section-card" id="sec6"></div>
 
   <div class="summary-box" id="summaryBox"></div>
+
+  <!-- 업셀링: C2-B 궁합 구매자 전용 -->
+<div class="upsell-section">
+  <div class="upsell-header">
+    궁합을 알았으니, 이제 아이의 공부법이 궁금하지 않으세요?<br>
+    <span style="font-size:12px;color:var(--text-dim);">궁합 구매자 전용 특가</span>
+  </div>
+
+  <!-- 학업운 크로스셀 -->
+  <div class="upsell-card">
+    <div class="upsell-badge">궁합 구매자 특가</div>
+    <div class="upsell-title">📚 학업운 정밀 분석</div>
+    <div class="upsell-desc" style="margin-bottom:6px;">궁합에서 본 소통 스타일, <b>공부에는 어떻게 쓸까요?</b></div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;padding:10px;background:rgba(155,111,212,0.06);border-radius:8px;">
+      📖 사주 기반 학습 스타일 & 집중 시간대<br>
+      🎯 일간·오행 과목별 적성<br>
+      📅 월별 학업 에너지 캘린더<br>
+      🚀 미래 유망 진로 분석<br>
+      <span style="color:rgba(154,150,144,0.35);filter:blur(2px);user-select:none;">🔒 격국별 시험 전략 & 부모 역할</span>
+    </div>
+    <div class="upsell-price">
+      <del>₩14,800</del>
+      <strong>₩4,900</strong>
+      <span class="upsell-discount">67% 할인 · 궁합 구매자 한정</span>
+    </div>
+    <a class="upsell-btn" id="ctaStudy" href="#">학업운 분석 보기 →</a>
+  </div>
+
+  <!-- 종합 패키지 업셀 -->
+  <div class="upsell-bundle">
+    <div class="upsell-badge" style="background:var(--gold);color:#0a0a0f;">BEST</div>
+    <div class="upsell-title">👑 종합 패키지</div>
+    <div class="upsell-desc">기본사주 + 학업운 + 궁합 — 한번에 다 보기</div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;padding:10px;background:rgba(212,168,83,0.06);border-radius:8px;">
+      ✅ 기본 사주풀이 전체<br>
+      ✅ 학업운 정밀 분석 전체<br>
+      ✅ 보호자↔자녀 궁합 (이미 구매)<br>
+      ✅ 세 분석 교차 종합 리포트<br>
+      <b style="color:var(--gold);">→ 궁합에 이미 지불한 금액 반영!</b>
+    </div>
+    <div class="upsell-price">
+      <del>₩34,500</del>
+      <strong>₩9,900</strong>
+      <span class="upsell-discount">71% 할인 · 궁합 구매자 한정</span>
+    </div>
+    <a class="upsell-btn bundle" id="ctaBundle" href="#">종합 패키지 보기 →</a>
+  </div>
+</div>
+
 
   <div class="footer">
     <div class="footer-text">복신당 · 보호자-자녀 궁합 분석 </div>
