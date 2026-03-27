@@ -205,16 +205,21 @@ tr:hover td{background:rgba(201,168,76,.03)}
 
     <div class="section-title">2. 무료 카드 테스트</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-      <input id="testName" class="login-input" style="width:100px;padding:8px" placeholder="이름">
       <select id="testGender" class="login-input" style="width:auto;padding:8px"><option value="남">남</option><option value="여">여</option></select>
       <input id="testYear" class="login-input" style="width:80px;padding:8px" type="number" value="2020" placeholder="년">
       <input id="testMonth" class="login-input" style="width:60px;padding:8px" type="number" value="5" placeholder="월">
       <input id="testDay" class="login-input" style="width:60px;padding:8px" type="number" value="15" placeholder="일">
+      <input id="testHour" class="login-input" style="width:60px;padding:8px" type="text" value="" placeholder="시(선택)">
     </div>
-    <button class="action-btn btn-result" onclick="testFreeCard()" style="margin-bottom:12px">무료 카드 생성 테스트</button>
+    <button class="action-btn btn-result" onclick="testFreeCard()" style="margin-bottom:12px">무료 카드 생성</button>
     <div id="freeTestResult" style="margin-bottom:24px"></div>
 
-    <div class="section-title">3. 카카오 알림톡 테스트</div>
+    <div class="section-title">3. 유료 결과 페이지 테스트</div>
+    <div id="paidTestBtns" style="margin-bottom:12px"><span style="color:var(--sub);font-size:12px">주문 로딩 중...</span></div>
+    <button class="action-btn btn-copy" onclick="checkAllResults()" style="margin-bottom:12px">결과 API 일괄 체크</button>
+    <div id="paidTestResult" style="margin-bottom:24px"></div>
+
+    <div class="section-title">4. 카카오 알림톡 테스트</div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <input id="testPhone" class="login-input" style="width:160px;padding:8px" placeholder="01012345678">
       <button class="action-btn btn-kakao" onclick="testAlimtalk()" disabled>추후 추가 예정</button>
@@ -273,6 +278,7 @@ function switchTab(id,btn){
   btn.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
   if(id==='monitor') loadMonitor();
+  if(id==='test') loadPaidTestBtns();
 }
 
 function changePeriod(p,btn){
@@ -561,44 +567,151 @@ function renderHourlyChart(d){
 function runHealthCheck(){
   var el=document.getElementById('healthResult');
   el.innerHTML='<div style="color:var(--sub)">체크 중...</div>';
-  fetch(API.replace('/api',''))
+  var results=[];
+  var baseUrl=API.replace('/api','');
+
+  // 1) 서버 응답
+  var t0=Date.now();
+  fetch(baseUrl)
     .then(function(r){return r.json()})
     .then(function(d){
-      el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:12px">✅ 서버 정상 — '+d.service+' v'+d.version+'</div>';
+      var ms=Date.now()-t0;
+      results.push({name:'서버 응답',ok:true,ms:ms});
+      return checkFirestore();
     })
     .catch(function(e){
-      el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">❌ 서버 응답 없음: '+e.message+'</div>';
-    });
+      results.push({name:'서버 응답',ok:false,err:e.message});
+      return checkFirestore();
+    })
+    .then(function(){return checkDashboardAPI()})
+    .then(function(){return checkHourlyAPI()})
+    .then(function(){renderHealthResults(results)});
+
+  function checkFirestore(){
+    var t1=Date.now();
+    return fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=1d')
+      .then(function(r){return r.json()})
+      .then(function(d){
+        var ms=Date.now()-t1;
+        results.push({name:'Firestore 연결',ok:d.success,ms:ms});
+      })
+      .catch(function(e){results.push({name:'Firestore 연결',ok:false,err:e.message})});
+  }
+  function checkDashboardAPI(){
+    var t2=Date.now();
+    return fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=1d')
+      .then(function(){results.push({name:'대시보드 API',ok:true,ms:Date.now()-t2})})
+      .catch(function(e){results.push({name:'대시보드 API',ok:false,err:e.message})});
+  }
+  function checkHourlyAPI(){
+    var t3=Date.now();
+    return fetch(API+'/admin/hourly?pw='+encodeURIComponent(PW))
+      .then(function(){results.push({name:'시간별 API',ok:true,ms:Date.now()-t3})})
+      .catch(function(e){results.push({name:'시간별 API',ok:false,err:e.message})});
+  }
+  function renderHealthResults(res){
+    el.innerHTML=res.map(function(r){
+      var color=r.ok?'var(--green)':'var(--red)';
+      var icon=r.ok?'🟢':'🔴';
+      return '<div style="padding:6px 0;font-size:12px;color:'+color+'">'+icon+' <b>'+r.name+'</b> '+(r.ms?r.ms+'ms':'')+(r.err?' — '+r.err:'')+'</div>';
+    }).join('');
+  }
 }
 
 function testFreeCard(){
   var el=document.getElementById('freeTestResult');
   el.innerHTML='<div style="color:var(--sub)">생성 중...</div>';
   var body={
-    childName:document.getElementById('testName').value||'테스트',
+    childName:'테스트',
     childYear:Number(document.getElementById('testYear').value),
     childMonth:Number(document.getElementById('testMonth').value),
     childDay:Number(document.getElementById('testDay').value),
     gender:document.getElementById('testGender').value,
-    calendar:'양력',childHour:''
+    calendar:'양력',
+    childHour:document.getElementById('testHour').value||''
   };
   fetch(API+'/child-free',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
     .then(function(r){return r.json()})
     .then(function(d){
-      if(d.success||d.childName){
-        el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:12px;white-space:pre-wrap">✅ 성공\n이름: '+(d.childName||'')+'\n띠: '+(d.zodiac||'')+'\n계절: '+(d.season||'')+'\n요약: '+(d.oneLiner||'')+'</div>';
+      if(d.childName||d.success){
+        var imgUrl=d.imageUrl||'';
+        el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:12px;line-height:1.8">'+
+          '🟢 성공<br>'+
+          '<b>ID:</b> '+(d.zodiac||d.id||'')+'<br>'+
+          '<b>제목:</b> '+(d.cardTitle||d.title||'')+'<br>'+
+          (imgUrl?'<b>이미지:</b> <a href="'+imgUrl+'" target="_blank" style="color:var(--gold)">확인</a><br>':'')+
+          '<div style="margin-top:8px;color:var(--sub);font-size:11px;word-break:break-all">'+JSON.stringify(d).slice(0,300)+'...</div>'+
+          '</div>';
       } else {
-        el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">❌ 실패: '+JSON.stringify(d)+'</div>';
+        el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">🔴 실패: '+JSON.stringify(d)+'</div>';
       }
     })
     .catch(function(e){
-      el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">❌ 오류: '+e.message+'</div>';
+      el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">🔴 오류: '+e.message+'</div>';
     });
+}
+
+// 유료 결과 페이지 테스트 버튼 로드
+function loadPaidTestBtns(){
+  fetch(API+'/admin/orders?pw='+encodeURIComponent(PW))
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!d.success||!d.orders.length){
+        document.getElementById('paidTestBtns').innerHTML='<span style="color:var(--sub);font-size:12px">결제 주문 없음</span>';
+        return;
+      }
+      var paid=d.orders.filter(function(o){return o.status==='paid'||o.status==='done'});
+      if(!paid.length){
+        document.getElementById('paidTestBtns').innerHTML='<span style="color:var(--sub);font-size:12px">결제 완료 주문 없음</span>';
+        return;
+      }
+      var resultPages={C1:'child-result.html',C2A:'child-study.html',C2B:'child-compat.html',C3:'child-full.html'};
+      var productNames={C1:'기본풀이',C2A:'학업운',C2B:'궁합',C3:'종합'};
+      var html=paid.slice(0,5).map(function(o){
+        var page=resultPages[o.product]||'child-result.html';
+        var qs='?childName='+encodeURIComponent(o.childName||'')+'&childYear='+(o.childYear||'')+'&childMonth='+(o.childMonth||'')+'&childDay='+(o.childDay||'')+'&calendar='+encodeURIComponent(o.calendar||'양력')+'&childHour='+encodeURIComponent(o.childHour||'')+'&gender='+encodeURIComponent(o.gender||'');
+        if(o.product==='C2B'||o.product==='C3') qs+='&parentName='+encodeURIComponent(o.parentName||'')+'&parentYear='+(o.parentYear||'')+'&parentMonth='+(o.parentMonth||'')+'&parentDay='+(o.parentDay||'');
+        var url='https://readmelab.github.io/boksindang/'+page+qs;
+        return '<a class="action-btn btn-result" href="'+url+'" target="_blank" style="margin-right:4px;margin-bottom:4px">'+(productNames[o.product]||o.product)+' ('+o.orderId.slice(-6)+')</a>';
+      }).join('');
+      document.getElementById('paidTestBtns').innerHTML=html;
+    });
+}
+
+function checkAllResults(){
+  var el=document.getElementById('paidTestResult');
+  el.innerHTML='<div style="color:var(--sub)">API 체크 중...</div>';
+  var apis=['/child-basic','/child-study','/child-compat','/child-full'];
+  var names=['기본풀이','학업운','궁합','종합'];
+  var testBody={childName:'테스트',childYear:2020,childMonth:5,childDay:15,calendar:'양력',childHour:'',gender:'남',parentName:'부모',parentYear:1990,parentMonth:3,parentDay:10};
+  var results=[];
+  var chain=Promise.resolve();
+  apis.forEach(function(ep,i){
+    chain=chain.then(function(){
+      var t=Date.now();
+      return fetch(API+ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(testBody)})
+        .then(function(r){return r.json()})
+        .then(function(d){
+          var ms=Date.now()-t;
+          var ok=d.success!==false&&!d.error;
+          results.push({name:names[i]+' ('+ep+')',ok:ok,ms:ms});
+        })
+        .catch(function(e){results.push({name:names[i]+' ('+ep+')',ok:false,err:e.message})});
+    });
+  });
+  chain.then(function(){
+    el.innerHTML=results.map(function(r){
+      var color=r.ok?'var(--green)':'var(--red)';
+      var icon=r.ok?'🟢':'🔴';
+      return '<div style="padding:6px 0;font-size:12px;color:'+color+'">'+icon+' <b>'+r.name+'</b> '+(r.ms?r.ms+'ms':'')+(r.err?' — '+r.err:'')+'</div>';
+    }).join('');
+  });
 }
 
 function testAlimtalk(){
   showToast('카카오 알림톡은 추후 추가 예정입니다');
 }
+
 
 // ═══ 유틸 ═══
 function sc(label,value,unit,rev){
