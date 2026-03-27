@@ -158,6 +158,13 @@ body{font-family:'Noto Serif KR',serif;background:var(--bg);color:var(--text);mi
 </div>
 <script>
 const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+
+// ===== 방문 트래킹 =====
+fetch(API_BASE + '/api/track/visit', {
+  method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ page: 'child-full.html' })
+}).catch(function(){});
+  
 const params = new URLSearchParams(location.search);
 const payload = {
   childName: params.get('childName'),
