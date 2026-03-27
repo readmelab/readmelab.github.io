@@ -771,7 +771,18 @@ body {
       <input type="tel" id="parentPhone" placeholder="010-0000-0000" maxlength="13">
     </div>
 
+        <div class="form-row" style="margin-top:24px;">
+      <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+        <input type="checkbox" id="agreeCheck" style="width:18px; height:18px; margin-top:2px; accent-color:var(--gold); flex-shrink:0;">
+        <span style="font-size:12px; color:var(--text-dim); line-height:1.6;">
+          결과 발송을 위한 <span style="color:var(--gold); text-decoration:underline; cursor:pointer;" onclick="event.preventDefault(); document.getElementById('privacyModal').style.display='flex';">개인정보 수집·이용</span>에 동의합니다.
+        </span>
+      </label>
+    </div>
+    
     <button class="submit-btn" onclick="startReading()">무료 기질 카드 받기</button>
+
+
 
     <p class="notice-text">
       입력하신 정보는 결과 발송 외 다른 용도로 사용되지 않습니다.<br>
@@ -1046,6 +1057,7 @@ async function startReading() {
   const parentPhone = document.getElementById('parentPhone').value.trim();
 
   if (!childName) { showToast('자녀 이름을 입력해 주세요'); return; }
+  if (!document.getElementById('agreeCheck').checked) { showToast('개인정보 수집·이용에 동의해 주세요'); return; }
   if (!parentName) { showToast('보호자 이름을 입력해 주세요'); return; }
   if (!parentPhone || parentPhone.length < 12) { showToast('연락처를 입력해 주세요'); return; }
 
@@ -1158,7 +1170,7 @@ function showResult() {
    // 양육 팁 렌더링
   if (card.temperament) {
     document.getElementById('temperamentTitle').textContent = card.temperament.title;
-    document.getElementById('temperamentDesc').textContent = card.temperament.description;
+    document.getElementById('temperamentDesc').textContent = card.temperament.desc;
   }
   if (card.parenting) {
     const pkEl = document.getElementById('parentingKeywords');
@@ -1169,19 +1181,18 @@ function showResult() {
  
   
   // CTA 링크
+  const pi = r.parentInfo || {};
   const params = new URLSearchParams({
-    childName: r.childName,
-    childYear: r.childYear,
-    childMonth: r.childMonth,
-    childDay: r.childDay,
-    calendar: r.calendar,
-    childHour: r.childHour,
-    gender: r.gender,
-    parentName: r.parentName,
-    parentYear: r.parentYear,
-    parentMonth: r.parentMonth,
-    parentDay: r.parentDay,
-    parentPhone: r.parentPhone
+    childName: card.childName,
+    childYear: pi.parentYear || '',
+    childMonth: pi.parentMonth || '',
+    childDay: pi.parentDay || '',
+    gender: card.zodiac ? '' : '',
+    parentName: pi.parentName || '',
+    parentYear: pi.parentYear || '',
+    parentMonth: pi.parentMonth || '',
+    parentDay: pi.parentDay || '',
+    parentPhone: pi.parentPhone || ''
   });
   document.getElementById('ctaBtn').href = `${ORDER_PAGE}?${params.toString()}`;
 
@@ -1233,7 +1244,7 @@ function saveImage() {
   const card = document.getElementById('cardContainer');
   html2canvas(card, { useCORS: true, scale: 2 }).then(canvas => {
     const link = document.createElement('a');
-    link.download = `복신당_${window._result.childName}_기질카드.png`;
+    link.download = `복신당_${window._result.data.card.childName}_기질카드.png`;
     link.href = canvas.toDataURL();
     link.click();
     showToast('이미지가 저장되었습니다');
@@ -1264,5 +1275,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initDropdowns();
 });
 </script>
+  <!-- 개인정보 모달 -->
+<div id="privacyModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#2a1f3d; border:1px solid rgba(201,168,76,0.3); border-radius:14px; max-width:400px; width:100%; max-height:80vh; overflow-y:auto; padding:24px;">
+    <h3 style="color:#c9a84c; font-size:16px; margin-bottom:14px;">개인정보 수집·이용 동의</h3>
+    <div style="font-size:12px; color:#a89bb5; line-height:1.8;">
+      <p><strong style="color:#f0e6d3;">1. 수집 항목</strong><br>자녀: 이름, 생년월일, 성별<br>보호자: 이름, 생년월일, 연락처</p>
+      <p style="margin-top:10px;"><strong style="color:#f0e6d3;">2. 수집 목적</strong><br>사주 분석 결과 생성 및 발송, 유료 서비스 안내</p>
+      <p style="margin-top:10px;"><strong style="color:#f0e6d3;">3. 보유 기간</strong><br>서비스 제공 후 1년 또는 동의 철회 시 즉시 파기</p>
+      <p style="margin-top:10px;"><strong style="color:#f0e6d3;">4. 동의 거부 권리</strong><br>동의를 거부할 수 있으나, 거부 시 서비스 이용이 제한됩니다.</p>
+    </div>
+    <button onclick="document.getElementById('privacyModal').style.display='none'" style="width:100%; margin-top:18px; padding:12px; background:linear-gradient(135deg,#c9a84c,#d4af37); border:none; border-radius:10px; color:#1a1028; font-family:'Noto Serif KR',serif; font-size:14px; font-weight:700; cursor:pointer;">확인</button>
+  </div>
+</div>
 </body>
 </html>
