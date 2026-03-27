@@ -984,6 +984,13 @@ var BOK_API = API_BASE;
 const IMAGE_BASE = 'https://audio.readmelab.co.kr/boksindang/child';
 const ORDER_PAGE = 'child-order.html';
 
+// ===== 방문 트래킹 =====
+fetch(API_BASE + '/api/track/visit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ page: 'child-free.html' })
+}).catch(function(){});
+
 // ===== 결제 콜백 처리 =====
 (function handlePaymentCallback() {
   var urlParams = new URLSearchParams(window.location.search);
