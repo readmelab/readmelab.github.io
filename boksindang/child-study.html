@@ -278,6 +278,11 @@ const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.ap
 var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
 var BOK_API = API_BASE;
 
+fetch(API_BASE + '/api/track/visit', {
+  method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ page: 'child-study.html' })
+}).catch(function(){});  
+
 // ===== 결제 콜백 처리 =====
 (function handlePaymentCallback() {
   var urlParams = new URLSearchParams(window.location.search);
