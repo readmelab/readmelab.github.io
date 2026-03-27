@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>복신당 — 자녀·가족 사주 전문</title>
+<meta property="og:title" content="복신당 — 자녀·가족 사주 전문">
+<meta property="og:description" content="우리 아이의 타고난 기운을 읽어드립니다. 자녀 사주, 학업운, 부부 궁합까지.">
+<meta property="og:image" content="">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0a14;
+  --card: #1a1222;
+  --primary: #b48cde;
+  --primary-dark: #8a5cbf;
+  --accent: #e8c170;
+  --red: #c45050;
+  --text: #e8e0f0;
+  --sub: #9a8aaa;
+  --border: #2a2035;
+  --green: #5a9a6a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Serif KR', serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(180,140,222,.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 100%, rgba(232,193,112,.05) 0%, transparent 50%);
+}
+
+.container { max-width: 520px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+/* ── 헤더 ── */
+.site-header {
+  text-align: center;
+  padding: 48px 0 20px;
+}
+.brand-stamp {
+  width: 80px; height: 80px; margin: 0 auto 16px;
+  border: 2px solid rgba(180,140,222,.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  background: radial-gradient(circle, var(--card), var(--bg));
+}
+.brand-name {
+  font-size: 32px; font-weight: 900;
+  color: var(--primary);
+  letter-spacing: 8px;
+  text-shadow: 0 0 20px rgba(180,140,222,.3);
+}
+.brand-hanja {
+  font-size: 14px; color: var(--sub);
+  letter-spacing: 6px; margin-top: 4px;
+}
+.brand-tagline {
+  font-size: 13px; color: var(--sub);
+  margin-top: 12px; line-height: 1.7;
+}
+
+.ornament {
+  text-align: center; margin: 32px 0;
+  color: rgba(180,140,222,.25);
+  font-size: 13px; letter-spacing: 8px;
+}
+.divider {
+  height: 1px; margin: 32px 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(180,140,222,.2) 30%, rgba(180,140,222,.35) 50%, rgba(180,140,222,.2) 70%, transparent 100%);
+}
+
+/* ── 서비스 소개 ── */
+.intro-section {
+  text-align: center;
+  padding: 20px 0;
+}
+.intro-title {
+  font-size: 20px; font-weight: 900;
+  color: var(--text);
+  line-height: 1.6; margin-bottom: 16px;
+}
+.intro-desc {
+  font-size: 13px; color: var(--sub);
+  line-height: 1.9;
+}
+
+/* ── 상품 카드 ── */
+.product-section {
+  padding: 20px 0;
+}
+.section-label {
+  font-size: 11px; color: var(--primary);
+  letter-spacing: 4px; margin-bottom: 8px;
+  text-align: center;
+}
+.section-title {
+  font-size: 18px; font-weight: 700;
+  text-align: center; margin-bottom: 24px;
+}
+
+.product-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+.product-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(180,140,222,.1);
+}
+.product-card::before,
+.product-card::after {
+  content: ''; position: absolute;
+  width: 16px; height: 16px;
+  border-color: rgba(180,140,222,.2);
+  border-style: solid;
+}
+.product-card::before { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+.product-card::after { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+.product-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.badge-free { background: rgba(90,154,106,.2); color: var(--green); }
+.badge-basic { background: rgba(180,140,222,.15); color: var(--primary); }
+.badge-popular { background: rgba(232,193,112,.15); color: var(--accent); }
+.badge-premium { background: rgba(196,80,80,.15); color: var(--red); }
+
+.product-icon { font-size: 28px; margin-bottom: 8px; }
+.product-name { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+.product-price { font-size: 20px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+.product-price .original { text-decoration: line-through; color: var(--sub); font-size: 13px; font-weight: 400; margin-right: 6px; }
+.product-desc { font-size: 12px; color: var(--sub); line-height: 1.8; }
+.product-includes { margin-top: 10px; font-size: 11px; color: rgba(154,138,170,.7); line-height: 1.6; }
+
+/* ── 결제 모달 ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 360px; width: 100%;
+  text-align: center;
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 12px; right: 16px;
+  background: none; border: none;
+  color: var(--sub); font-size: 20px; cursor: pointer;
+}
+.modal-icon { font-size: 48px; margin-bottom: 12px; }
+.modal-title { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 8px; }
+.modal-desc { font-size: 13px; color: var(--sub); line-height: 1.7; }
+
+/* ── 안내 섹션 ── */
+.info-section {
+  padding: 20px 0;
+}
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.info-card-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--primary); margin-bottom: 10px;
+}
+.info-card-body {
+  font-size: 12px; color: var(--sub); line-height: 1.9;
+}
+
+/* ── 푸터 ── */
+.site-footer {
+  padding: 40px 0 30px;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+.footer-brand {
+  font-size: 16px; font-weight: 900;
+  color: var(--primary); letter-spacing: 4px;
+  margin-bottom: 16px; text-align: center;
+}
+.footer-info {
+  font-size: 11px; color: rgba(154,138,170,.5);
+  line-height: 2;
+  text-align: center;
+}
+.footer-info a { color: rgba(154,138,170,.5); text-decoration: none; }
+.footer-info a:hover { color: var(--primary); }
+.footer-legal {
+  margin-top: 16px; padding-top: 16px;
+  border-top: 1px solid rgba(42,32,53,.5);
+  font-size: 10px; color: rgba(154,138,170,.35);
+  text-align: center; line-height: 1.8;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 400px) {
+  .brand-name { font-size: 26px; letter-spacing: 6px; }
+  .product-name { font-size: 16px; }
+  .product-price { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ═══ 헤더 ═══ -->
+  <header class="site-header">
+    <div class="brand-stamp">🔮</div>
+    <div class="brand-name">복신당</div>
+    <div class="brand-hanja">福 神 堂</div>
+    <div class="brand-tagline">자녀 · 가족 사주 전문<br>우리 아이의 타고난 기운을 읽어드립니다</div>
+  </header>
+
+  <div class="ornament">— ◆ —</div>
+
+  <!-- ═══ 서비스 소개 ═══ -->
+  <div class="intro-section">
+    <div class="intro-title">아이의 사주 속에<br>숨겨진 가능성을 찾아드립니다</div>
+    <div class="intro-desc">
+      아이의 타고난 기질, 학업 적성, 교우관계 성향까지<br>
+      사주로 읽어 엄마에게 맞춤 양육 해법을 드립니다.<br><br>
+      복신당은 동양 역학에 기반한<br>
+      자녀·가족 전문 사주 풀이 서비스입니다.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ 상품 목록 ═══ -->
+  <div class="product-section">
+    <div class="section-label">서 비 스</div>
+    <div class="section-title">복신당 사주 풀이</div>
+
+    <!-- 무료 -->
+    <div class="product-card" onclick="openModal('free')">
+      <div class="product-badge badge-free">무료</div>
+      <div class="product-icon">🌱</div>
+      <div class="product-name">우리 아이 기질 카드</div>
+      <div class="product-price">무료</div>
+      <div class="product-desc">
+        자녀의 생년월일만 넣으면<br>
+        타고난 오행 기질을 한 장의 카드로 보여드립니다.
+      </div>
+      <div class="product-includes">
+        포함: 오행 기질 카드 · 한줄 기질 해석 · 오행 분포 그래프
+      </div>
+    </div>
+
+    <!-- 기본 사주 -->
+    <div class="product-card" onclick="openModal('basic')">
+      <div class="product-badge badge-basic">기본 풀이</div>
+      <div class="product-icon">📒</div>
+      <div class="product-name">자녀 기본 사주풀이</div>
+      <div class="product-price">4,900원</div>
+      <div class="product-desc">
+        아이의 사주를 풀어 타고난 기질, 월별 에너지 흐름,<br>
+        양육 핵심 키워드를 알려드립니다.
+      </div>
+      <div class="product-includes">
+        포함: 기질 상세 분석 · 오행 비율 · 월별 에너지 그래프 · 양육 키워드(해야 할 말·피할 말) · 수호 부적
+      </div>
+    </div>
+
+    <!-- 학업운 -->
+    <div class="product-card" onclick="openModal('academic')">
+      <div class="product-badge badge-popular">인기</div>
+      <div class="product-icon">📚</div>
+      <div class="product-name">학업운 정밀분석</div>
+      <div class="product-price"><span class="original">9,900원</span>7,900원</div>
+      <div class="product-desc">
+        아이의 두뇌 유형, 과목 적성, 시험운까지.<br>
+        엄마가 알아야 할 학업 솔루션을 드립니다.
+      </div>
+      <div class="product-includes">
+        포함: 두뇌 유형 분석 · 과목별 적성 · 월별 학업 에너지 · 시험운 캘린더 · 엄마 역할 가이드 · 맞춤 고민 답변 · 학업 수호 부적
+      </div>
+    </div>
+
+    <!-- 교우관계 -->
+    <div class="product-card" onclick="openModal('friends')">
+      <div class="product-badge badge-basic">관계</div>
+      <div class="product-icon">👫</div>
+      <div class="product-name">교우관계 분석</div>
+      <div class="product-price"><span class="original">9,900원</span>7,900원</div>
+      <div class="product-desc">
+        아이의 대인관계 성향, 갈등 패턴, 친구 사귀는 법.<br>
+        사춘기 전에 알아야 할 것들을 알려드립니다.
+      </div>
+      <div class="product-includes">
+        포함: 관계 성향 분석 · 갈등 패턴 · 또래 궁합 유형 · 엄마 대화법 · 맞춤 고민 답변
+      </div>
+    </div>
+
+    <!-- 엄마↔자녀 궁합 -->
+    <div class="product-card" onclick="openModal('compatibility')">
+      <div class="product-badge badge-basic">궁합</div>
+      <div class="product-icon">💞</div>
+      <div class="product-name">엄마↔자녀 궁합</div>
+      <div class="product-price"><span class="original">9,900원</span>7,900원</div>
+      <div class="product-desc">
+        엄마와 아이의 사주 궁합을 풀어<br>
+        소통 방식, 갈등 원인, 최적의 대화 시간을 알려드립니다.
+      </div>
+      <div class="product-includes">
+        포함: 오행 궁합 분석 · 소통 스타일 매칭 · 갈등 원인 · 대화 골든타임 · 맞춤 고민 답변
+      </div>
+    </div>
+
+    <!-- 진로·취업 -->
+    <div class="product-card" onclick="openModal('career')">
+      <div class="product-badge badge-basic">진로</div>
+      <div class="product-icon">🧭</div>
+      <div class="product-name">진로·취업운 분석</div>
+      <div class="product-price"><span class="original">9,900원</span>7,900원</div>
+      <div class="product-desc">
+        아이에게 맞는 진로 방향, 적성 분야,<br>
+        취업 시기와 직업 궁합을 분석합니다.
+      </div>
+      <div class="product-includes">
+        포함: 진로 적성 분석 · 직업 궁합 · 취업 타이밍 · 맞춤 고민 답변
+      </div>
+    </div>
+
+    <!-- 삼재·주의시기 -->
+    <div class="product-card" onclick="openModal('samjae')">
+      <div class="product-badge badge-premium">주의</div>
+      <div class="product-icon">⚠️</div>
+      <div class="product-name">삼재·주의시기 분석</div>
+      <div class="product-price"><span class="original">9,900원</span>7,900원</div>
+      <div class="product-desc">
+        아이의 건강·안전 주의 시기, 삼재 여부,<br>
+        피해야 할 달과 조심할 상황을 알려드립니다.
+      </div>
+      <div class="product-includes">
+        포함: 삼재 분석 · 월별 주의 캘린더 · 건강 취약 시기 · 대인 트러블 시기 · 맞춤 고민 답변
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ 이용 안내 ═══ -->
+  <div class="info-section">
+    <div class="section-label">안 내</div>
+    <div class="section-title">이용 안내</div>
+
+    <div class="info-card">
+      <div class="info-card-title">📋 서비스 이용 방법</div>
+      <div class="info-card-body">
+        1. 자녀의 생년월일시를 입력합니다.<br>
+        2. 무료 기질 카드를 확인합니다.<br>
+        3. 더 자세한 풀이를 원하시면 원하는 상품을 선택합니다.<br>
+        4. 결제 완료 후 즉시 결과를 확인할 수 있습니다.<br>
+        5. 결과는 고유 링크에 영구 저장되어 언제든 재열람 가능합니다.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">🔒 개인정보 처리</div>
+      <div class="info-card-body">
+        수집 항목: 이름, 연락처, 생년월일시<br>
+        수집 목적: 사주 풀이 서비스 제공 및 결과 발송<br>
+        보유 기간: 서비스 제공 후 1년<br>
+        동의 거부 시 서비스 이용이 제한될 수 있습니다.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">💳 결제 및 환불</div>
+      <div class="info-card-body">
+        결제 수단: 신용카드, 체크카드 (토스페이먼츠)<br>
+        환불 정책: 결과 열람 전 전액 환불 가능.<br>
+        결과 열람 후에는 디지털 콘텐츠 특성상 환불이 불가합니다.<br>
+        환불 문의: abkomp400@gmail.com
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">⚖️ 면책 고지</div>
+      <div class="info-card-body">
+        본 서비스는 동양 역학에 기반한 참고용 콘텐츠이며,<br>
+        의학적·법률적·재정적 조언을 대체하지 않습니다.<br>
+        모든 해석은 오락 및 자기 성찰 목적으로 제공됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 푸터 ═══ -->
+  <footer class="site-footer">
+    <div class="footer-brand">복신당 福神堂</div>
+    <div class="footer-info">
+      상호: 나를읽다연구소<br>
+      대표: 오동훈<br>
+      사업자등록번호: 347-12-03166<br>
+      통신판매업신고: 제2026-부산서구-0040호<br>
+      소재지: 부산광역시 서구 대영로38번길 11, 103동 1601호<br>
+      (서대신동1가, 대신 푸르지오)<br><br>
+      이메일: <a href="mailto:abkomp400@gmail.com">abkomp400@gmail.com</a><br>
+      연락처: <a href="tel:01098471152">010-9847-1152</a>
+    </div>
+    <div class="footer-legal">
+      ⓒ 2026 나를읽다연구소. All rights reserved.<br>
+      본 서비스의 모든 콘텐츠는 저작권법에 의해 보호됩니다.
+    </div>
+  </footer>
+
+</div>
+
+<!-- ═══ 결제 모달 ═══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-icon" id="modalIcon">🔮</div>
+    <div class="modal-title" id="modalTitle">서비스 준비 중</div>
+    <div class="modal-desc" id="modalDesc">
+      현재 서비스를 준비하고 있습니다.<br>
+      곧 만나뵐 수 있도록 하겠습니다.<br><br>
+      <span style="font-size:11px; color:rgba(154,138,170,.5);">문의: abkomp400@gmail.com</span>
+    </div>
+  </div>
+</div>
+
+<script>
+var modalData = {
+  free: {
+    icon: '🌱',
+    title: '무료 기질 카드 — 준비 중',
+    desc: '자녀의 타고난 오행 기질을 무료로 확인하는 서비스입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  },
+  basic: {
+    icon: '📒',
+    title: '자녀 기본 사주풀이 — 준비 중',
+    desc: '자녀 사주 기본 풀이 서비스 (4,900원)입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  },
+  academic: {
+    icon: '📚',
+    title: '학업운 정밀분석 — 준비 중',
+    desc: '학업운 정밀분석 서비스 (7,900원)입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  },
+  friends: {
+    icon: '👫',
+    title: '교우관계 분석 — 준비 중',
+    desc: '교우관계 분석 서비스 (7,900원)입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  },
+  compatibility: {
+    icon: '💞',
+    title: '엄마↔자녀 궁합 — 준비 중',
+    desc: '엄마와 자녀 궁합 분석 서비스 (7,900원)입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  },
+  career: {
+    icon: '🧭',
+    title: '진로·취업운 분석 — 준비 중',
+    desc: '진로·취업운 분석 서비스 (7,900원)입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  },
+  samjae: {
+    icon: '⚠️',
+    title: '삼재·주의시기 분석 — 준비 중',
+    desc: '삼재·주의시기 분석 서비스 (7,900원)입니다.<br>현재 준비 중이며 곧 오픈 예정입니다.'
+  }
+};
+
+function openModal(type) {
+  var data = modalData[type];
+  if (!data) return;
+  document.getElementById('modalIcon').textContent = data.icon;
+  document.getElementById('modalTitle').textContent = data.title;
+  document.getElementById('modalDesc').innerHTML = data.desc + '<br><br><span style="font-size:11px; color:rgba(154,138,170,.5);">문의: abkomp400@gmail.com</span>';
+  document.getElementById('modalOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) {
+    closeModal();
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
