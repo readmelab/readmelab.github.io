@@ -1200,6 +1200,13 @@ async function startReading() {
     if (!res.ok) throw new Error('서버 응답 오류');
     const data = await res.json();
     window._result = data;
+
+    // 무료 카드 생성 트래킹
+    fetch(API_BASE + '/api/track/card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).catch(function(){});
+    
   } catch (err) {
     console.error(err);
     showToast('분석 중 오류가 발생했습니다. 다시 시도해 주세요.');
