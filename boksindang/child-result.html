@@ -401,7 +401,118 @@ body {
 <script>
 const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
 var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
-var BOK_API = API_BASE;  
+var BOK_API = API_BASE;
+
+// ===== 결제 콜백 처리 =====
+(function handlePaymentCallback() {
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('payment') === 'success') {
+    var paymentKey = urlParams.get('paymentKey');
+    var orderId = urlParams.get('orderId');
+    var amount = urlParams.get('amount');
+    history.replaceState(null, '', window.location.pathname);
+    var orderData = sessionStorage.getItem('bok_order');
+    if (!orderData) { alert('주문 정보를 찾을 수 없습니다.'); return; }
+    var order = JSON.parse(orderData);
+    if (order.orderId !== orderId || order.price !== parseInt(amount)) {
+      alert('결제 정보가 일치하지 않습니다.');
+      sessionStorage.removeItem('bok_order');
+      return;
+    }
+    sessionStorage.removeItem('bok_order');
+    fetch(BOK_API + '/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderId, product: order.product, productName: order.productName,
+        price: order.price, childName: order.childName, childYear: order.childYear,
+        childMonth: order.childMonth, childDay: order.childDay, calendar: order.calendar,
+        childHour: order.childHour, gender: order.gender, parentName: order.parentName,
+        parentYear: order.parentYear, parentMonth: order.parentMonth, parentDay: order.parentDay,
+        parentPhone: order.parentPhone
+      })
+    })
+    .then(function() {
+      return fetch(BOK_API + '/payment/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentKey: paymentKey, orderId: orderId, amount: parseInt(amount) })
+      });
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var resultPage = 'child-study.html';
+        if (order.product === 'C2B') resultPage = 'child-compat.html';
+        else if (order.product === 'C3') resultPage = 'child-full.html';
+        var qs = '?childName=' + encodeURIComponent(order.childName)
+          + '&childYear=' + order.childYear + '&childMonth=' + order.childMonth
+          + '&childDay=' + order.childDay + '&calendar=' + encodeURIComponent(order.calendar)
+          + '&childHour=' + encodeURIComponent(order.childHour)
+          + '&gender=' + encodeURIComponent(order.gender);
+        if (order.product === 'C2B' || order.product === 'C3') {
+          qs += '&parentName=' + encodeURIComponent(order.parentName || '')
+            + '&parentYear=' + (order.parentYear || '') + '&parentMonth=' + (order.parentMonth || '')
+            + '&parentDay=' + (order.parentDay || '');
+        }
+        location.href = resultPage + qs;
+      } else { alert('결제 승인 실패: ' + (data.error || '')); }
+    })
+    .catch(function(err) { console.error(err); alert('결제 처리 중 오류가 발생했습니다.'); });
+    return;
+  }
+  if (urlParams.get('payment') === 'fail') {
+    history.replaceState(null, '', window.location.pathname);
+    alert('결제가 취소되었거나 실패했습니다.');
+  }
+})();
+
+// ===== 결제 요청 함수 =====
+function requestBoksinPayment(product, price, productName) {
+  var p = new URLSearchParams(window.location.search);
+  var childName = p.get('childName') || '';
+  var childYear = p.get('childYear') || '';
+  var childMonth = p.get('childMonth') || '';
+  var childDay = p.get('childDay') || '';
+  var calendar = p.get('calendar') || '양력';
+  var childHour = p.get('childHour') || '';
+  var gender = p.get('gender') || '남';
+  var parentName = p.get('parentName') || '';
+  var parentYear = p.get('parentYear') || '';
+  var parentMonth = p.get('parentMonth') || '';
+  var parentDay = p.get('parentDay') || '';
+  var parentPhone = p.get('parentPhone') || '';
+  if (!childName) { alert('자녀 정보를 찾을 수 없습니다.'); return; }
+  var orderId = 'BOK' + Date.now();
+  sessionStorage.setItem('bok_order', JSON.stringify({
+    orderId: orderId, product: product, productName: productName, price: price,
+    childName: childName, childYear: childYear, childMonth: childMonth, childDay: childDay,
+    calendar: calendar, childHour: childHour, gender: gender,
+    parentName: parentName, parentYear: parentYear, parentMonth: parentMonth,
+    parentDay: parentDay, parentPhone: parentPhone
+  }));
+  try {
+    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    var payment = tossPayments.payment({ customerKey: 'ANONYMOUS' });
+    payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: price },
+      orderId: orderId,
+      orderName: '복신당 ' + productName,
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card: { flowMode: 'DEFAULT' }
+    }).catch(function(e) {
+      if (e.code === 'USER_CANCEL') return;
+      alert('결제 오류: ' + (e.message || ''));
+    });
+  } catch(e) {
+    console.error(e);
+    alert('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
+  }
+}
+
+  
 
 async function loadResult() {
   const params = new URLSearchParams(window.location.search);
@@ -584,6 +695,25 @@ function animateBars() {
 }
 
 window.addEventListener('DOMContentLoaded', loadResult);
+// ===== 업셀 버튼 연결 (C1 → C2A, C2B, C3) =====
+document.addEventListener('DOMContentLoaded', function() {
+  var ctaStudy = document.getElementById('ctaStudy');
+  if (ctaStudy) ctaStudy.addEventListener('click', function(e) {
+    e.preventDefault();
+    requestBoksinPayment('C2A', 9900, '학업운 정밀 분석');
+  });
+  var ctaCompat = document.getElementById('ctaCompat');
+  if (ctaCompat) ctaCompat.addEventListener('click', function(e) {
+    e.preventDefault();
+    requestBoksinPayment('C2B', 9900, '보호자↔자녀 궁합');
+  });
+  var ctaBundle = document.getElementById('ctaBundle');
+  if (ctaBundle) ctaBundle.addEventListener('click', function(e) {
+    e.preventDefault();
+    requestBoksinPayment('C3', 14900, '종합 패키지');
+  });
+});
+  
 </script>
 </body>
 </html>
