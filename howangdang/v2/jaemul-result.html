@@ -291,6 +291,63 @@
   ::-webkit-scrollbar{width:3px;}
   ::-webkit-scrollbar-track{background:#0d0906;}
   ::-webkit-scrollbar-thumb{background:#c8a96e33;}
+
+ /* === V2 추가: 본풀이 업셀 === */
+.v2-bonpuli-upsell{
+  padding:28px 22px;margin:24px 0;
+  background:#110e09;border:1px solid #c8a96e33;
+  position:relative;
+}
+.v2-bonpuli-upsell::before,.v2-bonpuli-upsell::after{
+  content:'';position:absolute;width:20px;height:20px;
+  border-color:#c8a96e44;border-style:solid;
+}
+.v2-bonpuli-upsell::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+.v2-bonpuli-upsell::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+
+.v2-bp-title{
+  text-align:center;font-size:16px;font-weight:900;
+  color:#c8a96e;margin-bottom:20px;letter-spacing:2px;
+}
+.v2-bp-locked-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.v2-bp-locked-item{
+  display:flex;align-items:center;gap:14px;
+  padding:16px;background:rgba(13,9,6,.8);
+  border:1px dashed #c8a96e22;border-radius:8px;
+}
+.v2-bp-locked-icon{font-size:28px;flex-shrink:0;}
+.v2-bp-locked-label{font-size:13px;font-weight:700;color:#c8a96e;}
+.v2-bp-locked-blur{font-size:16px;font-weight:900;color:#e8dcc8;filter:blur(5px);-webkit-filter:blur(5px);user-select:none;margin-top:4px;}
+.v2-bp-locked-tag{font-size:10px;color:#8a7a60;margin-top:4px;}
+
+.v2-bp-price-area{text-align:center;margin-bottom:16px;}
+.v2-bp-badge{
+  display:inline-block;padding:4px 12px;
+  background:rgba(232,80,80,.15);border:1px solid rgba(232,80,80,.3);
+  border-radius:12px;font-size:10px;color:#e85050;font-weight:700;
+  margin-bottom:8px;
+}
+.v2-bp-price-old{font-size:13px;color:#6a5a4a;text-decoration:line-through;}
+.v2-bp-price-new{font-size:28px;font-weight:900;color:#c8a96e;margin-top:4px;}
+.v2-bp-price-sub{font-size:11px;color:#8a7a60;margin-top:4px;}
+
+.v2-bp-cta{
+  display:block;width:100%;padding:16px 0;
+  background:#c8a96e;color:#0d0906;
+  font-size:15px;font-weight:900;font-family:'Noto Serif KR',serif;
+  border:none;border-radius:6px;cursor:pointer;
+  letter-spacing:3px;text-align:center;text-decoration:none;
+  transition:background .3s;
+}
+.v2-bp-cta:hover{background:#b8994e;}
+
+.v2-hotong-bridge{
+  text-align:center;padding:20px 24px;
+  font-size:14px;font-weight:700;color:#e8dcc8;
+  line-height:1.8;
+}
+/* === V2 추가 끝 === */
+ 
 </style>
 </head>
 <body>
@@ -457,6 +514,53 @@
   </div>
 
   <div class="divider"></div>
+
+  <!-- === V2 추가: 할머니 브릿지 + 본풀이 업셀 === -->
+  <div class="v2-hotong-bridge fade-up">
+    할머니가 더 해줄 말이 있다네…<br>
+    <span style="font-size:12px;color:#8a7a5a;">재물 너머, 인생 전체를 읽어줄게.</span>
+  </div>
+
+  <div class="v2-bonpuli-upsell fade-up">
+    <div class="v2-bp-title">📜 본풀이 — 인생 전반 지침서</div>
+
+    <div class="v2-bp-locked-list">
+      <div class="v2-bp-locked-item">
+        <div class="v2-bp-locked-icon">💕</div>
+        <div>
+          <div class="v2-bp-locked-label">인연운 점수</div>
+          <div class="v2-bp-locked-blur">궁합 점수 87점 · 인연이 들어오는 시기…</div>
+          <div class="v2-bp-locked-tag">🔒 본풀이에서 확인</div>
+        </div>
+      </div>
+      <div class="v2-bp-locked-item">
+        <div class="v2-bp-locked-icon">🏥</div>
+        <div>
+          <div class="v2-bp-locked-label">건강 위험 시기</div>
+          <div class="v2-bp-locked-blur">2027년 하반기 주의 · 취약 장기: 간…</div>
+          <div class="v2-bp-locked-tag">🔒 본풀이에서 확인</div>
+        </div>
+      </div>
+      <div class="v2-bp-locked-item">
+        <div class="v2-bp-locked-icon">🔮</div>
+        <div>
+          <div class="v2-bp-locked-label">10년 대운 흐름</div>
+          <div class="v2-bp-locked-blur">2026-2035 대운: 전환기 → 상승기…</div>
+          <div class="v2-bp-locked-tag">🔒 본풀이에서 확인</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="v2-bp-price-area">
+      <div class="v2-bp-badge">재물풀이 구매자 전용 할인</div>
+      <div class="v2-bp-price-old">49,700원</div>
+      <div class="v2-bp-price-new">29,900원</div>
+      <div class="v2-bp-price-sub">40% 할인 · 3문 1:1 질의응답 포함</div>
+    </div>
+
+    <a class="v2-bp-cta" id="v2BpCta" href="#">본풀이 받기</a>
+  </div>
+  <!-- === V2 추가 끝 === -->
 
   <div class="cta-section fade-up">
     <a class="cta-btn" id="ctaBtn" href="#">본풀이 · 인생 전반 지침서</a>
@@ -667,7 +771,14 @@
     document.getElementById('secHoTong').textContent=s.wealthHoTong||'';
 
     // CTA
-    document.getElementById('ctaBtn').href='chogyeon.html?upgrade=HW3&from='+(d.orderId||'');
+    // 기존 CTA (v2 폴더 경로 반영)
+    document.getElementById('ctaBtn').href='../chogyeon.html?upgrade=HW3&from='+(d.orderId||'');
+
+    // V2 추가: 본풀이 업셀 CTA
+    var bpCta = document.getElementById('v2BpCta');
+    if (bpCta) {
+      bpCta.href = '../chogyeon.html?upgrade=HW3&from=' + (d.orderId || getOrderId());
+    }
 
     // 표시
     document.getElementById('resultWrap').style.display='block';
