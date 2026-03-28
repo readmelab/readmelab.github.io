@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕당 초견 - 풀이 결과</title>
+<meta property="og:title" content="호왕당 초견 - 네 사주를 풀어주마">
+<meta property="og:description" content="호왕이 직접 봐준 사주 풀이">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/door.jpeg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
+
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%)}
+
+.logo-text{font-size:32px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.5);letter-spacing:6px;margin-bottom:4px}
+.logo-sub{font-size:12px;color:#8a7a5a;margin-bottom:24px;letter-spacing:2px}
+
+.result-card{max-width:400px;width:100%;background:linear-gradient(180deg,#1a1208 0%,#0a0a06 100%);border:1px solid #2a1a0a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.1);margin-bottom:24px}
+
+.result-header{padding:28px 24px 20px;text-align:center;border-bottom:1px solid #1a1208;background:radial-gradient(ellipse at center,rgba(197,151,91,.05) 0%,transparent 70%)}
+.result-name{font-size:13px;color:#8a7a5a;margin-bottom:6px}
+.result-daygan{font-size:42px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.3);margin-bottom:4px}
+.result-daygan-desc{font-size:12px;color:#8a7a5a;margin-bottom:16px}
+.result-pillars{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.result-pillar{width:56px;text-align:center;padding:8px 4px;background:rgba(26,16,8,.8);border:1px solid #2a1a0a;border-radius:6px}
+.result-pillar-label{font-size:9px;color:#6a5a4a;margin-bottom:3px}
+.result-pillar-hanja{font-size:16px;color:#c5975b;font-weight:700}
+.result-pillar-hangul{font-size:9px;color:#6a5a4a;margin-top:2px}
+.result-summary{font-size:15px;font-weight:700;color:#e8d5b0;line-height:1.7;padding:0 8px}
+
+.section{padding:24px;border-top:1px solid #1a1208}
+.section-num{font-size:10px;color:#6a5a4a;letter-spacing:2px;margin-bottom:6px}
+.section-title{font-size:16px;font-weight:900;color:#c5975b;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-icon{font-size:18px}
+.section-body{font-size:13.5px;color:#a89878;line-height:2}
+
+.gauge-area{padding:20px 24px;border-top:1px solid #1a1208}
+.gauge-label-text{font-size:10px;color:#6a5a4a;margin-bottom:10px}
+.gauge-row{display:flex;align-items:center;margin-bottom:6px;gap:8px}
+.gauge-label{width:20px;font-size:13px;text-align:center}
+.gauge-bar-bg{flex:1;height:6px;background:#1a1208;border-radius:3px;overflow:hidden}
+.gauge-bar{height:100%;border-radius:3px;transition:width 1.5s ease;width:0}
+.gauge-pct{width:30px;font-size:10px;color:#6a5a4a;text-align:right}
+.g-wood .gauge-bar{background:#4a8c5c}
+.g-fire .gauge-bar{background:#c44a4a}
+.g-earth .gauge-bar{background:#b8963a}
+.g-metal .gauge-bar{background:#a0a0b0}
+.g-water .gauge-bar{background:#4a6a9c}
+
+.hotong-section{padding:24px;border-top:1px solid #1a1208;background:rgba(139,26,26,.03)}
+.hotong-title{font-size:16px;font-weight:900;color:#e85050;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.hotong-body{font-size:14px;color:#e8d5b0;line-height:2;font-weight:700}
+
+.cta-section{padding:24px;border-top:1px solid #1a1208;text-align:center}
+.cta-text{font-size:13px;color:#8a7a5a;line-height:1.8;margin-bottom:16px}
+.cta-btn{display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;text-decoration:none;letter-spacing:2px;transition:all .3s}
+.cta-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+
+.save-section{padding:20px 24px;border-top:1px solid #1a1208;text-align:center}
+.save-text{font-size:12px;color:#6a5a4a;line-height:1.8;margin-bottom:12px}
+.save-btn{display:inline-block;padding:10px 24px;background:none;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:12px;cursor:pointer;transition:all .3s}
+.save-btn:hover{border-color:#c5975b;color:#c5975b}
+.save-toast{display:none;margin-top:8px;font-size:11px;color:#c5975b}
+
+.watermark{text-align:center;padding:12px;font-size:11px;color:#2a1a0a}
+
+.loading{text-align:center;padding:80px 20px}
+.loading-text{font-size:16px;color:#c5975b;animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.error-box{text-align:center;padding:60px 20px}
+.error-text{font-size:14px;color:#8a7a5a;line-height:1.8}
+
+.back-btn{margin-top:20px;padding:10px 24px;background:none;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block}
+
+/* === V2 추가: 잠금 티저 카드 + 2-택 업셀 === */
+.v2-locked-card{
+  padding:24px;border-top:1px solid #1a1208;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:all .3s;
+}
+.v2-locked-card:hover{background:rgba(197,151,91,.03);}
+.v2-locked-inner{
+  display:flex;align-items:center;gap:16px;
+  padding:16px;background:rgba(26,16,8,.6);
+  border:1px dashed #c8a96e33;border-radius:8px;
+}
+.v2-locked-icon{font-size:28px;flex-shrink:0;}
+.v2-locked-info{}
+.v2-locked-label{font-size:14px;font-weight:700;color:#c5975b;margin-bottom:4px;}
+.v2-locked-value{font-size:20px;font-weight:900;color:#e8d5b0;filter:blur(6px);-webkit-filter:blur(6px);user-select:none;}
+.v2-locked-hint{font-size:11px;color:#8a7a5a;margin-top:6px;}
+
+.v2-upsell-section{
+  padding:28px 24px;border-top:1px solid #c8a96e22;
+  background:linear-gradient(180deg,rgba(26,16,8,.3),rgba(10,10,6,.6));
+}
+.v2-upsell-title{
+  text-align:center;font-size:15px;font-weight:900;
+  color:#c5975b;margin-bottom:6px;letter-spacing:2px;
+}
+.v2-upsell-sub{
+  text-align:center;font-size:12px;color:#8a7a5a;
+  margin-bottom:20px;line-height:1.6;
+}
+.v2-upsell-grid{display:flex;gap:12px;margin-bottom:20px;}
+.v2-upsell-item{
+  flex:1;padding:20px 14px;
+  background:rgba(10,10,6,.8);border:1px solid #c8a96e22;
+  border-radius:10px;text-align:center;
+  transition:all .3s;cursor:pointer;position:relative;
+}
+.v2-upsell-item:hover{border-color:#c5975b;transform:translateY(-2px);}
+.v2-upsell-badge{
+  position:absolute;top:-8px;right:-4px;
+  padding:3px 8px;background:#e85050;
+  font-size:9px;color:#fff;font-weight:700;
+  border-radius:10px;letter-spacing:1px;
+}
+.v2-upsell-icon{font-size:32px;margin-bottom:10px;}
+.v2-upsell-name{font-size:14px;font-weight:900;color:#c5975b;margin-bottom:6px;}
+.v2-upsell-desc{font-size:11px;color:#a89878;line-height:1.6;margin-bottom:12px;}
+.v2-upsell-price-old{font-size:12px;color:#6a5a4a;text-decoration:line-through;}
+.v2-upsell-price-new{font-size:22px;font-weight:900;color:#c5975b;margin-top:2px;}
+.v2-upsell-btn{
+  display:block;width:100%;margin-top:12px;padding:10px 0;
+  background:linear-gradient(135deg,#8B1A1A,#5a1010);
+  border:1px solid #c5975b;border-radius:6px;
+  color:#e8d5b0;font-family:'Noto Serif KR',serif;
+  font-size:13px;font-weight:700;text-decoration:none;
+  text-align:center;letter-spacing:1px;
+}
+.v2-sample-preview{
+  margin-top:16px;padding:16px;
+  background:rgba(26,16,8,.4);border:1px solid #2a1a0a;border-radius:8px;
+  text-align:center;
+}
+.v2-sample-title{font-size:11px;color:#8a7a5a;margin-bottom:10px;}
+.v2-sample-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.v2-sample-chip{
+  padding:6px 10px;background:rgba(10,10,6,.8);
+  border:1px solid #c8a96e1a;border-radius:4px;
+  font-size:10px;color:#c5975b;
+}
+/* === V2 추가 끝 === */
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="logo-text">虎王堂</div>
+  <div class="logo-sub">초견 初見</div>
+
+  <div class="loading" id="loadingArea">
+    <div class="loading-text">호왕이 네 사주를 보고 있다...</div>
+  </div>
+
+  <div class="error-box" id="errorArea" style="display:none">
+    <div class="error-text" id="errorText"></div>
+    <a class="back-btn" href="../howangpae.html">호왕패 다시 뽑기</a>
+  </div>
+
+  <div class="result-card" id="resultCard" style="display:none">
+
+    <div class="result-header">
+      <div class="result-name" id="rName"></div>
+      <div class="result-daygan" id="rDayGan"></div>
+      <div class="result-daygan-desc" id="rDayGanDesc"></div>
+      <div class="result-pillars">
+        <div class="result-pillar"><div class="result-pillar-label">시주</div><div class="result-pillar-hanja" id="rHour"></div><div class="result-pillar-hangul" id="rHourH"></div></div>
+        <div class="result-pillar"><div class="result-pillar-label">일주</div><div class="result-pillar-hanja" id="rDay"></div><div class="result-pillar-hangul" id="rDayH"></div></div>
+        <div class="result-pillar"><div class="result-pillar-label">월주</div><div class="result-pillar-hanja" id="rMonth"></div><div class="result-pillar-hangul" id="rMonthH"></div></div>
+        <div class="result-pillar"><div class="result-pillar-label">년주</div><div class="result-pillar-hanja" id="rYear"></div><div class="result-pillar-hangul" id="rYearH"></div></div>
+      </div>
+      <div class="result-summary" id="rSummary"></div>
+    </div>
+
+    <!-- 壹 타고난 성정 (기존) -->
+    <div class="section">
+      <div class="section-num">壹</div>
+      <div class="section-title"><span class="section-icon">🐯</span>타고난 성정</div>
+      <div class="section-body" id="rPersonality"></div>
+    </div>
+
+    <!-- 오행 게이지 (기존) -->
+    <div class="gauge-area">
+      <div class="gauge-label-text">오행 분포</div>
+      <div class="gauge-row g-wood"><div class="gauge-label">木</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWood"></div></div><div class="gauge-pct" id="gWoodP"></div></div>
+      <div class="gauge-row g-fire"><div class="gauge-label">火</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gFire"></div></div><div class="gauge-pct" id="gFireP"></div></div>
+      <div class="gauge-row g-earth"><div class="gauge-label">土</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gEarth"></div></div><div class="gauge-pct" id="gEarthP"></div></div>
+      <div class="gauge-row g-metal"><div class="gauge-label">金</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gMetal"></div></div><div class="gauge-pct" id="gMetalP"></div></div>
+      <div class="gauge-row g-water"><div class="gauge-label">水</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWater"></div></div><div class="gauge-pct" id="gWaterP"></div></div>
+    </div>
+
+    <!-- 貳 재물 성향 (기존) -->
+    <div class="section">
+      <div class="section-num">貳</div>
+      <div class="section-title"><span class="section-icon">💰</span>재물 성향</div>
+      <div class="section-body" id="rWealth"></div>
+    </div>
+
+    <!-- === V2 추가: 잠금 티저 카드 1 — 돈 그릇 === -->
+    <div class="v2-locked-card" id="v2Lock1" onclick="document.getElementById('v2UpsellSection').scrollIntoView({behavior:'smooth'})">
+      <div class="v2-locked-inner">
+        <div class="v2-locked-icon">🏺</div>
+        <div class="v2-locked-info">
+          <div class="v2-locked-label">내 돈 그릇 크기</div>
+          <div class="v2-locked-value" id="v2LockVal1">용량 72% · 큰 항아리형</div>
+          <div class="v2-locked-hint">🔒 재물풀이에서 확인</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 參 대인관계 성향 (기존) -->
+    <div class="section">
+      <div class="section-num">參</div>
+      <div class="section-title"><span class="section-icon">🤝</span>대인관계 성향</div>
+      <div class="section-body" id="rRelationship"></div>
+    </div>
+
+    <!-- 肆 건강 주의점 (기존) -->
+    <div class="section">
+      <div class="section-num">肆</div>
+      <div class="section-title"><span class="section-icon">🏥</span>건강 주의점</div>
+      <div class="section-body" id="rHealth"></div>
+    </div>
+
+    <!-- === V2 추가: 잠금 티저 카드 2 — 월별 재물 타이밍 === -->
+    <div class="v2-locked-card" id="v2Lock2" onclick="document.getElementById('v2UpsellSection').scrollIntoView({behavior:'smooth'})">
+      <div class="v2-locked-inner">
+        <div class="v2-locked-icon">📅</div>
+        <div class="v2-locked-info">
+          <div class="v2-locked-label">2026년 월별 돈 들어오는 타이밍</div>
+          <div class="v2-locked-value">3월 ★★★★★ · 7월 ★★★★☆ · 11월 …</div>
+          <div class="v2-locked-hint">🔒 재물풀이에서 확인</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 伍 2026년 운 (기존) -->
+    <div class="section">
+      <div class="section-num">伍</div>
+      <div class="section-title"><span class="section-icon">📅</span>2026년 운</div>
+      <div class="section-body" id="rYear2026"></div>
+    </div>
+
+    <!-- 호통 (기존) -->
+    <div class="hotong-section">
+      <div class="hotong-title"><span class="section-icon">🔥</span>호왕의 호통</div>
+      <div class="hotong-body" id="rHoTong"></div>
+    </div>
+
+    <!-- === V2 추가: 2-택 업셀 영역 === -->
+    <div class="v2-upsell-section" id="v2UpsellSection">
+      <div class="v2-upsell-title">🔮 더 깊이 보고 싶다면</div>
+      <div class="v2-upsell-sub">초견은 여기까지다. 네 돈 길, 인생 길이 더 궁금하면 — </div>
+
+      <div class="v2-upsell-grid">
+        <!-- 재물풀이 카드 -->
+        <div class="v2-upsell-item" id="v2CardJaemul">
+          <div class="v2-upsell-badge">추천</div>
+          <div class="v2-upsell-icon">🏺</div>
+          <div class="v2-upsell-name">재물풀이</div>
+          <div class="v2-upsell-desc">돈 그릇·통로·누수<br>월별 재물운·투자 적성<br>3년 흐름</div>
+          <div class="v2-upsell-price-old">19,800원</div>
+          <div class="v2-upsell-price-new">14,900원</div>
+          <a class="v2-upsell-btn" id="v2BtnJaemul" href="#">재물풀이 받기</a>
+        </div>
+
+        <!-- 본풀이 카드 -->
+        <div class="v2-upsell-item" id="v2CardBonpuli">
+          <div class="v2-upsell-icon">📜</div>
+          <div class="v2-upsell-name">본풀이</div>
+          <div class="v2-upsell-desc">재물 + 건강·인연·진로<br>10년 대운 분석<br>3문 1:1 질의응답</div>
+          <div class="v2-upsell-price-old">49,700원</div>
+          <div class="v2-upsell-price-new">39,900원</div>
+          <a class="v2-upsell-btn" id="v2BtnBonpuli" href="#">본풀이 받기</a>
+        </div>
+      </div>
+
+      <!-- 재물풀이 미리보기 -->
+      <div class="v2-sample-preview">
+        <div class="v2-sample-title">📊 재물풀이에 포함된 분석 항목</div>
+        <div class="v2-sample-row">
+          <div class="v2-sample-chip">💰 재물 등급</div>
+          <div class="v2-sample-chip">🏺 돈 그릇</div>
+          <div class="v2-sample-chip">🚪 돈의 통로</div>
+          <div class="v2-sample-chip">💧 누수 패턴</div>
+          <div class="v2-sample-chip">📈 투자 적성</div>
+          <div class="v2-sample-chip">💼 직업 궁합</div>
+          <div class="v2-sample-chip">📅 월별 재물운</div>
+          <div class="v2-sample-chip">📿 돈 습관 처방</div>
+        </div>
+      </div>
+    </div>
+    <!-- === V2 추가 끝 === -->
+
+    <!-- 링크 저장 안내 (기존) -->
+    <div class="save-section">
+      <div class="save-text">이 풀이는 나만의 고유 링크에 영구 저장됩니다.<br>즐겨찾기에 추가하거나 링크를 복사해 평생 간직하세요.</div>
+      <button class="save-btn" id="copyLinkBtn">🔗 내 풀이 링크 복사</button>
+      <div class="save-toast" id="saveToast">링크가 복사되었습니다!</div>
+    </div>
+
+    <div class="watermark">虎王堂 · 호왕당</div>
+  </div>
+
+  <a class="back-btn" id="backBtn" href="../howangpae.html" style="display:none">호왕패 다시 뽑기</a>
+</div>
+
+<script>
+const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+
+const dayGanNames = {
+  '甲': '갑목 · 큰 나무', '乙': '을목 · 풀과 덩굴', '丙': '병화 · 태양',
+  '丁': '정화 · 촛불', '戊': '무토 · 큰 산', '己': '기토 · 기름진 밭',
+  '庚': '경금 · 큰 칼', '辛': '신금 · 보석', '壬': '임수 · 큰 강', '癸': '계수 · 비와 이슬'
+};
+
+(async function init() {
+  const params = new URLSearchParams(location.search);
+  const orderId = params.get('id');
+
+  if (!orderId) {
+    showError('주문번호가 없습니다.');
+    return;
+  }
+
+  try {
+    let result = null;
+    const existRes = await fetch(API_BASE + '/result/' + orderId);
+    const existData = await existRes.json();
+
+    if (existData.success && existData.data && existData.data.sections) {
+      result = existData.data;
+    } else {
+      const genRes = await fetch(API_BASE + '/api/chogyeon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      });
+      const genData = await genRes.json();
+      if (!genData.success) {
+        showError(genData.error || '풀이 생성에 실패했습니다.');
+        return;
+      }
+      result = genData.result;
+    }
+
+    renderResult(result);
+
+  } catch (e) {
+    showError('서버 연결에 실패했습니다.');
+  }
+})();
+
+function renderResult(r) {
+  document.getElementById('loadingArea').style.display = 'none';
+  document.getElementById('resultCard').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'inline-block';
+
+  document.getElementById('rName').textContent = (r.userName || '') + '의 사주';
+  document.getElementById('rDayGan').textContent = r.dayGan;
+  document.getElementById('rDayGanDesc').textContent = dayGanNames[r.dayGan] || '';
+
+  document.getElementById('rYear').textContent = r.fourPillars.year;
+  document.getElementById('rMonth').textContent = r.fourPillars.month;
+  document.getElementById('rDay').textContent = r.fourPillars.day;
+  document.getElementById('rHour').textContent = r.fourPillars.hour || '—';
+  document.getElementById('rYearH').textContent = r.fourPillarsHangul.year;
+  document.getElementById('rMonthH').textContent = r.fourPillarsHangul.month;
+  document.getElementById('rDayH').textContent = r.fourPillarsHangul.day;
+  document.getElementById('rHourH').textContent = r.fourPillarsHangul.hour || '모름';
+
+  document.getElementById('rSummary').textContent = r.sections.summary;
+  document.getElementById('rPersonality').textContent = r.sections.personality;
+  document.getElementById('rWealth').textContent = r.sections.wealth;
+  document.getElementById('rRelationship').textContent = r.sections.relationship;
+  document.getElementById('rHealth').textContent = r.sections.health;
+  document.getElementById('rYear2026').textContent = r.sections.yearFortune;
+  document.getElementById('rHoTong').textContent = r.sections.hoTong;
+
+  // 오행 게이지 애니메이션
+  setTimeout(() => {
+    const g = r.elementGauge;
+    ['wood','fire','earth','metal','water'].forEach(el => {
+      const id = el.charAt(0).toUpperCase() + el.slice(1);
+      document.getElementById('g' + id).style.width = (g[el]||0) + '%';
+      document.getElementById('g' + id + 'P').textContent = (g[el]||0) + '%';
+    });
+  }, 300);
+
+  // === V2: 업셀 링크 설정 ===
+  var oid = new URLSearchParams(location.search).get('id');
+  document.getElementById('v2BtnJaemul').href = '../chogyeon.html?upgrade=HW2&from=' + oid;
+  document.getElementById('v2BtnBonpuli').href = '../chogyeon.html?upgrade=HW3&from=' + oid;
+}
+
+// 링크 복사 기능 (기존 동일)
+document.getElementById('copyLinkBtn').addEventListener('click', function() {
+  var url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      showSaveToast();
+    }).catch(function() {
+      fallbackCopy(url);
+    });
+  } else {
+    fallbackCopy(url);
+  }
+});
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showSaveToast();
+}
+
+function showSaveToast() {
+  var toast = document.getElementById('saveToast');
+  toast.style.display = 'block';
+  setTimeout(function() { toast.style.display = 'none'; }, 2000);
+}
+
+function showError(msg) {
+  document.getElementById('loadingArea').style.display = 'none';
+  document.getElementById('errorArea').style.display = 'block';
+  document.getElementById('errorText').textContent = msg;
+}
+</script>
+<script>
+fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({ page: 'chogyeon-result-v2', referrer: document.referrer, userAgent: navigator.userAgent })
+}).catch(()=>{});
+</script>
+</body>
+</html>
