@@ -494,7 +494,7 @@ function renderOrders(){
   var list=document.getElementById('orderList');
   if(!orders.length){list.innerHTML='<div class="empty">주문이 없습니다</div>';return}
 
-  var resultPages={HW1:'chogyeon-result.html',HW2:'jaemul-result.html',HW3:'bonpuli-result.html'};
+  var resultPages={HW1:'v2/chogyeon-result.html',HW2:'v2/jaemul-result.html',HW3:'v2/bonpuli-result.html'};
 
   list.innerHTML=orders.map(function(o){
     var sc=o.status==='done'?'s-done':(o.status==='processing'?'s-processing':(o.paymentStatus==='confirmed'?'s-confirmed':'s-waiting'));
