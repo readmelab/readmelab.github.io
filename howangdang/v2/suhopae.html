@@ -1,1 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕 수호패 - 虎王堂</title>
+<meta property="og:title" content="호왕 수호패 - 부족한 기운을 채워주마">
+<meta property="og:description" content="생년월일만 넣어라. 호왕이 네 수호신을 내려주마.">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/suhopae/wood.jpeg">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
 
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
+
+/* ── 입력 화면 ── */
+#screen-input{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at center,#1a1008 0%,#000 70%);position:relative}
+#screen-input::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('https://audio.readmelab.co.kr/howang/door.jpeg') center/cover no-repeat;opacity:.15;z-index:0}
+#screen-input>*{position:relative;z-index:1}
+
+.logo-text{font-size:42px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.5);letter-spacing:8px;margin-bottom:8px}
+.logo-sub{font-size:14px;color:#8a7a5a;margin-bottom:40px;letter-spacing:2px}
+
+.form-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:16px}
+.form-row{display:flex;gap:8px}
+
+label{font-size:13px;color:#8a7a5a;margin-bottom:4px;display:block}
+
+select{flex:1;padding:14px 4px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;-webkit-appearance:none;text-align:center}
+select:focus{border-color:#c5975b}
+select option{background:#1a1008;color:#e8d5b0}
+
+.gender-row{display:flex;gap:8px}
+.gender-btn{flex:1;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:16px;cursor:pointer;transition:all .3s}
+.gender-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+
+.submit-btn{margin-top:12px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
+.submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+
+/* ── 로딩 화면 ── */
+#screen-loading{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
+.door-container{width:100%;max-width:400px;position:relative}
+.door-img{width:100%;border-radius:4px;transition:transform 1s ease-in-out,opacity 0.6s ease}
+.door-img.zoom{transform:scale(1.8);opacity:0}
+.loading-text{position:absolute;bottom:15%;left:0;right:0;text-align:center;font-size:16px;color:#c5975b;text-shadow:0 0 10px rgba(197,151,91,.8);opacity:0;transition:opacity .5s}
+.loading-text.show{opacity:1}
+
+/* ── 결과 화면 ── */
+#screen-result{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:30px 20px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%);opacity:0;transition:opacity 1s ease}
+#screen-result.show{opacity:1}
+
+/* 카드 */
+#card-capture{width:360px;background:linear-gradient(180deg,#1a1208 0%,#0a0a06 100%);border:1px solid #3a2a1a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.15)}
+
+.card-image-area{width:100%;position:relative;overflow:hidden;background:#0a0a06}
+.card-image-area img{width:100%;height:auto;display:block}
+
+.card-overlay{position:absolute;top:6%;left:8%;right:8%;bottom:auto;padding:0;background:none;text-align:center;overflow:visible}
+.card-overlay-tag{display:inline-block;padding:3px 10px;border:1px solid rgba(197,151,91,.6);border-radius:16px;font-size:10px;color:#c5975b;margin-bottom:4px}
+.card-overlay-title{font-size:22px;font-weight:900;color:#c5975b;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 15px rgba(197,151,91,.4);margin-bottom:3px}
+.card-overlay-oneliner{font-size:11px;color:#e8d5b0;line-height:1.4;font-style:italic;text-shadow:0 1px 6px rgba(0,0,0,.9);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+.card-brand{position:absolute;bottom:6px;right:10px;font-family:'Noto Serif KR',serif;font-size:9px;color:rgba(197,151,91,0.45);letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.8);pointer-events:none}
+
+.card-text-area{padding:24px 20px}
+.card-description{font-size:14px;color:#a89878;line-height:1.8;margin-bottom:20px}
+.card-season{font-size:13px;color:#8a7a5a;padding:12px;background:rgba(197,151,91,.05);border-left:2px solid #c5975b;margin-bottom:20px;line-height:1.6}
+
+/* 사주 원국 */
+.pillars-section{margin-bottom:20px}
+.pillars-title{font-size:12px;color:#8a7a5a;margin-bottom:8px}
+.pillars-row{display:flex;justify-content:center;gap:8px}
+.pillar-box{width:60px;text-align:center;padding:8px 4px;background:rgba(26,16,8,.8);border:1px solid #2a1a0a;border-radius:6px}
+.pillar-label{font-size:10px;color:#8a7a5a;margin-bottom:4px}
+.pillar-hanja{font-size:18px;color:#c5975b;font-weight:700}
+.pillar-hangul{font-size:10px;color:#8a7a5a;margin-top:2px}
+
+/* 오행 게이지 */
+.gauge-section{margin-bottom:20px}
+.gauge-title{font-size:12px;color:#8a7a5a;margin-bottom:10px}
+.gauge-row{display:flex;align-items:center;margin-bottom:6px;gap:8px}
+.gauge-label{width:24px;font-size:14px;text-align:center}
+.gauge-bar-bg{flex:1;height:8px;background:#1a1208;border-radius:4px;overflow:hidden}
+.gauge-bar{height:100%;border-radius:4px;transition:width 1.5s ease;width:0}
+.gauge-pct{width:64px;font-size:11px;color:#8a7a5a;text-align:right;white-space:nowrap}
+.badge-weak{display:inline-block;font-size:9px;background:#c44a4a;color:#fff;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle;line-height:1.2}
+
+.gauge-wood .gauge-label{color:#4a8c5c}
+.gauge-fire .gauge-label{color:#c44a4a}
+.gauge-earth .gauge-label{color:#b8963a}
+.gauge-metal .gauge-label{color:#a0a0b0}
+.gauge-water .gauge-label{color:#4a6a9c}
+.gauge-wood .gauge-bar{background:#4a8c5c}
+.gauge-fire .gauge-bar{background:#c44a4a}
+.gauge-earth .gauge-bar{background:#b8963a}
+.gauge-metal .gauge-bar{background:#a0a0b0}
+.gauge-water .gauge-bar{background:#4a6a9c}
+
+/* 수호신 설명 */
+.guardian-section{margin-bottom:20px;padding:16px;background:rgba(26,16,8,.6);border:1px solid #2a1a0a;border-radius:8px}
+.guardian-title{font-size:14px;color:#c5975b;font-weight:700;margin-bottom:8px}
+.guardian-desc{font-size:13px;color:#a89878;line-height:1.7}
+
+/* 호왕의 한마디 */
+.hotong-section{margin-bottom:20px;padding:14px;border-left:2px solid #c5975b;background:rgba(197,151,91,.05)}
+.hotong-label{font-size:12px;color:#c5975b;margin-bottom:6px;font-weight:700}
+.hotong-text{font-size:13px;color:#a89878;line-height:1.7}
+
+.card-cta{text-align:center;padding:16px 20px;font-size:13px;color:#8a7a5a;line-height:1.6}
+.card-watermark{text-align:center;padding:8px 0 12px;font-size:11px;color:#3a2a1a}
+
+/* 공유 버튼 */
+.share-section{margin-top:24px;width:360px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.share-btn{display:flex;align-items:center;gap:6px;padding:12px 20px;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .3s}
+.share-btn:hover{transform:scale(1.03)}
+
+.btn-kakao{background:#FEE500;color:#3C1E1E}
+.btn-save{background:rgba(197,151,91,.15);color:#c5975b;border:1px solid #c5975b}
+.btn-copy{background:rgba(255,255,255,.1);color:#e8d5b0;border:1px solid #3a2a1a}
+.btn-insta{background:linear-gradient(135deg,#833AB4,#FD1D1D,#F77737);color:#fff}
+
+.retry-btn{margin-top:20px;padding:10px 24px;background:none;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+
+/* === V2 수호패 업셀 === */
+.v2-teaser-section{display:none;margin-top:32px;padding:0 16px;}
+.v2-blur-box{position:relative;background:rgba(30,20,10,0.85);border:1px solid #5a4a2a;border-radius:14px;padding:24px 18px;margin-bottom:18px;overflow:hidden;}
+.v2-blur-text{font-size:13.5px;line-height:2;color:#c8b888;filter:blur(5px);user-select:none;-webkit-user-select:none;}
+.v2-lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(13,9,6,0.55);z-index:2;}
+.v2-lock-overlay span:first-child{font-size:28px;}
+.v2-lock-overlay span:last-child{font-size:13px;color:#c8a96e;margin-top:6px;font-weight:600;}
+.v2-warning-banner{background:linear-gradient(135deg,#3a1515 0%,#1a0a0a 100%);border:1px solid #8b3a3a;border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;}
+.v2-warning-icon{font-size:22px;}
+.v2-warning-text{font-size:13px;color:#e8a0a0;line-height:1.7;margin-top:6px;}
+.v2-price-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;}
+.v2-price-coffee{font-size:12px;color:#8a7a5a;}
+.v2-price-amount{font-size:20px;font-weight:800;color:#c8a96e;}
+.v2-main-cta{display:block;text-align:center;padding:16px;background:linear-gradient(135deg,#c8a96e,#a8894e);color:#0d0906;font-size:15px;font-weight:700;border-radius:12px;text-decoration:none;margin-bottom:24px;letter-spacing:0.5px;}
+.v2-main-cta:active{transform:scale(0.97);}
+.v2-preview-row{display:flex;gap:10px;margin-bottom:12px;}
+.v2-preview-card{flex:1;background:rgba(40,30,15,0.7);border:1px solid #3a3020;border-radius:10px;padding:14px 10px;text-align:center;}
+.v2-preview-card .v2-pc-icon{font-size:22px;}
+.v2-preview-card .v2-pc-title{font-size:12px;color:#c8a96e;margin-top:4px;font-weight:600;}
+.v2-preview-card .v2-pc-desc{font-size:11px;color:#8a7a5a;margin-top:4px;line-height:1.5;}
+
+  
+</style>
+</head>
+<body>
+
+<!-- ═══ 입력 ═══ -->
+<div id="screen-input">
+  <div class="logo-text">虎王堂</div>
+  <div class="logo-sub">수호패를 내려주마</div>
+
+  <div class="form-box">
+    <div>
+      <label>생년월일</label>
+      <div class="form-row">
+        <select id="birthYear"><option value="" disabled selected>년</option></select>
+        <select id="birthMonth"><option value="" disabled selected>월</option></select>
+        <select id="birthDay"><option value="" disabled selected>일</option></select>
+      </div>
+    </div>
+
+    <div>
+      <label>태어난 시각</label>
+      <div class="form-row">
+        <select id="birthHour"><option value="" disabled selected>시</option></select>
+        <select id="birthMinute"><option value="" disabled selected>분</option></select>
+      </div>
+      <div style="margin-top:6px">
+        <button class="gender-btn" id="unknownTimeBtn" onclick="toggleUnknownTime()" style="font-size:12px;padding:8px">모름</button>
+      </div>
+    </div>
+
+    <div>
+      <label>양력 / 음력</label>
+      <div class="gender-row">
+        <button class="gender-btn active" data-cal="solar" onclick="selectCal(this)">양력</button>
+        <button class="gender-btn" data-cal="lunar" onclick="selectCal(this)">음력</button>
+      </div>
+    </div>
+
+    <div>
+      <label>성별</label>
+      <div class="gender-row">
+        <button class="gender-btn" data-gender="male" onclick="selectGender(this)">남</button>
+        <button class="gender-btn" data-gender="female" onclick="selectGender(this)">여</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()">수호패 받기</button>
+  </div>
+</div>
+
+<!-- ═══ 로딩 ═══ -->
+<div id="screen-loading">
+  <div class="door-container">
+    <img class="door-img" src="https://audio.readmelab.co.kr/howang/door.jpeg" alt="호왕당 문">
+    <div class="loading-text" id="loadingText"></div>
+  </div>
+</div>
+
+<!-- ═══ 결과 ═══ -->
+<div id="screen-result">
+  <div id="card-capture">
+    <div class="card-image-area" id="card-image-area">
+      <img id="cardImage" src="" alt="수호패">
+      <div class="card-overlay">
+        <div class="card-overlay-tag" id="cardTag"></div>
+        <div class="card-overlay-title" id="cardTitle"></div>
+        <div class="card-overlay-oneliner" id="cardOneliner"></div>
+      </div>
+      <div class="card-brand">호왕당 虎王堂</div>
+    </div>
+    <div class="card-text-area">
+
+      <!-- 수호신 설명 -->
+      <div class="guardian-section">
+        <div class="guardian-title" id="guardianTitle"></div>
+        <div class="guardian-desc" id="guardianDesc"></div>
+      </div>
+
+      <!-- 호왕의 한마디 -->
+      <div class="hotong-section">
+        <div class="hotong-label">호왕의 한마디</div>
+        <div class="hotong-text" id="hotongText"></div>
+      </div>
+
+      <div class="pillars-section">
+        <div class="pillars-title">사주 원국 (四柱)</div>
+        <div class="pillars-row">
+          <div class="pillar-box"><div class="pillar-label">시주</div><div class="pillar-hanja" id="pHour"></div><div class="pillar-hangul" id="pHourH"></div></div>
+          <div class="pillar-box"><div class="pillar-label">일주</div><div class="pillar-hanja" id="pDay"></div><div class="pillar-hangul" id="pDayH"></div></div>
+          <div class="pillar-box"><div class="pillar-label">월주</div><div class="pillar-hanja" id="pMonth"></div><div class="pillar-hangul" id="pMonthH"></div></div>
+          <div class="pillar-box"><div class="pillar-label">년주</div><div class="pillar-hanja" id="pYear"></div><div class="pillar-hangul" id="pYearH"></div></div>
+        </div>
+      </div>
+
+      <div class="gauge-section">
+        <div class="gauge-title">오행 분포</div>
+        <div class="gauge-row gauge-wood"><div class="gauge-label">木</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWood"></div></div><div class="gauge-pct" id="gWoodPct"></div></div>
+        <div class="gauge-row gauge-fire"><div class="gauge-label">火</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gFire"></div></div><div class="gauge-pct" id="gFirePct"></div></div>
+        <div class="gauge-row gauge-earth"><div class="gauge-label">土</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gEarth"></div></div><div class="gauge-pct" id="gEarthPct"></div></div>
+        <div class="gauge-row gauge-metal"><div class="gauge-label">金</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gMetal"></div></div><div class="gauge-pct" id="gMetalPct"></div></div>
+        <div class="gauge-row gauge-water"><div class="gauge-label">水</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWater"></div></div><div class="gauge-pct" id="gWaterPct"></div></div>
+      </div>
+    </div>
+    <div class="card-cta" id="cardCta"></div>
+    <div class="card-watermark">@howangdang · 虎王堂</div>
+  </div>
+
+
+  <!-- === V2 수호패 업셀 === -->
+  <div class="v2-teaser-section" id="v2TeaserSection">
+    <div class="v2-blur-box">
+      <div class="v2-blur-text" id="v2BlurText">
+        수호신이 전하는 경고가 있습니다. 당신의 사주에서 부족한 기운이 2026년 어떤 영향을 미치는지, 그리고 이를 보완할 구체적인 방법을 확인하세요...
+      </div>
+      <div class="v2-lock-overlay">
+        <span>🔮</span>
+        <span>수호신이 전하는 경고를 확인하세요</span>
+      </div>
+    </div>
+
+    <div class="v2-warning-banner" id="v2WarningBanner">
+      <div class="v2-warning-icon">⚠️</div>
+      <div class="v2-warning-text" id="v2WarningText">
+        오행 균형 분석 중…
+      </div>
+    </div>
+
+    <div class="v2-price-row">
+      <span class="v2-price-coffee">☕ 커피 한 잔 값</span>
+      <span class="v2-price-amount">4,900원</span>
+    </div>
+
+    <a class="v2-main-cta" id="v2MainCta" href="#">
+      초견 풀이 받기 →
+    </a>
+
+    <div class="v2-preview-row">
+      <div class="v2-preview-card">
+        <div class="v2-pc-icon">🏺</div>
+        <div class="v2-pc-title">재물풀이</div>
+        <div class="v2-pc-desc">돈의 흐름·투자 적성<br>월별 재물운</div>
+      </div>
+      <div class="v2-preview-card">
+        <div class="v2-pc-icon">📜</div>
+        <div class="v2-pc-title">본풀이</div>
+        <div class="v2-pc-desc">인연·건강·대운<br>인생 전반 지침서</div>
+      </div>
+    </div>
+  </div>
+  <!-- === V2 수호패 업셀 끝 === -->
+  
+  <div class="share-section">
+    <div class="share-row">
+      <button class="share-btn btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
+      <button class="share-btn btn-save" onclick="saveCard()">📥 이미지 저장</button>
+    </div>
+    <div class="share-row">
+      <button class="share-btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>
+      <button class="share-btn btn-insta" onclick="shareInsta()">📸 인스타 스토리</button>
+    </div>
+  </div>
+
+  <button class="retry-btn" onclick="retry()">다시 뽑기</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/api/howangpae';
+const PROXY_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/proxy-image?url=';
+const IMG_BASE = 'https://audio.readmelab.co.kr/howang/suhopae';
+const DOOR_SOUND = 'https://audio.readmelab.co.kr/howang/door_creak.mp3';
+const SHARE_URL = 'https://readmelab.github.io/howangdang/v2/suhopae.html';
+
+let selectedGender = '';
+let selectedCal = 'solar';
+let unknownTime = false;
+let currentData = null;
+let cardImageBase64 = null;
+
+Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
+
+/* ═══ 수호신 데이터 ═══ */
+const GUARDIANS = {
+  wood: {
+    element:'木', hanja:'靑龍', name:'청룡', color:'#4a8c5c',
+    direction:'동쪽', goodColor:'청록색', season:'봄', numbers:'3, 8',
+    desc:'청룡은 동쪽을 지키는 신수로, 생장과 시작의 기운을 관장한다. 목(木)의 기운이 부족한 너에게 시작하는 힘, 뻗어나가는 에너지를 불어넣어 줄 것이다.',
+    hotong:'네 안에 싹트는 기운이 약하다. 청룡의 푸른 숨결을 받아라. 새로 시작할 용기가 필요할 때, 이 패를 꺼내 보거라.'
+  },
+  fire: {
+    element:'火', hanja:'朱雀', name:'주작', color:'#c44a4a',
+    direction:'남쪽', goodColor:'붉은색', season:'여름', numbers:'2, 7',
+    desc:'주작은 남쪽을 지키는 신수로, 열정과 빛의 기운을 관장한다. 화(火)의 기운이 부족한 너에게 식어버린 열정과 추진력을 되살려 줄 것이다.',
+    hotong:'네 안의 불꽃이 사그라들었다. 주작의 날갯짓이 다시 불을 지필 것이다. 뜨겁게 살아라.'
+  },
+  earth: {
+    element:'土', hanja:'麒麟', name:'기린', color:'#b8963a',
+    direction:'중앙', goodColor:'황금색', season:'환절기', numbers:'5, 10',
+    desc:'기린은 중앙을 지키는 신수로, 균형과 안정의 기운을 관장한다. 토(土)의 기운이 부족한 너에게 흔들리지 않는 중심과 안정감을 깔아줄 것이다.',
+    hotong:'네 중심이 흔들리고 있다. 기린이 네 발 아래 대지를 다져줄 것이니, 흔들릴 때 이 패를 꺼내 보거라.'
+  },
+  metal: {
+    element:'金', hanja:'白虎', name:'백호', color:'#a0a0b0',
+    direction:'서쪽', goodColor:'흰색', season:'가을', numbers:'4, 9',
+    desc:'백호는 서쪽을 지키는 신수로, 결단과 정화의 기운을 관장한다. 금(金)의 기운이 부족한 너에게 서릿발 같은 결단력과 마무리 짓는 힘을 내려줄 것이다.',
+    hotong:'우유부단함이 너를 갉아먹고 있다. 백호의 이빨처럼 날카롭게 끊어내야 할 것이 있다. 이 패가 네 결단을 도울 것이다.'
+  },
+  water: {
+    element:'水', hanja:'玄武', name:'현무', color:'#4a6a9c',
+    direction:'북쪽', goodColor:'검은색', season:'겨울', numbers:'1, 6',
+    desc:'현무는 북쪽을 지키는 신수로, 지혜와 유연함의 기운을 관장한다. 수(水)의 기운이 부족한 너에게 깊은 물의 지혜와 흐르는 적응력을 흘려보내 줄 것이다.',
+    hotong:'네 안에 흐르는 물이 말랐다. 현무의 깊은 물줄기가 네 안을 다시 적셔줄 것이다. 유연해져라.'
+  }
+};
+
+const PRESCRIPTIONS = {
+  wood:'잠든 푸른 기운을 깨워야 하느니라',
+  fire:'식어버린 불꽃을 되살려야 하느니라',
+  earth:'흔들리는 중심을 다잡아야 하느니라',
+  metal:'무뎌진 칼날을 다시 세워야 하느니라',
+  water:'마른 물줄기를 다시 흘려야 하느니라'
+};
+
+/* ═══ 드롭다운 초기화 (호왕패와 동일) ═══ */
+(function initDropdowns(){
+  const yearSel = document.getElementById('birthYear');
+  const monthSel = document.getElementById('birthMonth');
+  const daySel = document.getElementById('birthDay');
+  const hourSel = document.getElementById('birthHour');
+  const minSel = document.getElementById('birthMinute');
+
+  for(let y=2025;y>=1940;y--){
+    const o=document.createElement('option');
+    o.value=y; o.textContent=y+'년';
+    yearSel.appendChild(o);
+  }
+  yearSel.value=1990;
+
+  for(let m=1;m<=12;m++){
+    const o=document.createElement('option');
+    o.value=m; o.textContent=m+'월';
+    monthSel.appendChild(o);
+  }
+  monthSel.value=6;
+
+  for(let d=1;d<=31;d++){
+    const o=document.createElement('option');
+    o.value=d; o.textContent=d+'일';
+    daySel.appendChild(o);
+  }
+  daySel.value=15;
+
+  for(let h=0;h<=23;h++){
+    const o=document.createElement('option');
+    o.value=h; o.textContent=h+'시';
+    hourSel.appendChild(o);
+  }
+  hourSel.value=12;
+
+  for(let mi=0;mi<=50;mi+=10){
+    const o=document.createElement('option');
+    o.value=mi; o.textContent=(mi<10?'0':'')+mi+'분';
+    minSel.appendChild(o);
+  }
+  minSel.value=0;
+})();
+
+function toggleUnknownTime(){
+  unknownTime=!unknownTime;
+  const btn=document.getElementById('unknownTimeBtn');
+  const h=document.getElementById('birthHour');
+  const m=document.getElementById('birthMinute');
+  if(unknownTime){
+    btn.classList.add('active');
+    h.disabled=true;h.style.opacity='0.3';
+    m.disabled=true;m.style.opacity='0.3';
+  }else{
+    btn.classList.remove('active');
+    h.disabled=false;h.style.opacity='1';
+    m.disabled=false;m.style.opacity='1';
+  }
+}
+
+function selectGender(btn){
+  document.querySelectorAll('[data-gender]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedGender=btn.dataset.gender;
+}
+
+function selectCal(btn){
+  document.querySelectorAll('[data-cal]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCal=btn.dataset.cal;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+
+async function loadImageAsBase64(url){
+  const proxyUrl=PROXY_URL+encodeURIComponent(url);
+  try{
+    const resp=await fetch(proxyUrl);
+    if(!resp.ok) throw new Error('proxy failed');
+    const blob=await resp.blob();
+    return new Promise(resolve=>{
+      const reader=new FileReader();
+      reader.onloadend=()=>resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }catch(e){
+    try{
+      const resp2=await fetch(url);
+      const blob2=await resp2.blob();
+      return new Promise(resolve=>{
+        const reader=new FileReader();
+        reader.onloadend=()=>resolve(reader.result);
+        reader.readAsDataURL(blob2);
+      });
+    }catch(e2){
+      console.warn('Image base64 conversion failed:',e2);
+      return url;
+    }
+  }
+}
+
+/* ═══ 제출 (호왕패와 동일한 API 형식) ═══ */
+async function submitForm(){
+  const year=document.getElementById('birthYear').value;
+  const month=document.getElementById('birthMonth').value;
+  const day=document.getElementById('birthDay').value;
+  const hour=unknownTime?null:Number(document.getElementById('birthHour').value);
+  const minute=unknownTime?null:Number(document.getElementById('birthMinute').value);
+
+  if(!year||!month||!day){alert('생년월일을 선택해주세요.');return}
+  if(!selectedGender){alert('성별을 선택해주세요.');return}
+
+  document.getElementById('screen-input').style.display='none';
+  const loadingScreen=document.getElementById('screen-loading');
+  loadingScreen.style.display='flex';
+
+  try{
+    const audio=new Audio(DOOR_SOUND);
+    audio.volume=0.35;audio.playbackRate=0.5;audio.play();
+  }catch(e){}
+
+  const loadingText=document.getElementById('loadingText');
+  loadingText.textContent='호왕이 너의 기운을 살피고 있다...';
+  loadingText.classList.add('show');
+
+  try{
+    // 호왕패와 동일한 요청 형식
+    const body={
+      gender:selectedGender,
+      birthYear:Number(year),
+      birthMonth:Number(month),
+      birthDay:Number(day),
+      calendarType:selectedCal
+    };
+    if(!unknownTime){
+      body.birthHour=hour;
+      body.birthMinute=minute;
+    }
+
+    const res=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(!data.success){alert('오류: '+(data.error||''));retry();return}
+
+    currentData=data;
+
+    // 부족한 오행 찾기
+    const gauge=data.spiProperties.elementGauge;
+    let weakEl='wood',weakVal=Infinity;
+    for(const[k,v]of Object.entries(gauge)){
+      if(v<weakVal){weakVal=v;weakEl=k;}
+    }
+    currentData._weakEl=weakEl;
+
+    // 수호신 이미지 로드
+    const imgUrl=`${IMG_BASE}/${weakEl}.jpeg`;
+    cardImageBase64=await loadImageAsBase64(imgUrl);
+
+    const doorImg=document.querySelector('.door-img');
+    doorImg.classList.add('zoom');
+    await wait(800);
+
+    renderResult(data,weakEl);
+
+    // 카드 생성 트래킹
+    fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'suhopae' })
+    }).catch(() => {});    
+
+    loadingScreen.style.display='none';
+    const resultScreen=document.getElementById('screen-result');
+    resultScreen.style.display='flex';
+    await wait(50);
+    resultScreen.classList.add('show');
+    await wait(300);
+    animateGauge(gauge,weakEl);
+
+  }catch(err){
+    console.error(err);
+    alert('서버 연결에 실패했습니다. 다시 시도해주세요.');
+    retry();
+  }
+}
+
+/* ═══ 결과 렌더링 ═══ */
+function renderResult(data,weakEl){
+  const spi=data.spiProperties;
+  const g=GUARDIANS[weakEl];
+
+  // 카드 이미지
+  document.getElementById('cardImage').src=cardImageBase64||`${IMG_BASE}/${weakEl}.jpeg`;
+  document.getElementById('cardTag').textContent='#호왕수호패';
+  document.getElementById('cardTitle').textContent=`${g.hanja} ${g.name} · ${g.element}`;
+  document.getElementById('cardOneliner').textContent=PRESCRIPTIONS[weakEl];
+
+  // 수호신 설명
+  document.getElementById('guardianTitle').textContent=`${g.hanja} ${g.name} — ${g.element}의 수호신`;
+  document.getElementById('guardianDesc').textContent=g.desc;
+
+  // 호왕의 한마디
+  document.getElementById('hotongText').textContent=g.hotong;
+
+  // 사주 사기둥
+  const fp=spi.fourPillars;
+  const fph=spi.fourPillarsHangul;
+  document.getElementById('pYear').textContent=fp.year;
+  document.getElementById('pYearH').textContent=fph.year;
+  document.getElementById('pMonth').textContent=fp.month;
+  document.getElementById('pMonthH').textContent=fph.month;
+  document.getElementById('pDay').textContent=fp.day;
+  document.getElementById('pDayH').textContent=fph.day;
+  document.getElementById('pHour').textContent=fp.hour||'\u2014';
+  document.getElementById('pHourH').textContent=fph.hour||'모름';
+
+  // CTA
+  const birthInfo=document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
+  const timeInfo=unknownTime?'모름':document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
+  const pillarsText=fp.year+' '+fp.month+' '+fp.day+' '+(fp.hour||'');
+  const chogyeonUrl='../chogyeon.html?title='+encodeURIComponent(g.hanja+' '+g.name)+'&pillars='+encodeURIComponent(pillarsText)+'&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal);
+  document.getElementById('cardCta').innerHTML='네 사주는 봤다. 그 안의 뜻은 아직 모르지?<br>호왕이 풀어주마.<br><br><a href="'+chogyeonUrl+'" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-weight:700;text-decoration:none;letter-spacing:2px;font-size:15px;">초견 받으러 가기</a>';
+
+ renderV2Upsell(currentData);
+}
+
+function animateGauge(gauge,weakEl){
+  const els=['wood','fire','earth','metal','water'];
+  const ids=['Wood','Fire','Earth','Metal','Water'];
+  els.forEach((el,i)=>{
+    const pct=gauge[el]||0;
+    document.getElementById('g'+ids[i]).style.width=pct+'%';
+    const pctEl=document.getElementById('g'+ids[i]+'Pct');
+    if(el===weakEl){
+      pctEl.innerHTML=pct+'% <span class="badge-weak">부족</span>';
+    }else{
+      pctEl.textContent=pct+'%';
+    }
+  });
+}
+
+// === V2: 업셀 렌더링 ===
+function renderV2Upsell(data) {
+  var section = document.getElementById('v2TeaserSection');
+  if (!section) return;
+
+  var elements = [
+    {name:'목(木)', val:data.wood||0},
+    {name:'화(火)', val:data.fire||0},
+    {name:'토(土)', val:data.earth||0},
+    {name:'금(金)', val:data.metal||0},
+    {name:'수(水)', val:data.water||0}
+  ];
+  elements.sort(function(a,b){return a.val - b.val;});
+  var weakest = elements[0];
+
+  var g = GUARDIANS[data._weakEl];
+  var cardTitle = g ? g.hanja + ' ' + g.name : '수호신의 카드';
+
+  document.getElementById('v2BlurText').textContent =
+    '『' + cardTitle + '』 — ' + weakest.name + ' 기운이 ' +
+    weakest.val + '%로 부족합니다. 이 부족한 기운이 2026년 재물운과 건강에 미치는 영향, 그리고 구체적인 보완 방법을…';
+
+  document.getElementById('v2WarningText').innerHTML =
+    '<strong>' + weakest.name + ' ' + weakest.val + '%</strong> — 오행 균형이 깨져 있습니다.<br>' +
+    '수호신이 전하는 경고, 초견 풀이에서 확인하세요.';
+
+  document.getElementById('v2MainCta').href = document.getElementById('cardCta').querySelector('a').href;
+
+  section.style.display = 'block';
+}
+
+  
+/* ═══ 공유 ═══ */
+function shareKakao(){
+  if(!currentData) return;
+  const g=GUARDIANS[currentData._weakEl];
+  Kakao.Share.sendDefault({
+    objectType:'feed',
+    content:{
+      title:'호왕 수호패: '+g.hanja+' '+g.name,
+      description:PRESCRIPTIONS[currentData._weakEl],
+      imageUrl:`${IMG_BASE}/${currentData._weakEl}.jpeg`,
+      link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}
+    },
+    buttons:[{title:'나도 뽑아보기',link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}}]
+  });
+}
+
+async function saveCard(){
+  try{
+    const el=document.getElementById('card-image-area');
+    const canvas=await html2canvas(el,{
+      backgroundColor:'#0a0a06',scale:2,useCORS:false,allowTaint:true
+    });
+    const link=document.createElement('a');
+    const g=GUARDIANS[currentData._weakEl];
+    link.download='호왕수호패_'+g.name+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    showToast('이미지가 저장되었습니다');
+  }catch(e){
+    console.error('saveCard error:',e);
+    showToast('길게 눌러 스크린샷으로 저장해주세요');
+  }
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(SHARE_URL).then(()=>{
+    showToast('링크가 복사되었습니다');
+  }).catch(()=>{
+    showToast('링크 복사에 실패했습니다');
+  });
+}
+
+async function shareInsta(){
+  try{
+    const el=document.getElementById('card-image-area');
+    const canvas=await html2canvas(el,{
+      backgroundColor:'#0a0a06',scale:2,useCORS:false,allowTaint:true
+    });
+    const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
+    const g=GUARDIANS[currentData._weakEl];
+    const file=new File([blob],'호왕수호패_'+g.name+'.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'호왕 수호패',text:'내 수호패를 확인해봐! '+SHARE_URL});
+    }else{
+      const link=document.createElement('a');
+      link.download='호왕수호패_'+g.name+'.png';
+      link.href=canvas.toDataURL('image/png');
+      link.click();
+      showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
+    }
+  }catch(e){
+    console.error('shareInsta error:',e);
+    showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
+  }
+}
+
+function retry(){
+  document.getElementById('screen-result').style.display='none';
+  document.getElementById('screen-result').classList.remove('show');
+  document.getElementById('screen-loading').style.display='none';
+  document.querySelector('.door-img').classList.remove('zoom');
+  document.getElementById('loadingText').classList.remove('show');
+  document.getElementById('screen-input').style.display='flex';
+  cardImageBase64=null;currentData=null;
+  ['Wood','Fire','Earth','Metal','Water'].forEach(id=>{
+    document.getElementById('g'+id).style.width='0';
+    document.getElementById('g'+id+'Pct').textContent='';
+  });
+}
+</script>
+  <script>
+fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({ page: 'suhopae', referrer: document.referrer, userAgent: navigator.userAgent })
+}).catch(()=>{});
+</script>
+</body>
+</html>
