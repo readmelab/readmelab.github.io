@@ -128,8 +128,8 @@ select option{background:#1a1008;color:#e8d5b0}
 .toast.show{opacity:1}
 
 /* === V2 수호패 업셀 === */
-.v2-teaser-section{display:none;margin-top:32px;padding:0 16px;}
-.v2-blur-box{position:relative;background:rgba(30,20,10,0.85);border:1px solid #5a4a2a;border-radius:14px;padding:24px 18px;margin-bottom:18px;overflow:hidden;}
+.v2-teaser-section{display:none;margin-top:32px;padding:0 16px;max-width:480px;margin-left:auto;margin-right:auto;overflow:hidden;}
+.v2-blur-box{position:relative;background:rgba(30,20,10,0.85);border:1px solid #5a4a2a;border-radius:14px;padding:24px 18px;margin-bottom:18px;overflow:hidden;word-break:keep-all;}
 .v2-blur-text{font-size:13.5px;line-height:2;color:#c8b888;filter:blur(5px);user-select:none;-webkit-user-select:none;}
 .v2-lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(13,9,6,0.55);z-index:2;}
 .v2-lock-overlay span:first-child{font-size:28px;}
@@ -142,7 +142,7 @@ select option{background:#1a1008;color:#e8d5b0}
 .v2-price-amount{font-size:20px;font-weight:800;color:#c8a96e;}
 .v2-main-cta{display:block;text-align:center;padding:16px;background:linear-gradient(135deg,#c8a96e,#a8894e);color:#0d0906;font-size:15px;font-weight:700;border-radius:12px;text-decoration:none;margin-bottom:24px;letter-spacing:0.5px;}
 .v2-main-cta:active{transform:scale(0.97);}
-.v2-preview-row{display:flex;gap:10px;margin-bottom:12px;}
+.v2-preview-row{display:flex;gap:10px;margin-bottom:12px;width:100%;box-sizing:border-box;}
 .v2-preview-card{flex:1;background:rgba(40,30,15,0.7);border:1px solid #3a3020;border-radius:10px;padding:14px 10px;text-align:center;}
 .v2-preview-card .v2-pc-icon{font-size:22px;}
 .v2-preview-card .v2-pc-title{font-size:12px;color:#c8a96e;margin-top:4px;font-weight:600;}
@@ -259,13 +259,18 @@ select option{background:#1a1008;color:#e8d5b0}
 
   <!-- === V2 수호패 업셀 === -->
   <div class="v2-teaser-section" id="v2TeaserSection">
+
+    <div style="text-align:center;margin-bottom:18px;">
+      <span style="font-size:15px;color:#c8a96e;font-weight:700;">🔮 이 사주, 할머니가 더 할 말이 있다</span>
+    </div>
+
     <div class="v2-blur-box">
       <div class="v2-blur-text" id="v2BlurText">
         수호신이 전하는 경고가 있습니다. 당신의 사주에서 부족한 기운이 2026년 어떤 영향을 미치는지, 그리고 이를 보완할 구체적인 방법을 확인하세요...
       </div>
       <div class="v2-lock-overlay">
-        <span>🔮</span>
-        <span>수호신이 전하는 경고를 확인하세요</span>
+        <span>🔒</span>
+        <span>초견 풀이에서 확인하세요</span>
       </div>
     </div>
 
@@ -274,28 +279,35 @@ select option{background:#1a1008;color:#e8d5b0}
       <div class="v2-warning-text" id="v2WarningText">
         오행 균형 분석 중…
       </div>
+      <div style="font-size:12px;color:#8a7a5a;margin-top:6px;">이 불균형이 재물·건강·관계에 미치는 영향은?</div>
     </div>
 
-    <div class="v2-price-row">
-      <span class="v2-price-coffee">☕ 커피 한 잔 값</span>
-      <span class="v2-price-amount">4,900원</span>
+    <div style="text-align:center;margin-bottom:6px;">
+      <span style="font-size:28px;font-weight:900;color:#e8d5b0;">4,900원</span>
+    </div>
+    <div style="text-align:center;margin-bottom:18px;">
+      <span style="font-size:12px;color:#8a7a5a;">☕ 커피 한 잔 값으로 사주 전체를 풀어드립니다</span>
     </div>
 
     <a class="v2-main-cta" id="v2MainCta" href="#">
-      초견 풀이 받기 →
+      초견 풀이 받으러 가기
     </a>
 
+    <div style="text-align:center;margin:20px 0 12px;">
+      <span style="font-size:13px;color:#8a7a5a;">더 깊은 풀이도 준비되어 있습니다</span>
+    </div>
+
     <div class="v2-preview-row">
-    <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
-      <div class="v2-pc-icon">🏺</div>
-      <div class="v2-pc-title">재물풀이</div>
-      <div class="v2-pc-desc">돈의 흐름·투자 적성<br>월별 재물운</div>
-    </a>
-    <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
-      <div class="v2-pc-icon">📜</div>
-      <div class="v2-pc-title">본풀이</div>
-      <div class="v2-pc-desc">인연·건강·대운<br>인생 전반 지침서</div>
-    </a>
+      <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
+        <div class="v2-pc-icon">🏺</div>
+        <div class="v2-pc-title">재물풀이</div>
+        <div class="v2-pc-desc">돈 그릇·통로·투자<br>월별 재물운</div>
+      </a>
+      <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
+        <div class="v2-pc-icon">📜</div>
+        <div class="v2-pc-title">본풀이</div>
+        <div class="v2-pc-desc">인생 전체 운세<br>10년 대운·3문 질의</div>
+      </a>
     </div>
   </div>
   <!-- === V2 수호패 업셀 끝 === -->
