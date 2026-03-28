@@ -772,12 +772,12 @@
 
     // CTA
     // 기존 CTA (v2 폴더 경로 반영)
-    document.getElementById('ctaBtn').href='../chogyeon.html?upgrade=HW3&from='+(d.orderId||'');
+    document.getElementById('ctaBtn').href='chogyeon.html?upgrade=HW3&from='+(d.orderId||'');
 
     // V2 추가: 본풀이 업셀 CTA
     var bpCta = document.getElementById('v2BpCta');
     if (bpCta) {
-      bpCta.href = '../chogyeon.html?upgrade=HW3&from=' + (d.orderId || getOrderId());
+      bpCta.href = 'chogyeon.html?upgrade=HW3&from=' + (d.orderId || getOrderId());
     }
 
     // 표시
