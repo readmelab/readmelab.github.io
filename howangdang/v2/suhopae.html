@@ -286,16 +286,16 @@ select option{background:#1a1008;color:#e8d5b0}
     </a>
 
     <div class="v2-preview-row">
-      <div class="v2-preview-card">
-        <div class="v2-pc-icon">🏺</div>
-        <div class="v2-pc-title">재물풀이</div>
-        <div class="v2-pc-desc">돈의 흐름·투자 적성<br>월별 재물운</div>
-      </div>
-      <div class="v2-preview-card">
-        <div class="v2-pc-icon">📜</div>
-        <div class="v2-pc-title">본풀이</div>
-        <div class="v2-pc-desc">인연·건강·대운<br>인생 전반 지침서</div>
-      </div>
+    <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
+      <div class="v2-pc-icon">🏺</div>
+      <div class="v2-pc-title">재물풀이</div>
+      <div class="v2-pc-desc">돈의 흐름·투자 적성<br>월별 재물운</div>
+    </a>
+    <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
+      <div class="v2-pc-icon">📜</div>
+      <div class="v2-pc-title">본풀이</div>
+      <div class="v2-pc-desc">인연·건강·대운<br>인생 전반 지침서</div>
+    </a>
     </div>
   </div>
   <!-- === V2 수호패 업셀 끝 === -->
@@ -603,7 +603,8 @@ function renderResult(data,weakEl){
   const timeInfo=unknownTime?'모름':document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
   const pillarsText=fp.year+' '+fp.month+' '+fp.day+' '+(fp.hour||'');
   const chogyeonUrl='../chogyeon.html?title='+encodeURIComponent(g.hanja+' '+g.name)+'&pillars='+encodeURIComponent(pillarsText)+'&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal);
-  document.getElementById('cardCta').innerHTML='네 사주는 봤다. 그 안의 뜻은 아직 모르지?<br>호왕이 풀어주마.<br><br><a href="'+chogyeonUrl+'" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-weight:700;text-decoration:none;letter-spacing:2px;font-size:15px;">초견 받으러 가기</a>';
+  document.getElementById('cardCta').innerHTML='네 사주는 봤다. 그 안의 뜻은 아직 모르지?<br>호왕이 풀어주마.';
+  document.getElementById('cardCta').dataset.url=chogyeonUrl;
 
  renderV2Upsell(currentData);
 }
@@ -649,7 +650,7 @@ function renderV2Upsell(data) {
     '<strong>' + weakest.name + ' ' + weakest.val + '%</strong> — 오행 균형이 깨져 있습니다.<br>' +
     '수호신이 전하는 경고, 초견 풀이에서 확인하세요.';
 
-  document.getElementById('v2MainCta').href = document.getElementById('cardCta').querySelector('a').href;
+  document.getElementById('v2MainCta').href = document.getElementById('cardCta').dataset.url || '../chogyeon.html';
 
   section.style.display = 'block';
 }
