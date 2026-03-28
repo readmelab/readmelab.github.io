@@ -456,7 +456,7 @@ function render(d) {
 
   // 질문권
   document.getElementById('askSection').style.display = 'block';
-  updateAskUI();
+  loadPreviousQuestions();
 
   // 로딩 해제
   document.getElementById('loading').classList.add('hide');
@@ -612,6 +612,35 @@ function updateAskUI() {
   }
 }
 
+
+async function loadPreviousQuestions() {
+  try {
+    const res = await fetch(`${API_BASE}/order-info/${orderId}`);
+    const json = await res.json();
+    if (!json.success || !json.data) {
+      updateAskUI();
+      return;
+    }
+    
+    const order = json.data;
+    askCount = order.askCount || 0;
+    
+    const histEl = document.getElementById('askHistory');
+    for (let i = 1; i <= askCount; i++) {
+      const qa = order.questions?.[`q${i}`];
+      if (qa) {
+        histEl.innerHTML += `<div class="ask-item"><div class="ask-q">Q. ${qa.question}</div><div class="ask-a">${qa.answer}</div></div>`;
+      }
+    }
+    
+    updateAskUI();
+  } catch (e) {
+    console.error('질문 로드 실패:', e);
+    updateAskUI();
+  }
+}
+
+  
 async function submitAsk() {
   const q = document.getElementById('askInput').value.trim();
   if (!q || askCount >= MAX_ASK) return;
