@@ -414,6 +414,10 @@ function submitOrder() {
   if (!selectedProduct) { showToast('상품을 선택해주세요'); return; }
   if (!name) { showToast('이름을 입력해주세요'); return; }
   if (!phone) { showToast('연락처를 입력해주세요'); return; }
+  if (!isUpgrade) {
+  var checkBirth = pBirth || '';
+  if (!checkBirth) { showToast('생년월일 정보가 없습니다. 호왕패를 먼저 뽑아주세요.'); return; }
+}
   if ((selectedProduct === 'HW2' || selectedProduct === 'HW3') && !selectedJob) { showToast('직업을 선택해주세요'); return; }
   if (selectedProduct === 'HW3' && !question) { showToast('질문을 입력해주세요'); return; }
   if (!document.getElementById('agreePrivacy').checked) { showToast('개인정보 수집·이용에 동의해주세요'); return; }
