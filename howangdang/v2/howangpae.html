@@ -298,12 +298,12 @@ select option{background:#1a1008;color:#e8d5b0}
     <div class="v2-preview-section">
       <div class="v2-preview-title">더 깊은 풀이도 준비되어 있습니다</div>
       <div class="v2-preview-cards">
-        <a class="v2-preview-card" href="/chogyeon.html" style="text-decoration:none;color:inherit;">
+        <a class="v2-preview-card" href="./chogyeon.html" style="text-decoration:none;color:inherit;">
           <div class="v2-preview-card-icon">🏺</div>
           <div class="v2-preview-card-label">재물풀이</div>
           <div class="v2-preview-card-sub">돈 그릇·통로·투자<br>월별 재물운</div>
         </a>
-        <a class="v2-preview-card" href="/chogyeon.html" style="text-decoration:none;color:inherit;">
+        <a class="v2-preview-card" href="./chogyeon.html" style="text-decoration:none;color:inherit;">
           <div class="v2-preview-card-icon">📜</div>
           <div class="v2-preview-card-label">본풀이</div>
           <div class="v2-preview-card-sub">인생 전체 운세<br>10년 대운·3문 질의</div>
@@ -542,7 +542,7 @@ function renderCard(data) {
   const birthInfo = document.getElementById('birthYear').value + '년 ' + document.getElementById('birthMonth').value + '월 ' + document.getElementById('birthDay').value + '일';
   const timeInfo = unknownTime ? '모름' : document.getElementById('birthHour').value + '시 ' + document.getElementById('birthMinute').value + '분';
   const pillarsText = spi.fourPillars.year + ' ' + spi.fourPillars.month + ' ' + spi.fourPillars.day + ' ' + (spi.fourPillars.hour || '');
-  const chogyeonUrl = '/chogyeon.html?title=' + encodeURIComponent(card.title) + '&pillars=' + encodeURIComponent(pillarsText) + '&birth=' + encodeURIComponent(birthInfo) + '&time=' + encodeURIComponent(timeInfo) + '&cal=' + encodeURIComponent(selectedCal);
+  const chogyeonUrl = './chogyeon.html?title=' + encodeURIComponent(card.title) + '&pillars=' + encodeURIComponent(pillarsText) + '&birth=' + encodeURIComponent(birthInfo) + '&time=' + encodeURIComponent(timeInfo) + '&cal=' + encodeURIComponent(selectedCal);
 
   // 기존 카드 하단 CTA는 간결하게 유지 (V2 업셀 섹션이 메인)
   document.getElementById('cardCta').innerHTML = card.cta.replace('호왕이', '<br>호왕이');
