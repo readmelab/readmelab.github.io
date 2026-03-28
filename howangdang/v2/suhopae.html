@@ -328,12 +328,12 @@ select option{background:#1a1008;color:#e8d5b0}
   <div class="v2-preview-section">
     <div class="v2-preview-title">더 깊은 풀이도 준비되어 있습니다</div>
     <div class="v2-preview-cards">
-      <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
+      <a class="v2-preview-card" href="chogyeon.html" style="text-decoration:none;color:inherit;">
         <div class="v2-preview-card-icon">🏺</div>
         <div class="v2-preview-card-label">재물풀이</div>
         <div class="v2-preview-card-sub">돈 그릇·통로·투자<br>월별 재물운</div>
       </a>
-      <a class="v2-preview-card" href="../chogyeon.html" style="text-decoration:none;color:inherit;">
+      <a class="v2-preview-card" href="chogyeon.html" style="text-decoration:none;color:inherit;">
         <div class="v2-preview-card-icon">📜</div>
         <div class="v2-preview-card-label">본풀이</div>
         <div class="v2-preview-card-sub">인생 전체 운세<br>10년 대운·3문 질의</div>
@@ -646,7 +646,7 @@ function renderResult(data,weakEl){
   const birthInfo=document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
   const timeInfo=unknownTime?'모름':document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
   const pillarsText=fp.year+' '+fp.month+' '+fp.day+' '+(fp.hour||'');
-  const chogyeonUrl='../chogyeon.html?title='+encodeURIComponent(g.hanja+' '+g.name)+'&pillars='+encodeURIComponent(pillarsText)+'&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal);
+  const chogyeonUrl='chogyeon.html?title='+encodeURIComponent(g.hanja+' '+g.name)+'&pillars='+encodeURIComponent(pillarsText)+'&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal);
   document.getElementById('cardCta').innerHTML='네 사주는 봤다. 그 안의 뜻은 아직 모르지?<br>호왕이 풀어주마.';
   document.getElementById('cardCta').dataset.url=chogyeonUrl;
 
@@ -697,7 +697,7 @@ function renderV2Upsell(data) {
     '『' + cardTitle + '』 — ' + elNames[minEl] + ' 기운이 ' + minVal +
     '%로 부족합니다. 이 부족한 기운이 2026년 재물운과 건강에 미치는 영향, 그리고 구체적인 보완 방법을…';
 
-  document.getElementById('v2MainCta').href = document.getElementById('cardCta').dataset.url || '../chogyeon.html';
+  document.getElementById('v2MainCta').href = document.getElementById('cardCta').dataset.url || 'chogyeon.html';
 
   section.style.display = 'block';
 }
