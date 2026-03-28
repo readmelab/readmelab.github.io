@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>虎王堂 V2 어드민</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0906;--card:#1a1410;--gold:#d4af37;--red:#b4391e;--text:#e8dcc8;--sub:#a89a85;--border:#2a2218;--green:#4a7c59;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;}
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
+.login-screen h1{color:var(--gold);font-size:24px;letter-spacing:6px;margin-bottom:8px;}
+.login-screen p{color:var(--sub);font-size:13px;margin-bottom:24px;}
+.login-screen input{width:240px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;text-align:center;margin-bottom:12px;}
+.login-screen input:focus{outline:none;border-color:var(--gold);}
+.login-screen button{width:240px;padding:12px;background:var(--gold);color:var(--bg);border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.login-error{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+
+.container{max-width:800px;margin:0 auto;padding:24px 16px 80px;display:none;}
+.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.header h1{color:var(--gold);font-size:20px;letter-spacing:4px;}
+.header .badge{background:var(--red);color:#fff;font-size:11px;padding:3px 10px;border-radius:12px;margin-left:8px;}
+.refresh-btn{background:var(--card);border:1px solid var(--border);color:var(--gold);padding:8px 16px;border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer;}
+.refresh-btn:hover{border-color:var(--gold);}
+
+.period-tabs{display:flex;gap:8px;margin-bottom:24px;}
+.period-tab{background:var(--card);border:1px solid var(--border);color:var(--sub);padding:8px 16px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;}
+.period-tab.active{border-color:var(--gold);color:var(--gold);}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.stat-label{font-size:11px;color:var(--sub);margin-bottom:6px;}
+.stat-value{font-size:24px;font-weight:900;color:var(--gold);}
+.stat-sub{font-size:11px;color:var(--sub);margin-top:4px;}
+
+.section{margin-bottom:32px;}
+.section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+.funnel{display:flex;flex-direction:column;gap:8px;}
+.funnel-row{display:flex;align-items:center;gap:12px;}
+.funnel-label{width:140px;font-size:12px;color:var(--sub);text-align:right;}
+.funnel-bar-bg{flex:1;height:28px;background:var(--card);border-radius:6px;overflow:hidden;border:1px solid var(--border);position:relative;}
+.funnel-bar{height:100%;border-radius:6px;transition:width 1s ease;}
+.funnel-bar.visit{background:var(--gold);}
+.funnel-bar.card{background:var(--green);}
+.funnel-bar.pay{background:var(--red);}
+.funnel-val{width:80px;font-size:12px;color:var(--text);}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--card);color:var(--gold);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap;}
+tr:hover td{background:rgba(212,175,55,0.05);}
+
+.compare-section{margin-top:16px;}
+.compare-row{display:grid;grid-template-columns:140px 1fr 1fr;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.compare-label{font-size:12px;color:var(--sub);}
+.compare-bar-wrap{display:flex;align-items:center;gap:8px;}
+.compare-bar-bg{flex:1;height:16px;background:var(--card);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+.compare-bar{height:100%;border-radius:4px;}
+.compare-bar.v1{background:var(--sub);}
+.compare-bar.v2{background:var(--gold);}
+.compare-val{font-size:11px;color:var(--text);width:50px;}
+.compare-header{display:grid;grid-template-columns:140px 1fr 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--gold);margin-bottom:4px;}
+.compare-header span{font-size:11px;color:var(--gold);font-weight:700;}
+
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+.status-dot.ok{background:var(--green);}
+.status-dot.warn{background:var(--gold);}
+.status-dot.err{background:var(--red);}
+
+@media(max-width:600px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .compare-row{grid-template-columns:100px 1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <h1>虎王堂</h1>
+  <p>V2 관리자 대시보드</p>
+  <input type="password" id="pwInput" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()">
+  <button onclick="login()">입장</button>
+  <div class="login-error" id="loginError">비밀번호가 틀렸습니다</div>
+</div>
+
+<div class="container" id="main">
+  <div class="header">
+    <div>
+      <h1>虎王堂 <span class="badge">V2</span></h1>
+    </div>
+    <button class="refresh-btn" onclick="loadAll()">새로고침</button>
+  </div>
+
+  <div class="period-tabs">
+    <button class="period-tab active" data-period="today" onclick="setPeriod('today',this)">오늘</button>
+    <button class="period-tab" data-period="7d" onclick="setPeriod('7d',this)">7일</button>
+    <button class="period-tab" data-period="30d" onclick="setPeriod('30d',this)">30일</button>
+    <button class="period-tab" data-period="all" onclick="setPeriod('all',this)">전체</button>
+  </div>
+
+  <!-- 핵심 지표 -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">V2 방문</div>
+      <div class="stat-value" id="statVisit">-</div>
+      <div class="stat-sub" id="statVisitSub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">카드 뽑기</div>
+      <div class="stat-value" id="statCard">-</div>
+      <div class="stat-sub" id="statCardSub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">결제 완료</div>
+      <div class="stat-value" id="statPay">-</div>
+      <div class="stat-sub" id="statPaySub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">V2 매출</div>
+      <div class="stat-value" id="statRevenue">-</div>
+      <div class="stat-sub" id="statRevenueSub"></div>
+    </div>
+  </div>
+
+  <!-- 전환 퍼널 -->
+  <div class="section">
+    <div class="section-title">V2 전환 퍼널</div>
+    <div class="funnel" id="funnel"></div>
+  </div>
+
+  <!-- V1 vs V2 비교 -->
+  <div class="section">
+    <div class="section-title">V1 vs V2 비교</div>
+    <div class="compare-header">
+      <span>지표</span>
+      <span>V1 (기존)</span>
+      <span>V2 (신규)</span>
+    </div>
+    <div id="compareBody"></div>
+  </div>
+
+  <!-- 페이지별 방문 -->
+  <div class="section">
+    <div class="section-title">V2 페이지별 방문</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>페이지</th><th>방문수</th><th>비중</th></tr></thead>
+        <tbody id="pageTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 최근 V2 결제 -->
+  <div class="section">
+    <div class="section-title">최근 V2 경유 결제 (20건)</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>주문번호</th><th>상품</th><th>금액</th><th>고객</th><th>상태</th><th>일시</th></tr></thead>
+        <tbody id="orderTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 상태 -->
+  <div class="section">
+    <div class="section-title">시스템 상태</div>
+    <div id="statusArea"></div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const V2_PAGES = ['howangpae-v2','suhopae-v2','chogyeon-v2','chogyeon-result-v2','jaemul-result-v2','bonpuli-result-v2'];
+const V1_PAGES = ['howangpae','suhopae','chogyeon','chogyeon-result','jaemul-result','bonpuli-result'];
+let currentPeriod = 'today';
+
+// ── 로그인 ──
+function login() {
+  const pw = document.getElementById('pwInput').value;
+  // 기존 admin과 동일한 비밀번호 사용 (서버에서 검증)
+  fetch(API_BASE + '/admin/verify', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({password: pw})
+  }).then(r => r.json()).then(j => {
+    if (j.success) {
+      sessionStorage.setItem('hw-admin-pw', pw);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('main').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }).catch(() => {
+    // 서버에 verify 엔드포인트 없으면 로컬 체크
+    if (pw === 'howang2024!' || pw === sessionStorage.getItem('hw-admin-pw')) {
+      sessionStorage.setItem('hw-admin-pw', pw);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('main').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  });
+}
+
+// 자동 로그인
+if (sessionStorage.getItem('hw-admin-pw')) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  setTimeout(loadAll, 100);
+}
+
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  loadAll();
+}
+
+async function loadAll() {
+  const pw = sessionStorage.getItem('hw-admin-pw') || '';
+  const headers = {'Content-Type':'application/json','x-admin-pw': pw};
+
+  try {
+    // 전체 통계 가져오기
+    const [statsRes, ordersRes] = await Promise.all([
+      fetch(API_BASE + '/admin/stats?period=' + currentPeriod, {headers}).then(r=>r.json()).catch(()=>null),
+      fetch(API_BASE + '/admin/orders?limit=20', {headers}).then(r=>r.json()).catch(()=>null)
+    ]);
+
+    const stats = statsRes?.data || statsRes || {};
+    const orders = ordersRes?.data || ordersRes?.orders || [];
+
+    renderStats(stats);
+    renderFunnel(stats);
+    renderCompare(stats);
+    renderPageTable(stats);
+    renderOrders(orders);
+    renderStatus();
+  } catch(e) {
+    console.error('loadAll error:', e);
+  }
+}
+
+function getV2Count(stats, suffix) {
+  // stats.pages가 있으면 V2 페이지만 합산
+  let total = 0;
+  if (stats.pages) {
+    V2_PAGES.forEach(p => {
+      if (stats.pages[p] && stats.pages[p][suffix] !== undefined) {
+        total += stats.pages[p][suffix];
+      }
+    });
+  }
+  return total;
+}
+
+function getV1Count(stats, suffix) {
+  let total = 0;
+  if (stats.pages) {
+    V1_PAGES.forEach(p => {
+      if (stats.pages[p] && stats.pages[p][suffix] !== undefined) {
+        total += stats.pages[p][suffix];
+      }
+    });
+  }
+  return total;
+}
+
+function renderStats(stats) {
+  const v2Visit = getV2Count(stats, 'visit') || stats.v2Visit || 0;
+  const v2Card = getV2Count(stats, 'card') || stats.v2Card || 0;
+  const v2Pay = stats.v2Pay || 0;
+  const v2Revenue = stats.v2Revenue || 0;
+
+  document.getElementById('statVisit').textContent = v2Visit.toLocaleString();
+  document.getElementById('statCard').textContent = v2Card.toLocaleString();
+  document.getElementById('statCardSub').textContent = v2Visit > 0 ? (v2Card/v2Visit*100).toFixed(1) + '% 전환' : '';
+  document.getElementById('statPay').textContent = v2Pay.toLocaleString();
+  document.getElementById('statPaySub').textContent = v2Visit > 0 ? (v2Pay/v2Visit*100).toFixed(2) + '% 전환' : '';
+  document.getElementById('statRevenue').textContent = v2Revenue.toLocaleString() + '원';
+}
+
+function renderFunnel(stats) {
+  const v2Visit = getV2Count(stats, 'visit') || stats.v2Visit || 0;
+  const v2Card = getV2Count(stats, 'card') || stats.v2Card || 0;
+  const v2Pay = stats.v2Pay || 0;
+  const maxVal = Math.max(v2Visit, 1);
+
+  const rows = [
+    {label: 'V2 방문', val: v2Visit, cls: 'visit'},
+    {label: '카드 뽑기', val: v2Card, cls: 'card'},
+    {label: '결제 완료', val: v2Pay, cls: 'pay'}
+  ];
+
+  document.getElementById('funnel').innerHTML = rows.map(r => {
+    const pct = (r.val / maxVal * 100).toFixed(1);
+    return `<div class="funnel-row">
+      <div class="funnel-label">${r.label}</div>
+      <div class="funnel-bar-bg"><div class="funnel-bar ${r.cls}" style="width:${pct}%"></div></div>
+      <div class="funnel-val">${r.val.toLocaleString()} (${pct}%)</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCompare(stats) {
+  const metrics = [
+    {label: '방문수', v1: getV1Count(stats,'visit'), v2: getV2Count(stats,'visit')},
+    {label: '카드 뽑기', v1: getV1Count(stats,'card'), v2: getV2Count(stats,'card')},
+    {label: '카드 전환율', v1: null, v2: null, isRate: true},
+    {label: '결제수', v1: stats.v1Pay||0, v2: stats.v2Pay||0}
+  ];
+
+  // 전환율 계산
+  const v1Visit = getV1Count(stats,'visit');
+  const v1Card = getV1Count(stats,'card');
+  const v2Visit = getV2Count(stats,'visit');
+  const v2Card = getV2Count(stats,'card');
+  metrics[2].v1 = v1Visit > 0 ? (v1Card/v1Visit*100) : 0;
+  metrics[2].v2 = v2Visit > 0 ? (v2Card/v2Visit*100) : 0;
+
+  const body = document.getElementById('compareBody');
+  body.innerHTML = metrics.map(m => {
+    const maxVal = Math.max(m.v1, m.v2, 1);
+    const v1Pct = (m.v1 / maxVal * 100).toFixed(1);
+    const v2Pct = (m.v2 / maxVal * 100).toFixed(1);
+    const v1Display = m.isRate ? m.v1.toFixed(1)+'%' : m.v1.toLocaleString();
+    const v2Display = m.isRate ? m.v2.toFixed(1)+'%' : m.v2.toLocaleString();
+    return `<div class="compare-row">
+      <div class="compare-label">${m.label}</div>
+      <div class="compare-bar-wrap"><div class="compare-bar-bg"><div class="compare-bar v1" style="width:${v1Pct}%"></div></div><div class="compare-val">${v1Display}</div></div>
+      <div class="compare-bar-wrap"><div class="compare-bar-bg"><div class="compare-bar v2" style="width:${v2Pct}%"></div></div><div class="compare-val">${v2Display}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderPageTable(stats) {
+  const tbody = document.getElementById('pageTable');
+  if (!stats.pages) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--sub);">데이터 없음</td></tr>'; return; }
+
+  let totalVisit = 0;
+  const rows = [];
+  V2_PAGES.forEach(p => {
+    const d = stats.pages[p];
+    if (d && d.visit) {
+      totalVisit += d.visit;
+      rows.push({page: p, visit: d.visit});
+    }
+  });
+
+  rows.sort((a,b) => b.visit - a.visit);
+  tbody.innerHTML = rows.map(r => {
+    const pct = totalVisit > 0 ? (r.visit/totalVisit*100).toFixed(1) : 0;
+    return `<tr><td>${r.page}</td><td>${r.visit.toLocaleString()}</td><td>${pct}%</td></tr>`;
+  }).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--sub);">V2 방문 데이터 없음</td></tr>';
+}
+
+function renderOrders(orders) {
+  const tbody = document.getElementById('orderTable');
+  if (!orders.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--sub);">결제 내역 없음</td></tr>'; return; }
+
+  tbody.innerHTML = orders.slice(0, 20).map(o => {
+    const product = o.product || o.productName || '';
+    const amount = (o.amount || o.price || 0).toLocaleString();
+    const name = o.customerName || o.name || '';
+    const status = o.status || '';
+    const date = o.createdAt ? new Date(o.createdAt).toLocaleString('ko-KR') : '';
+    const statusColor = status === 'DONE' || status === '결제완료' ? 'ok' : status === '대기' ? 'warn' : 'err';
+    return `<tr>
+      <td>${o.orderId||o.id||''}</td>
+      <td>${product}</td>
+      <td>${amount}원</td>
+      <td>${name}</td>
+      <td><span class="status-dot ${statusColor}"></span>${status}</td>
+      <td>${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderStatus() {
+  const area = document.getElementById('statusArea');
+  area.innerHTML = '<div style="color:var(--sub);font-size:12px;">상태 확인 중...</div>';
+
+  fetch(API_BASE + '/health').then(r => r.json()).then(j => {
+    const ok = j.status === 'ok' || j.success;
+    area.innerHTML = `<div style="font-size:13px;"><span class="status-dot ${ok?'ok':'err'}"></span>API 서버: ${ok?'정상':'오류'}</div>
+    <div style="font-size:11px;color:var(--sub);margin-top:4px;">마지막 확인: ${new Date().toLocaleTimeString('ko-KR')}</div>`;
+  }).catch(() => {
+    area.innerHTML = '<div style="font-size:13px;"><span class="status-dot err"></span>API 서버: 응답 없음</div>';
+  });
+}
+</script>
+</body>
+</html>
