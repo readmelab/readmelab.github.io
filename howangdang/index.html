@@ -255,9 +255,9 @@ const TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
 const PRICES = { HW1: 4900, HW2: 19800, HW3: 49700 };
 const PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이' };
 const RESULT_PAGES = {
-  HW1: 'chogyeon-result.html',
-  HW2: 'jaemul-result.html',
-  HW3: 'bonpuli-result.html'
+  HW1: 'v2/chogyeon-result.html',
+  HW2: 'v2/jaemul-result.html',
+  HW3: 'v2/bonpuli-result.html'
 };
 
 var selectedProduct = '';
@@ -300,6 +300,7 @@ function selectProduct(code) {
 
   // 폼 표시
   document.getElementById('formSection').classList.add('active');
+  document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   // HW2, HW3 → 직업 필드 표시
   document.getElementById('jobField').style.display = (code === 'HW2' || code === 'HW3') ? 'block' : 'none';
