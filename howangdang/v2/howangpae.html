@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕패 - 虎王堂</title>
+<meta property="og:title" content="호왕패 - 너의 사주를 한 장에 담다">
+<meta property="og:description" content="생년월일만 넣어라. 호왕이 네 패를 꺼내주마.">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/door.jpeg">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
+
+#screen-input{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at center,#1a1008 0%,#000 70%);position:relative}
+#screen-input::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('https://audio.readmelab.co.kr/howang/door.jpeg') center/cover no-repeat;opacity:.15;z-index:0}
+#screen-input>*{position:relative;z-index:1}
+
+.logo-text{font-size:42px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.5);letter-spacing:8px;margin-bottom:8px}
+.logo-sub{font-size:14px;color:#8a7a5a;margin-bottom:40px;letter-spacing:2px}
+
+.form-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:16px}
+.form-row{display:flex;gap:8px}
+
+label{font-size:13px;color:#8a7a5a;margin-bottom:4px;display:block}
+
+select{flex:1;padding:14px 4px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;-webkit-appearance:none;text-align:center}
+select:focus{border-color:#c5975b}
+select option{background:#1a1008;color:#e8d5b0}
+
+.gender-row{display:flex;gap:8px}
+.gender-btn{flex:1;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:16px;cursor:pointer;transition:all .3s}
+.gender-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+
+.submit-btn{margin-top:12px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
+.submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+
+#screen-loading{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
+.door-container{width:100%;max-width:400px;position:relative}
+.door-img{width:100%;border-radius:4px;transition:transform 1s ease-in-out,opacity 0.6s ease}
+.door-img.zoom{transform:scale(1.8);opacity:0}
+.loading-text{position:absolute;bottom:15%;left:0;right:0;text-align:center;font-size:16px;color:#c5975b;text-shadow:0 0 10px rgba(197,151,91,.8);opacity:0;transition:opacity .5s}
+.loading-text.show{opacity:1}
+
+#screen-result{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:30px 20px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%);opacity:0;transition:opacity 1s ease}
+#screen-result.show{opacity:1}
+
+#card-capture{width:360px;background:linear-gradient(180deg,#1a1208 0%,#0a0a06 100%);border:1px solid #3a2a1a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.15)}
+
+.card-image-area{width:100%;position:relative;overflow:hidden;background:#0a0a06}
+.card-image-area img{width:100%;height:auto;display:block}
+
+.card-overlay{position:absolute;bottom:16%;left:12%;right:12%;padding:0;background:none;text-align:center;overflow:hidden}
+.card-overlay-tag{display:inline-block;padding:3px 10px;border:1px solid rgba(197,151,91,.6);border-radius:16px;font-size:10px;color:#c5975b;margin-bottom:4px}
+.card-overlay-title{font-size:20px;font-weight:900;color:#c5975b;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 15px rgba(197,151,91,.4);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-overlay-oneliner{font-size:10px;color:#e8d5b0;line-height:1.3;font-style:italic;text-shadow:0 1px 6px rgba(0,0,0,.9);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+.card-brand{position:absolute;bottom:6px;right:10px;font-family:'Noto Serif KR',serif;font-size:9px;color:rgba(197,151,91,0.45);letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.8);pointer-events:none}
+
+.card-text-area{padding:24px 20px}
+.card-description{font-size:14px;color:#a89878;line-height:1.8;margin-bottom:20px}
+.card-season{font-size:13px;color:#8a7a5a;padding:12px;background:rgba(197,151,91,.05);border-left:2px solid #c5975b;margin-bottom:20px;line-height:1.6}
+
+.pillars-section{margin-bottom:20px}
+.pillars-title{font-size:12px;color:#8a7a5a;margin-bottom:8px}
+.pillars-row{display:flex;justify-content:center;gap:8px}
+.pillar-box{width:60px;text-align:center;padding:8px 4px;background:rgba(26,16,8,.8);border:1px solid #2a1a0a;border-radius:6px}
+.pillar-label{font-size:10px;color:#8a7a5a;margin-bottom:4px}
+.pillar-hanja{font-size:18px;color:#c5975b;font-weight:700}
+.pillar-hangul{font-size:10px;color:#8a7a5a;margin-top:2px}
+
+.gauge-section{margin-bottom:20px}
+.gauge-title{font-size:12px;color:#8a7a5a;margin-bottom:10px}
+.gauge-row{display:flex;align-items:center;margin-bottom:6px;gap:8px}
+.gauge-label{width:24px;font-size:14px;text-align:center}
+.gauge-bar-bg{flex:1;height:8px;background:#1a1208;border-radius:4px;overflow:hidden}
+.gauge-bar{height:100%;border-radius:4px;transition:width 1.5s ease;width:0}
+.gauge-pct{width:32px;font-size:11px;color:#8a7a5a;text-align:right}
+
+.gauge-wood .gauge-bar{background:#4a8c5c}
+.gauge-fire .gauge-bar{background:#c44a4a}
+.gauge-earth .gauge-bar{background:#b8963a}
+.gauge-metal .gauge-bar{background:#a0a0b0}
+.gauge-water .gauge-bar{background:#4a6a9c}
+
+.card-cta{text-align:center;padding:16px 20px;font-size:13px;color:#8a7a5a;line-height:1.6}
+.card-watermark{text-align:center;padding:8px 0 12px;font-size:11px;color:#3a2a1a}
+
+.share-section{margin-top:24px;width:360px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.share-btn{display:flex;align-items:center;gap:6px;padding:12px 20px;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .3s}
+.share-btn:hover{transform:scale(1.03)}
+
+.btn-kakao{background:#FEE500;color:#3C1E1E}
+.btn-save{background:rgba(197,151,91,.15);color:#c5975b;border:1px solid #c5975b}
+.btn-copy{background:rgba(255,255,255,.1);color:#e8d5b0;border:1px solid #3a2a1a}
+.btn-insta{background:linear-gradient(135deg,#833AB4,#FD1D1D,#F77737);color:#fff}
+
+.retry-btn{margin-top:20px;padding:10px 24px;background:none;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+
+/* === V2 추가: 블러 티저 + 오행 경고 + CTA 강화 === */
+.v2-teaser-section{
+  margin-top:24px;padding:24px 20px;width:360px;
+  background:linear-gradient(180deg,#1a1208,#0a0a06);
+  border:1px solid #3a2a1a;border-radius:16px;
+  box-shadow:0 0 30px rgba(197,151,91,.08);
+}
+.v2-teaser-title{
+  font-size:14px;font-weight:900;color:#c5975b;
+  text-align:center;margin-bottom:16px;letter-spacing:2px;
+}
+.v2-blur-box{
+  position:relative;padding:20px;
+  background:rgba(26,16,8,.6);border:1px solid #2a1a0a;border-radius:8px;
+  overflow:hidden;margin-bottom:16px;
+}
+.v2-blur-text{
+  font-size:13px;color:#a89878;line-height:2;
+  filter:blur(5px);-webkit-filter:blur(5px);
+  user-select:none;-webkit-user-select:none;
+}
+.v2-blur-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(10,10,6,.5);z-index:2;
+}
+.v2-lock-icon{font-size:32px;margin-bottom:8px;}
+.v2-lock-text{font-size:12px;color:#c5975b;letter-spacing:1px;}
+
+.v2-element-warning{
+  padding:14px 16px;margin-bottom:20px;
+  background:rgba(139,26,26,.08);border:1px solid rgba(200,80,80,.2);border-radius:8px;
+  text-align:center;
+}
+.v2-warning-icon{font-size:20px;margin-bottom:4px;}
+.v2-warning-text{font-size:12px;color:#e88;line-height:1.7;}
+.v2-warning-sub{font-size:11px;color:#8a7a5a;margin-top:6px;}
+
+.v2-main-cta{
+  display:block;width:100%;padding:18px 0;
+  background:linear-gradient(135deg,#8B1A1A,#5a1010);
+  border:1px solid #c5975b;border-radius:10px;
+  color:#e8d5b0;font-family:'Noto Serif KR',serif;
+  font-size:17px;font-weight:900;text-align:center;
+  text-decoration:none;letter-spacing:3px;
+  transition:all .3s;margin-bottom:10px;
+  box-shadow:0 0 20px rgba(139,26,26,.3);
+}
+.v2-main-cta:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02);}
+.v2-price-row{text-align:center;margin-bottom:16px;}
+.v2-price-coffee{font-size:12px;color:#8a7a5a;margin-top:4px;}
+.v2-price-amount{font-size:26px;font-weight:900;color:#c5975b;}
+
+.v2-preview-section{
+  margin-top:12px;padding:20px;
+  background:rgba(26,16,8,.4);border:1px solid #2a1a0a;border-radius:8px;
+  text-align:center;
+}
+.v2-preview-title{font-size:12px;color:#8a7a5a;margin-bottom:12px;letter-spacing:1px;}
+.v2-preview-cards{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.v2-preview-card{
+  flex:1;min-width:90px;max-width:120px;padding:14px 8px;
+  background:rgba(10,10,6,.8);border:1px solid #c8a96e22;border-radius:6px;
+}
+.v2-preview-card-icon{font-size:24px;margin-bottom:6px;}
+.v2-preview-card-label{font-size:10px;color:#c5975b;font-weight:700;}
+.v2-preview-card-sub{font-size:9px;color:#6a5a4a;margin-top:4px;}
+/* === V2 추가 끝 === */
+</style>
+</head>
+<body>
+
+<!-- ===== 입력 화면 (기존 100% 동일) ===== -->
+<div id="screen-input">
+  <div class="logo-text">虎王堂</div>
+  <div class="logo-sub">호왕패를 뽑아보거라</div>
+  <div class="form-box">
+    <div>
+      <label>생년월일</label>
+      <div class="form-row">
+        <select id="birthYear"><option value="" disabled selected>년</option></select>
+        <select id="birthMonth"><option value="" disabled selected>월</option></select>
+        <select id="birthDay"><option value="" disabled selected>일</option></select>
+      </div>
+    </div>
+    <div>
+      <label>태어난 시각</label>
+      <div class="form-row">
+        <select id="birthHour"><option value="" disabled selected>시</option></select>
+        <select id="birthMinute"><option value="" disabled selected>분</option></select>
+      </div>
+      <div style="margin-top:6px">
+        <button class="gender-btn" id="unknownTimeBtn" onclick="toggleUnknownTime()" style="font-size:12px;padding:8px">모름</button>
+      </div>
+    </div>
+    <div>
+      <label>양력 / 음력</label>
+      <div class="gender-row">
+        <button class="gender-btn active" data-cal="solar" onclick="selectCal(this)">양력</button>
+        <button class="gender-btn" data-cal="lunar" onclick="selectCal(this)">음력</button>
+      </div>
+    </div>
+    <div>
+      <label>성별</label>
+      <div class="gender-row">
+        <button class="gender-btn" data-gender="male" onclick="selectGender(this)">남</button>
+        <button class="gender-btn" data-gender="female" onclick="selectGender(this)">여</button>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="submitForm()">패를 뽑다</button>
+  </div>
+</div>
+
+<!-- ===== 로딩 화면 (기존 동일) ===== -->
+<div id="screen-loading">
+  <div class="door-container">
+    <img class="door-img" src="https://audio.readmelab.co.kr/howang/door.jpeg" alt="호왕당 문">
+    <div class="loading-text" id="loadingText"></div>
+  </div>
+</div>
+
+<!-- ===== 결과 화면 ===== -->
+<div id="screen-result">
+  <div id="card-capture">
+    <div class="card-image-area" id="card-image-area">
+      <img id="cardImage" src="" alt="호왕패">
+      <div class="card-overlay">
+        <div class="card-overlay-tag" id="cardTag"></div>
+        <div class="card-overlay-title" id="cardTitle"></div>
+        <div class="card-overlay-oneliner" id="cardOneliner"></div>
+      </div>
+      <div class="card-brand">호왕당 虎王堂</div>
+    </div>
+    <div class="card-text-area">
+      <div class="card-description" id="cardDescription"></div>
+      <div class="card-season" id="cardSeason"></div>
+
+      <div class="pillars-section">
+        <div class="pillars-title">사주 원국 (四柱)</div>
+        <div class="pillars-row">
+          <div class="pillar-box"><div class="pillar-label">시주</div><div class="pillar-hanja" id="pHour"></div><div class="pillar-hangul" id="pHourH"></div></div>
+          <div class="pillar-box"><div class="pillar-label">일주</div><div class="pillar-hanja" id="pDay"></div><div class="pillar-hangul" id="pDayH"></div></div>
+          <div class="pillar-box"><div class="pillar-label">월주</div><div class="pillar-hanja" id="pMonth"></div><div class="pillar-hangul" id="pMonthH"></div></div>
+          <div class="pillar-box"><div class="pillar-label">년주</div><div class="pillar-hanja" id="pYear"></div><div class="pillar-hangul" id="pYearH"></div></div>
+        </div>
+      </div>
+
+      <div class="gauge-section">
+        <div class="gauge-title">오행 분포</div>
+        <div class="gauge-row gauge-wood"><div class="gauge-label">木</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWood"></div></div><div class="gauge-pct" id="gWoodPct"></div></div>
+        <div class="gauge-row gauge-fire"><div class="gauge-label">火</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gFire"></div></div><div class="gauge-pct" id="gFirePct"></div></div>
+        <div class="gauge-row gauge-earth"><div class="gauge-label">土</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gEarth"></div></div><div class="gauge-pct" id="gEarthPct"></div></div>
+        <div class="gauge-row gauge-metal"><div class="gauge-label">金</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gMetal"></div></div><div class="gauge-pct" id="gMetalPct"></div></div>
+        <div class="gauge-row gauge-water"><div class="gauge-label">水</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWater"></div></div><div class="gauge-pct" id="gWaterPct"></div></div>
+      </div>
+    </div>
+    <!-- 기존 card-cta 위치는 유지하되 V2에서는 별도 업셀 섹션으로 대체 -->
+    <div class="card-cta" id="cardCta"></div>
+    <div class="card-watermark">@howangdang · 虎王堂</div>
+  </div>
+
+  <!-- === V2 추가: 메인 업셀 섹션 (공유 버튼 위에 배치) === -->
+  <div class="v2-teaser-section" id="v2TeaserSection" style="display:none;">
+
+    <!-- 블러 티저: 숨겨진 사주 해석 -->
+    <div class="v2-teaser-title">🔮 이 사주, 할머니가 더 할 말이 있다</div>
+    <div class="v2-blur-box">
+      <div class="v2-blur-text" id="v2BlurText">
+        당신의 일주가 품고 있는 재물의 성격은 매우 독특합니다. 특히 오행의 불균형에서 오는 기회와 위험이 공존하며, 2026년 상반기에 중요한 재물 분기점이 찾아옵니다. 이 시기를 어떻게 활용하느냐에 따라...
+      </div>
+      <div class="v2-blur-overlay">
+        <div class="v2-lock-icon">🔒</div>
+        <div class="v2-lock-text">초견 풀이에서 확인하세요</div>
+      </div>
+    </div>
+
+    <!-- 오행 불균형 경고 배너 -->
+    <div class="v2-element-warning" id="v2ElementWarning">
+      <div class="v2-warning-icon">⚠️</div>
+      <div class="v2-warning-text" id="v2WarningText"></div>
+      <div class="v2-warning-sub">이 불균형이 재물·건강·관계에 미치는 영향은?</div>
+    </div>
+
+    <!-- 가격 앵커링 + CTA -->
+    <div class="v2-price-row">
+      <div class="v2-price-amount">4,900원</div>
+      <div class="v2-price-coffee">☕ 커피 한 잔 값으로 사주 전체를 풀어드립니다</div>
+    </div>
+    <a class="v2-main-cta" id="v2MainCta" href="#">초견 풀이 받으러 가기</a>
+
+    <!-- 상위 상품 미리보기 -->
+    <div class="v2-preview-section">
+      <div class="v2-preview-title">더 깊은 풀이도 준비되어 있습니다</div>
+      <div class="v2-preview-cards">
+        <div class="v2-preview-card">
+          <div class="v2-preview-card-icon">🏺</div>
+          <div class="v2-preview-card-label">재물풀이</div>
+          <div class="v2-preview-card-sub">돈 그릇·통로·투자<br>월별 재물운</div>
+        </div>
+        <div class="v2-preview-card">
+          <div class="v2-preview-card-icon">📜</div>
+          <div class="v2-preview-card-label">본풀이</div>
+          <div class="v2-preview-card-sub">인생 전체 운세<br>10년 대운·3문 질의</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- === V2 추가 끝 === -->
+
+  <div class="share-section">
+    <div class="share-row">
+      <button class="share-btn btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
+      <button class="share-btn btn-save" onclick="saveCard()">📥 이미지 저장</button>
+    </div>
+    <div class="share-row">
+      <button class="share-btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>
+      <button class="share-btn btn-insta" onclick="shareInsta()">📸 인스타 스토리</button>
+    </div>
+  </div>
+
+  <button class="retry-btn" onclick="retry()">다시 뽑기</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/api/howangpae';
+const PROXY_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/proxy-image?url=';
+const DOOR_SOUND = 'https://audio.readmelab.co.kr/howang/door_creak.mp3';
+const SHARE_URL = 'https://readmelab.github.io/howangdang/v2/howangpae.html';
+
+let selectedGender = '';
+let selectedCal = 'solar';
+let unknownTime = false;
+let currentCardData = null;
+let cardImageBase64 = null;
+
+Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
+
+(function initDropdowns() {
+  const yearSel = document.getElementById('birthYear');
+  const monthSel = document.getElementById('birthMonth');
+  const daySel = document.getElementById('birthDay');
+  const hourSel = document.getElementById('birthHour');
+  const minSel = document.getElementById('birthMinute');
+
+  for (let y = 2025; y >= 1940; y--) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y + '년';
+    yearSel.appendChild(opt);
+  }
+  yearSel.value = 1990;
+
+  for (let m = 1; m <= 12; m++) {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m + '월';
+    monthSel.appendChild(opt);
+  }
+  monthSel.value = 6;
+
+  for (let d = 1; d <= 31; d++) {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d + '일';
+    daySel.appendChild(opt);
+  }
+  daySel.value = 15;
+
+  for (let h = 0; h <= 23; h++) {
+    const opt = document.createElement('option');
+    opt.value = h; opt.textContent = h + '시';
+    hourSel.appendChild(opt);
+  }
+  hourSel.value = 12;
+
+  for (let mi = 0; mi <= 50; mi += 10) {
+    const opt = document.createElement('option');
+    opt.value = mi; opt.textContent = (mi < 10 ? '0' : '') + mi + '분';
+    minSel.appendChild(opt);
+  }
+  minSel.value = 0;
+})();
+
+function toggleUnknownTime() {
+  unknownTime = !unknownTime;
+  const btn = document.getElementById('unknownTimeBtn');
+  const hourSel = document.getElementById('birthHour');
+  const minSel = document.getElementById('birthMinute');
+  if (unknownTime) {
+    btn.classList.add('active');
+    hourSel.disabled = true; hourSel.style.opacity = '0.3';
+    minSel.disabled = true; minSel.style.opacity = '0.3';
+  } else {
+    btn.classList.remove('active');
+    hourSel.disabled = false; hourSel.style.opacity = '1';
+    minSel.disabled = false; minSel.style.opacity = '1';
+  }
+}
+
+function selectGender(btn) {
+  document.querySelectorAll('[data-gender]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedGender = btn.dataset.gender;
+}
+
+function selectCal(btn) {
+  document.querySelectorAll('[data-cal]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCal = btn.dataset.cal;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+async function loadImageAsBase64(url) {
+  const proxyUrl = PROXY_URL + encodeURIComponent(url);
+  try {
+    const resp = await fetch(proxyUrl);
+    if (!resp.ok) throw new Error('proxy failed');
+    const blob = await resp.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) {
+    try {
+      const resp2 = await fetch(url);
+      const blob2 = await resp2.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob2);
+      });
+    } catch (e2) {
+      console.warn('Image base64 conversion failed:', e2);
+      return url;
+    }
+  }
+}
+
+async function submitForm() {
+  const year = document.getElementById('birthYear').value;
+  const month = document.getElementById('birthMonth').value;
+  const day = document.getElementById('birthDay').value;
+  const hour = unknownTime ? null : Number(document.getElementById('birthHour').value);
+  const minute = unknownTime ? null : Number(document.getElementById('birthMinute').value);
+
+  if (!year || !month || !day) { alert('생년월일을 선택해주세요.'); return; }
+  if (!selectedGender) { alert('성별을 선택해주세요.'); return; }
+
+  document.getElementById('screen-input').style.display = 'none';
+  const loadingScreen = document.getElementById('screen-loading');
+  loadingScreen.style.display = 'flex';
+
+  try {
+    const audio = new Audio(DOOR_SOUND);
+    audio.volume = 0.35;
+    audio.playbackRate = 0.5;
+    audio.play();
+  } catch(e) {}
+
+  const loadingText = document.getElementById('loadingText');
+  loadingText.textContent = '호왕이 사주를 살피는 중이다...';
+  loadingText.classList.add('show');
+
+  try {
+    const body = {
+      gender: selectedGender,
+      birthYear: Number(year),
+      birthMonth: Number(month),
+      birthDay: Number(day),
+      calendarType: selectedCal
+    };
+    if (!unknownTime) {
+      body.birthHour = hour;
+      body.birthMinute = minute;
+    }
+
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.success) { alert('오류: ' + (data.error || '')); retry(); return; }
+
+    currentCardData = data;
+    cardImageBase64 = await loadImageAsBase64(data.card.imageUrl);
+
+    const doorImg = document.querySelector('.door-img');
+    doorImg.classList.add('zoom');
+    await wait(800);
+
+    renderCard(data);
+
+    // 카드 생성 트래킹
+    fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'howangpae' })
+    }).catch(() => {});
+
+    loadingScreen.style.display = 'none';
+    const resultScreen = document.getElementById('screen-result');
+    resultScreen.style.display = 'flex';
+    await wait(50);
+    resultScreen.classList.add('show');
+
+    await wait(300);
+    animateGauge(data.spiProperties.elementGauge);
+
+    // === V2 추가: 업셀 섹션 활성화 ===
+    renderV2Upsell(data);
+
+  } catch (err) {
+    alert('서버 연결에 실패했습니다. 다시 시도해주세요.');
+    retry();
+  }
+}
+
+function renderCard(data) {
+  const card = data.card;
+  const spi = data.spiProperties;
+
+  document.getElementById('cardImage').src = cardImageBase64 || card.imageUrl;
+  document.getElementById('cardTag').textContent = '#호왕패';
+  document.getElementById('cardTitle').textContent = card.title;
+  document.getElementById('cardOneliner').textContent = card.viralLine || card.oneLiner;
+  document.getElementById('cardDescription').textContent = '\u201C' + card.oneLiner + '\u201D\n\n' + card.description;
+  document.getElementById('cardSeason').textContent = card.seasonLine;
+
+  const birthInfo = document.getElementById('birthYear').value + '년 ' + document.getElementById('birthMonth').value + '월 ' + document.getElementById('birthDay').value + '일';
+  const timeInfo = unknownTime ? '모름' : document.getElementById('birthHour').value + '시 ' + document.getElementById('birthMinute').value + '분';
+  const pillarsText = spi.fourPillars.year + ' ' + spi.fourPillars.month + ' ' + spi.fourPillars.day + ' ' + (spi.fourPillars.hour || '');
+  const chogyeonUrl = '../chogyeon.html?title=' + encodeURIComponent(card.title) + '&pillars=' + encodeURIComponent(pillarsText) + '&birth=' + encodeURIComponent(birthInfo) + '&time=' + encodeURIComponent(timeInfo) + '&cal=' + encodeURIComponent(selectedCal);
+
+  // 기존 카드 하단 CTA는 간결하게 유지 (V2 업셀 섹션이 메인)
+  document.getElementById('cardCta').innerHTML = card.cta.replace('호왕이', '<br>호왕이');
+
+  // V2: 메인 CTA 링크 설정
+  document.getElementById('v2MainCta').href = chogyeonUrl;
+
+  document.getElementById('pYear').textContent = spi.fourPillars.year;
+  document.getElementById('pMonth').textContent = spi.fourPillars.month;
+  document.getElementById('pDay').textContent = spi.fourPillars.day;
+  document.getElementById('pHour').textContent = spi.fourPillars.hour || '\u2014';
+  document.getElementById('pYearH').textContent = spi.fourPillarsHangul.year;
+  document.getElementById('pMonthH').textContent = spi.fourPillarsHangul.month;
+  document.getElementById('pDayH').textContent = spi.fourPillarsHangul.day;
+  document.getElementById('pHourH').textContent = spi.fourPillarsHangul.hour || '모름';
+}
+
+// === V2 추가 함수: 업셀 렌더링 ===
+function renderV2Upsell(data) {
+  const gauge = data.spiProperties.elementGauge;
+  const elNames = { wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)' };
+  const elEffects = {
+    wood: '성장·계획력이 약해 새 기회를 잡기 어렵습니다',
+    fire: '열정·추진력이 부족해 결정적 순간에 흔들립니다',
+    earth: '안정감·신뢰가 약해 재물이 모이기 어렵습니다',
+    metal: '결단력·실행력이 부족해 기회를 놓치기 쉽습니다',
+    water: '지혜·유연함이 약해 변화에 대응하기 어렵습니다'
+  };
+
+  // 가장 약한 오행 찾기
+  let minEl = 'wood', minVal = 100;
+  for (const [el, val] of Object.entries(gauge)) {
+    if (val < minVal) { minVal = val; minEl = el; }
+  }
+
+  // 경고 텍스트 설정
+  document.getElementById('v2WarningText').innerHTML =
+    '<strong>' + elNames[minEl] + ' 기운 ' + minVal + '%</strong> — ' + elEffects[minEl];
+
+  // 블러 텍스트를 카드 description 기반으로 동적 생성
+  const desc = data.card.description || '';
+  if (desc.length > 20) {
+    document.getElementById('v2BlurText').textContent =
+      desc.substring(0, 30) + '… 이 사주의 핵심 재물 성향과 2026년 전환점, 그리고 오행 불균형이 가져올 기회와 위험까지 — 초견 풀이에서 낱낱이 풀어드립니다.';
+  }
+
+  // 섹션 표시
+  document.getElementById('v2TeaserSection').style.display = 'block';
+}
+
+function animateGauge(gauge) {
+  const els = ['wood','fire','earth','metal','water'];
+  const ids = ['Wood','Fire','Earth','Metal','Water'];
+  els.forEach((el, i) => {
+    const pct = gauge[el] || 0;
+    document.getElementById('g' + ids[i]).style.width = pct + '%';
+    document.getElementById('g' + ids[i] + 'Pct').textContent = pct + '%';
+  });
+}
+
+function shareKakao() {
+  if (!currentCardData) return;
+  const card = currentCardData.card;
+  Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: '호왕패: ' + card.title,
+      description: card.oneLiner,
+      imageUrl: card.imageUrl,
+      link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL }
+    },
+    buttons: [
+      { title: '나도 뽑아보기', link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL } }
+    ]
+  });
+}
+
+async function saveCard() {
+  try {
+    const el = document.getElementById('card-image-area');
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#0a0a06',
+      scale: 2,
+      useCORS: false,
+      allowTaint: true
+    });
+    const link = document.createElement('a');
+    const title = currentCardData ? currentCardData.card.title.replace(/\s/g, '') : 'card';
+    link.download = '호왕패_' + title + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('이미지가 저장되었습니다');
+  } catch(e) {
+    console.error('saveCard error:', e);
+    showToast('길게 눌러 스크린샷으로 저장해주세요');
+  }
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(SHARE_URL).then(() => {
+    showToast('링크가 복사되었습니다');
+  }).catch(() => {
+    showToast('링크 복사에 실패했습니다');
+  });
+}
+
+async function shareInsta() {
+  try {
+    const el = document.getElementById('card-image-area');
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#0a0a06',
+      scale: 2,
+      useCORS: false,
+      allowTaint: true
+    });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const title = currentCardData ? currentCardData.card.title.replace(/\s/g, '') : 'card';
+    const file = new File([blob], '호왕패_' + title + '.png', { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: '호왕패', text: '내 호왕패를 확인해봐! ' + SHARE_URL });
+    } else {
+      const link = document.createElement('a');
+      link.download = '호왕패_' + title + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
+    }
+  } catch(e) {
+    console.error('shareInsta error:', e);
+    showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
+  }
+}
+
+function retry() {
+  document.getElementById('screen-result').style.display = 'none';
+  document.getElementById('screen-result').classList.remove('show');
+  document.getElementById('screen-loading').style.display = 'none';
+  document.querySelector('.door-img').classList.remove('zoom');
+  document.getElementById('loadingText').classList.remove('show');
+  document.getElementById('screen-input').style.display = 'flex';
+  document.getElementById('v2TeaserSection').style.display = 'none';
+  cardImageBase64 = null;
+  currentCardData = null;
+  ['Wood','Fire','Earth','Metal','Water'].forEach(id => {
+    document.getElementById('g' + id).style.width = '0';
+    document.getElementById('g' + id + 'Pct').textContent = '';
+  });
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+<script>
+fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    page: 'howangpae-v2',
+    referrer: document.referrer,
+    userAgent: navigator.userAgent
+  })
+}).catch(() => {});
+</script>
+</body>
+</html>
