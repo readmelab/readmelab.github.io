@@ -196,7 +196,7 @@ function login() {
     }
   }).catch(() => {
     // 서버에 verify 엔드포인트 없으면 로컬 체크
-    if (pw === 'howang2024!' || pw === sessionStorage.getItem('hw-admin-pw')) {
+    if (pw === '2991' || pw === sessionStorage.getItem('hw-admin-pw')) {
       sessionStorage.setItem('hw-admin-pw', pw);
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('main').style.display = 'block';
