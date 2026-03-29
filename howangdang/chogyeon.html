@@ -193,6 +193,7 @@ var pPillars = params.get('pillars');
 var pBirth = params.get('birth');
 var pTime = params.get('time');
 var pCal = params.get('cal');
+var pGender = params.get('gender') || '';
 
 var upgradeTarget = params.get('upgrade');
 var upgradeFromId = params.get('from');
@@ -298,11 +299,12 @@ if (prevOrder.job) {
     document.getElementById('orderSection').classList.remove('show');
     if (document.getElementById('upgradeInfo')) document.getElementById('upgradeInfo').style.display = 'none';
 
-    fetch(API_BASE + '/order', {
+fetch(API_BASE + '/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         orderId: orderId, product: order.product, name: order.name, phone: order.phone,
+        gender: order.gender || '',
         birthDate: order.birthDate, birthTime: order.birthTime,
         calendarType: order.calendarType, question: order.question, job: order.job,
         marriage: order.marriage || '미입력',
@@ -425,9 +427,10 @@ function submitOrder() {
   }
 
   var orderId = 'HW' + Date.now();
-  sessionStorage.setItem('hw_order', JSON.stringify({
+sessionStorage.setItem('hw_order', JSON.stringify({
     orderId: orderId, product: selectedProduct, price: selectedPrice,
-    name: name, phone: phone, birthDate: birthDate, birthTime: birthTime,
+    name: name, phone: phone, gender: pGender,
+    birthDate: birthDate, birthTime: birthTime,
     calendarType: calType, question: question, job: selectedJob,
     marriage: selectedMarriage || '미입력',
     interest: selectedInterest || '전체',
