@@ -535,7 +535,7 @@ function renderResult(data,weakEl){
   const birthInfo=document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
   const timeInfo=unknownTime?'모름':document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
   const pillarsText=fp.year+' '+fp.month+' '+fp.day+' '+(fp.hour||'');
-  const chogyeonUrl='chogyeon.html?title='+encodeURIComponent(g.hanja+' '+g.name)+'&pillars='+encodeURIComponent(pillarsText)+'&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal);
+  const chogyeonUrl='chogyeon.html?title='+encodeURIComponent(g.hanja+' '+g.name)+'&pillars='+encodeURIComponent(pillarsText)+'&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
 
   document.getElementById('cardCta').innerHTML='네 사주는 봤다. 그 안의 뜻은 아직 모르지?<br>호왕이 풀어주마.<br><br><a href="'+chogyeonUrl+'" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-weight:700;text-decoration:none;letter-spacing:2px;font-size:15px;">초견 받으러 가기</a>';
 }
