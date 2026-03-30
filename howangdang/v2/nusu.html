@@ -349,18 +349,16 @@ var SHARE_URL = 'https://readmelab.github.io/howangdang/v2/nusu.html';
 var selectedGender = '';
 var selectedCal = 'solar';
 var unknownTime = false;
-var currentData = null;
+var currentData = null;   // data.card 가 들어감
 var cardImageBase64 = null;
 
 Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
 
-/* ═══ 누수 유형 한글 ═══ */
 var LEAK_NAMES = { people:'인간관계 누수', desire:'욕망 누수', pride:'체면 누수', learning:'배움 누수', unconscious:'무의식 누수' };
 var LEAK_ICONS = { people:'🤝', desire:'🛍️', pride:'👔', learning:'📚', unconscious:'💨' };
 var LEVEL_LABELS = { 1:'양호', 2:'주의', 3:'경고', 4:'위험', 5:'심각' };
 var LEVEL_COLORS = { 1:'#4a8c5c', 2:'#b8963a', 3:'#c87830', 4:'#c44a4a', 5:'#9c2020' };
 
-/* 레벨별 경고 문구 */
 var LEVEL_WARNINGS = {
   1: '현재 누수는 경미하지만, 방심하면 {year10}만 원이 조용히 빠져나갑니다',
   2: '지금 습관이 계속되면 10년 뒤 {year10}만 원이 사라집니다',
@@ -448,18 +446,20 @@ async function submitForm(){
     var data=await res.json();
     if(!data.success){alert('오류: '+(data.error||''));retry();return}
 
-    currentData=data;
+    // ★ 핵심 수정: data.card 안에 모든 데이터가 있음
+    var c = data.card;
+    currentData = c;
 
     // 레벨별 이미지 로드
-    var leakLevel=data.leakLevel||3;
-    var imgUrl=IMG_BASE+'/level'+leakLevel+'.jpeg';
-    cardImageBase64=await loadImageAsBase64(imgUrl);
+    var leakLevel = c.leakLevel || 3;
+    var imgUrl = IMG_BASE + '/level' + leakLevel + '.jpeg';
+    cardImageBase64 = await loadImageAsBase64(imgUrl);
 
     var doorImg=document.querySelector('.door-img');
     doorImg.classList.add('zoom');
     await wait(800);
 
-    renderResult(data);
+    renderResult(c);
 
     // 트래킹
     fetch(API_BASE+'/api/track/card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'nusupae'})}).catch(function(){});
@@ -470,7 +470,7 @@ async function submitForm(){
     await wait(50);
     resultScreen.classList.add('show');
     await wait(300);
-    animateAll(data);
+    animateAll(c);
 
   }catch(err){
     console.error(err);
@@ -479,56 +479,55 @@ async function submitForm(){
   }
 }
 
-/* ═══ 결과 렌더링 ═══ */
-function renderResult(data){
-  var leakLevel=data.leakLevel||3;
-  var leakKey=data.leakKey||'unconscious';
-  var leakLabel=LEVEL_LABELS[leakLevel]||'주의';
-  var leakColor=LEVEL_COLORS[leakLevel]||'#c87830';
+/* ═══ 결과 렌더링 — c = data.card ═══ */
+function renderResult(c){
+  var leakLevel = c.leakLevel || 3;
+  var leakKey = c.leakKey || 'unconscious';
+  var leakLabel = c.leakLabel || LEVEL_LABELS[leakLevel] || '주의';
+  var leakColor = LEVEL_COLORS[leakLevel] || '#c87830';
 
   // 이미지 오버레이
-  document.getElementById('cardImage').src=cardImageBase64||IMG_BASE+'/level'+leakLevel+'.jpeg';
-  var overlayLevel=document.getElementById('overlayLevel');
-  overlayLevel.textContent='누수등급 '+leakLevel+' — '+leakLabel;
-  overlayLevel.style.color=leakColor;
-  document.getElementById('overlayTitle').textContent=(LEAK_ICONS[leakKey]||'💧')+' '+(LEAK_NAMES[leakKey]||'누수');
-  document.getElementById('overlayOneliner').textContent=data.cardText||'';
+  document.getElementById('cardImage').src = cardImageBase64 || IMG_BASE+'/level'+leakLevel+'.jpeg';
+  var overlayLevel = document.getElementById('overlayLevel');
+  overlayLevel.textContent = '누수등급 '+leakLevel+' — '+leakLabel;
+  overlayLevel.style.color = leakColor;
+  document.getElementById('overlayTitle').textContent = (LEAK_ICONS[leakKey]||'💧')+' '+(LEAK_NAMES[leakKey]||'누수');
+  document.getElementById('overlayOneliner').textContent = c.cardText || '';
 
   // 물방울 게이지
   for(var i=1;i<=5;i++){
     var drop=document.getElementById('drop'+i);
-    if(i<=leakLevel)drop.classList.add('active');
-    else drop.classList.remove('active');
+    drop.classList.remove('active');
   }
-  document.getElementById('leakGaugeLabel').textContent=leakLabel;
-  document.getElementById('leakGaugeLabel').style.color=leakColor;
+  document.getElementById('leakGaugeLabel').textContent = leakLabel;
+  document.getElementById('leakGaugeLabel').style.color = leakColor;
 
-  // 사주
-  var fp=data.fourPillars||{};
-  var fph=data.fourPillarsHangul||{};
-  document.getElementById('pYear').textContent=fp.year||'';
-  document.getElementById('pYearH').textContent=fph.year||'';
-  document.getElementById('pMonth').textContent=fp.month||'';
-  document.getElementById('pMonthH').textContent=fph.month||'';
-  document.getElementById('pDay').textContent=fp.day||'';
-  document.getElementById('pDayH').textContent=fph.day||'';
-  document.getElementById('pHour').textContent=fp.hour||'\u2014';
-  document.getElementById('pHourH').textContent=fph.hour||'모름';
+  // 사주 원국
+  var fp = c.fourPillars || {};
+  var fph = c.fourPillarsHangul || {};
+  document.getElementById('pYear').textContent = fp.year || '';
+  document.getElementById('pYearH').textContent = fph.year || '';
+  document.getElementById('pMonth').textContent = fp.month || '';
+  document.getElementById('pMonthH').textContent = fph.month || '';
+  document.getElementById('pDay').textContent = fp.day || '';
+  document.getElementById('pDayH').textContent = fph.day || '';
+  document.getElementById('pHour').textContent = fp.hour || '\u2014';
+  document.getElementById('pHourH').textContent = fph.hour || '모름';
 
   // 누수 금액
-  var la=data.leakAmount||{};
-  document.getElementById('fAmt1').textContent=formatMoney(la.year1||0)+'원';
-  document.getElementById('fAmt3').textContent=formatMoney(la.year3||0)+'원';
-  document.getElementById('fAmt5').textContent=formatMoney(la.year5||0)+'원';
-  document.getElementById('fAmt10').textContent=formatMoney(la.year10||0)+'원';
+  var la = c.leakAmount || {};
+  document.getElementById('fAmt1').textContent = formatMoney(la.year1||0)+'원';
+  document.getElementById('fAmt3').textContent = formatMoney(la.year3||0)+'원';
+  document.getElementById('fAmt5').textContent = formatMoney(la.year5||0)+'원';
+  document.getElementById('fAmt10').textContent = formatMoney(la.year10||0)+'원';
 
   // 업셀
-  renderUpsell(data);
+  renderUpsell(c);
 }
 
-function animateAll(data){
+function animateAll(c){
   // 오행 게이지
-  var g=data.elementGauge||{};
+  var g = c.elementGauge || {};
   var els=['wood','fire','earth','metal','water'];
   var ids=['Wood','Fire','Earth','Metal','Water'];
   els.forEach(function(el,i){
@@ -538,8 +537,8 @@ function animateAll(data){
   });
 
   // 누수 금액 바
-  var la=data.leakAmount||{};
-  var max10=la.year10||1;
+  var la = c.leakAmount || {};
+  var max10 = la.year10 || 1;
   var bars=[{id:'fBar1',val:la.year1||0},{id:'fBar3',val:la.year3||0},{id:'fBar5',val:la.year5||0},{id:'fBar10',val:la.year10||0}];
   bars.forEach(function(b){
     var pct=Math.min(100,Math.round(b.val/max10*100));
@@ -547,7 +546,7 @@ function animateAll(data){
   });
 
   // 물방울 순차 활성화
-  var leakLevel=data.leakLevel||3;
+  var leakLevel = c.leakLevel || 3;
   for(var i=1;i<=leakLevel;i++){
     (function(idx){
       setTimeout(function(){document.getElementById('drop'+idx).classList.add('active')},idx*300);
@@ -556,26 +555,26 @@ function animateAll(data){
 }
 
 /* ═══ 업셀 렌더링 ═══ */
-function renderUpsell(data){
-  var leakLevel=data.leakLevel||3;
-  var la=data.leakAmount||{};
-  var year10Man=Math.round((la.year10||0)/10000);
+function renderUpsell(c){
+  var leakLevel = c.leakLevel || 3;
+  var la = c.leakAmount || {};
+  var year10Man = Math.round((la.year10||0)/10000);
 
   // 경고 문구
-  var warningTemplate=LEVEL_WARNINGS[leakLevel]||LEVEL_WARNINGS[3];
-  document.getElementById('v2WarningText').textContent=warningTemplate.replace('{year10}',year10Man.toLocaleString());
+  var warningTemplate = LEVEL_WARNINGS[leakLevel] || LEVEL_WARNINGS[3];
+  document.getElementById('v2WarningText').textContent = warningTemplate.replace('{year10}', year10Man.toLocaleString());
 
   // 가격 서브 텍스트
-  document.getElementById('v2PriceSub').textContent='☕ 커피 두 잔 값으로 '+year10Man.toLocaleString()+'만 원을 지킵니다';
+  document.getElementById('v2PriceSub').textContent = '☕ 커피 두 잔 값으로 '+year10Man.toLocaleString()+'만 원을 지킵니다';
 
-  // CTA 링크
-  var birthInfo=document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
-  var timeInfo=unknownTime?'모름':document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
-  var ctaUrl='chogyeon.html?product=nusu-treat&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
-  document.getElementById('v2MainCta').href=ctaUrl;
+  // CTA 링크 → chogyeon.html에 product=NUSU 파라미터 전달
+  var birthInfo = document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
+  var timeInfo = unknownTime ? '모름' : document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
+  var ctaUrl = 'chogyeon.html?product=NUSU&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
+  document.getElementById('v2MainCta').href = ctaUrl;
 
   // 재물풀이 링크
-  document.getElementById('v2ExtraJaemul').href='chogyeon.html?product=jaemul&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
+  document.getElementById('v2ExtraJaemul').href = 'chogyeon.html?highlight=HW2&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
 
   // 표시
   document.getElementById('v2TeaserSection').style.display='block';
@@ -584,20 +583,21 @@ function renderUpsell(data){
 /* ═══ 공유 ═══ */
 function shareKakao(){
   if(!currentData)return;
-  var leakKey=currentData.leakKey||'unconscious';
+  var leakKey = currentData.leakKey || 'unconscious';
+  var leakLevel = currentData.leakLevel || 3;
   Kakao.Share.sendDefault({
     objectType:'feed',
     content:{
       title:'호왕 누수패: '+(LEAK_NAMES[leakKey]||'누수'),
-      description:currentData.cardText||'내 돈이 어디로 새는지 확인해봐',
-      imageUrl:IMG_BASE+'/level'+(currentData.leakLevel||3)+'.jpeg',
+      description: currentData.cardText || '내 돈이 어디로 새는지 확인해봐',
+      imageUrl: IMG_BASE+'/level'+leakLevel+'.jpeg',
       link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}
     },
     buttons:[{title:'나도 뽑아보기',link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}}]
   });
 }
 
-/* 이미지 저장: card-image-area만 캡처 (항아리+오버레이만) */
+/* 이미지 저장: card-image-area만 (항아리+오버레이) */
 async function saveCard(){
   try{
     var el=document.getElementById('card-image-area');
