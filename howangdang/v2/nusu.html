@@ -731,7 +731,7 @@ function retry(){
 
 /* ═══ 주문/결제 ═══ */
 var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
-var ORDER_API = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+var ORDER_API = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 var selectedJob = '';
 var selectedMarriage = '';
 var selectedChild = '';
@@ -795,7 +795,8 @@ function submitOrder(){
     marriage: selectedMarriage,
     hasChild: selectedChild,
     leakKey: currentData ? currentData.leakKey : '',
-    leakLevel: currentData ? currentData.leakLevel : 0
+    leakLevel: currentData ? currentData.leakLevel : 0,
+    nusuCard: currentData || null
   }));
 
   try{
@@ -858,8 +859,8 @@ function submitOrder(){
         marriage: order.marriage,
         hasChild: order.hasChild,
         gender: order.gender,
-        leakKey: order.leakKey,
-        leakLevel: order.leakLevel
+        nusuCard: order.nusuCard || null,
+        fromProduct: order.product === 'HW2' ? 'NUSU' : ''
       })
     })
     .then(function(){
