@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>누수처방 | 호왕당</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Noto Serif KR',serif;
+  background:#0d0906;color:#e8dcc8;
+  min-height:100vh;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 0%,#1a120a 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 100%,#1a120a 0%,transparent 50%);
+  opacity:0.6;
+}
+
+/* 로딩 */
+.loading-screen{
+  position:fixed;inset:0;z-index:9999;background:#0d0906;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 1s;
+}
+.loading-screen.hide{opacity:0;pointer-events:none;}
+.loading-circle{
+  width:48px;height:48px;
+  border:2px solid #2a1f14;border-top-color:#c44a4a;
+  border-radius:50%;animation:spin 1.2s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{margin-top:20px;color:#c44a4a;font-size:13px;letter-spacing:6px;}
+
+.container{max-width:480px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+
+.ornament{text-align:center;margin:40px 0;color:#c8a96e44;font-size:13px;letter-spacing:8px;}
+.divider{
+  height:1px;margin:36px 0;
+  background:linear-gradient(90deg,transparent 0%,#c8a96e33 30%,#c8a96e55 50%,#c8a96e33 70%,transparent 100%);
+}
+
+/* 헤더 */
+.header{text-align:center;padding:48px 0 20px;}
+.header-stamp{
+  width:72px;height:72px;margin:0 auto 16px;
+  border:2px solid #c44a4a55;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  background:radial-gradient(circle,#1a120a,#0d0906);
+}
+.header h1{font-size:24px;color:#c44a4a;font-weight:900;letter-spacing:6px;}
+.header .sub{font-size:12px;color:#8a7a60;margin-top:8px;letter-spacing:4px;}
+.user-badge{
+  display:inline-block;margin-top:16px;padding:6px 20px;
+  border:1px solid #c44a4a33;font-size:13px;color:#c44a4a;
+  background:#c44a4a0a;letter-spacing:2px;
+}
+
+/* 사주 패널 */
+.saju-panel{
+  background:#110e09;border:1px solid #c8a96e22;
+  padding:28px 16px;margin:20px 0;text-align:center;position:relative;
+}
+.saju-panel::before,.saju-panel::after{
+  content:'';position:absolute;width:20px;height:20px;border-color:#c8a96e33;border-style:solid;
+}
+.saju-panel::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+.saju-panel::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+.saju-label{font-size:11px;color:#8a7a60;letter-spacing:6px;margin-bottom:16px;}
+.pillars{display:flex;justify-content:center;gap:8px;margin-bottom:16px;}
+.pillar{
+  width:68px;padding:14px 0;background:#0d0906;border:1px solid #c8a96e33;text-align:center;
+}
+.pillar .pos{font-size:10px;color:#8a7a60;margin-bottom:8px;letter-spacing:2px;}
+.pillar .hanja{font-size:24px;color:#c8a96e;font-weight:700;line-height:1.2;}
+.pillar .hangul{font-size:10px;color:#aa9a7a;margin-top:6px;}
+.day-master-info{font-size:12px;color:#aa9a7a;margin-top:8px;}
+.day-master-info .val{color:#c8a96e;font-weight:700;}
+
+/* 누수 등급 카드 */
+.leak-grade-card{
+  background:#110e09;border:1px solid #c44a4a33;
+  padding:30px 20px;text-align:center;margin:20px 0;position:relative;
+}
+.leak-grade-card::before,.leak-grade-card::after{
+  content:'';position:absolute;width:24px;height:24px;border-color:#c44a4a33;border-style:solid;
+}
+.leak-grade-card::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+.leak-grade-card::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+.leak-grade-label{font-size:11px;color:#8a7a60;letter-spacing:4px;margin-bottom:12px;}
+.leak-grade-level{font-size:64px;font-weight:900;line-height:1;text-shadow:0 0 30px rgba(196,74,74,.3);}
+.leak-grade-text{font-size:16px;color:#aa9a7a;margin-top:8px;letter-spacing:2px;}
+.leak-drops-row{display:flex;gap:5px;justify-content:center;margin:16px 0;}
+.leak-drop{
+  width:14px;height:14px;border-radius:50%;
+  background:#1a1510;border:1px solid #2a1f14;transition:background 0.5s;
+}
+.leak-drop.active{background:#c44a4a;border-color:#c44a4a;}
+
+/* 누수 금액 */
+.leak-amount-section{margin:20px 0;}
+.leak-amount-title{font-size:12px;color:#8a7a60;margin-bottom:12px;text-align:center;letter-spacing:2px;}
+.leak-amount-row{display:flex;align-items:center;margin-bottom:10px;gap:8px;}
+.leak-amount-label{width:44px;font-size:11px;color:#8a7a60;text-align:right;flex-shrink:0;}
+.leak-amount-bar-bg{flex:1;height:14px;background:#1a1510;overflow:hidden;}
+.leak-amount-bar{height:100%;background:linear-gradient(90deg,#8B1A1A,#c44a4a);transition:width 1.5s ease;width:0;}
+.leak-amount-val{width:84px;font-size:12px;color:#c44a4a;text-align:right;flex-shrink:0;font-weight:700;}
+
+/* 섹션 카드 */
+.section-card{
+  background:#110e09;border:1px solid #c8a96e1a;
+  padding:28px 22px;margin:24px 0;position:relative;
+}
+.section-card::before,.section-card::after{
+  content:'';position:absolute;width:16px;height:16px;border-color:#c8a96e22;border-style:solid;
+}
+.section-card::before{top:6px;left:6px;border-width:1px 0 0 1px;}
+.section-card::after{bottom:6px;right:6px;border-width:0 1px 1px 0;}
+.section-num{font-size:10px;color:#5a4a3a;letter-spacing:4px;margin-bottom:8px;}
+.section-title{font-size:18px;font-weight:700;color:#c8a96e;margin-bottom:16px;letter-spacing:1px;}
+.section-body{font-size:13.5px;line-height:2;color:#ccc0aa;word-break:keep-all;}
+
+/* 위험한 달 캘린더 */
+.calendar-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0;
+}
+.cal-cell{
+  padding:10px 6px;text-align:center;background:#0d0906;border:1px solid #c8a96e1a;
+}
+.cal-cell.danger{border-color:#c44a4a55;background:rgba(196,74,74,.06);}
+.cal-cell.safe{border-color:#4a8c5c55;background:rgba(74,140,92,.06);}
+.cal-month{font-size:12px;font-weight:700;margin-bottom:2px;}
+.cal-cell.danger .cal-month{color:#c44a4a;}
+.cal-cell.safe .cal-month{color:#4a8c5c;}
+.cal-cell .cal-month{color:#8a7a60;}
+.cal-icon{font-size:14px;}
+
+/* 업셀 */
+.upsell-section{
+  background:#110e09;border:1px solid #c8a96e33;
+  padding:28px 22px;margin:24px 0;text-align:center;position:relative;
+}
+.upsell-section::before,.upsell-section::after{
+  content:'';position:absolute;width:20px;height:20px;border-color:#c8a96e44;border-style:solid;
+}
+.upsell-section::before{top:8px;left:8px;border-width:1px 0 0 1px;}
+.upsell-section::after{bottom:8px;right:8px;border-width:0 1px 1px 0;}
+.upsell-title{font-size:16px;font-weight:900;color:#c8a96e;margin-bottom:8px;letter-spacing:2px;}
+.upsell-sub{font-size:12px;color:#8a7a60;margin-bottom:20px;line-height:1.7;}
+.upsell-price-old{font-size:13px;color:#6a5a4a;text-decoration:line-through;}
+.upsell-price-new{font-size:28px;font-weight:900;color:#c8a96e;margin-top:4px;}
+.upsell-price-note{font-size:11px;color:#8a7a60;margin-top:4px;}
+.upsell-cta{
+  display:block;width:100%;padding:16px 0;margin-top:16px;
+  background:#c8a96e;color:#0d0906;
+  font-size:15px;font-weight:900;font-family:'Noto Serif KR',serif;
+  border:none;border-radius:6px;cursor:pointer;letter-spacing:3px;
+  text-align:center;text-decoration:none;transition:background .3s;
+}
+.upsell-cta:hover{background:#b8994e;}
+
+.footer{text-align:center;padding:40px 0 30px;font-size:10px;color:#3a3020;letter-spacing:1px;}
+
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.8s,transform 0.8s;}
+.fade-up.show{opacity:1;transform:translateY(0);}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:#0d0906;}
+::-webkit-scrollbar-thumb{background:#c44a4a33;}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-circle"></div>
+  <div class="loading-text">처방전을 작성하는 중…</div>
+</div>
+
+<div class="container" id="resultWrap" style="display:none;">
+
+  <div class="header fade-up">
+    <div class="header-stamp">💧</div>
+    <h1>누 수 처 방</h1>
+    <div class="sub">호왕당 할머니의 누수 처방전</div>
+    <div class="user-badge" id="userBadge"></div>
+  </div>
+
+  <div class="ornament">— ◆ —</div>
+
+  <!-- 사주 -->
+  <div class="saju-panel fade-up" id="sajuPanel">
+    <div class="saju-label">四 柱 命 式</div>
+    <div class="pillars" id="pillarsWrap"></div>
+    <div class="day-master-info">
+      일간 <span class="val" id="dayGanText"></span> ·
+      <span class="val" id="strengthText"></span> ·
+      오행 <span class="val" id="dayElementText"></span>
+    </div>
+  </div>
+
+  <!-- 누수 등급 -->
+  <div class="leak-grade-card fade-up" id="leakGradeCard">
+    <div class="leak-grade-label">누 수 등 급</div>
+    <div class="leak-grade-level" id="leakLevelNum"></div>
+    <div class="leak-grade-text" id="leakLevelText"></div>
+    <div class="leak-drops-row" id="leakDropsRow"></div>
+  </div>
+
+  <!-- 누수 금액 -->
+  <div class="leak-amount-section fade-up">
+    <div class="leak-amount-title">누수 예측 금액</div>
+    <div class="leak-amount-row"><div class="leak-amount-label">월</div><div class="leak-amount-bar-bg"><div class="leak-amount-bar" id="amtBarM"></div></div><div class="leak-amount-val" id="amtValM"></div></div>
+    <div class="leak-amount-row"><div class="leak-amount-label">1년</div><div class="leak-amount-bar-bg"><div class="leak-amount-bar" id="amtBar1"></div></div><div class="leak-amount-val" id="amtVal1"></div></div>
+    <div class="leak-amount-row"><div class="leak-amount-label">3년</div><div class="leak-amount-bar-bg"><div class="leak-amount-bar" id="amtBar3"></div></div><div class="leak-amount-val" id="amtVal3"></div></div>
+    <div class="leak-amount-row"><div class="leak-amount-label">5년</div><div class="leak-amount-bar-bg"><div class="leak-amount-bar" id="amtBar5"></div></div><div class="leak-amount-val" id="amtVal5"></div></div>
+    <div class="leak-amount-row"><div class="leak-amount-label">10년</div><div class="leak-amount-bar-bg"><div class="leak-amount-bar" id="amtBar10"></div></div><div class="leak-amount-val" id="amtVal10"></div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Ch1 누수 진단서 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.1</div>
+    <div class="section-title">누수 진단서</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;">🔍</div>
+      <div style="font-size:11px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">당신의 누수 유형을 진단합니다</div>
+    </div>
+    <div class="section-body" id="secCh1"></div>
+  </div>
+
+  <!-- Ch2 누수의 뿌리 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.2</div>
+    <div class="section-title">누수의 뿌리</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;">🌿</div>
+      <div style="font-size:11px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">사주 속 누수의 원인을 파헤칩니다</div>
+    </div>
+    <div class="section-body" id="secCh2"></div>
+  </div>
+
+  <!-- Ch3 맞춤 분석 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.3</div>
+    <div class="section-title">맞춤 분석</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;">🎯</div>
+      <div style="font-size:11px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">성별·나이·직업별 누수 패턴</div>
+    </div>
+    <div class="section-body" id="secCh3"></div>
+  </div>
+
+  <!-- Ch4 사주 심리학 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.4</div>
+    <div class="section-title">사주 심리학</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;">🧠</div>
+      <div style="font-size:11px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">왜 반복하는지, 사주가 만든 심리</div>
+    </div>
+    <div class="section-body" id="secCh4"></div>
+  </div>
+
+  <div class="ornament">— ◆ —</div>
+
+  <!-- Ch5 위험한 달 캘린더 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.5</div>
+    <div class="section-title">위험한 달 캘린더</div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="section-body" id="secCh5Tip" style="margin-top:12px;"></div>
+    <div class="section-body" id="secCh5LeakTip" style="margin-top:12px;"></div>
+    <div class="section-body" id="secCh5JobTip" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Ch6 누수 처방전 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.6</div>
+    <div class="section-title">누수 처방전</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;">💊</div>
+      <div style="font-size:11px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">구체적인 행동 가이드</div>
+    </div>
+    <div class="section-body" id="secCh6"></div>
+  </div>
+
+  <!-- Ch7 재물 연결 -->
+  <div class="section-card fade-up">
+    <div class="section-num">Ch.7</div>
+    <div class="section-title">재물 연결</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;">🔗</div>
+      <div style="font-size:11px;color:#8a7a60;letter-spacing:3px;margin-top:4px;">누수를 막은 뒤 재물운을 연결합니다</div>
+    </div>
+    <div class="section-body" id="secCh7"></div>
+  </div>
+
+  <div class="ornament">— ◆ —</div>
+
+  <!-- 업셀: 재물풀이 -->
+  <div class="upsell-section fade-up">
+    <div class="upsell-title">🏺 재물풀이</div>
+    <div class="upsell-sub">
+      누수를 막았다면, 이제 돈의 흐름을 읽을 차례입니다.<br>
+      돈 그릇 · 재물 통로 · 투자 성향 · 직업 궁합<br>
+      월별 재물운 · 3년 재물 흐름
+    </div>
+    <div class="upsell-price-old">19,800원</div>
+    <div class="upsell-price-new">9,900원</div>
+    <div class="upsell-price-note">누수처방 구매자 전용 50% 할인</div>
+    <a class="upsell-cta" id="upsellCta" href="#">재물풀이 받으러 가기</a>
+  </div>
+
+  <div class="footer">ⓒ 호왕당 · 이 결과는 참고용이며 투자 권유가 아닙니다</div>
+</div>
+
+<script>
+(function(){
+  var API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
+  var LEAK_NAMES = {people:'인간관계 누수',desire:'욕망 누수',pride:'체면 누수',learning:'배움 누수',unconscious:'무의식 누수'};
+  var LEVEL_LABELS = {1:'양호',2:'주의',3:'경고',4:'위험',5:'심각'};
+  var LEVEL_COLORS = {1:'#4a8c5c',2:'#b8963a',3:'#c87830',4:'#c44a4a',5:'#9c2020'};
+
+  function getOrderId(){
+    var p = new URLSearchParams(window.location.search);
+    return p.get('id') || p.get('orderId') || '';
+  }
+
+  function formatMoney(n){
+    if(n>=100000000) return Math.round(n/100000000)+'억';
+    if(n>=10000) return Math.round(n/10000).toLocaleString()+'만';
+    if(n>=1000) return Math.round(n/1000)+'천';
+    return n.toLocaleString();
+  }
+
+  async function loadResult(){
+    var orderId = getOrderId();
+    if(!orderId){alert('주문 정보를 찾을 수 없습니다.');return;}
+    try{
+      var r = await fetch(API_BASE+'/result/'+orderId);
+      var j = await r.json();
+      if(!j.success || !j.data) throw new Error(j.error||'데이터 없음');
+      render(j.data);
+    }catch(e){
+      console.error(e);
+      document.getElementById('loadingScreen').innerHTML='<div style="color:#c44a4a;font-size:13px;text-align:center;padding:40px;">결과를 불러오지 못했습니다.<br>잠시 후 다시 시도해주세요.<br><br><button onclick="location.reload()" style="padding:10px 24px;background:none;border:1px solid #c44a4a;color:#c44a4a;font-family:Noto Serif KR,serif;cursor:pointer;">다시 시도</button></div>';
+    }
+  }
+
+  function render(d){
+    var ch = d.chapters || {};
+    var la = d.leakAmount || {};
+    var nc = d.nusuCard || {};
+    var fp = nc.fourPillars || d.fourPillars || {};
+    var fph = nc.fourPillarsHangul || d.fourPillarsHangul || {};
+    var leakLevel = d.leakLevel || nc.leakLevel || 3;
+    var leakKey = d.leakKey || nc.leakKey || 'unconscious';
+    var leakLabel = d.leakLabel || nc.leakLabel || LEVEL_LABELS[leakLevel] || '주의';
+    var leakColor = LEVEL_COLORS[leakLevel] || '#c87830';
+
+    // 헤더
+    document.getElementById('userBadge').textContent = (d.userName||'')+'님의 누수 처방전';
+
+    // 사주
+    var pLabels=['시주','일주','월주','연주'], pKeys=['hour','day','month','year'];
+    var pw = document.getElementById('pillarsWrap'); pw.innerHTML='';
+    pKeys.forEach(function(k,i){
+      pw.innerHTML+='<div class="pillar"><div class="pos">'+pLabels[i]+'</div><div class="hanja">'+(fp[k]||'??')+'</div><div class="hangul">'+(fph[k]||'')+'</div></div>';
+    });
+    var elKo = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    document.getElementById('dayGanText').textContent = d.dayGan || nc.dayGan || '';
+    document.getElementById('strengthText').textContent = (d.strength||nc.strength)==='strong'?'신강':'신약';
+    document.getElementById('dayElementText').textContent = elKo[d.dayGanOheng||nc.dayGanOheng] || '';
+
+    // 누수 등급
+    document.getElementById('leakLevelNum').textContent = leakLevel;
+    document.getElementById('leakLevelNum').style.color = leakColor;
+    document.getElementById('leakLevelText').textContent = (LEAK_NAMES[leakKey]||'누수')+' · '+leakLabel;
+    var dr = document.getElementById('leakDropsRow'); dr.innerHTML='';
+    for(var i=1;i<=5;i++) dr.innerHTML+='<div class="leak-drop'+(i<=leakLevel?' active':'')+'"></div>';
+
+    // 누수 금액
+    var amts = [
+      {label:'월',key:'monthly',bar:'amtBarM',val:'amtValM'},
+      {label:'1년',key:'year1',bar:'amtBar1',val:'amtVal1'},
+      {label:'3년',key:'year3',bar:'amtBar3',val:'amtVal3'},
+      {label:'5년',key:'year5',bar:'amtBar5',val:'amtVal5'},
+      {label:'10년',key:'year10',bar:'amtBar10',val:'amtVal10'}
+    ];
+    var max10 = la.year10 || 1;
+    amts.forEach(function(a){
+      var v = la[a.key] || 0;
+      document.getElementById(a.val).textContent = formatMoney(v)+'원';
+      document.getElementById(a.bar).dataset.w = Math.min(100,Math.round(v/max10*100))+'%';
+    });
+
+    // 챕터 텍스트
+    document.getElementById('secCh1').textContent = ch.ch1 || '';
+    document.getElementById('secCh2').textContent = ch.ch2 || '';
+    document.getElementById('secCh3').textContent = ch.ch3 || '';
+    document.getElementById('secCh4').textContent = ch.ch4 || '';
+    document.getElementById('secCh6').textContent = ch.ch6 || '';
+    document.getElementById('secCh7').textContent = ch.ch7 || '';
+
+    // Ch5 캘린더
+    var ch5 = ch.ch5 || {};
+    var danger = ch5.danger || [];
+    var safe = ch5.safe;
+    var grid = document.getElementById('calendarGrid'); grid.innerHTML='';
+    for(var m=1;m<=12;m++){
+      var cls = '';
+      var icon = '';
+      if(danger.indexOf(m) !== -1){ cls='danger'; icon='⚠️'; }
+      else if(m === safe){ cls='safe'; icon='✅'; }
+      grid.innerHTML+='<div class="cal-cell '+cls+'"><div class="cal-month">'+m+'월</div><div class="cal-icon">'+icon+'</div></div>';
+    }
+    document.getElementById('secCh5Tip').textContent = ch5.tip || '';
+    document.getElementById('secCh5LeakTip').textContent = ch5.leakTip || '';
+    document.getElementById('secCh5JobTip').textContent = ch5.jobTip || '';
+
+    // 업셀 CTA
+    document.getElementById('upsellCta').href = '../v2/nusu.html?upgrade=HW2&from='+(d.orderId||getOrderId());
+
+    // 표시
+    document.getElementById('resultWrap').style.display='block';
+    document.getElementById('loadingScreen').classList.add('hide');
+    setTimeout(function(){animateBars();},300);
+    observeFadeUp();
+  }
+
+  function animateBars(){
+    document.querySelectorAll('[data-w]').forEach(function(el){el.style.width=el.dataset.w;});
+  }
+
+  function observeFadeUp(){
+    var els=document.querySelectorAll('.fade-up');
+    if('IntersectionObserver' in window){
+      var obs=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('show');
+            obs.unobserve(entry.target);
+            entry.target.querySelectorAll('[data-w]').forEach(function(b){b.style.width=b.dataset.w;});
+          }
+        });
+      },{threshold:0.15});
+      els.forEach(function(el){obs.observe(el);});
+    }else{els.forEach(function(el){el.classList.add('show');});}
+  }
+
+  loadResult();
+})();
+</script>
+<script>
+fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/visit',{
+  method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({page:'nusu-result',referrer:document.referrer,userAgent:navigator.userAgent})
+}).catch(function(){});
+</script>
+</body>
+</html>
