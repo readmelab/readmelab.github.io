@@ -181,6 +181,10 @@ select option{background:#1a1008;color:#e8d5b0}
 .pay-btn{width:100%;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
 .pay-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
 
+
+.card-top-badge{position:absolute;top:0;left:0;right:0;padding:18px 16px 60px;background:linear-gradient(to bottom,rgba(0,0,0,.9) 0%,rgba(0,0,0,.7) 40%,transparent 100%);text-align:center;z-index:2}
+.card-top-title{font-size:20px;font-weight:900;color:#c5975b;letter-spacing:6px;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.card-top-desc{font-size:11px;color:#a89878;margin-top:6px;letter-spacing:1px;line-height:1.5}
   
 </style>
 </head>
@@ -240,16 +244,20 @@ select option{background:#1a1008;color:#e8d5b0}
   <div id="card-capture">
 
     <!-- 이미지 영역: 이것만 이미지 저장 대상 -->
-    <div class="card-image-area" id="card-image-area">
-      <img id="cardImage" src="" alt="누수패">
-      <div class="card-overlay">
-        <div class="card-overlay-tag">#호왕누수패</div>
-        <div class="card-overlay-level" id="overlayLevel"></div>
-        <div class="card-overlay-title" id="overlayTitle"></div>
-        <div class="card-overlay-oneliner" id="overlayOneliner"></div>
-      </div>
-      <div class="card-brand">호왕당 虎王堂</div>
-    </div>
+<div class="card-image-area" id="card-image-area">
+  <img id="cardImage" src="" alt="누수패">
+  <div class="card-top-badge">
+    <div class="card-top-title">호왕 누수패</div>
+    <div class="card-top-desc">사주로 찾는 내 돈의 누수 지점</div>
+  </div>
+  <div class="card-overlay">
+    <div class="card-overlay-tag">#호왕누수패</div>
+    <div class="card-overlay-level" id="overlayLevel"></div>
+    <div class="card-overlay-title" id="overlayTitle"></div>
+    <div class="card-overlay-oneliner" id="overlayOneliner"></div>
+  </div>
+  <div class="card-brand">호왕당 虎王堂</div>
+</div>
 
     <!-- 텍스트 영역 -->
     <div class="card-text-area">
