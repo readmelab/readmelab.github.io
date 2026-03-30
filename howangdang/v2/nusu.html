@@ -9,6 +9,8 @@
 <meta property="og:image" content="https://audio.readmelab.co.kr/howang/nusu/anchor.jpeg">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<script src="https://js.tosspayments.com/v2/standard"></script>
+  
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
 
@@ -160,6 +162,26 @@ select option{background:#1a1008;color:#e8d5b0}
 
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:200;pointer-events:none}
 .toast.show{opacity:1}
+
+/* ═══ 주문 폼 ═══ */
+.order-overlay{display:none;margin-top:20px;width:360px;padding:24px 20px;background:linear-gradient(180deg,#1a1208,#0a0a06);border:1px solid #3a2a1a;border-radius:16px;box-shadow:0 0 30px rgba(197,151,91,.08)}
+.order-overlay.show{display:block}
+.order-title{font-size:16px;font-weight:900;color:#c5975b;text-align:center;margin-bottom:16px;letter-spacing:2px}
+.order-price{font-size:22px;font-weight:900;color:#c5975b;text-align:center;margin-bottom:20px}
+.form-label{font-size:12px;color:#8a7a5a;margin-bottom:4px;display:block}
+.form-input{width:100%;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;margin-bottom:12px}
+.form-input:focus{border-color:#c5975b}
+.form-input::placeholder{color:#4a3a2a}
+.option-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.option-btn{padding:10px 16px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s}
+.option-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+.privacy-row{display:flex;align-items:flex-start;gap:8px;margin:12px 0}
+.privacy-row input{margin-top:3px;accent-color:#c5975b;width:18px;height:18px;cursor:pointer}
+.privacy-row label{font-size:11px;color:#8a7a5a;line-height:1.6;cursor:pointer}
+.pay-btn{width:100%;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
+.pay-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+
+  
 </style>
 </head>
 <body>
@@ -321,6 +343,52 @@ select option{background:#1a1008;color:#e8d5b0}
     </div>
   </div>
 
+
+  <!-- ═══ 주문 폼 (누수처방 / 재물풀이 공용) ═══ -->
+  <div class="order-overlay" id="orderOverlay">
+    <div class="order-title" id="orderTitle">누수처방</div>
+    <div class="order-price" id="orderPrice">9,900원</div>
+
+    <div class="form-label">이름</div>
+    <input class="form-input" id="userName" type="text" placeholder="이름을 알려주거라">
+
+    <div class="form-label">연락처</div>
+    <input class="form-input" id="userPhone" type="tel" placeholder="010-0000-0000">
+
+    <div class="form-label">직업</div>
+    <div class="option-row" id="jobRow">
+      <button class="option-btn" data-job="사업" onclick="selectJob(this)">사업</button>
+      <button class="option-btn" data-job="직장인" onclick="selectJob(this)">직장인</button>
+      <button class="option-btn" data-job="프리랜서" onclick="selectJob(this)">프리랜서</button>
+      <button class="option-btn" data-job="주부" onclick="selectJob(this)">주부</button>
+      <button class="option-btn" data-job="취준생" onclick="selectJob(this)">취준생</button>
+      <button class="option-btn" data-job="학생" onclick="selectJob(this)">학생</button>
+    </div>
+
+    <div class="form-label">결혼 여부</div>
+    <div class="option-row" id="marriageRow">
+      <button class="option-btn" data-val="미혼" onclick="selectMarriage(this)">미혼</button>
+      <button class="option-btn" data-val="연애중" onclick="selectMarriage(this)">연애중</button>
+      <button class="option-btn" data-val="기혼" onclick="selectMarriage(this)">기혼</button>
+      <button class="option-btn" data-val="이혼·사별" onclick="selectMarriage(this)">이혼·사별</button>
+    </div>
+
+    <div class="form-label">자녀 여부</div>
+    <div class="option-row" id="childRow">
+      <button class="option-btn" data-val="없음" onclick="selectChild(this)">없음</button>
+      <button class="option-btn" data-val="1명" onclick="selectChild(this)">1명</button>
+      <button class="option-btn" data-val="2명 이상" onclick="selectChild(this)">2명 이상</button>
+    </div>
+
+    <div class="privacy-row">
+      <input type="checkbox" id="agreePrivacy">
+      <label for="agreePrivacy">[필수] 개인정보 수집·이용에 동의합니다.<br><span style="color:#6a5a4a">수집 항목: 이름, 연락처, 생년월일시 | 목적: 사주 풀이 제공 | 보유 기간: 서비스 제공 후 1년</span></label>
+    </div>
+
+    <button class="pay-btn" id="payBtn" onclick="submitOrder()">결제하기</button>
+  </div>
+
+  
   <!-- 공유 -->
   <div class="share-section">
     <div class="share-row">
@@ -560,25 +628,21 @@ function renderUpsell(c){
   var la = c.leakAmount || {};
   var year10Man = Math.round((la.year10||0)/10000);
 
-  // 경고 문구
   var warningTemplate = LEVEL_WARNINGS[leakLevel] || LEVEL_WARNINGS[3];
   document.getElementById('v2WarningText').textContent = warningTemplate.replace('{year10}', year10Man.toLocaleString());
 
-  // 가격 서브 텍스트
   document.getElementById('v2PriceSub').textContent = '☕ 커피 두 잔 값으로 '+year10Man.toLocaleString()+'만 원을 지킵니다';
 
-  // CTA 링크 → chogyeon.html에 product=NUSU 파라미터 전달
-  var birthInfo = document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
-  var timeInfo = unknownTime ? '모름' : document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
-  var ctaUrl = 'chogyeon.html?product=NUSU&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
-  document.getElementById('v2MainCta').href = ctaUrl;
+  // CTA → 페이지 내 주문 폼 열기 (chogyeon.html 이동 안 함)
+  document.getElementById('v2MainCta').href = 'javascript:void(0)';
+  document.getElementById('v2MainCta').onclick = function(){ openOrderForm('NUSU', 9900, '누수처방'); };
 
-  // 재물풀이 링크
-  document.getElementById('v2ExtraJaemul').href = 'chogyeon.html?highlight=HW2&birth='+encodeURIComponent(birthInfo)+'&time='+encodeURIComponent(timeInfo)+'&cal='+encodeURIComponent(selectedCal)+'&gender='+encodeURIComponent(selectedGender);
+  document.getElementById('v2ExtraJaemul').href = 'javascript:void(0)';
+  document.getElementById('v2ExtraJaemul').onclick = function(){ openOrderForm('HW2', 19800, '재물풀이'); };
 
-  // 표시
   document.getElementById('v2TeaserSection').style.display='block';
 }
+
 
 /* ═══ 공유 ═══ */
 function shareKakao(){
@@ -656,6 +720,166 @@ function retry(){
   ['fBar1','fBar3','fBar5','fBar10'].forEach(function(id){document.getElementById(id).style.width='0'});
   for(var i=1;i<=5;i++)document.getElementById('drop'+i).classList.remove('active');
 }
+
+/* ═══ 주문/결제 ═══ */
+var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+var ORDER_API = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+var selectedJob = '';
+var selectedMarriage = '';
+var selectedChild = '';
+var orderProduct = '';  // 'NUSU' or 'HW2'
+var orderPrice = 0;
+
+function selectJob(btn){
+  document.querySelectorAll('#jobRow .option-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  selectedJob = btn.dataset.job;
+}
+function selectMarriage(btn){
+  document.querySelectorAll('#marriageRow .option-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  selectedMarriage = btn.dataset.val;
+}
+function selectChild(btn){
+  document.querySelectorAll('#childRow .option-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  selectedChild = btn.dataset.val;
+}
+
+function openOrderForm(product, price, title){
+  orderProduct = product;
+  orderPrice = price;
+  document.getElementById('orderTitle').textContent = title;
+  document.getElementById('orderPrice').textContent = price.toLocaleString() + '원';
+  document.getElementById('payBtn').textContent = title + ' 결제하기 (' + price.toLocaleString() + '원)';
+  var overlay = document.getElementById('orderOverlay');
+  overlay.classList.add('show');
+  overlay.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function submitOrder(){
+  var name = document.getElementById('userName').value.trim();
+  var phone = document.getElementById('userPhone').value.trim();
+
+  if(!name){showToast('이름을 입력해주세요');return}
+  if(!phone){showToast('연락처를 입력해주세요');return}
+  if(!selectedJob){showToast('직업을 선택해주세요');return}
+  if(!selectedMarriage){showToast('결혼 여부를 선택해주세요');return}
+  if(!selectedChild){showToast('자녀 여부를 선택해주세요');return}
+  if(!document.getElementById('agreePrivacy').checked){showToast('개인정보 수집·이용에 동의해주세요');return}
+
+  var birthDate = document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
+  var birthTime = unknownTime ? '모름' : document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
+
+  var orderId = 'NUSU' + Date.now();
+
+  sessionStorage.setItem('hw_order', JSON.stringify({
+    orderId: orderId,
+    product: orderProduct,
+    price: orderPrice,
+    name: name,
+    phone: phone,
+    gender: selectedGender,
+    birthDate: birthDate,
+    birthTime: birthTime,
+    calendarType: selectedCal,
+    job: selectedJob,
+    marriage: selectedMarriage,
+    hasChild: selectedChild,
+    leakKey: currentData ? currentData.leakKey : '',
+    leakLevel: currentData ? currentData.leakLevel : 0
+  }));
+
+  try{
+    var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    var payment = tossPayments.payment({customerKey:'ANONYMOUS'});
+    var productNames = {NUSU:'누수처방', HW2:'재물풀이'};
+    payment.requestPayment({
+      method:'CARD',
+      amount:{currency:'KRW', value:orderPrice},
+      orderId: orderId,
+      orderName:'호왕당 '+(productNames[orderProduct]||orderProduct),
+      customerName: name,
+      customerMobilePhone: phone.replace(/[^0-9]/g,''),
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card:{flowMode:'DEFAULT'}
+    }).catch(function(e){
+      if(e.code==='USER_CANCEL') showToast('결제가 취소되었습니다');
+      else{console.error(e);showToast('결제 중 오류: '+(e.message||''));}
+    });
+  }catch(e){
+    console.error(e);
+    showToast('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
+  }
+}
+
+/* ═══ 결제 콜백 ═══ */
+(function handlePaymentCallback(){
+  var urlParams = new URLSearchParams(window.location.search);
+
+  if(urlParams.get('payment')==='success'){
+    var paymentKey = urlParams.get('paymentKey');
+    var pOrderId = urlParams.get('orderId');
+    var amount = urlParams.get('amount');
+
+    history.replaceState(null,'',window.location.pathname);
+    var orderData = sessionStorage.getItem('hw_order');
+    if(!orderData){showToast('주문 정보를 찾을 수 없습니다.');return}
+    var order = JSON.parse(orderData);
+    if(order.orderId !== pOrderId || order.price !== parseInt(amount)){
+      showToast('결제 정보가 일치하지 않습니다.');
+      sessionStorage.removeItem('hw_order');
+      return;
+    }
+    sessionStorage.removeItem('hw_order');
+
+    // 주문 저장 → 결제 승인 → 결과 페이지
+    fetch(ORDER_API + '/order',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        orderId: pOrderId,
+        product: order.product,
+        name: order.name,
+        phone: order.phone,
+        birthDate: order.birthDate,
+        birthTime: order.birthTime,
+        calendarType: order.calendarType,
+        job: order.job,
+        marriage: order.marriage,
+        hasChild: order.hasChild,
+        gender: order.gender,
+        leakKey: order.leakKey,
+        leakLevel: order.leakLevel
+      })
+    })
+    .then(function(){
+      return fetch(ORDER_API + '/payment/confirm',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({paymentKey:paymentKey, orderId:pOrderId, amount:parseInt(amount)})
+      });
+    })
+    .then(function(res){return res.json()})
+    .then(function(data){
+      if(data.success){
+        var resultPage = order.product === 'NUSU' ? 'nusu-result.html' : 'jaemul-result.html';
+        location.href = resultPage + '?id=' + pOrderId;
+      }else{
+        showToast('결제 승인 실패: '+(data.error||''));
+      }
+    })
+    .catch(function(err){console.error(err);showToast('결제 처리 중 오류가 발생했습니다')});
+  }
+
+  if(urlParams.get('payment')==='fail'){
+    history.replaceState(null,'',window.location.pathname);
+    showToast('결제가 취소되었거나 실패했습니다.');
+  }
+})();
+
+  
 </script>
 <script>
 fetch(API_BASE+'/api/track/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:'nusupae',referrer:document.referrer,userAgent:navigator.userAgent})}).catch(function(){});
