@@ -600,7 +600,7 @@
 
 <script>
 (function(){
-  const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+  const API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 
   function getOrderId(){
     const p = new URLSearchParams(window.location.search);
@@ -913,7 +913,7 @@ document.getElementById('bpModalPay').addEventListener('click', async function()
 })();
 </script>
   <script>
-fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/visit', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({ page: 'jaemul-result', referrer: document.referrer, userAgent: navigator.userAgent })
