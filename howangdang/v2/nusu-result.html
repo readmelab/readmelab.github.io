@@ -172,6 +172,7 @@ body::before{
 ::-webkit-scrollbar-track{background:#0d0906;}
 ::-webkit-scrollbar-thumb{background:#c44a4a33;}
 </style>
+<script src="https://js.tosspayments.com/v1/payment"></script>  
 </head>
 <body>
 
@@ -426,7 +427,47 @@ body::before{
     document.getElementById('secCh5JobTip').textContent = ch5.jobTip || '';
 
     // 업셀 CTA
-    document.getElementById('upsellCta').href = '../v2/nusu.html?upgrade=HW2&from='+(d.orderId||getOrderId());
+  // 업셀: 재물풀이 바로 결제
+document.getElementById('upsellCta').addEventListener('click', async function(e){
+  e.preventDefault();
+  var fromId = d.orderId || getOrderId();
+  var newOrderId = 'nusu-up-' + fromId + '-' + Date.now();
+  
+  // 1) 주문 생성
+  try {
+    var res = await fetch(API_BASE+'/order', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        orderId: newOrderId,
+        product: 'HW2',
+        name: d.userName || d.nusuCard?.name || '',
+        phone: '',
+        birthDate: d.nusuCard?.birthDate || '',
+        birthTime: d.nusuCard?.birthTime || '',
+        calendarType: 'solar',
+        gender: d.nusuCard?.gender || d.genderKey || '',
+        job: d.jobKey || '',
+        question: '',
+        price: 9900,
+        upgradeFrom: fromId,
+        fromProduct: 'NUSU'
+      })
+    });
+    var orderResult = await res.json();
+    if(!orderResult.success){ alert('주문 생성 실패'); return; }
+  } catch(err){ alert('주문 오류: '+err.message); return; }
+
+  // 2) 토스 결제
+  var toss = TossPayments('live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY');
+  toss.requestPayment('카드', {
+    amount: 9900,
+    orderId: newOrderId,
+    orderName: '호왕당 재물풀이 (누수처방 업그레이드)',
+    successUrl: location.origin + '/howangdang/v2/nusu-upsell-success.html',
+    failUrl: location.href
+  });
+});
 
     // 표시
     document.getElementById('resultWrap').style.display='block';
