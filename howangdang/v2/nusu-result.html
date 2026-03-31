@@ -427,12 +427,24 @@ body::before{
     document.getElementById('secCh5JobTip').textContent = ch5.jobTip || '';
 
     // 업셀 CTA
-  // 업셀: 재물풀이 바로 결제
+// 업셀: 재물풀이 바로 결제
 document.getElementById('upsellCta').addEventListener('click', async function(e){
   e.preventDefault();
   var fromId = d.orderId || getOrderId();
   var newOrderId = 'nusu-up-' + fromId + '-' + Date.now();
   
+  // 0) 이전 주문 정보 가져오기
+  var prevPhone = '';
+  var prevName = d.userName || '';
+  try {
+    var infoRes = await fetch(API_BASE+'/order-info/'+fromId);
+    var infoData = await infoRes.json();
+    if(infoData.success){
+      prevPhone = infoData.data.phone || infoData.data.user?.phone || '';
+      prevName = infoData.data.name || infoData.data.user?.name || prevName;
+    }
+  } catch(err){}
+
   // 1) 주문 생성
   try {
     var res = await fetch(API_BASE+'/order', {
@@ -441,8 +453,8 @@ document.getElementById('upsellCta').addEventListener('click', async function(e)
       body: JSON.stringify({
         orderId: newOrderId,
         product: 'HW2',
-        name: d.userName || d.nusuCard?.name || '',
-        phone: '',
+        name: prevName,
+        phone: prevPhone,
         birthDate: d.nusuCard?.birthDate || '',
         birthTime: d.nusuCard?.birthTime || '',
         calendarType: 'solar',
@@ -455,7 +467,7 @@ document.getElementById('upsellCta').addEventListener('click', async function(e)
       })
     });
     var orderResult = await res.json();
-    if(!orderResult.success){ alert('주문 생성 실패'); return; }
+    if(!orderResult.success){ alert('주문 생성 실패: '+(orderResult.error||'')); return; }
   } catch(err){ alert('주문 오류: '+err.message); return; }
 
   // 2) 토스 결제
