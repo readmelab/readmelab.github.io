@@ -349,6 +349,7 @@
 /* === V2 추가 끝 === */
  
 </style>
+<script src="https://js.tosspayments.com/v1/payment"></script>
 </head>
 <body>
 
@@ -560,6 +561,33 @@
 
     <a class="v2-bp-cta" id="v2BpCta" href="#">본풀이 받기</a>
   </div>
+<!-- 본풀이 질문 모달 -->
+<div id="bpModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;justify-content:center;align-items:center;">
+  <div style="max-width:380px;width:90%;background:#1a1008;border:1px solid #c8a96e44;border-radius:12px;padding:28px 22px;margin:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+    <div style="text-align:center;font-size:16px;font-weight:900;color:#c8a96e;margin-bottom:20px;letter-spacing:2px;">📜 본풀이 질문</div>
+    <div style="font-size:12px;color:#8a7a60;margin-bottom:16px;">호왕에게 묻고 싶은 것을 적어라.</div>
+    
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:#6a5a4a;margin-bottom:4px;">지금 가장 궁금한 것 (필수)</div>
+      <textarea id="bpQuestion" style="width:100%;height:70px;background:#0d0906;border:1px solid #2a1a0a;border-radius:8px;color:#d4c4a0;padding:10px;font-size:13px;resize:none;box-sizing:border-box;" placeholder="호왕에게 묻고 싶은 것을 적어라."></textarea>
+    </div>
+    
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:#6a5a4a;margin-bottom:6px;">가장 궁금한 분야</div>
+      <div id="bpInterestWrap" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+    
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px;color:#6a5a4a;margin-bottom:4px;">추가 질문 (선택)</div>
+      <textarea id="bpQuestion2" style="width:100%;height:50px;background:#0d0906;border:1px solid #2a1a0a;border-radius:8px;color:#d4c4a0;padding:10px;font-size:13px;resize:none;box-sizing:border-box;" placeholder="예: 남편과의 관계가 나아질까요?"></textarea>
+    </div>
+    
+    <button id="bpModalPay" style="width:100%;padding:14px 0;background:#c8a96e;color:#0d0906;font-size:15px;font-weight:900;font-family:'Noto Serif KR',serif;border:none;border-radius:6px;cursor:pointer;letter-spacing:2px;">본풀이 결제 (29,900원)</button>
+    <div style="text-align:center;margin-top:10px;"><a href="#" id="bpModalClose" style="font-size:12px;color:#6a5a4a;text-decoration:none;">닫기</a></div>
+  </div>
+</div>
+
+  
   <!-- === V2 추가 끝 === -->
 
   <div class="cta-section fade-up">
@@ -770,15 +798,84 @@
     document.getElementById('hotongLabel').textContent='강도: '+(hL[hi]||'호통');
     document.getElementById('secHoTong').textContent=s.wealthHoTong||'';
 
-    // CTA
-    // 기존 CTA (v2 폴더 경로 반영)
-    document.getElementById('ctaBtn').href='chogyeon.html?upgrade=HW3&from='+(d.orderId||'');
+// CTA → 본풀이 모달 열기
+var interests = ['재물','연애·결혼','건강','직업·진로','대인관계'];
+var bpInterestWrap = document.getElementById('bpInterestWrap');
+var selectedInterest = '';
+interests.forEach(function(item){
+  var btn = document.createElement('span');
+  btn.textContent = item;
+  btn.style.cssText = 'padding:6px 12px;border:1px solid #2a1a0a;border-radius:16px;font-size:12px;color:#8a7a60;cursor:pointer;';
+  btn.onclick = function(){
+    bpInterestWrap.querySelectorAll('span').forEach(function(s){ s.style.borderColor='#2a1a0a'; s.style.color='#8a7a60'; });
+    btn.style.borderColor='#c8a96e'; btn.style.color='#c8a96e';
+    selectedInterest = item;
+  };
+  bpInterestWrap.appendChild(btn);
+});
 
-    // V2 추가: 본풀이 업셀 CTA
-    var bpCta = document.getElementById('v2BpCta');
-    if (bpCta) {
-      bpCta.href = 'chogyeon.html?upgrade=HW3&from=' + (d.orderId || getOrderId());
-    }
+function openBpModal(e){ e.preventDefault(); document.getElementById('bpModal').style.display='block'; }
+document.getElementById('ctaBtn').addEventListener('click', openBpModal);
+var bpCta = document.getElementById('v2BpCta');
+if(bpCta) bpCta.addEventListener('click', openBpModal);
+document.getElementById('bpModalClose').addEventListener('click', function(e){ e.preventDefault(); document.getElementById('bpModal').style.display='none'; });
+
+// 결제 실행
+document.getElementById('bpModalPay').addEventListener('click', async function(){
+  var question = document.getElementById('bpQuestion').value.trim();
+  if(!question){ alert('질문을 입력해주세요'); return; }
+  
+  var fromId = d.orderId || getOrderId();
+  var newOrderId = 'bp-up-' + fromId + '-' + Date.now();
+  
+  // 이전 주문 정보 가져오기
+  var prev = {};
+  try {
+    var infoRes = await fetch(API_BASE+'/order-info/'+fromId);
+    var infoData = await infoRes.json();
+    if(infoData.success) prev = infoData.data;
+  } catch(err){}
+  
+  // 주문 생성
+  try {
+    var res = await fetch(API_BASE+'/order', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        orderId: newOrderId,
+        product: 'HW3',
+        name: prev.user?.name || d.userName || '',
+        phone: prev.user?.phone || '',
+        birthDate: prev.user?.birthDate || '',
+        birthTime: prev.user?.birthTime || '',
+        calendarType: prev.user?.calendar || 'solar',
+        gender: prev.user?.gender || '',
+        job: prev.job || '',
+        marriage: prev.marriage || '',
+        hasChild: prev.hasChild || '',
+        interest: selectedInterest || '전체',
+        question: question,
+        question2: document.getElementById('bpQuestion2').value.trim(),
+        price: 29900,
+        upgradeFrom: fromId,
+        fromProduct: prev.product || 'HW2'
+      })
+    });
+    var orderResult = await res.json();
+    if(!orderResult.success){ alert('주문 생성 실패: '+(orderResult.error||'')); return; }
+  } catch(err){ alert('주문 오류: '+err.message); return; }
+  
+  // 토스 결제
+  var toss = TossPayments('live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY');
+  toss.requestPayment('카드', {
+    amount: 29900,
+    orderId: newOrderId,
+    orderName: '호왕당 본풀이 (업그레이드)',
+    successUrl: location.origin + '/howangdang/v2/bp-upsell-success.html',
+    failUrl: location.href
+  });
+});
+
 
     // 표시
     document.getElementById('resultWrap').style.display='block';
