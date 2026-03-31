@@ -1380,17 +1380,171 @@ function shareInstagram() {
 }
 
 function saveImage() {
-  const card = document.getElementById('cardContainer');
-  html2canvas(card, { useCORS: true, scale: 2 }).then(canvas => {
+  const card = window._result?.data?.card;
+  if (!card) { showToast('카드 데이터가 없습니다'); return; }
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    // 캔버스 크기 = 카드 비율 9:16, 폭 720px
+    const W = 720;
+    const H = Math.round(W * 16 / 9);
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // 1) 배경 이미지 (cover 방식)
+    const imgRatio = img.naturalWidth / img.naturalHeight;
+    const canvasRatio = W / H;
+    let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+    if (imgRatio > canvasRatio) {
+      sw = img.naturalHeight * canvasRatio;
+      sx = (img.naturalWidth - sw) / 2;
+    } else {
+      sh = img.naturalWidth / canvasRatio;
+      sy = (img.naturalHeight - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+
+    // 2) 상단 그라데이션
+    const topGrad = ctx.createLinearGradient(0, 0, 0, H * 0.18);
+    topGrad.addColorStop(0, 'rgba(26,16,40,0.6)');
+    topGrad.addColorStop(1, 'rgba(26,16,40,0)');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, W, H * 0.18);
+
+    // 3) 상단 텍스트
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#f5e6b8';
+    ctx.font = '500 22px "Noto Serif KR", serif';
+    ctx.fillText(card.season.name + '에 태어난', W / 2, H * 0.07);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 40px "Noto Serif KR", serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 10;
+    const titleText = card.childName + '의 수호 동물 — 아기 ' + card.zodiac.name + ' ' + card.zodiac.emoji;
+    // 긴 제목 줄바꿈 처리
+    if (ctx.measureText(titleText).width > W - 60) {
+      const line1 = card.childName + '의 수호 동물';
+      const line2 = '아기 ' + card.zodiac.name + ' ' + card.zodiac.emoji;
+      ctx.font = '900 36px "Noto Serif KR", serif';
+      ctx.fillText(line1, W / 2, H * 0.105);
+      ctx.fillText(line2, W / 2, H * 0.14);
+    } else {
+      ctx.fillText(titleText, W / 2, H * 0.115);
+    }
+    ctx.shadowBlur = 0;
+
+    // 4) 하단 그라데이션
+    const btmGrad = ctx.createLinearGradient(0, H * 0.6, 0, H);
+    btmGrad.addColorStop(0, 'rgba(26,16,40,0)');
+    btmGrad.addColorStop(0.3, 'rgba(26,16,40,0.7)');
+    btmGrad.addColorStop(1, 'rgba(26,16,40,0.95)');
+    ctx.fillStyle = btmGrad;
+    ctx.fillRect(0, H * 0.6, W, H * 0.4);
+
+    // 5) 한줄평
+    ctx.fillStyle = '#f5e6b8';
+    ctx.font = '400 26px "Noto Serif KR", serif';
+    ctx.textAlign = 'center';
+    const oneliner = card.oneliner;
+    // 줄바꿈 처리
+    const maxLineW = W - 80;
+    const olWords = oneliner.split('');
+    let olLines = [];
+    let olLine = '';
+    for (const ch of olWords) {
+      if (ctx.measureText(olLine + ch).width > maxLineW) {
+        olLines.push(olLine);
+        olLine = ch;
+      } else {
+        olLine += ch;
+      }
+    }
+    if (olLine) olLines.push(olLine);
+    const olStartY = H * 0.74 - (olLines.length - 1) * 18;
+    olLines.forEach((line, idx) => {
+      ctx.fillText(line, W / 2, olStartY + idx * 36);
+    });
+
+    // 6) 오행 게이지
+    const OHENG_COLOR = { '목': '#4CAF50', '화': '#e57373', '토': '#c9a84c', '금': '#b0bec5', '수': '#64b5f6' };
+    const OHENG_HANJA = { '목': '木', '화': '火', '토': '土', '금': '金', '수': '水' };
+    const gaugeKeys = Object.keys(card.ohengGauge);
+    const gaugeW = 60;
+    const gaugeGap = 16;
+    const totalGaugeW = gaugeKeys.length * gaugeW + (gaugeKeys.length - 1) * gaugeGap;
+    let gx = (W - totalGaugeW) / 2;
+    const gy = H * 0.82;
+    gaugeKeys.forEach(key => {
+      const pct = card.ohengGauge[key];
+      // 라벨
+      ctx.fillStyle = '#a89bb5';
+      ctx.font = '400 18px "Noto Serif KR", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(OHENG_HANJA[key], gx + gaugeW / 2, gy);
+      // 바 배경
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      roundRect(ctx, gx, gy + 8, gaugeW, 8, 4);
+      ctx.fill();
+      // 바 값
+      ctx.fillStyle = OHENG_COLOR[key];
+      roundRect(ctx, gx, gy + 8, gaugeW * pct / 100, 8, 4);
+      ctx.fill();
+      gx += gaugeW + gaugeGap;
+    });
+
+    // 7) 키워드
+    ctx.font = '400 20px "Noto Serif KR", serif';
+    const kwY = H * 0.90;
+    const keywords = card.keywords || [];
+    let kwTotalW = 0;
+    const kwPad = 16;
+    const kwGap = 12;
+    const kwMeasures = keywords.map(k => {
+      const w = ctx.measureText(k).width + kwPad * 2;
+      kwTotalW += w;
+      return w;
+    });
+    kwTotalW += (keywords.length - 1) * kwGap;
+    let kwX = (W - kwTotalW) / 2;
+    keywords.forEach((k, i) => {
+      const bw = kwMeasures[i];
+      ctx.strokeStyle = 'rgba(201,168,76,0.4)';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = 'rgba(201,168,76,0.08)';
+      roundRect(ctx, kwX, kwY - 14, bw, 32, 16);
+      ctx.fill();
+      roundRect(ctx, kwX, kwY - 14, bw, 32, 16);
+      ctx.stroke();
+      ctx.fillStyle = '#f5e6b8';
+      ctx.textAlign = 'center';
+      ctx.fillText(k, kwX + bw / 2, kwY + 8);
+      kwX += bw + kwGap;
+    });
+
+    // 8) 워터마크
+    ctx.fillStyle = 'rgba(201,168,76,0.3)';
+    ctx.font = '400 16px "Noto Serif KR", serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('복신당 福神堂', W / 2, H * 0.97);
+
+    // 다운로드
     const link = document.createElement('a');
-    link.download = `복신당_${window._result.data.card.childName}_기질카드.png`;
-    link.href = canvas.toDataURL();
+    link.download = '복신당_' + card.childName + '_기질카드.png';
+    link.href = canvas.toDataURL('image/png');
     link.click();
     showToast('이미지가 저장되었습니다');
-  }).catch(() => {
-    showToast('이미지 저장에 실패했습니다');
-  });
+  };
+
+  img.onerror = function() {
+    showToast('이미지를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.');
+  };
+
+  img.src = card.imageUrl;
 }
+
 
 function copyLink() {
   const url = window.location.href;
