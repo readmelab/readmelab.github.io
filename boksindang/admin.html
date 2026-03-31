@@ -222,8 +222,9 @@ tr:hover td{background:rgba(201,168,76,.03)}
     <div class="section-title">4. 카카오 알림톡 테스트</div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <input id="testPhone" class="login-input" style="width:160px;padding:8px" placeholder="01012345678">
-      <button class="action-btn btn-kakao" onclick="testAlimtalk()" disabled>추후 추가 예정</button>
+      <button class="action-btn btn-kakao" onclick="testAlimtalk()">알림톡 테스트 발송</button>
     </div>
+    <div id="alimtalkResult" style="margin-bottom:24px"></div>
   </div>
 
 </div>
@@ -238,7 +239,6 @@ var period = '30d';
 var allOrders = [];
 var currentFilter = 'all';
 
-// 자동 로그인
 if (PW) {
   fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=30d')
     .then(function(r){return r.json()})
@@ -296,7 +296,6 @@ function loadDashboard(){
     .then(function(d){if(d.success) renderOverview(d)});
 }
 
-// ═══ 대시보드 렌더링 ═══
 function renderOverview(data){
   var s=data.summary;
   var ps=data.productStats;
@@ -313,7 +312,6 @@ function renderOverview(data){
     sc('업셀 전환',s.upgradeRate,'')+
     sc('객단가',fmt(s.avgOrderValue),'원');
 
-  // 퍼널
   var maxF=Math.max(s.totalVisits,1);
   var steps=[
     {l:'방문자',v:s.totalVisits,c:'c1'},
@@ -330,10 +328,8 @@ function renderOverview(data){
   }
   document.getElementById('funnelWrap').innerHTML=fh;
 
-  // 차트
   renderChart(data.dailyStats||[]);
 
-  // 상품 테이블
   var tr=s.totalRevenue||1;
   var prods=[{c:'C1',n:'기본 사주풀이',b:'c1'},{c:'C2A',n:'학업운 분석',b:'c2a'},{c:'C2B',n:'궁합 분석',b:'c2b'},{c:'C3',n:'종합 패키지',b:'c3'}];
   var ph='';
@@ -343,7 +339,6 @@ function renderOverview(data){
   });
   document.getElementById('productTbody').innerHTML=ph;
 
-  // 페이지별 방문
   var pv=data.pageVisits||{};
   var pn={'child-free.html':'무료입력','child-result.html':'기본결과','child-study.html':'학업운','child-compat.html':'궁합','child-full.html':'종합','index.html':'메인'};
   var pvArr=Object.entries(pv).sort(function(a,b){return b[1]-a[1]});
@@ -351,7 +346,6 @@ function renderOverview(data){
   pvArr.forEach(function(e){pgh+='<div class="page-card"><div class="pg-name">'+(pn[e[0]]||e[0])+'</div><div class="pg-count">'+fmt(e[1])+'</div></div>'});
   document.getElementById('pageGrid').innerHTML=pgh||'<div style="color:var(--sub);font-size:12px">데이터 없음</div>';
 
-  // 최근 주문
   var ro=data.recentOrders||[];
   var rh='';
   ro.forEach(function(o){
@@ -364,7 +358,6 @@ function renderOverview(data){
   document.getElementById('recentTbody').innerHTML=rh||'<tr><td colspan="6" style="text-align:center;color:var(--sub)">없음</td></tr>';
 }
 
-// ═══ 일별 차트 ═══
 function renderChart(stats){
   var w=document.getElementById('chartWrap');
   if(!stats.length){w.innerHTML='<div style="text-align:center;color:var(--sub);padding:40px;font-size:12px">데이터 없음</div>';return}
@@ -410,7 +403,6 @@ function renderChart(stats){
   w.innerHTML=svg;
 }
 
-// ═══ 주문 관리 ═══
 function loadOrders(){
   fetch(API+'/admin/orders?pw='+encodeURIComponent(PW))
     .then(function(r){return r.json()})
@@ -504,7 +496,6 @@ function copyInfo(orderId){
   navigator.clipboard.writeText(t).then(function(){showToast('복사 완료')});
 }
 
-// ═══ 모니터링 ═══
 function loadMonitor(){
   fetch(API+'/admin/hourly?pw='+encodeURIComponent(PW))
     .then(function(r){return r.json()})
@@ -563,14 +554,12 @@ function renderHourlyChart(d){
   w.innerHTML=svg;
 }
 
-// ═══ 테스트 ═══
 function runHealthCheck(){
   var el=document.getElementById('healthResult');
   el.innerHTML='<div style="color:var(--sub)">체크 중...</div>';
   var results=[];
   var baseUrl=API.replace('/api','');
 
-  // 1) 서버 응답
   var t0=Date.now();
   fetch(baseUrl)
     .then(function(r){return r.json()})
@@ -651,7 +640,6 @@ function testFreeCard(){
     });
 }
 
-// 유료 결과 페이지 테스트 버튼 로드
 function loadPaidTestBtns(){
   fetch(API+'/admin/orders?pw='+encodeURIComponent(PW))
     .then(function(r){return r.json()})
@@ -709,11 +697,29 @@ function checkAllResults(){
 }
 
 function testAlimtalk(){
-  showToast('카카오 알림톡은 추후 추가 예정입니다');
+  var phone=document.getElementById('testPhone').value.trim();
+  if(!phone){showToast('전화번호를 입력해주세요');return}
+  var el=document.getElementById('alimtalkResult');
+  el.innerHTML='<div style="color:var(--sub)">발송 중...</div>';
+
+  fetch(API+'/admin/test-alimtalk',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({phone:phone,pw:PW})
+  })
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.success){
+        el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--green);border-radius:8px;color:var(--green);font-size:12px">🟢 알림톡 발송 성공! 카카오톡을 확인해주세요.<br><div style="margin-top:6px;color:var(--sub);font-size:11px;word-break:break-all">'+JSON.stringify(d.result||{}).slice(0,300)+'</div></div>';
+      } else {
+        el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">🔴 발송 실패: '+(d.error||JSON.stringify(d))+'</div>';
+      }
+    })
+    .catch(function(e){
+      el.innerHTML='<div style="padding:12px;background:var(--card);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:12px">🔴 오류: '+e.message+'</div>';
+    });
 }
 
-
-// ═══ 유틸 ═══
 function sc(label,value,unit,rev){
   return '<div class="stat-card"><div class="label">'+label+'</div><div class="value'+(rev?' revenue':'')+'">'+value+'</div>'+(unit?'<div class="unit">'+unit+'</div>':'')+'</div>';
 }
