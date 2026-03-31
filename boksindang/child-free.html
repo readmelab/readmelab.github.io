@@ -684,6 +684,7 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 </style>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
 <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 <body>
@@ -980,6 +981,7 @@ body {
 <script>
 // ==================== 설정 ====================
 const API_BASE = 'https://boksindang-server-1075269376260.asia-northeast3.run.app';
+Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');  
 var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
 var BOK_API = API_BASE;
 const IMAGE_BASE = 'https://audio.readmelab.co.kr/boksindang/child';
@@ -1374,12 +1376,50 @@ function initScrollAnimation() {
 
 // ==================== 공유 기능 ====================
 function shareKakao() {
-  showToast('카카오톡 공유 준비 중입니다');
+  if (!window._result?.data?.card) { showToast('카드 데이터가 없습니다'); return; }
+  const card = window._result.data.card;
+  const shareUrl = 'https://readmelab.co.kr/boksindang/child-free';
+  Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: '복신당 기질카드: ' + card.childName,
+      description: card.oneliner,
+      imageUrl: card.imageUrl,
+      link: { mobileWebUrl: shareUrl, webUrl: shareUrl }
+    },
+    buttons: [
+      { title: '나도 기질카드 받기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }
+    ]
+  });
 }
 
-function shareInstagram() {
-  saveImage();
-  showToast('이미지를 저장 후 인스타그램에 공유해 주세요');
+async function shareInstagram() {
+  try {
+    const el = document.getElementById('cardContainer');
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#1a1028',
+      scale: 2,
+      useCORS: false,
+      allowTaint: true
+    });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const name = window._result?.data?.card?.childName || 'card';
+    const file = new File([blob], '복신당_' + name + '_기질카드.png', { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: '복신당 기질카드',
+        text: '우리 아이 기질카드를 확인해봐! https://readmelab.co.kr/boksindang/child-free'
+      });
+    } else {
+      saveImage();
+      showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
+    }
+  } catch (e) {
+    console.error('shareInsta error:', e);
+    showToast('이미지를 저장 후 인스타 스토리에 올려주세요');
+  }
 }
 
 const PROXY_URL = API_BASE + '/proxy-image?url=';
