@@ -201,6 +201,7 @@ var pPillars = params.get('pillars');
 var pBirth = params.get('birth');
 var pTime = params.get('time');
 var pCal = params.get('cal');
+var pGender = params.get('gender') || '';
 
 var upgradeTarget = params.get('upgrade');
 var upgradeFromId = params.get('from');
@@ -312,7 +313,7 @@ if (prevOrder.job) {
       body: JSON.stringify({
         orderId: orderId, product: order.product, name: order.name, phone: order.phone,
         birthDate: order.birthDate, birthTime: order.birthTime,
-        calendarType: order.calendarType, question: order.question, job: order.job,
+        calendarType: order.calendarType, gender: order.gender || '', question: order.question, job: order.job,
         marriage: order.marriage || '미입력',
         interest: order.interest || '전체',
         question2: order.question2 || '',
@@ -440,7 +441,7 @@ function submitOrder() {
   sessionStorage.setItem('hw_order', JSON.stringify({
     orderId: orderId, product: selectedProduct, price: selectedPrice,
     name: name, phone: phone, birthDate: birthDate, birthTime: birthTime,
-    calendarType: calType, question: question, job: selectedJob,
+    calendarType: calType, gender: pGender || '', question: question, job: selectedJob,
     marriage: selectedMarriage || '미입력',
     interest: selectedInterest || '전체',
     question2: document.getElementById('hw3Question2') ? document.getElementById('hw3Question2').value.trim() : '',
