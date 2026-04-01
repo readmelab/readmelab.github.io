@@ -434,37 +434,53 @@ document.getElementById('upsellCta').addEventListener('click', async function(e)
   var newOrderId = 'nusu-up-' + fromId + '-' + Date.now();
   
   // 0) 이전 주문 정보 가져오기
-  var prevPhone = '';
-  var prevName = d.userName || '';
-  try {
-    var infoRes = await fetch(API_BASE+'/order-info/'+fromId);
-    var infoData = await infoRes.json();
-    if(infoData.success){
-      prevPhone = infoData.data.phone || infoData.data.user?.phone || '';
-      prevName = infoData.data.name || infoData.data.user?.name || prevName;
-    }
-  } catch(err){}
+var prevPhone = '';
+var prevName = d.userName || '';
+var prevBirthDate = '';
+var prevBirthTime = '';
+var prevCalendar = 'solar';
+var prevGender = '';
+var prevMarriage = '';
+var prevHasChild = '';
+try {
+  var infoRes = await fetch(API_BASE+'/order-info/'+fromId);
+  var infoData = await infoRes.json();
+  if(infoData.success){
+    var u = infoData.data.user || infoData.data || {};
+    prevPhone = u.phone || infoData.data.phone || '';
+    prevName = u.name || infoData.data.name || prevName;
+    prevBirthDate = u.birthDate || '';
+    prevBirthTime = u.birthTime || '';
+    prevCalendar = u.calendar || 'solar';
+    prevGender = u.gender || '';
+    prevMarriage = infoData.data.marriage || '';
+    prevHasChild = infoData.data.hasChild || '';
+  }
+} catch(err){}
+
 
   // 1) 주문 생성
   try {
     var res = await fetch(API_BASE+'/order', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        orderId: newOrderId,
-        product: 'HW2',
-        name: prevName,
-        phone: prevPhone,
-        birthDate: d.nusuCard?.birthDate || '',
-        birthTime: d.nusuCard?.birthTime || '',
-        calendarType: 'solar',
-        gender: d.nusuCard?.gender || d.genderKey || '',
-        job: d.jobKey || '',
-        question: '',
-        price: 9900,
-        upgradeFrom: fromId,
-        fromProduct: 'NUSU'
-      })
+body: JSON.stringify({
+  orderId: newOrderId,
+  product: 'HW2',
+  name: prevName,
+  phone: prevPhone,
+  birthDate: prevBirthDate || d.nusuCard?.birthDate || '',
+  birthTime: prevBirthTime || d.nusuCard?.birthTime || '',
+  calendarType: prevCalendar || 'solar',
+  gender: prevGender || d.nusuCard?.gender || d.genderKey || '',
+  job: d.jobKey || '',
+  marriage: prevMarriage || '',    // ← 추가
+  hasChild: prevHasChild || '',    // ← 추가
+  question: '',
+  price: 9900,
+  upgradeFrom: fromId,
+  fromProduct: 'NUSU'
+})
     });
     var orderResult = await res.json();
     if(!orderResult.success){ alert('주문 생성 실패: '+(orderResult.error||'')); return; }
