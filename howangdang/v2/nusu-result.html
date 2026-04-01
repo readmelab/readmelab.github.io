@@ -473,7 +473,7 @@ body: JSON.stringify({
   birthTime: prevBirthTime || d.nusuCard?.birthTime || '',
   calendarType: prevCalendar || 'solar',
   gender: prevGender || d.nusuCard?.gender || d.genderKey || '',
-  job: d.jobKey || '',
+  job: (function(){ var m={'employed':'직장인','self':'자영업','freelance':'프리랜서','student':'학생','unemployed':'무직','housewife':'주부'}; return m[d.jobKey]||d.jobKey||'직장인'; })(),
   marriage: prevMarriage || '',    // ← 추가
   hasChild: prevHasChild || '',    // ← 추가
   question: '',
