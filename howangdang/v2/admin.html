@@ -6,7 +6,7 @@
 <title>호왕당 V2 어드민</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a06;--card:rgba(26,16,8,.9);--gold:#c5975b;--red:#8B1A1A;--green:#4a8c5c;--blue:#4a6a9c;--text:#e8d5b0;--sub:#8a7a5a;--border:#2a1a0a;--border2:#3a2a1a}
+:root{--bg:#0a0a06;--card:rgba(26,16,8,.9);--gold:#c5975b;--red:#8B1A1A;--green:#4a8c5c;--blue:#4a6a9c;--purple:#7a5a9c;--text:#e8d5b0;--sub:#8a7a5a;--border:#2a1a0a;--border2:#3a2a1a}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Serif KR',serif;background:var(--bg);color:var(--text);min-height:100vh}
 .container{max-width:920px;margin:0 auto;padding:20px 16px 100px}
@@ -59,6 +59,7 @@ body{font-family:'Noto Serif KR',serif;background:var(--bg);color:var(--text);mi
 .funnel-bar.c2{background:linear-gradient(90deg,#3a6a4a,#4a8c5c)}
 .funnel-bar.c3{background:linear-gradient(90deg,#3a5a7a,#4a6a9c)}
 .funnel-bar.c4{background:linear-gradient(90deg,#7a2a1a,#c44a4a)}
+.funnel-bar.c5{background:linear-gradient(90deg,#5a3a7a,#7a5a9c)}
 .funnel-rate{width:50px;font-size:10px;color:var(--sub);flex-shrink:0}
 
 /* ── 차트 ── */
@@ -77,6 +78,7 @@ tr:hover td{background:rgba(197,151,91,.03)}
 .badge-hw1{background:rgba(138,122,90,.2);color:var(--sub)}
 .badge-hw2{background:rgba(197,80,80,.15);color:#c44a4a}
 .badge-hw3{background:rgba(197,151,91,.2);color:var(--gold)}
+.badge-nusu{background:rgba(122,90,156,.2);color:var(--purple)}
 .badge-up{background:rgba(74,140,92,.15);color:var(--green);margin-left:3px}
 
 .status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
@@ -123,10 +125,16 @@ tr:hover td{background:rgba(197,151,91,.03)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(197,151,91,.9);color:#1a1008;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:opacity .3s;z-index:9999;pointer-events:none}
 .toast.show{opacity:1}
 
+/* ── 퍼널 비교 카드 ── */
+.funnel-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.funnel-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.funnel-box-title{font-size:12px;color:var(--gold);margin-bottom:12px;font-weight:700;letter-spacing:1px}
+
 @media(max-width:600px){
   .stat-grid{grid-template-columns:repeat(2,1fr)}
   .funnel-label{width:60px;font-size:10px}
   .header{flex-direction:column;align-items:flex-start}
+  .funnel-compare{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -173,9 +181,16 @@ tr:hover td{background:rgba(197,151,91,.03)}
 
     <div class="stat-grid" id="statGrid"></div>
 
-    <div class="funnel-section">
-      <div class="section-title">전환 퍼널</div>
-      <div id="funnelWrap"></div>
+    <!-- 퍼널 비교: 기존 vs 누수 -->
+    <div class="funnel-compare">
+      <div class="funnel-box">
+        <div class="funnel-box-title">기존 퍼널 (호왕패/수호패 → 초견 → 재물/본)</div>
+        <div id="funnelMain"></div>
+      </div>
+      <div class="funnel-box">
+        <div class="funnel-box-title">누수 퍼널 (누수패 → 누수처방/재물풀이)</div>
+        <div id="funnelNusu"></div>
+      </div>
     </div>
 
     <div class="section-title">일별 추이</div>
@@ -213,6 +228,10 @@ tr:hover td{background:rgba(197,151,91,.03)}
       <button class="filter-btn" data-f="processing" onclick="filterOrders(this)">풀이생성중</button>
       <button class="filter-btn" data-f="done" onclick="filterOrders(this)">알림발송완료</button>
       <button class="filter-btn" data-f="waiting" onclick="filterOrders(this)">대기</button>
+      <button class="filter-btn" data-f="NUSU" onclick="filterOrders(this)">누수처방</button>
+      <button class="filter-btn" data-f="HW1" onclick="filterOrders(this)">초견</button>
+      <button class="filter-btn" data-f="HW2" onclick="filterOrders(this)">재물풀이</button>
+      <button class="filter-btn" data-f="HW3" onclick="filterOrders(this)">본풀이</button>
     </div>
 
     <div id="orderList"><div class="empty">불러오는 중...</div></div>
@@ -233,6 +252,9 @@ tr:hover td{background:rgba(197,151,91,.03)}
         <tbody id="cardTypeTbody"></tbody>
       </table>
     </div>
+
+    <div class="section-title">누수패 시간별 추이</div>
+    <div class="chart-wrap" id="nusuHourlyChart"></div>
   </div>
 
   <!-- ════ 탭 4: 테스트 ════ -->
@@ -252,6 +274,7 @@ tr:hover td{background:rgba(197,151,91,.03)}
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
       <button class="action-btn btn-result" onclick="testAPI('howangpae')">호왕패</button>
       <button class="action-btn btn-result" onclick="testAPI('suhopae')">수호패</button>
+      <button class="action-btn btn-result" style="background:rgba(122,90,156,.15);color:var(--purple);border-color:var(--purple)" onclick="testAPI('nusu-card')">누수패</button>
     </div>
     <div id="freeTestResult" style="margin-bottom:24px"></div>
 
@@ -273,7 +296,7 @@ tr:hover td{background:rgba(197,151,91,.03)}
 <div class="toast" id="toast"></div>
 
 <script>
-var API = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+var API = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 var PW = localStorage.getItem('hw_admin_pw') || '';
 if(PW){
   fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=1d')
@@ -293,6 +316,15 @@ var period = '1d';
 var allOrders = [];
 var currentFilter = 'all';
 var dashData = null;
+var hourlyData = null;
+
+/* ── 상품 메타 ── */
+var PRODUCTS = {
+  HW1:  {name:'초견',      badge:'hw1',  resultPage:'v2/chogyeon-result.html'},
+  HW2:  {name:'재물풀이',  badge:'hw2',  resultPage:'v2/jaemul-result.html'},
+  HW3:  {name:'본풀이',    badge:'hw3',  resultPage:'v2/bonpuli-result.html'},
+  NUSU: {name:'누수처방',  badge:'nusu', resultPage:'v2/nusu-result.html'}
+};
 
 function doLogin(){
   PW = document.getElementById('pwInput').value;
@@ -319,6 +351,8 @@ function switchTab(id,btn){
   document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active')});
   btn.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
+  if(id==='monitor') loadMonitor();
+  if(id==='test') loadPaidTests();
 }
 
 function changePeriod(p,btn){
@@ -343,42 +377,69 @@ function renderOverview(data){
   var s=data.summary;
   var ps=data.productStats;
 
+  /* 누수패 카드 수 계산 — dailyStats에서 합산 (서버가 nusupae 필드를 줄 경우 대비) */
+  var totalNusu = 0;
+  (data.dailyStats||[]).forEach(function(d){ totalNusu += (d.nusupae||0); });
+  /* NUSU 주문 수 */
+  var nusuStats = ps['NUSU']||{count:0,revenue:0};
+
   document.getElementById('lastUpdate').textContent='갱신: '+new Date().toLocaleTimeString('ko');
 
   document.getElementById('statGrid').innerHTML=
     sc('총 방문',fmt(s.totalVisits),'명')+
     sc('호왕패',fmt(s.totalHowangpae),'회')+
     sc('수호패',fmt(s.totalSuhopae),'회')+
+    sc('누수패',fmt(totalNusu||nusuStats.count),'회')+
     sc('총 결제',fmt(s.totalOrders),'건')+
     sc('총 매출',fmt(s.totalRevenue),'원',true)+
     sc('업그레이드',fmt(s.upgradeCount),'건')+
     sc('방문→결제',s.conversionRate,'')+
     sc('카드→결제',s.cardToPayRate,'')+
     sc('업셀 전환',s.upgradeRate,'')+
-    sc('객단가',fmt(s.avgOrderValue||0),'원');
+    sc('객단가',fmt(s.avgOrderValue||0),'원')+
+    sc('누수처방',fmt(nusuStats.count),'건');
 
-  var fw=document.getElementById('funnelWrap');
+  /* ── 퍼널 (기존) ── */
+  var fw=document.getElementById('funnelMain');
   var maxF=Math.max(s.totalVisits,1);
+  var mainCards = (s.totalHowangpae||0)+(s.totalSuhopae||0);
+  var mainOrders = ((ps['HW1']||{}).count||0)+((ps['HW2']||{}).count||0)+((ps['HW3']||{}).count||0);
   var steps=[
     {l:'방문자',v:s.totalVisits,c:'c1'},
-    {l:'패 뽑기',v:s.totalCards,c:'c2'},
-    {l:'결제',v:s.totalOrders,c:'c3'},
+    {l:'패 뽑기',v:mainCards,c:'c2'},
+    {l:'결제',v:mainOrders,c:'c3'},
     {l:'업그레이드',v:s.upgradeCount,c:'c4'}
   ];
-  var fh='';
-  for(var i=0;i<steps.length;i++){
-    var st=steps[i];
-    var pct=Math.max((st.v/maxF)*100,3);
-    var rate=i>0&&steps[i-1].v>0?(st.v/steps[i-1].v*100).toFixed(1)+'%':'';
-    fh+='<div class="funnel-step"><div class="funnel-label">'+st.l+'</div><div class="funnel-bar-bg"><div class="funnel-bar '+st.c+'" style="width:'+pct+'%">'+fmt(st.v)+'</div></div><div class="funnel-rate">'+rate+'</div></div>';
-  }
-  fw.innerHTML=fh;
+  fw.innerHTML=buildFunnel(steps,maxF);
+
+  /* ── 퍼널 (누수) ── */
+  var fn=document.getElementById('funnelNusu');
+  var nusuCardCount = totalNusu || nusuStats.count || 0;
+  var nusuOrderCount = nusuStats.count || 0;
+  /* 누수→재물 업그레이드 수 (recentOrders에서 추정) */
+  var nusuToJaemul = 0;
+  (data.recentOrders||[]).forEach(function(o){
+    if(o.isUpgrade && o.product==='HW2' && (o.orderId||'').indexOf('NUSU')===0) nusuToJaemul++;
+  });
+  var nSteps=[
+    {l:'누수패',v:nusuCardCount,c:'c5'},
+    {l:'누수처방',v:nusuOrderCount,c:'c3'},
+    {l:'→ 재물풀이',v:nusuToJaemul,c:'c2'}
+  ];
+  var maxN=Math.max(nusuCardCount,1);
+  fn.innerHTML=buildFunnel(nSteps,maxN);
 
   renderChart(data.dailyStats||[]);
 
+  /* ── 상품별 매출 (NUSU 포함) ── */
   var ptb=document.getElementById('productTbody');
   var tr=s.totalRevenue||1;
-  var prods=[{c:'HW1',n:'초견',b:'hw1'},{c:'HW2',n:'재물풀이',b:'hw2'},{c:'HW3',n:'본풀이',b:'hw3'}];
+  var prods=[
+    {c:'HW1',n:'초견',b:'hw1'},
+    {c:'HW2',n:'재물풀이',b:'hw2'},
+    {c:'HW3',n:'본풀이',b:'hw3'},
+    {c:'NUSU',n:'누수처방',b:'nusu'}
+  ];
   var ph='';
   prods.forEach(function(p){
     var d=ps[p.c]||{count:0,revenue:0};
@@ -386,27 +447,40 @@ function renderOverview(data){
   });
   ptb.innerHTML=ph;
 
+  /* ── 페이지별 방문 ── */
   var pg=document.getElementById('pageGrid');
   var pv=data.pageVisits||{};
-  var pn={'index.html':'메인','howangpae.html':'호왕패','suhopae.html':'수호패','chogyeon.html':'주문','chogyeon-result.html':'초견결과','jaemul-result.html':'재물결과','bonpuli-result.html':'본풀이결과','howangpae-v2':'호왕패V2','suhopae-v2':'수호패V2','chogyeon-v2':'주문V2','chogyeon-result-v2':'초견결과V2','jaemul-result-v2':'재물결과V2','bonpuli-result-v2':'본풀이결과V2'};
+  var pn={'index.html':'메인','howangpae.html':'호왕패','suhopae.html':'수호패','nusupae.html':'누수패','nusu-result.html':'누수결과','chogyeon.html':'주문','chogyeon-result.html':'초견결과','jaemul-result.html':'재물결과','bonpuli-result.html':'본풀이결과','howangpae-v2':'호왕패V2','suhopae-v2':'수호패V2','nusupae-v2':'누수패V2','chogyeon-v2':'주문V2','chogyeon-result-v2':'초견결과V2','jaemul-result-v2':'재물결과V2','bonpuli-result-v2':'본풀이결과V2','nusu-result-v2':'누수결과V2'};
   var pvArr=Object.entries(pv).sort(function(a,b){return b[1]-a[1]});
   var pgh='';
   pvArr.forEach(function(e){pgh+='<div class="page-card"><div class="pg-name">'+(pn[e[0]]||e[0])+'</div><div class="pg-count">'+fmt(e[1])+'</div></div>'});
   pg.innerHTML=pgh||'<div style="color:var(--sub);font-size:12px">트래킹 데이터 없음</div>';
 
+  /* ── 최근 결제 (NUSU 뱃지 포함) ── */
   var rtb=document.getElementById('recentTbody');
   var ro=data.recentOrders||[];
   var rh='';
   ro.forEach(function(o){
-    var bc=o.product==='HW1'?'hw1':o.product==='HW2'?'hw2':'hw3';
+    var meta=PRODUCTS[o.product]||{name:o.product,badge:'hw1'};
     var sc2='st-confirmed';var st2='결제완료';
     if(o.status==='done'){sc2='st-done';st2='알림발송완료'}
     else if(o.status==='processing'&&o.product==='HW3'){sc2='st-processing';st2='풀이생성중'}
     else if(o.status==='processing'){sc2='st-confirmed';st2='풀이완료'}
     var dt=o.createdAt?new Date(o.createdAt).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
-    rh+='<tr><td style="font-size:10px;color:var(--sub)">'+(o.orderId||'').slice(-8)+'</td><td><span class="badge badge-'+bc+'">'+(o.productName||'')+'</span>'+(o.isUpgrade?'<span class="badge badge-up">UP</span>':'')+'</td><td>'+fmt(o.price||0)+'원</td><td>'+(o.userName||'')+'</td><td><span class="status-badge '+sc2+'">'+st2+'</span></td><td style="font-size:10px;color:var(--sub)">'+dt+'</td></tr>';
+    rh+='<tr><td style="font-size:10px;color:var(--sub)">'+(o.orderId||'').slice(-8)+'</td><td><span class="badge badge-'+meta.badge+'">'+(o.productName||meta.name)+'</span>'+(o.isUpgrade?'<span class="badge badge-up">UP</span>':'')+'</td><td>'+fmt(o.price||0)+'원</td><td>'+(o.userName||'')+'</td><td><span class="status-badge '+sc2+'">'+st2+'</span></td><td style="font-size:10px;color:var(--sub)">'+dt+'</td></tr>';
   });
   rtb.innerHTML=rh||'<tr><td colspan="6" style="text-align:center;color:var(--sub)">없음</td></tr>';
+}
+
+function buildFunnel(steps,maxVal){
+  var h='';
+  for(var i=0;i<steps.length;i++){
+    var st=steps[i];
+    var pct=Math.max((st.v/maxVal)*100,3);
+    var rate=i>0&&steps[i-1].v>0?(st.v/steps[i-1].v*100).toFixed(1)+'%':'';
+    h+='<div class="funnel-step"><div class="funnel-label">'+st.l+'</div><div class="funnel-bar-bg"><div class="funnel-bar '+st.c+'" style="width:'+pct+'%">'+fmt(st.v)+'</div></div><div class="funnel-rate">'+rate+'</div></div>';
+  }
+  return h;
 }
 
 function renderChart(stats){
@@ -417,12 +491,10 @@ function renderChart(stats){
   var pW=W-pL-pR,pH=H-pT-pB;
   var n=sorted.length;
 
-  // 좌측 Y축: 방문수
   var mx=1;
   sorted.forEach(function(d){if((d.visits||0)>mx)mx=d.visits});
   mx=Math.ceil(mx/5)*5||5;
 
-  // 우측 Y축: 전환율 (%)
   var mxR=1;
   sorted.forEach(function(d){if((d.convCard||0)>mxR)mxR=d.convCard;if((d.convVisit||0)>mxR)mxR=d.convVisit});
   mxR=Math.ceil(mxR/2)*2||2;
@@ -430,7 +502,6 @@ function renderChart(stats){
 
   var svg='<svg viewBox="0 0 '+W+' '+H+'">';
 
-  // 그리드
   for(var i=0;i<=4;i++){
     var y=pT+pH-(pH*i/4);
     var v=Math.round(mx*i/4);
@@ -448,7 +519,7 @@ function renderChart(stats){
   var vp=sorted.map(function(d,i){return gX(i)+','+gY(d.visits||0)});
   svg+='<polyline points="'+vp.join(' ')+'" fill="none" stroke="#c5975b" stroke-width="2"/>';
 
-  // 결제 라인 (막대)
+  // 결제 막대
   var barW=n>1?Math.min((pW/(n-1))*0.4,16):20;
   sorted.forEach(function(d,i){
     var x=gX(i);
@@ -460,13 +531,20 @@ function renderChart(stats){
     }
   });
 
-  // 카드→결제 전환율 라인 (우축)
+  // 카드→결제 전환율
   var cp=sorted.map(function(d,i){return gX(i)+','+gYR(d.convCard||0)});
   svg+='<polyline points="'+cp.join(' ')+'" fill="none" stroke="#c44a4a" stroke-width="2"/>';
 
-  // 방문→결제 전환율 라인 (우축)
+  // 방문→결제 전환율
   var vcp=sorted.map(function(d,i){return gX(i)+','+gYR(d.convVisit||0)});
   svg+='<polyline points="'+vcp.join(' ')+'" fill="none" stroke="#e8c56e" stroke-width="1.5" stroke-dasharray="4,3"/>';
+
+  // 누수패 라인 (보라색 점선)
+  var hasNusu = sorted.some(function(d){return (d.nusupae||0)>0});
+  if(hasNusu){
+    var np=sorted.map(function(d,i){return gX(i)+','+gY(d.nusupae||0)});
+    svg+='<polyline points="'+np.join(' ')+'" fill="none" stroke="#7a5a9c" stroke-width="2" stroke-dasharray="6,3"/>';
+  }
 
   // 점 + 날짜
   sorted.forEach(function(d,i){
@@ -474,6 +552,7 @@ function renderChart(stats){
     svg+='<circle cx="'+x+'" cy="'+gY(d.visits||0)+'" r="3" fill="#c5975b"/>';
     svg+='<circle cx="'+x+'" cy="'+gYR(d.convCard||0)+'" r="3" fill="#c44a4a"/>';
     svg+='<circle cx="'+x+'" cy="'+gYR(d.convVisit||0)+'" r="2" fill="#e8c56e"/>';
+    if(hasNusu) svg+='<circle cx="'+x+'" cy="'+gY(d.nusupae||0)+'" r="2.5" fill="#7a5a9c"/>';
     var show=n<=10||i%Math.ceil(n/8)===0||i===n-1;
     if(show) svg+='<text x="'+x+'" y="'+(H-8)+'" fill="#8a7a5a" font-size="9" text-anchor="middle">'+d.date.slice(5)+'</text>';
   });
@@ -483,6 +562,7 @@ function renderChart(stats){
   svg+='<rect x="'+(pL+52)+'" y="10" width="8" height="8" fill="rgba(74,106,156,0.6)" rx="1"/><text x="'+(pL+64)+'" y="18" fill="#4a6a9c" font-size="9">결제</text>';
   svg+='<circle cx="'+(pL+104)+'" cy="14" r="4" fill="#c44a4a"/><text x="'+(pL+112)+'" y="18" fill="#c44a4a" font-size="9">카드→결제%</text>';
   svg+='<circle cx="'+(pL+190)+'" cy="14" r="4" fill="#e8c56e"/><text x="'+(pL+198)+'" y="18" fill="#e8c56e" font-size="9">방문→결제%</text>';
+  if(hasNusu) svg+='<circle cx="'+(pL+286)+'" cy="14" r="4" fill="#7a5a9c"/><text x="'+(pL+294)+'" y="18" fill="#7a5a9c" font-size="9">누수패</text>';
   svg+='</svg>';
   w.innerHTML=svg;
 
@@ -496,9 +576,9 @@ function renderChart(stats){
   tbl.className='table-wrap';
   tbl.style.marginTop='16px';
 
-  var th='<table><thead><tr><th>날짜</th><th>방문</th><th>카드</th><th>결제</th><th>매출</th><th>방문→결제</th><th>카드→결제</th><th>객단가</th></tr></thead><tbody>';
+  var th='<table><thead><tr><th>날짜</th><th>방문</th><th>호왕/수호</th><th>누수패</th><th>결제</th><th>매출</th><th>방문→결제</th><th>카드→결제</th><th>객단가</th></tr></thead><tbody>';
   sorted.slice().reverse().forEach(function(d){
-    th+='<tr><td>'+d.date.slice(5)+'</td><td>'+fmt(d.visits||0)+'</td><td>'+fmt(d.cards||0)+'</td><td style="color:var(--gold);font-weight:700">'+(d.orders||0)+'</td><td>'+fmt(d.revenue||0)+'</td><td style="color:#e8c56e">'+(d.convVisit||0).toFixed(2)+'%</td><td style="color:#c44a4a;font-weight:700">'+(d.convCard||0).toFixed(2)+'%</td><td>'+fmt(d.avgOrderValue||0)+'</td></tr>';
+    th+='<tr><td>'+d.date.slice(5)+'</td><td>'+fmt(d.visits||0)+'</td><td>'+fmt((d.howangpae||0)+(d.suhopae||0))+'</td><td style="color:var(--purple)">'+fmt(d.nusupae||0)+'</td><td style="color:var(--gold);font-weight:700">'+(d.orders||0)+'</td><td>'+fmt(d.revenue||0)+'</td><td style="color:#e8c56e">'+(d.convVisit||0).toFixed(2)+'%</td><td style="color:#c44a4a;font-weight:700">'+(d.convCard||0).toFixed(2)+'%</td><td>'+fmt(d.avgOrderValue||0)+'</td></tr>';
   });
   th+='</tbody></table>';
   tbl.innerHTML=th;
@@ -539,17 +619,22 @@ function filterOrders(btn){
 
 function renderOrders(){
   var orders=allOrders;
+  // 상태 필터
   if(currentFilter==='waiting') orders=orders.filter(function(o){return o.paymentStatus==='waiting'});
   else if(currentFilter==='confirmed') orders=orders.filter(function(o){return o.paymentStatus==='confirmed'&&o.status!=='done'});
   else if(currentFilter==='processing') orders=orders.filter(function(o){return o.status==='processing'});
   else if(currentFilter==='done') orders=orders.filter(function(o){return o.status==='done'});
+  // 상품 필터
+  else if(currentFilter==='NUSU') orders=orders.filter(function(o){return o.product==='NUSU'});
+  else if(currentFilter==='HW1') orders=orders.filter(function(o){return o.product==='HW1'});
+  else if(currentFilter==='HW2') orders=orders.filter(function(o){return o.product==='HW2'});
+  else if(currentFilter==='HW3') orders=orders.filter(function(o){return o.product==='HW3'});
 
   var list=document.getElementById('orderList');
   if(!orders.length){list.innerHTML='<div class="empty">주문이 없습니다</div>';return}
 
-  var resultPages={HW1:'v2/chogyeon-result.html',HW2:'v2/jaemul-result.html',HW3:'v2/bonpuli-result.html'};
-
   list.innerHTML=orders.map(function(o){
+    var meta=PRODUCTS[o.product]||{name:o.product,badge:'hw1',resultPage:'v2/chogyeon-result.html'};
     var sc=o.status==='done'?'s-done':(o.status==='processing'?'s-processing':(o.paymentStatus==='confirmed'?'s-confirmed':'s-waiting'));
     var stText='대기';
     var stBadge='st-waiting';
@@ -559,10 +644,10 @@ function renderOrders(){
     else if(o.status==='error'){stText='생성실패';stBadge='st-processing'}
     else if(o.status==='processing'&&o.product==='HW3'){stText='풀이생성중';stBadge='st-confirmed'}
     else if(o.paymentStatus==='confirmed'){stText='풀이완료';stBadge='st-confirmed'}
-    var resultUrl='https://readmelab.github.io/howangdang/'+(resultPages[o.product]||'chogyeon-result.html')+'?id='+o.orderId;
+    var resultUrl='https://readmelab.github.io/howangdang/'+meta.resultPage+'?id='+o.orderId;
 
     return '<div class="order-card '+sc+'">'+
-      '<div class="order-top"><span class="order-product">'+(o.productName||o.product)+(o.isUpgrade?' <span class="badge badge-up">업그레이드</span>':'')+'</span><span class="order-price">'+fmt(o.price||0)+'원</span></div>'+
+      '<div class="order-top"><span class="order-product">'+(o.productName||meta.name)+(o.isUpgrade?' <span class="badge badge-up">업그레이드</span>':'')+'</span><span class="order-price">'+fmt(o.price||0)+'원</span></div>'+
       '<div class="order-top"><span class="status-badge '+stBadge+'">'+stText+'</span><span style="font-size:10px;color:var(--sub)">'+(o.createdAt?new Date(o.createdAt).toLocaleString('ko'):'')+'</span></div>'+
       '<div class="order-info">'+
         '<strong>이름:</strong> '+(o.user&&o.user.name||'-')+'<br>'+
@@ -574,6 +659,7 @@ function renderOrders(){
         (o.interest&&o.interest!=='전체'?'<strong>관심:</strong> '+o.interest+'<br>':'')+
         (o.question?'<strong>질문:</strong> '+o.question+'<br>':'')+
         (o.question2?'<strong>질문2:</strong> '+o.question2+'<br>':'')+
+        (o.product==='NUSU'&&o.nusuCard?'<strong>누수유형:</strong> '+(o.nusuCard.leakLabel||o.nusuCard.leakKey||'-')+' Lv'+(o.nusuCard.leakLevel||'-')+'<br>':'')+
         '<strong>주문번호:</strong> '+o.orderId+
       '</div>'+
       '<div class="order-actions">'+
@@ -601,7 +687,8 @@ function markDone(orderId){
 function copyInfo(orderId){
   var o=allOrders.find(function(x){return x.orderId===orderId});
   if(!o) return;
-  var t='['+(o.productName||o.product)+'] '+(o.user&&o.user.name||'')+'\n연락처: '+(o.user&&o.user.phone||'')+'\n생년월일: '+(o.user&&o.user.birthDate||'')+'\n시: '+(o.user&&o.user.birthTime||'')+'\n'+(o.job?'직업: '+o.job+'\n':'')+(o.question?'질문: '+o.question+'\n':'')+'주문번호: '+o.orderId;
+  var meta=PRODUCTS[o.product]||{name:o.product};
+  var t='['+(o.productName||meta.name)+'] '+(o.user&&o.user.name||'')+'\n연락처: '+(o.user&&o.user.phone||'')+'\n생년월일: '+(o.user&&o.user.birthDate||'')+'\n시: '+(o.user&&o.user.birthTime||'')+'\n'+(o.job?'직업: '+o.job+'\n':'')+(o.question?'질문: '+o.question+'\n':'')+(o.product==='NUSU'&&o.nusuCard?'누수유형: '+(o.nusuCard.leakLabel||'')+' Lv'+(o.nusuCard.leakLevel||'')+'\n':'')+'주문번호: '+o.orderId;
   navigator.clipboard.writeText(t).then(function(){showToast('복사 완료')});
 }
 
@@ -640,9 +727,11 @@ function loadMonitor(){
     .then(function(r){return r.json()})
     .then(function(d){
       if(!d.success) return;
+      hourlyData=d;
       renderMonitorStatus(d);
       renderHourlyChart(d);
       renderCardTypes(d);
+      renderNusuHourlyChart(d);
     });
 }
 
@@ -655,9 +744,12 @@ function renderMonitorStatus(d){
   var prevVisits=(h[prevH]&&h[prevH].visits)||0;
   var curCards=(h[now]&&h[now].cards)||0;
   var curOrders=(h[now]&&h[now].orders)||0;
+  var curNusu=(h[now]&&h[now].cards_nusupae)||0;
 
   var visitColor=curVisits>0?'var(--green)':(prevVisits>0?'#c5975b':'#c44a4a');
   var visitLabel=curVisits>0?'정상':(prevVisits>0?'주의':'경고');
+
+  var nusuTotal=(todayData.cards&&todayData.cards.nusupae)||0;
 
   var el=document.getElementById('monitorStatus');
   el.innerHTML=
@@ -665,7 +757,9 @@ function renderMonitorStatus(d){
     '<div class="stat-card"><div class="label">이번 시간 카드</div><div class="value">'+curCards+'</div><div class="unit">회</div></div>'+
     '<div class="stat-card"><div class="label">이번 시간 결제</div><div class="value">'+curOrders+'</div><div class="unit">건</div></div>'+
     '<div class="stat-card"><div class="label">오늘 총 방문</div><div class="value">'+(todayData.totalVisits||0)+'</div><div class="unit">명</div></div>'+
-    '<div class="stat-card"><div class="label">오늘 총 카드</div><div class="value">'+(todayData.totalCards||0)+'</div><div class="unit">회</div></div>';
+    '<div class="stat-card"><div class="label">오늘 총 카드</div><div class="value">'+(todayData.totalCards||0)+'</div><div class="unit">회</div></div>'+
+    '<div class="stat-card" style="border-top:3px solid var(--purple)"><div class="label">이번 시간 누수패</div><div class="value" style="color:var(--purple)">'+curNusu+'</div><div class="unit">회</div></div>'+
+    '<div class="stat-card" style="border-top:3px solid var(--purple)"><div class="label">오늘 누수패 합계</div><div class="value" style="color:var(--purple)">'+nusuTotal+'</div><div class="unit">회</div></div>';
 }
 
 function renderHourlyChart(d){
@@ -691,7 +785,6 @@ function renderHourlyChart(d){
   }
 
   var bw=(pW/24)*0.7;
-  var gap=(pW/24)*0.3;
   var nowH=Number(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul',hour:'2-digit',hour12:false}));
 
   for(var i=0;i<24;i++){
@@ -700,6 +793,7 @@ function renderHourlyChart(d){
     var visits=hd.visits||0;
     var cards=hd.cards||0;
     var orders=hd.orders||0;
+    var nusuCards=hd.cards_nusupae||0;
     var x=pL+(pW/24)*i;
     var barH=visits>0?(visits/mx)*pH:0;
     var opacity=i<=nowH?1:0.3;
@@ -708,6 +802,11 @@ function renderHourlyChart(d){
     if(cards>0){
       var cH=(cards/mx)*pH;
       svg+='<rect x="'+(x+bw*0.15)+'" y="'+(pT+pH-cH)+'" width="'+(bw*0.35)+'" height="'+cH+'" fill="#4a8c5c" opacity="0.7" rx="1"/>';
+    }
+    // 누수패 막대 (보라색, 카드 막대 오른쪽)
+    if(nusuCards>0){
+      var nH=(nusuCards/mx)*pH;
+      svg+='<rect x="'+(x+bw*0.55)+'" y="'+(pT+pH-nH)+'" width="'+(bw*0.35)+'" height="'+nH+'" fill="#7a5a9c" opacity="0.8" rx="1"/>';
     }
     if(orders>0){
       var oH=Math.max((orders/mx)*pH,4);
@@ -718,17 +817,86 @@ function renderHourlyChart(d){
 
   svg+='<rect x="'+(pL+8)+'" y="10" width="8" height="8" fill="#c5975b" rx="1"/><text x="'+(pL+20)+'" y="18" fill="#c5975b" font-size="9">방문</text>';
   svg+='<rect x="'+(pL+60)+'" y="10" width="8" height="8" fill="#4a8c5c" rx="1"/><text x="'+(pL+72)+'" y="18" fill="#4a8c5c" font-size="9">카드</text>';
-  svg+='<circle cx="'+(pL+116)+'" cy="14" r="4" fill="#c44a4a"/><text x="'+(pL+124)+'" y="18" fill="#c44a4a" font-size="9">결제</text>';
+  svg+='<rect x="'+(pL+108)+'" y="10" width="8" height="8" fill="#7a5a9c" rx="1"/><text x="'+(pL+120)+'" y="18" fill="#7a5a9c" font-size="9">누수패</text>';
+  svg+='<circle cx="'+(pL+172)+'" cy="14" r="4" fill="#c44a4a"/><text x="'+(pL+180)+'" y="18" fill="#c44a4a" font-size="9">결제</text>';
   svg+='</svg>';
 
   document.getElementById('hourlyChart').innerHTML=svg;
 }
 
+function renderNusuHourlyChart(d){
+  var todayData=d.daily[d.today]||{};
+  var yesterdayData=d.daily[d.yesterday]||{};
+  var hToday=todayData.hourly||{};
+  var hYesterday=yesterdayData.hourly||{};
+  var W=800,H=180,pL=48,pR=16,pT=28,pB=32;
+  var pW=W-pL-pR,pH=H-pT-pB;
+  var mx=1;
+  for(var i=0;i<24;i++){
+    var k=String(i).padStart(2,'0');
+    var v1=(hToday[k]&&hToday[k].cards_nusupae)||0;
+    var v2=(hYesterday[k]&&hYesterday[k].cards_nusupae)||0;
+    if(v1>mx) mx=v1;
+    if(v2>mx) mx=v2;
+  }
+  mx=Math.ceil(mx/5)*5||5;
+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'">';
+  for(var g=0;g<=4;g++){
+    var y=pT+pH-(pH*g/4);
+    svg+='<line x1="'+pL+'" y1="'+y+'" x2="'+(W-pR)+'" y2="'+y+'" stroke="#2a1a0a" stroke-width="1"/>';
+    svg+='<text x="'+(pL-6)+'" y="'+(y+4)+'" fill="#8a7a5a" font-size="9" text-anchor="end">'+Math.round(mx*g/4)+'</text>';
+  }
+
+  // 어제 라인 (반투명)
+  var yPts=[];
+  for(var i=0;i<24;i++){
+    var k=String(i).padStart(2,'0');
+    var v=(hYesterday[k]&&hYesterday[k].cards_nusupae)||0;
+    var x=pL+(pW/23)*i;
+    var y=pT+pH-(v/mx)*pH;
+    yPts.push(x+','+y);
+  }
+  svg+='<polyline points="'+yPts.join(' ')+'" fill="none" stroke="#5a3a6a" stroke-width="1.5" opacity="0.4"/>';
+
+  // 오늘 라인
+  var tPts=[];
+  var nowH=Number(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul',hour:'2-digit',hour12:false}));
+  for(var i=0;i<=nowH&&i<24;i++){
+    var k=String(i).padStart(2,'0');
+    var v=(hToday[k]&&hToday[k].cards_nusupae)||0;
+    var x=pL+(pW/23)*i;
+    var y=pT+pH-(v/mx)*pH;
+    tPts.push(x+','+y);
+    svg+='<circle cx="'+x+'" cy="'+y+'" r="3" fill="#7a5a9c"/>';
+  }
+  if(tPts.length>1) svg+='<polyline points="'+tPts.join(' ')+'" fill="none" stroke="#7a5a9c" stroke-width="2"/>';
+
+  for(var i=0;i<24;i+=2){
+    var k=String(i).padStart(2,'0');
+    var x=pL+(pW/23)*i;
+    svg+='<text x="'+x+'" y="'+(H-6)+'" fill="#8a7a5a" font-size="8" text-anchor="middle">'+k+'</text>';
+  }
+
+  svg+='<circle cx="'+(pL+8)+'" cy="14" r="4" fill="#7a5a9c"/><text x="'+(pL+16)+'" y="18" fill="#7a5a9c" font-size="9">오늘</text>';
+  svg+='<line x1="'+(pL+56)+'" y1="14" x2="'+(pL+72)+'" y2="14" stroke="#5a3a6a" stroke-width="1.5" opacity="0.4"/><text x="'+(pL+76)+'" y="18" fill="#5a3a6a" font-size="9">어제</text>';
+  svg+='</svg>';
+
+  document.getElementById('nusuHourlyChart').innerHTML=svg;
+}
+
 function renderCardTypes(d){
   var ct=d.cardTypes||{};
-  var names={'howangpae':'호왕패','suhopae':'수호패'};
+  var names={'howangpae':'호왕패','suhopae':'수호패','nusupae':'누수패'};
+  var colors={'howangpae':'var(--gold)','suhopae':'var(--green)','nusupae':'var(--purple)'};
   var tbody=document.getElementById('cardTypeTbody');
-  var keys=Object.keys(ct).sort();
+  // 정렬: howangpae → suhopae → nusupae → 나머지
+  var order=['howangpae','suhopae','nusupae'];
+  var keys=Object.keys(ct).sort(function(a,b){
+    var ai=order.indexOf(a),bi=order.indexOf(b);
+    if(ai===-1) ai=99; if(bi===-1) bi=99;
+    return ai-bi;
+  });
   if(!keys.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--sub)">데이터 없음</td></tr>';return}
   var html='';
   keys.forEach(function(k){
@@ -736,7 +904,8 @@ function renderCardTypes(d){
     var diff=c.yesterday>0?((c.today-c.yesterday)/c.yesterday*100).toFixed(0):'--';
     var diffColor=diff==='--'?'var(--sub)':(Number(diff)>=0?'var(--green)':'#c44a4a');
     var warn=c.yesterday>0&&c.today<c.yesterday*0.5?' style="background:rgba(196,74,74,.1)"':'';
-    html+='<tr'+warn+'><td style="font-weight:700">'+(names[k]||k)+'</td><td>'+c.today+'</td><td>'+c.yesterday+'</td><td>'+c.week+'</td><td style="color:'+diffColor+'">'+(diff==='--'?'-':diff+'%')+'</td></tr>';
+    var nameColor=colors[k]||'var(--text)';
+    html+='<tr'+warn+'><td style="font-weight:700;color:'+nameColor+'">'+(names[k]||k)+'</td><td>'+c.today+'</td><td>'+c.yesterday+'</td><td>'+c.week+'</td><td style="color:'+diffColor+'">'+(diff==='--'?'-':diff+'%')+'</td></tr>';
   });
   tbody.innerHTML=html;
 }
@@ -749,13 +918,16 @@ function runHealthCheck(){
     {name:'서버 응답',url:API+'/',method:'GET'},
     {name:'Firestore 연결',url:API+'/test-firestore',method:'GET'},
     {name:'대시보드 API',url:API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=7d',method:'GET'},
-    {name:'시간별 API',url:API+'/admin/hourly?pw='+encodeURIComponent(PW),method:'GET'}
+    {name:'시간별 API',url:API+'/admin/hourly?pw='+encodeURIComponent(PW),method:'GET'},
+    {name:'누수패 API',url:API+'/api/v2/nusu-card',method:'POST',body:JSON.stringify({name:'테스트',gender:'male',birthYear:1990,birthMonth:5,birthDay:15,birthHour:12,birthMinute:0,calendarType:'solar'})}
   ];
   var results=[];
   var done=0;
   checks.forEach(function(c,i){
     var start=Date.now();
-    fetch(c.url).then(function(r){return r.json().then(function(d){
+    var opts={method:c.method||'GET'};
+    if(c.body){opts.headers={'Content-Type':'application/json'};opts.body=c.body}
+    fetch(c.url,opts).then(function(r){return r.json().then(function(d){
       results[i]={name:c.name,ok:true,ms:Date.now()-start,detail:r.status};
     })}).catch(function(e){
       results[i]={name:c.name,ok:false,ms:Date.now()-start,detail:e.message};
@@ -780,6 +952,7 @@ function testAPI(type){
   var el=document.getElementById('freeTestResult');
   el.innerHTML='<div style="color:var(--sub);font-size:12px">호출 중...</div>';
   var body={
+    name:'테스트',
     gender:document.getElementById('testGender').value,
     birthYear:Number(document.getElementById('testYear').value),
     birthMonth:Number(document.getElementById('testMonth').value),
@@ -788,20 +961,32 @@ function testAPI(type){
     birthMinute:0,
     calendarType:'solar'
   };
-  fetch(API+'/api/howangpae',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+
+  var endpoint = type==='nusu-card' ? '/api/v2/nusu-card' : '/api/howangpae';
+  if(type==='suhopae') endpoint='/api/suhopae';
+
+  fetch(API+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
     .then(function(r){return r.json()})
     .then(function(d){
-      if(d.success){
-        var c=d.card||{};
+      if(d.success!==false && (d.card || d.success)){
+        var c=d.card||d;
+        var detailHtml='';
+        if(type==='nusu-card'){
+          detailHtml='<div><strong>누수유형:</strong> '+(c.leakLabel||c.leakKey||'')+'</div>'+
+            '<div><strong>누수레벨:</strong> '+(c.leakLevel||'')+'</div>'+
+            '<div><strong>이미지:</strong> '+(c.imageUrl?'<a href="'+c.imageUrl+'" target="_blank" style="color:var(--purple)">확인</a>':'없음')+'</div>';
+        } else {
+          detailHtml='<div><strong>ID:</strong> '+(c.id||'')+'</div>'+
+            '<div><strong>제목:</strong> '+(c.title||'')+'</div>'+
+            '<div><strong>이미지:</strong> <a href="https://audio.readmelab.co.kr/howang/howangpae/'+(c.id||'')+'.jpeg" target="_blank" style="color:var(--gold)">확인</a></div>';
+        }
         el.innerHTML='<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px">'+
-          '<div style="color:var(--green);margin-bottom:6px">● 성공</div>'+
-          '<div><strong>ID:</strong> '+(c.id||'')+'</div>'+
-          '<div><strong>제목:</strong> '+(c.title||'')+'</div>'+
-          '<div><strong>이미지:</strong> <a href="https://audio.readmelab.co.kr/howang/howangpae/'+(c.id||'')+'.jpeg" target="_blank" style="color:var(--gold)">확인</a></div>'+
-          '<div style="margin-top:6px;color:var(--sub);font-size:10px;max-height:60px;overflow:auto">'+JSON.stringify(d).slice(0,300)+'...</div>'+
+          '<div style="color:var(--green);margin-bottom:6px">● 성공 ('+type+')</div>'+
+          detailHtml+
+          '<div style="margin-top:6px;color:var(--sub);font-size:10px;max-height:80px;overflow:auto">'+JSON.stringify(d).slice(0,400)+'...</div>'+
         '</div>';
       } else {
-        el.innerHTML='<div style="color:#c44a4a">✖ 실패: '+(d.error||'')+'</div>';
+        el.innerHTML='<div style="color:#c44a4a">✖ 실패: '+(d.error||JSON.stringify(d))+'</div>';
       }
     })
     .catch(function(e){el.innerHTML='<div style="color:#c44a4a">✖ 에러: '+e.message+'</div>'});
@@ -812,8 +997,6 @@ function loadPaidTests(){
     .then(function(r){return r.json()})
     .then(function(d){
       if(!d.success||!d.orders.length) return;
-      var pages={HW1:'v2/chogyeon-result.html',HW2:'v2/jaemul-result.html',HW3:'v2/bonpuli-result.html'};
-      var names={HW1:'초견',HW2:'재물풀이',HW3:'본풀이'};
       var found={};
       d.orders.forEach(function(o){
         if(o.paymentStatus==='confirmed'&&!found[o.product]){found[o.product]=o}
@@ -821,8 +1004,9 @@ function loadPaidTests(){
       var html='';
       Object.keys(found).forEach(function(p){
         var o=found[p];
-        var url='https://readmelab.github.io/howangdang/'+pages[p]+'?id='+o.orderId;
-        html+='<a class="action-btn btn-result" href="'+url+'" target="_blank" style="margin-right:6px">'+(names[p]||p)+' ('+o.orderId.slice(-6)+')</a>';
+        var meta=PRODUCTS[p]||{name:p,resultPage:'v2/chogyeon-result.html',badge:'hw1'};
+        var url='https://readmelab.github.io/howangdang/'+meta.resultPage+'?id='+o.orderId;
+        html+='<a class="action-btn btn-result" href="'+url+'" target="_blank" style="margin-right:6px">'+meta.name+' ('+o.orderId.slice(-6)+')</a>';
       });
       html+='<button class="action-btn btn-copy" onclick="testResultAPIs()" style="margin-left:8px">결과 API 일괄 체크</button>';
       document.getElementById('paidTestBtns').innerHTML=html||'<span style="color:var(--sub);font-size:12px">결제 주문 없음</span>';
@@ -840,11 +1024,11 @@ function testResultAPIs(){
       d.orders.forEach(function(o){if(o.paymentStatus==='confirmed'&&!found[o.product]) found[o.product]=o});
       var keys=Object.keys(found);
       var results=[];var done=0;
-      var names={HW1:'초견',HW2:'재물풀이',HW3:'본풀이'};
       keys.forEach(function(p,i){
+        var meta=PRODUCTS[p]||{name:p};
         fetch(API+'/result/'+found[p].orderId)
-          .then(function(r){return r.json().then(function(j){results[i]={name:names[p],ok:!j.error,id:found[p].orderId}})})
-          .catch(function(){results[i]={name:names[p],ok:false,id:found[p].orderId}})
+          .then(function(r){return r.json().then(function(j){results[i]={name:meta.name,ok:!j.error,id:found[p].orderId}})})
+          .catch(function(){results[i]={name:meta.name,ok:false,id:found[p].orderId}})
           .finally(function(){
             done++;
             if(done===keys.length){
@@ -873,13 +1057,6 @@ function testAlimtalk(){
     })
     .catch(function(e){el.innerHTML='<div style="color:#c44a4a">✖ 에러: '+e.message+'</div>'});
 }
-
-var origSwitchTab=switchTab;
-switchTab=function(id,btn){
-  origSwitchTab(id,btn);
-  if(id==='monitor') loadMonitor();
-  if(id==='test') loadPaidTests();
-};
 </script>
 </body>
 </html>
