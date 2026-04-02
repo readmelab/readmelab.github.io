@@ -222,6 +222,13 @@ tr:hover td{background:rgba(197,151,91,.03)}
       <div class="stat-card"><div class="value" id="oStatToday">0</div><div class="unit">오늘</div></div>
     </div>
 
+<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+  <input id="searchName" class="login-input" style="width:180px;padding:10px 12px;text-align:left;font-size:13px" placeholder="고객 이름 검색" onkeydown="if(event.key==='Enter')searchByName()">
+  <button class="action-btn btn-done" onclick="searchByName()">검색</button>
+  <button class="action-btn btn-copy" onclick="clearSearch()">초기화</button>
+</div>
+
+    
     <div class="filter-row">
       <button class="filter-btn active" data-f="all" onclick="filterOrders(this)">전체</button>
       <button class="filter-btn" data-f="confirmed" onclick="filterOrders(this)">풀이완료</button>
@@ -597,6 +604,28 @@ function renderChart(stats){
   th+='</tbody></table>';
   tbl.innerHTML=th;
   w.parentNode.insertBefore(tbl,w.nextSibling);
+}
+
+
+  function searchByName(){
+  var name = document.getElementById('searchName').value.trim();
+  if(!name){showToast('이름을 입력하세요');return}
+  fetch(API+'/admin/orders?pw='+encodeURIComponent(PW)+'&name='+encodeURIComponent(name))
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(!d.success){showToast('검색 실패');return}
+      allOrders=d.orders.filter(function(o){return !clientIsTestOrder(o)});
+      updateOrderStats();
+      renderOrders();
+      showToast('"'+name+'" 검색 결과: '+allOrders.length+'건');
+    })
+    .catch(function(){showToast('서버 연결 실패')});
+}
+
+function clearSearch(){
+  document.getElementById('searchName').value='';
+  loadOrders();
+  showToast('초기화 완료');
 }
 
 
