@@ -20,7 +20,7 @@
   }
 
   try {
-    var res = await fetch(API_BASE+'/confirm', {
+    var res = await fetch(API_BASE+'/payment/confirm', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ orderId: orderId, paymentKey: paymentKey, amount: Number(amount) })
