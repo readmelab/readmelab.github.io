@@ -297,6 +297,19 @@ tr:hover td{background:rgba(197,151,91,.03)}
 
 <script>
 var API = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
+function clientIsTestOrder(o) {
+  if (!o) return false;
+  var id = (o.orderId || o.id || '').toLowerCase();
+  if (id.includes('test')) return true;
+  if (id.startsWith('jt2-')) return true;
+  if (id.startsWith('job-test')) return true;
+  if (o.isTest === true) return true;
+  var phone = (o.user && o.user.phone || o.phone || '').replace(/[-\s]/g, '');
+  if (phone === '01000000000') return true;
+  var name = (o.user && o.user.name || o.userName || '').trim();
+  if (name === '\uD14C\uC2A4\uD2B8' || name.toLowerCase() === 'test') return true;
+  return false;
+}
 var PW = localStorage.getItem('hw_admin_pw') || '';
 if(PW){
   fetch(API+'/admin/dashboard?pw='+encodeURIComponent(PW)+'&period=1d')
@@ -312,6 +325,7 @@ if(PW){
     })
     .catch(function(){ localStorage.removeItem('hw_admin_pw'); PW=''; });
 }
+
 var period = '1d';
 var allOrders = [];
 var currentFilter = 'all';
@@ -458,7 +472,7 @@ function renderOverview(data){
 
   /* ── 최근 결제 (NUSU 뱃지 포함) ── */
   var rtb=document.getElementById('recentTbody');
-  var ro=data.recentOrders||[];
+  var ro=(data.recentOrders||[]).filter(function(o){return !clientIsTestOrder(o)});
   var rh='';
   ro.forEach(function(o){
     var meta=PRODUCTS[o.product]||{name:o.product,badge:'hw1'};
@@ -592,7 +606,7 @@ function loadOrders(){
     .then(function(r){return r.json()})
     .then(function(d){
       if(!d.success){showToast('주문 불러오기 실패');return}
-      allOrders=d.orders;
+      allOrders=d.orders.filter(function(o){return !clientIsTestOrder(o)});
       updateOrderStats();
       renderOrders();
     })
