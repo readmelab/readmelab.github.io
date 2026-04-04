@@ -506,7 +506,7 @@ async function submitOrder(){
     var tossPayments=TossPayments(TOSS_KEY);
     var payment=tossPayments.payment({customerKey:orderId});
     await payment.requestPayment({
-      method:'카드',
+      method:'CARD',
       amount:{currency:'KRW',value:price},
       orderId:orderId,
       orderName:'호왕 '+NAMES[product],
