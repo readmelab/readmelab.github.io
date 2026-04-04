@@ -17,7 +17,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
 
-/* ── 입력 화면 ── */
 #screen-input{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at center,#1a1008 0%,#000 70%);position:relative}
 #screen-input::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('https://audio.readmelab.co.kr/howang/gm/vessel_grade3.jpeg') center/cover no-repeat;opacity:.12;z-index:0}
 #screen-input>*{position:relative;z-index:1}
@@ -27,21 +26,16 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 
 .form-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:16px}
 .form-row{display:flex;gap:8px}
-
 label{font-size:13px;color:#8a7a5a;margin-bottom:4px;display:block}
-
 select{flex:1;padding:14px 4px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;-webkit-appearance:none;text-align:center}
 select:focus{border-color:#c5975b}
 select option{background:#1a1008;color:#e8d5b0}
-
 .gender-row{display:flex;gap:8px}
 .gender-btn{flex:1;padding:14px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:16px;cursor:pointer;transition:all .3s}
 .gender-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
-
 .submit-btn{margin-top:12px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
 .submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
 
-/* ── 로딩 화면 ── */
 #screen-loading{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
 .door-container{width:100%;max-width:400px;position:relative}
 .door-img{width:100%;border-radius:4px;transition:transform 1s ease-in-out,opacity 0.6s ease}
@@ -49,34 +43,27 @@ select option{background:#1a1008;color:#e8d5b0}
 .loading-text{position:absolute;bottom:15%;left:0;right:0;text-align:center;font-size:16px;color:#c5975b;text-shadow:0 0 10px rgba(197,151,91,.8);opacity:0;transition:opacity .5s}
 .loading-text.show{opacity:1}
 
-/* ── 결과 화면 ── */
 #screen-result{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:30px 20px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%);opacity:0;transition:opacity 1s ease}
 #screen-result.show{opacity:1}
 
-/* 카드 */
 #card-capture{width:360px;background:linear-gradient(180deg,#1a1208 0%,#0a0a06 100%);border:1px solid #3a2a1a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.15)}
-
 .card-image-area{width:100%;position:relative;overflow:hidden;background:#0a0a06}
 .card-image-area img{width:100%;height:auto;display:block}
-
 .card-top-badge{position:absolute;top:0;left:0;right:0;padding:18px 16px 60px;background:linear-gradient(to bottom,rgba(0,0,0,.9) 0%,rgba(0,0,0,.7) 40%,transparent 100%);text-align:center;z-index:2}
 .card-top-title{font-size:20px;font-weight:900;color:#c5975b;letter-spacing:6px;text-shadow:0 2px 8px rgba(0,0,0,.9)}
 .card-top-desc{font-size:11px;color:#a89878;margin-top:6px;letter-spacing:1px;line-height:1.5}
-
 .card-overlay{position:absolute;bottom:0;left:0;right:0;padding:24px 16px 16px;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.85) 40%,rgba(0,0,0,.6) 70%,transparent 100%);text-align:center}
 .card-overlay-tag{display:inline-block;padding:3px 10px;border:1px solid rgba(197,151,91,.6);border-radius:16px;font-size:11px;color:#c5975b;margin-bottom:6px;letter-spacing:1px}
 .card-overlay-label{font-size:28px;font-weight:900;color:#c5975b;margin-bottom:4px;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 15px rgba(197,151,91,.4)}
 .card-overlay-score{font-size:14px;color:#e8d5b0;margin-bottom:4px}
 .card-overlay-oneliner{font-size:12px;color:#e8d5b0;line-height:1.5;font-style:italic;text-shadow:0 1px 6px rgba(0,0,0,.9)}
-.card-brand{position:absolute;bottom:6px;right:10px;font-family:'Noto Serif KR',serif;font-size:9px;color:rgba(197,151,91,0.45);letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.8);pointer-events:none}
+.card-brand{position:absolute;bottom:6px;right:10px;font-size:9px;color:rgba(197,151,91,0.45);letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.8);pointer-events:none}
 
-/* 카드 텍스트 영역 */
 .card-text-area{padding:24px 20px}
 
-/* 돈 그릇 게이지 */
 .vessel-gauge{margin-bottom:20px}
 .vessel-gauge-title{font-size:12px;color:#8a7a5a;margin-bottom:10px}
-.vessel-gauge-bar-bg{height:14px;background:#1a1208;border-radius:7px;overflow:hidden;position:relative}
+.vessel-gauge-bar-bg{height:14px;background:#1a1208;border-radius:7px;overflow:hidden}
 .vessel-gauge-fill{height:100%;border-radius:7px;transition:width 1.5s ease;width:0}
 .vessel-gauge-labels{display:flex;justify-content:space-between;margin-top:6px}
 .vessel-gauge-labels span{font-size:11px;color:#8a7a5a}
@@ -84,7 +71,6 @@ select option{background:#1a1008;color:#e8d5b0}
 .vessel-gauge-score strong{font-size:24px;color:#c5975b}
 .vessel-gauge-score span{font-size:13px;color:#8a7a5a}
 
-/* 사주 원국 */
 .pillars-section{margin-bottom:20px}
 .pillars-title{font-size:12px;color:#8a7a5a;margin-bottom:8px}
 .pillars-row{display:flex;justify-content:center;gap:8px}
@@ -93,7 +79,6 @@ select option{background:#1a1008;color:#e8d5b0}
 .pillar-hanja{font-size:18px;color:#c5975b;font-weight:700}
 .pillar-hangul{font-size:10px;color:#8a7a5a;margin-top:2px}
 
-/* 오행 분포 */
 .gauge-section{margin-bottom:20px}
 .gauge-title{font-size:12px;color:#8a7a5a;margin-bottom:10px}
 .gauge-row{display:flex;align-items:center;margin-bottom:6px;gap:8px}
@@ -107,7 +92,6 @@ select option{background:#1a1008;color:#e8d5b0}
 .gauge-metal .gauge-label{color:#a0a0b0} .gauge-metal .gauge-bar{background:#a0a0b0}
 .gauge-water .gauge-label{color:#4a6a9c} .gauge-water .gauge-bar{background:#4a6a9c}
 
-/* 사주 근거 */
 .basis-section{margin-bottom:20px}
 .basis-title{font-size:12px;color:#8a7a5a;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #2a1a0a}
 .basis-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
@@ -117,7 +101,6 @@ select option{background:#1a1008;color:#e8d5b0}
 
 .card-watermark{text-align:center;padding:8px 0 12px;font-size:11px;color:#3a2a1a}
 
-/* ═══ 업셀 섹션 ═══ */
 .v2-teaser-section{margin-top:24px;padding:24px 20px;width:360px;background:linear-gradient(180deg,#1a1208,#0a0a06);border:1px solid #3a2a1a;border-radius:16px;box-shadow:0 0 30px rgba(197,151,91,.08);display:none}
 .v2-teaser-title{font-size:14px;font-weight:900;color:#c5975b;text-align:center;margin-bottom:16px;letter-spacing:2px}
 .v2-chapter-list{margin-bottom:16px}
@@ -134,8 +117,14 @@ select option{background:#1a1008;color:#e8d5b0}
 .v2-price-coffee{font-size:12px;color:#8a7a5a;margin-top:4px}
 .v2-main-cta{display:block;width:100%;padding:18px 0;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:10px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:17px;font-weight:900;text-align:center;text-decoration:none;letter-spacing:3px;transition:all .3s;margin-bottom:10px;box-shadow:0 0 20px rgba(139,26,26,.3);cursor:pointer}
 .v2-main-cta:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+.v2-extra-section{margin-top:12px;padding:20px;background:rgba(26,16,8,.4);border:1px solid #2a1a0a;border-radius:8px;text-align:center}
+.v2-extra-title{font-size:12px;color:#8a7a5a;margin-bottom:12px;letter-spacing:1px}
+.v2-extra-card{display:block;padding:16px;background:rgba(10,10,6,.8);border:1px solid #c8a96e22;border-radius:6px;text-decoration:none;color:inherit;cursor:pointer}
+.v2-extra-card-icon{font-size:24px;margin-bottom:6px}
+.v2-extra-card-label{font-size:13px;color:#c5975b;font-weight:700}
+.v2-extra-card-sub{font-size:11px;color:#6a5a4a;margin-top:4px;line-height:1.5}
+.v2-extra-card-price{font-size:14px;color:#c5975b;font-weight:900;margin-top:8px}
 
-/* 주문 폼 */
 .order-overlay{display:none;margin-top:20px;width:360px;padding:24px 20px;background:linear-gradient(180deg,#1a1208,#0a0a06);border:1px solid #3a2a1a;border-radius:16px;box-shadow:0 0 30px rgba(197,151,91,.08)}
 .order-overlay.show{display:block}
 .order-title{font-size:16px;font-weight:900;color:#c5975b;text-align:center;margin-bottom:16px;letter-spacing:2px}
@@ -153,7 +142,6 @@ select option{background:#1a1008;color:#e8d5b0}
 .pay-btn{width:100%;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
 .pay-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
 
-/* 공유 */
 .share-section{margin-top:24px;width:360px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .share-btn{display:flex;align-items:center;gap:6px;padding:12px 20px;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .3s}
@@ -239,17 +227,13 @@ select option{background:#1a1008;color:#e8d5b0}
     </div>
 
     <div class="card-text-area">
-      <!-- 돈 그릇 게이지 -->
       <div class="vessel-gauge">
         <div class="vessel-gauge-title">돈 그릇 크기</div>
-        <div class="vessel-gauge-bar-bg">
-          <div class="vessel-gauge-fill" id="vesselFill"></div>
-        </div>
+        <div class="vessel-gauge-bar-bg"><div class="vessel-gauge-fill" id="vesselFill"></div></div>
         <div class="vessel-gauge-labels"><span>0</span><span>100</span></div>
         <div class="vessel-gauge-score"><strong id="vesselScore">0</strong> <span>/ 100점</span></div>
       </div>
 
-      <!-- 사주 원국 -->
       <div class="pillars-section">
         <div class="pillars-title">사주 원국 (四柱)</div>
         <div class="pillars-row">
@@ -260,7 +244,6 @@ select option{background:#1a1008;color:#e8d5b0}
         </div>
       </div>
 
-      <!-- 오행 분포 -->
       <div class="gauge-section">
         <div class="gauge-title">오행 분포</div>
         <div class="gauge-row gauge-wood"><div class="gauge-label">木</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWood"></div></div><div class="gauge-pct" id="gWoodPct"></div></div>
@@ -270,7 +253,6 @@ select option{background:#1a1008;color:#e8d5b0}
         <div class="gauge-row gauge-water"><div class="gauge-label">水</div><div class="gauge-bar-bg"><div class="gauge-bar" id="gWater"></div></div><div class="gauge-pct" id="gWaterPct"></div></div>
       </div>
 
-      <!-- 사주 근거 -->
       <div class="basis-section">
         <div class="basis-title">왜 이 그릇인가</div>
         <div id="basisRows"></div>
@@ -280,7 +262,7 @@ select option{background:#1a1008;color:#e8d5b0}
     <div class="card-watermark">@howangdang · 虎王堂</div>
   </div>
 
-  <!-- ═══ 업셀 ═══ -->
+  <!-- ═══ 업셀: 재물풀이 ═══ -->
   <div class="v2-teaser-section" id="v2TeaserSection">
     <div class="v2-teaser-title">🏺 재물풀이 — 10가지 재물 분석</div>
     <div class="v2-chapter-list">
@@ -295,21 +277,29 @@ select option{background:#1a1008;color:#e8d5b0}
       <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.9</div><div class="v2-chapter-name">돈 습관 처방</div><div class="v2-chapter-preview">사주 맞춤 재무 습관을 처방합니다</div></div>
       <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.10</div><div class="v2-chapter-name">재물 호통</div><div class="v2-chapter-preview">호왕이 직접 던지는 돈 각성 메시지</div></div>
     </div>
-    <div class="v2-lock-bar">
-      <span class="v2-lock-bar-icon">🔒</span>
-      <span class="v2-lock-bar-text">재물풀이에서 확인하세요</span>
-    </div>
+    <div class="v2-lock-bar"><span class="v2-lock-bar-icon">🔒</span><span class="v2-lock-bar-text">재물풀이에서 확인하세요</span></div>
     <div class="v2-price-row">
       <div class="v2-price-amount">19,800원</div>
       <div class="v2-price-coffee">커피 네 잔 값으로 재물의 흐름을 읽다</div>
     </div>
-    <a class="v2-main-cta" href="#" onclick="openOrder();return false;">재물풀이 받으러 가기</a>
+    <a class="v2-main-cta" href="#" onclick="openOrder('HW2');return false;">재물풀이 받으러 가기</a>
+
+    <!-- 본풀이 추가 상품 -->
+    <div class="v2-extra-section">
+      <div class="v2-extra-title">더 깊은 풀이도 준비되어 있습니다</div>
+      <a class="v2-extra-card" href="#" onclick="openOrder('HW3');return false;">
+        <div class="v2-extra-card-icon">📜</div>
+        <div class="v2-extra-card-label">본풀이 本解</div>
+        <div class="v2-extra-card-sub">성정·재물·연애·건강·대운 — 삶의 전체 지도<br>10년 대운 흐름 · 호왕 처방전 · 호왕의 밀서<br><strong style="color:#c5975b">✦ 질문 3회권 포함 — 호왕에게 직접 물어보세요</strong></div>
+        <div class="v2-extra-card-price">49,700원</div>
+      </a>
+    </div>
   </div>
 
   <!-- ═══ 주문 폼 ═══ -->
   <div class="order-overlay" id="orderOverlay">
-    <div class="order-title">재물풀이</div>
-    <div class="order-price">19,800원</div>
+    <div class="order-title" id="orderTitle">재물풀이</div>
+    <div class="order-price" id="orderPrice">19,800원</div>
     <div class="form-label">이름</div>
     <input class="form-input" id="userName" type="text" placeholder="이름을 알려주거라">
     <div class="form-label">연락처</div>
@@ -362,10 +352,11 @@ select option{background:#1a1008;color:#e8d5b0}
 <script>
 var API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 var GM_API = API_BASE + '/api/v2/gimyeong-card';
-var ORDER_API = API_BASE + '/api/v2/jaemul-order';
+var ORDER_API = API_BASE + '/order';
 var PROXY_URL = API_BASE + '/proxy-image?url=';
 var IMG_BASE = 'https://audio.readmelab.co.kr/howang/gm';
 var SHARE_URL = 'https://readmelab.github.io/howangdang/v2/gm.html';
+var TOSS_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
 
 var selectedGender = '';
 var selectedCal = 'solar';
@@ -373,75 +364,47 @@ var unknownTime = false;
 var currentData = null;
 var birthPayload = null;
 var cardImageBase64 = null;
-
 var selectedJob = '';
 var selectedMarriage = '';
 var selectedChild = '';
+var currentProduct = 'HW2';
 
 Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
 
 var VESSEL_IMGS = {
-  grade_1: IMG_BASE + '/vessel_grade1.jpeg',
-  grade_2: IMG_BASE + '/vessel_grade2.jpeg',
-  grade_3: IMG_BASE + '/vessel_grade3.jpeg',
-  grade_4: IMG_BASE + '/vessel_grade4.jpeg',
-  grade_5: IMG_BASE + '/vessel_grade5.jpeg',
-  grade_6: IMG_BASE + '/vessel_grade6.jpeg'
+  grade_1: IMG_BASE+'/vessel_grade1.jpeg', grade_2: IMG_BASE+'/vessel_grade2.jpeg',
+  grade_3: IMG_BASE+'/vessel_grade3.jpeg', grade_4: IMG_BASE+'/vessel_grade4.jpeg',
+  grade_5: IMG_BASE+'/vessel_grade5.jpeg', grade_6: IMG_BASE+'/vessel_grade6.jpeg'
 };
-
 var GRADE_COLORS = {
-  grade_1:'linear-gradient(90deg,#d4af37,#f5d96a)',
-  grade_2:'linear-gradient(90deg,#c9a84c,#d4af37)',
-  grade_3:'linear-gradient(90deg,#a08030,#c9a84c)',
-  grade_4:'linear-gradient(90deg,#887755,#a08030)',
-  grade_5:'linear-gradient(90deg,#665533,#887755)',
-  grade_6:'linear-gradient(90deg,#554433,#665533)'
+  grade_1:'linear-gradient(90deg,#d4af37,#f5d96a)', grade_2:'linear-gradient(90deg,#c9a84c,#d4af37)',
+  grade_3:'linear-gradient(90deg,#a08030,#c9a84c)', grade_4:'linear-gradient(90deg,#887755,#a08030)',
+  grade_5:'linear-gradient(90deg,#665533,#887755)', grade_6:'linear-gradient(90deg,#554433,#665533)'
 };
+var PRICES = { HW2: 19800, HW3: 49700 };
+var NAMES = { HW2: '재물풀이', HW3: '본풀이' };
 
 /* ═══ 드롭다운 ═══ */
 (function initDropdowns(){
-  var yearSel=document.getElementById('birthYear');
-  var monthSel=document.getElementById('birthMonth');
-  var daySel=document.getElementById('birthDay');
-  var hourSel=document.getElementById('birthHour');
-  var minSel=document.getElementById('birthMinute');
-
-  for(var y=2025;y>=1940;y--){var o=document.createElement('option');o.value=y;o.textContent=y+'년';yearSel.appendChild(o)}
-  yearSel.value='1990';
-  for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=m;o.textContent=m+'월';monthSel.appendChild(o)}
-  monthSel.value='6';
-  for(var d=1;d<=31;d++){var o=document.createElement('option');o.value=d;o.textContent=d+'일';daySel.appendChild(o)}
-  daySel.value='15';
-  for(var h=0;h<=23;h++){var o=document.createElement('option');o.value=h;o.textContent=h+'시';hourSel.appendChild(o)}
-  hourSel.value='12';
-  for(var mi=0;mi<=50;mi+=10){var o=document.createElement('option');o.value=mi;o.textContent=(mi<10?'0':'')+mi+'분';minSel.appendChild(o)}
-  minSel.value='0';
+  var y=document.getElementById('birthYear'),m=document.getElementById('birthMonth'),d=document.getElementById('birthDay'),h=document.getElementById('birthHour'),mi=document.getElementById('birthMinute');
+  for(var i=2025;i>=1940;i--){var o=document.createElement('option');o.value=i;o.textContent=i+'년';y.appendChild(o)}y.value='1990';
+  for(var i=1;i<=12;i++){var o=document.createElement('option');o.value=i;o.textContent=i+'월';m.appendChild(o)}m.value='6';
+  for(var i=1;i<=31;i++){var o=document.createElement('option');o.value=i;o.textContent=i+'일';d.appendChild(o)}d.value='15';
+  for(var i=0;i<=23;i++){var o=document.createElement('option');o.value=i;o.textContent=i+'시';h.appendChild(o)}h.value='12';
+  for(var i=0;i<=50;i+=10){var o=document.createElement('option');o.value=i;o.textContent=(i<10?'0':'')+i+'분';mi.appendChild(o)}mi.value='0';
 })();
 
-function toggleUnknownTime(){
-  unknownTime=!unknownTime;
-  var btn=document.getElementById('unknownTimeBtn');
-  var h=document.getElementById('birthHour');
-  var m=document.getElementById('birthMinute');
-  if(unknownTime){btn.classList.add('active');h.disabled=true;h.style.opacity='0.3';m.disabled=true;m.style.opacity='0.3'}
-  else{btn.classList.remove('active');h.disabled=false;h.style.opacity='1';m.disabled=false;m.style.opacity='1'}
-}
-function selectGender(btn){document.querySelectorAll('[data-gender]').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');selectedGender=btn.dataset.gender}
-function selectCal(btn){document.querySelectorAll('[data-cal]').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');selectedCal=btn.dataset.cal}
-function selectJob(btn){document.querySelectorAll('#jobRow .option-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');selectedJob=btn.dataset.job}
-function selectMarriage(btn){document.querySelectorAll('#marriageRow .option-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');selectedMarriage=btn.dataset.val}
-function selectChild(btn){document.querySelectorAll('#childRow .option-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');selectedChild=btn.dataset.val}
+function toggleUnknownTime(){unknownTime=!unknownTime;var b=document.getElementById('unknownTimeBtn'),h=document.getElementById('birthHour'),m=document.getElementById('birthMinute');if(unknownTime){b.classList.add('active');h.disabled=true;h.style.opacity='.3';m.disabled=true;m.style.opacity='.3'}else{b.classList.remove('active');h.disabled=false;h.style.opacity='1';m.disabled=false;m.style.opacity='1'}}
+function selectGender(b){document.querySelectorAll('[data-gender]').forEach(function(e){e.classList.remove('active')});b.classList.add('active');selectedGender=b.dataset.gender}
+function selectCal(b){document.querySelectorAll('[data-cal]').forEach(function(e){e.classList.remove('active')});b.classList.add('active');selectedCal=b.dataset.cal}
+function selectJob(b){document.querySelectorAll('#jobRow .option-btn').forEach(function(e){e.classList.remove('active')});b.classList.add('active');selectedJob=b.dataset.job}
+function selectMarriage(b){document.querySelectorAll('#marriageRow .option-btn').forEach(function(e){e.classList.remove('active')});b.classList.add('active');selectedMarriage=b.dataset.val}
+function selectChild(b){document.querySelectorAll('#childRow .option-btn').forEach(function(e){e.classList.remove('active')});b.classList.add('active');selectedChild=b.dataset.val}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
 function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
 
-/* ═══ 이미지 base64 ═══ */
 async function loadImageAsBase64(url){
-  try{
-    var resp=await fetch(PROXY_URL+encodeURIComponent(url));
-    if(!resp.ok)throw new Error('proxy failed');
-    var blob=await resp.blob();
-    return new Promise(function(resolve){var reader=new FileReader();reader.onloadend=function(){resolve(reader.result)};reader.readAsDataURL(blob)});
-  }catch(e){return url}
+  try{var r=await fetch(PROXY_URL+encodeURIComponent(url));if(!r.ok)throw 0;var b=await r.blob();return new Promise(function(res){var rd=new FileReader();rd.onloadend=function(){res(rd.result)};rd.readAsDataURL(b)})}catch(e){return url}
 }
 
 /* ═══ 제출 ═══ */
@@ -452,110 +415,67 @@ async function submitForm(){
   var bD=document.getElementById('birthDay').value;
   var bH=unknownTime?'':document.getElementById('birthHour').value;
   var bMi=unknownTime?'':document.getElementById('birthMinute').value;
-
   birthPayload={gender:selectedGender,birthYear:bY,birthMonth:bM,birthDay:bD,birthHour:bH,birthMinute:bMi,calendarType:selectedCal};
 
-  // 로딩 시작
   document.getElementById('screen-input').style.display='none';
   var loading=document.getElementById('screen-loading');
   loading.style.display='flex';
-  var loadText=document.getElementById('loadingText');
+  var lt=document.getElementById('loadingText');
   var msgs=['사주를 펼치는 중...','돈 그릇을 측정하는 중...','재물의 기운을 읽는 중...'];
-  
-  for(var i=0;i<msgs.length;i++){
-    loadText.textContent=msgs[i];loadText.classList.add('show');
-    await wait(1200);loadText.classList.remove('show');await wait(300);
-  }
+
+  for(var i=0;i<msgs.length;i++){lt.textContent=msgs[i];lt.classList.add('show');await wait(700);lt.classList.remove('show');await wait(200)}
 
   try{
     var res=await fetch(GM_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(birthPayload)});
     var json=await res.json();
     if(!json.success)throw new Error(json.error||'API error');
     currentData=json.card;
-
-    // 이미지 프리로드
     var imgUrl=VESSEL_IMGS[currentData.vesselGrade]||VESSEL_IMGS.grade_3;
     cardImageBase64=await loadImageAsBase64(imgUrl);
-
-    // 문 줌
     document.querySelector('.door-img').classList.add('zoom');
-    await wait(800);
+    await wait(600);
     loading.style.display='none';
-
     renderResult(currentData);
-  }catch(e){
-    alert('오류: '+e.message);
-    loading.style.display='none';
-    document.getElementById('screen-input').style.display='';
-  }
+  }catch(e){alert('오류: '+e.message);loading.style.display='none';document.getElementById('screen-input').style.display=''}
 }
 
-/* ═══ 결과 렌더링 ═══ */
+/* ═══ 렌더링 ═══ */
 function renderResult(c){
-  var result=document.getElementById('screen-result');
-  result.style.display='flex';
-  setTimeout(function(){result.classList.add('show')},50);
-
-  // 카드 이미지
+  var r=document.getElementById('screen-result');r.style.display='flex';setTimeout(function(){r.classList.add('show')},50);
   document.getElementById('cardImage').src=cardImageBase64||VESSEL_IMGS[c.vesselGrade]||VESSEL_IMGS.grade_3;
-
-  // 오버레이
   document.getElementById('overlayLabel').textContent=c.vesselLabel||'';
   document.getElementById('overlayScore').textContent=(c.vesselSize||0)+' / 100점 · '+(c.gradePercentLabel||'');
   document.getElementById('overlayOneliner').textContent=c.gradeDesc||c.cardText||'';
 
-  // 게이지
   var size=c.vesselSize||50;
   var fill=document.getElementById('vesselFill');
   fill.style.background=GRADE_COLORS[c.vesselGrade]||GRADE_COLORS.grade_3;
   document.getElementById('vesselScore').textContent=size;
   setTimeout(function(){fill.style.width=size+'%'},200);
 
-  // 사주 4주
-  if(c.fourPillars){
-    document.getElementById('pHour').textContent=c.fourPillars.hour||'?';
-    document.getElementById('pDay').textContent=c.fourPillars.day||'?';
-    document.getElementById('pMonth').textContent=c.fourPillars.month||'?';
-    document.getElementById('pYear').textContent=c.fourPillars.year||'?';
-  }
-  if(c.fourPillarsHangul){
-    document.getElementById('pHourH').textContent=c.fourPillarsHangul.hour||'';
-    document.getElementById('pDayH').textContent=c.fourPillarsHangul.day||'';
-    document.getElementById('pMonthH').textContent=c.fourPillarsHangul.month||'';
-    document.getElementById('pYearH').textContent=c.fourPillarsHangul.year||'';
-  }
+  if(c.fourPillars){document.getElementById('pHour').textContent=c.fourPillars.hour||'?';document.getElementById('pDay').textContent=c.fourPillars.day||'?';document.getElementById('pMonth').textContent=c.fourPillars.month||'?';document.getElementById('pYear').textContent=c.fourPillars.year||'?'}
+  if(c.fourPillarsHangul){document.getElementById('pHourH').textContent=c.fourPillarsHangul.hour||'';document.getElementById('pDayH').textContent=c.fourPillarsHangul.day||'';document.getElementById('pMonthH').textContent=c.fourPillarsHangul.month||'';document.getElementById('pYearH').textContent=c.fourPillarsHangul.year||''}
 
-  // 오행
-  if(c.elementGauge){
-    var els=[['Wood','wood'],['Fire','fire'],['Earth','earth'],['Metal','metal'],['Water','water']];
-    els.forEach(function(e){
-      var v=c.elementGauge[e[1]]||0;
-      var bar=document.getElementById('g'+e[0]);
-      var pct=document.getElementById('g'+e[0]+'Pct');
-      if(bar)setTimeout(function(){bar.style.width=v+'%'},400);
-      if(pct)pct.textContent=v+'%';
-    });
-  }
+  if(c.elementGauge){[['Wood','wood'],['Fire','fire'],['Earth','earth'],['Metal','metal'],['Water','water']].forEach(function(e){var v=c.elementGauge[e[1]]||0;var bar=document.getElementById('g'+e[0]);var pct=document.getElementById('g'+e[0]+'Pct');if(bar)setTimeout(function(){bar.style.width=v+'%'},400);if(pct)pct.textContent=v+'%'})}
 
-  // 사주 근거
-  var bRows=document.getElementById('basisRows');
-  var rows=[];
+  var bR=document.getElementById('basisRows');var rows=[];
   if(c.ganDesc)rows.push({l:'일간',v:c.ganDesc});
   if(c.strengthKor)rows.push({l:'신강/신약',v:c.strengthKor});
   if(c.jaeSummary)rows.push({l:'재성',v:c.jaeSummary});
   if(c.sipsinSummary)rows.push({l:'십신 구성',v:c.sipsinSummary});
-  bRows.innerHTML=rows.map(function(r){return '<div class="basis-row"><span class="bl">'+r.l+'</span><span class="bv">'+r.v+'</span></div>'}).join('');
+  bR.innerHTML=rows.map(function(r){return '<div class="basis-row"><span class="bl">'+r.l+'</span><span class="bv">'+r.v+'</span></div>'}).join('');
   document.getElementById('basisDesc').textContent=c.vesselReason||c.cardText||'';
 
-  // 업셀 표시
   document.getElementById('v2TeaserSection').style.display='block';
 }
 
 /* ═══ 주문 ═══ */
-function openOrder(){
-  var ov=document.getElementById('orderOverlay');
-  ov.classList.add('show');
-  ov.scrollIntoView({behavior:'smooth'});
+function openOrder(product){
+  currentProduct=product||'HW2';
+  document.getElementById('orderTitle').textContent=NAMES[currentProduct];
+  document.getElementById('orderPrice').textContent=PRICES[currentProduct].toLocaleString()+'원';
+  document.getElementById('payBtn').textContent=PRICES[currentProduct].toLocaleString()+'원 결제하기';
+  var ov=document.getElementById('orderOverlay');ov.classList.add('show');ov.scrollIntoView({behavior:'smooth'});
 }
 
 async function submitOrder(){
@@ -567,77 +487,53 @@ async function submitOrder(){
   if(!selectedChild){showToast('자녀 여부를 선택해주세요');return}
   if(!document.getElementById('agreePrivacy').checked){showToast('개인정보 수집에 동의해주세요');return}
 
-  var payload=Object.assign({},birthPayload,{
-    name:name,phone:phone,job:selectedJob,marriage:selectedMarriage,child:selectedChild,
-    product:'HW2',upgradeFrom:'GM'
-  });
+  var product=currentProduct;
+  var price=PRICES[product];
+  var orderId=product+Date.now();
+  var birthDate=(selectedCal==='lunar'?'음력 ':'')+birthPayload.birthYear+'-'+birthPayload.birthMonth+'-'+birthPayload.birthDay;
+  var birthTime=birthPayload.birthHour?(birthPayload.birthHour+':'+(birthPayload.birthMinute||'0')):'모름';
 
   try{
-    var res=await fetch(ORDER_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    var res=await fetch(ORDER_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      orderId:orderId, product:product, name:name, phone:phone,
+      gender:birthPayload.gender, birthDate:birthDate, birthTime:birthTime,
+      calendarType:selectedCal, job:selectedJob, marriage:selectedMarriage,
+      hasChild:selectedChild, upgradeFrom:'GM'
+    })});
     var json=await res.json();
     if(!json.success)throw new Error(json.error||'주문 생성 실패');
 
-    // Toss 결제
-    var toss=await TossPayments(TOSS_KEY);
-    var widgets=toss.widgets({customerKey:json.orderId});
-    await widgets.setAmount({currency:'KRW',value:19800});
-    await widgets.renderPaymentMethods({selector:'#payBtn',variantKey:'DEFAULT'});
-    await widgets.requestPayment({
-      orderId:json.orderId,
-      orderName:'호왕 재물풀이',
+    var tossPayments=TossPayments(TOSS_KEY);
+    var payment=tossPayments.payment({customerKey:orderId});
+    await payment.requestPayment({
+      method:'카드',
+      amount:{currency:'KRW',value:price},
+      orderId:orderId,
+      orderName:'호왕 '+NAMES[product],
       customerName:name,
-      successUrl:API_BASE+'/api/v2/payment/success',
-      failUrl:API_BASE+'/api/v2/payment/fail'
+      successUrl:API_BASE+'/payment/confirm',
+      failUrl:API_BASE+'/payment/fail'
     });
-  }catch(e){
-    alert('오류: '+e.message);
-  }
+  }catch(e){alert('오류: '+e.message)}
 }
 
 /* ═══ 공유 ═══ */
 async function saveCard(){
-  try{
-    var canvas=await html2canvas(document.getElementById('card-image-area'),{backgroundColor:'#000',useCORS:true,scale:2});
-    var a=document.createElement('a');a.download='gimyeong-card.png';a.href=canvas.toDataURL('image/png');a.click();
-    showToast('이미지가 저장되었습니다');
-  }catch(e){showToast('저장 실패: '+e.message)}
+  try{var canvas=await html2canvas(document.getElementById('card-image-area'),{backgroundColor:'#000',useCORS:true,scale:2});var a=document.createElement('a');a.download='gimyeong-card.png';a.href=canvas.toDataURL('image/png');a.click();showToast('이미지가 저장되었습니다')}catch(e){showToast('저장 실패')}
 }
-
 function shareKakao(){
-  Kakao.Share.sendDefault({
-    objectType:'feed',
-    content:{
-      title:'내 돈 그릇은 '+(currentData?.vesselLabel||'?')+'이다',
-      description:'호왕이 측정한 내 돈 그릇의 크기, 확인해볼래?',
-      imageUrl:VESSEL_IMGS[currentData?.vesselGrade]||VESSEL_IMGS.grade_3,
-      link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}
-    },
-    buttons:[{title:'내 돈 그릇 확인하기',link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}}]
-  });
+  Kakao.Share.sendDefault({objectType:'feed',content:{title:'내 돈 그릇은 '+(currentData?.vesselLabel||'?')+'이다',description:'호왕이 측정한 내 돈 그릇의 크기, 확인해볼래?',imageUrl:VESSEL_IMGS[currentData?.vesselGrade]||VESSEL_IMGS.grade_3,link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}},buttons:[{title:'내 돈 그릇 확인하기',link:{mobileWebUrl:SHARE_URL,webUrl:SHARE_URL}}]});
 }
-
 function copyLink(){navigator.clipboard.writeText(SHARE_URL).then(function(){showToast('링크가 복사되었습니다')})}
-
 async function shareInsta(){
-  try{
-    var canvas=await html2canvas(document.getElementById('card-image-area'),{backgroundColor:'#000',useCORS:true,scale:2});
-    canvas.toBlob(function(blob){
-      var item=new ClipboardItem({'image/png':blob});
-      navigator.clipboard.write([item]).then(function(){showToast('이미지가 복사되었습니다. 인스타에 붙여넣기 하세요!')});
-    });
-  }catch(e){showToast('복사 실패')}
+  try{var canvas=await html2canvas(document.getElementById('card-image-area'),{backgroundColor:'#000',useCORS:true,scale:2});canvas.toBlob(function(blob){navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){showToast('이미지가 복사되었습니다. 인스타에 붙여넣기 하세요!')})})}catch(e){showToast('복사 실패')}
 }
-
 function retry(){
-  document.getElementById('screen-result').style.display='none';
-  document.getElementById('screen-result').classList.remove('show');
-  document.getElementById('v2TeaserSection').style.display='none';
-  document.getElementById('orderOverlay').classList.remove('show');
-  document.querySelector('.door-img').classList.remove('zoom');
-  document.getElementById('vesselFill').style.width='0';
+  document.getElementById('screen-result').style.display='none';document.getElementById('screen-result').classList.remove('show');
+  document.getElementById('v2TeaserSection').style.display='none';document.getElementById('orderOverlay').classList.remove('show');
+  document.querySelector('.door-img').classList.remove('zoom');document.getElementById('vesselFill').style.width='0';
   document.getElementById('screen-input').style.display='';
 }
 </script>
-
 </body>
 </html>
