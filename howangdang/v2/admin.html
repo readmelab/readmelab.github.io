@@ -187,11 +187,16 @@ tr:hover td{background:rgba(197,151,91,.03)}
         <div class="funnel-box-title">기존 퍼널 (호왕패/수호패 → 초견 → 재물/본)</div>
         <div id="funnelMain"></div>
       </div>
-      <div class="funnel-box">
-        <div class="funnel-box-title">누수 퍼널 (누수패 → 누수처방/재물풀이)</div>
-        <div id="funnelNusu"></div>
-      </div>
+    <div class="funnel-box">
+      <div class="funnel-box-title">누수 퍼널 (누수패 → 누수처방/재물풀이)</div>
+      <div id="funnelNusu"></div>
     </div>
+    <div class="funnel-box">
+      <div class="funnel-box-title">기명패 퍼널 (기명패 → 재물/본풀이)</div>
+      <div id="funnelGimyeong"></div>
+    </div>
+  </div>
+>
 
     <div class="section-title">일별 추이</div>
     <div class="chart-wrap" id="chartWrap"></div>
@@ -411,6 +416,7 @@ function renderOverview(data){
     sc('호왕패',fmt(s.totalHowangpae),'회')+
     sc('수호패',fmt(s.totalSuhopae),'회')+
     sc('누수패',fmt(totalNusu||nusuStats.count),'회')+
+    sc('기명패',fmt(s.totalGimyeongpae||0),'회')+
     sc('총 결제',fmt(s.totalOrders),'건')+
     sc('총 매출',fmt(s.totalRevenue),'원',true)+
     sc('업그레이드',fmt(s.upgradeCount),'건')+
@@ -450,6 +456,25 @@ function renderOverview(data){
   var maxN=Math.max(nusuCardCount,1);
   fn.innerHTML=buildFunnel(nSteps,maxN);
 
+  /* ── 퍼널 (기명패) ── */
+  var fg=document.getElementById('funnelGimyeong');
+  var gmCardCount = s.totalGimyeongpae || 0;
+  var gmToJaemul = 0, gmToBonpuri = 0;
+  (data.recentOrders||[]).forEach(function(o){
+    if(o.upgradeFrom && o.upgradeFrom==='GM'){
+      if(o.product==='HW2') gmToJaemul++;
+      if(o.product==='HW3') gmToBonpuri++;
+    }
+  });
+  var gSteps=[
+    {l:'기명패',v:gmCardCount,c:'c1'},
+    {l:'재물풀이',v:gmToJaemul,c:'c2'},
+    {l:'본풀이',v:gmToBonpuri,c:'c3'}
+  ];
+  var maxG=Math.max(gmCardCount,1);
+  fg.innerHTML=buildFunnel(gSteps,maxG);
+  
+  
   renderChart(data.dailyStats||[]);
 
   /* ── 상품별 매출 (NUSU 포함) ── */
