@@ -287,6 +287,7 @@ tr:hover td{background:rgba(197,151,91,.03)}
       <button class="action-btn btn-result" onclick="testAPI('howangpae')">호왕패</button>
       <button class="action-btn btn-result" onclick="testAPI('suhopae')">수호패</button>
       <button class="action-btn btn-result" style="background:rgba(122,90,156,.15);color:var(--purple);border-color:var(--purple)" onclick="testAPI('nusu-card')">누수패</button>
+      <button class="action-btn btn-result" style="background:rgba(197,151,91,.15);color:var(--gold);border-color:var(--gold)" onclick="testAPI('gimyeong-card')">기명패</button>
     </div>
     <div id="freeTestResult" style="margin-bottom:24px"></div>
 
@@ -813,11 +814,12 @@ function renderMonitorStatus(d){
   var curCards=(h[now]&&h[now].cards)||0;
   var curOrders=(h[now]&&h[now].orders)||0;
   var curNusu=(h[now]&&h[now].cards_nusupae)||0;
-
+  var curGimyeong=(h[now]&&h[now].cards_gimyeongpae)||0;
   var visitColor=curVisits>0?'var(--green)':(prevVisits>0?'#c5975b':'#c44a4a');
   var visitLabel=curVisits>0?'정상':(prevVisits>0?'주의':'경고');
 
   var nusuTotal=(todayData.cards&&todayData.cards.nusupae)||0;
+  var gimyeongTotal=(todayData.cards&&todayData.cards.gimyeongpae)||0;
 
   var el=document.getElementById('monitorStatus');
   el.innerHTML=
@@ -827,7 +829,9 @@ function renderMonitorStatus(d){
     '<div class="stat-card"><div class="label">오늘 총 방문</div><div class="value">'+(todayData.totalVisits||0)+'</div><div class="unit">명</div></div>'+
     '<div class="stat-card"><div class="label">오늘 총 카드</div><div class="value">'+(todayData.totalCards||0)+'</div><div class="unit">회</div></div>'+
     '<div class="stat-card" style="border-top:3px solid var(--purple)"><div class="label">이번 시간 누수패</div><div class="value" style="color:var(--purple)">'+curNusu+'</div><div class="unit">회</div></div>'+
-    '<div class="stat-card" style="border-top:3px solid var(--purple)"><div class="label">오늘 누수패 합계</div><div class="value" style="color:var(--purple)">'+nusuTotal+'</div><div class="unit">회</div></div>';
+    '<div class="stat-card" style="border-top:3px solid var(--purple)"><div class="label">오늘 누수패 합계</div><div class="value" style="color:var(--purple)">'+nusuTotal+'</div><div class="unit">회</div></div>'+
+    '<div class="stat-card" style="border-top:3px solid var(--gold)"><div class="label">이번 시간 기명패</div><div class="value" style="color:var(--gold)">'+curGimyeong+'</div><div class="unit">회</div></div>'+
+    '<div class="stat-card" style="border-top:3px solid var(--gold)"><div class="label">오늘 기명패 합계</div><div class="value" style="color:var(--gold)">'+gimyeongTotal+'</div><div class="unit">회</div></div>';
 }
 
 function renderHourlyChart(d){
@@ -1032,6 +1036,7 @@ function testAPI(type){
 
   var endpoint = type==='nusu-card' ? '/api/v2/nusu-card' : '/api/howangpae';
   if(type==='suhopae') endpoint='/api/suhopae';
+  if(type==='gimyeong-card') endpoint='/api/v2/gimyeong-card';
 
   fetch(API+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
     .then(function(r){return r.json()})
