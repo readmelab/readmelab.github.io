@@ -430,6 +430,8 @@ async function submitForm(){
     var json=await res.json();
     if(!json.success)throw new Error(json.error||'API error');
     currentData=json.card;
+        // 기명패 생성 트래킹 추가
+    fetch(API_BASE+'/api/track/card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'gimyeongpae'})}).catch(function(){});
     var imgUrl=VESSEL_IMGS[currentData.vesselGrade]||VESSEL_IMGS.grade_3;
     cardImageBase64=await loadImageAsBase64(imgUrl);
     document.querySelector('.door-img').classList.add('zoom');
