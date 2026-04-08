@@ -60,6 +60,34 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 .upgrade-info .ui-label{font-size:11px;color:#6a5a4a;margin-bottom:2px}
 .upgrade-info .ui-value{font-size:14px;color:#a89878;margin-bottom:10px}
 .upgrade-info .ui-value:last-child{margin-bottom:0}
+
+/* Footer 스타일 추가 */
+.footer {
+  width: 100%;
+  max-width: 360px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #2a1a0a;
+  text-align: center;
+}
+.footer-brand {
+  font-size: 13px;
+  font-weight: 700;
+  color: #8a7a5a;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+.footer-info {
+  font-size: 11px;
+  color: #5a4a3a;
+  line-height: 1.8;
+}
+.footer-info span {
+  display: inline-block;
+  margin: 0 4px;
+  color: #3a2a1a;
+}
+  
 </style>
 </head>
 <body>
@@ -167,14 +195,21 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
       <input type="checkbox" id="agreePrivacy" style="margin-top:3px;accent-color:#c5975b;width:18px;height:18px;cursor:pointer">
       <label for="agreePrivacy" style="font-size:11px;color:#8a7a5a;line-height:1.6;cursor:pointer">
         [필수] 개인정보 수집·이용에 동의합니다.<br>
-        <span style="color:#6a5a4a">수집 항목: 이름, 연락처, 생년월일시 | 목적: 사주 풀이 제공 | 보유 기간: 서비스 제공 후 1년</span>
+<span style="color:#6a5a4a">수집 항목: 이름, 연락처, 생년월일시 | 목적: 사주 풀이 제공 | 보유 기간: 서비스 제공 후 1년</span>
       </label>
     </div>
     <button class="submit-btn" id="submitBtn" onclick="submitOrder()">결제하기</button>
+  </div> <div class="footer">
+    <div class="footer-brand">호왕당 by 나를읽다연구소</div>
+    <div class="footer-info">
+      상호 : 나를읽다연구소 <span>|</span> 대표자 : 오동훈<br>
+      사업자등록번호 : 347-12-03156<br>
+      주소 : 부산광역시 서구 대영로38번길 11, 103동 1601호<br>(서대신동1가, 대신푸르지오)<br>
+      고객센터 : 010-9847-1152<br>
+      이메일 : readmelab.kr@gmail.com
+    </div>
   </div>
-</div>
-
-<div class="toast" id="toast"></div>
+  </div> <div class="toast" id="toast"></div>
 
 <script>
 var API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
