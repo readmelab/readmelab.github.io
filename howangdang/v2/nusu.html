@@ -308,18 +308,18 @@ select option{background:#1a1008;color:#e8d5b0}
 
   <!-- ═══ 업셀 (카드 밖) ═══ -->
   <div class="v2-teaser-section" id="v2TeaserSection">
-    <div class="v2-teaser-title">📜 누수처방 — 7가지 처방전</div>
+    <div class="v2-teaser-title">📜 지금 끊어야 할 7가지 누수</div>
 
     <!-- 챕터 목차: 제목은 선명, 미리보기 한 줄만 블러 -->
-    <div class="v2-chapter-list" id="v2ChapterList">
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.1</div><div class="v2-chapter-name">누수 진단서</div><div class="v2-chapter-preview">당신의 누수 유형과 심각도를 정밀 분석합니다</div></div>
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.2</div><div class="v2-chapter-name">누수의 뿌리</div><div class="v2-chapter-preview">사주 속 누수 원인을 낱낱이 파헤칩니다</div></div>
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.3</div><div class="v2-chapter-name">맞춤 분석</div><div class="v2-chapter-preview">성별·나이·직업별 누수 패턴을 짚어줍니다</div></div>
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.4</div><div class="v2-chapter-name">사주 심리학</div><div class="v2-chapter-preview">왜 반복하는지, 사주가 만든 심리를 풀어줍니다</div></div>
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.5</div><div class="v2-chapter-name">위험한 달 캘린더</div><div class="v2-chapter-preview">돈이 새는 달과 안전한 달을 알려줍니다</div></div>
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.6</div><div class="v2-chapter-name">누수 처방전</div><div class="v2-chapter-preview">구체적인 행동 가이드와 저축 목표를 제시합니다</div></div>
-      <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.7</div><div class="v2-chapter-name">재물 연결</div><div class="v2-chapter-preview">누수를 막은 뒤 재물운 흐름을 연결합니다</div></div>
-    </div>
+<div class="v2-chapter-list" id="v2ChapterList">
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.1</div><div class="v2-chapter-name">누수 진단서</div><div class="v2-chapter-preview">지금 새고 있는 누수의 진짜 심각도를 밝힙니다</div></div>
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.2</div><div class="v2-chapter-name">누수의 뿌리</div><div class="v2-chapter-preview">왜 같은 지점에서 반복해서 무너지는지 드러납니다</div></div>
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.3</div><div class="v2-chapter-name">맞춤 분석</div><div class="v2-chapter-preview">지금 삶의 조건에서 특히 위험한 지점을 짚어냅니다</div></div>
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.4</div><div class="v2-chapter-name">사주 심리학</div><div class="v2-chapter-preview">끊고 싶어도 반복하게 되는 이유가 여기서 풀립니다</div></div>
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.5</div><div class="v2-chapter-name">위험한 달 캘린더</div><div class="v2-chapter-preview">특히 새기 쉬운 시기와 버텨야 할 때를 알려줍니다</div></div>
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.6</div><div class="v2-chapter-name">누수 처방전</div><div class="v2-chapter-preview">지금부터 무엇을 끊고 무엇을 지켜야 하는지 정리합니다</div></div>
+  <div class="v2-chapter-item"><div class="v2-chapter-num">Ch.7</div><div class="v2-chapter-name">재물 연결</div><div class="v2-chapter-preview">누수를 막은 뒤 돈의 흐름을 어디로 돌려야 하는지 이어집니다</div></div>
+</div>
 
     <div class="v2-lock-bar">
       <span class="v2-lock-bar-icon">🔒</span>
@@ -337,11 +337,11 @@ select option{background:#1a1008;color:#e8d5b0}
       <div class="v2-price-amount">9,900원</div>
       <div class="v2-price-coffee" id="v2PriceSub"></div>
     </div>
-    <a class="v2-main-cta" id="v2MainCta" href="#">누수처방 받으러 가기</a>
+    <a class="v2-main-cta" id="v2MainCta" href="#">지금 누수 끊기</a>
 
     <!-- 재물풀이 추가 상품 -->
-    <div class="v2-extra-section">
-      <div class="v2-extra-title">더 깊은 풀이도 준비되어 있습니다</div>
+    <div class="v2-extra-section" id="v2ExtraSection" style="display:none;">
+      <div class="v2-extra-title">누수를 먼저 끊은 뒤에 보면 더 정확합니다</div>
       <a class="v2-extra-card" id="v2ExtraJaemul" href="#">
         <div class="v2-extra-card-icon">🏺</div>
         <div class="v2-extra-card-label">재물풀이</div>
@@ -436,11 +436,11 @@ var LEVEL_LABELS = { 1:'양호', 2:'주의', 3:'경고', 4:'위험', 5:'심각' 
 var LEVEL_COLORS = { 1:'#4a8c5c', 2:'#b8963a', 3:'#c87830', 4:'#c44a4a', 5:'#9c2020' };
 
 var LEVEL_WARNINGS = {
-  1: '현재 누수는 경미하지만, 방심하면 {year10}만 원이 조용히 빠져나갑니다',
-  2: '지금 습관이 계속되면 10년 뒤 {year10}만 원이 사라집니다',
-  3: '이미 새고 있습니다. 이대로 10년이면 {year10}만 원을 잃습니다',
-  4: '위험 수준입니다. 10년 방치 시 {year10}만 원이 증발합니다',
-  5: '심각한 누수입니다. 10년이면 {year10}만 원 — 지금 막지 않으면 돌이킬 수 없습니다'
+  1: '지금은 약하지만, 이 구조를 방치하면 결국 {year10}만 원 규모의 누수로 커집니다',
+  2: '겉으로는 작아 보여도 이미 시작된 누수입니다. 계속되면 {year10}만 원이 빠져나갑니다',
+  3: '이미 돈이 새고 있습니다. 이 구조를 끊지 않으면 {year10}만 원이 사라집니다',
+  4: '지금 가장 먼저 막아야 할 누수입니다. 방치하면 {year10}만 원을 잃게 됩니다',
+  5: '심각한 누수 구조입니다. 지금 끊지 않으면 {year10}만 원 손실로 이어집니다'
 };
 
 /* ═══ 드롭다운 ═══ */
@@ -639,16 +639,26 @@ function renderUpsell(c){
   var warningTemplate = LEVEL_WARNINGS[leakLevel] || LEVEL_WARNINGS[3];
   document.getElementById('v2WarningText').textContent = warningTemplate.replace('{year10}', year10Man.toLocaleString());
 
-  document.getElementById('v2PriceSub').textContent = '☕ 커피 두 잔 값으로 '+year10Man.toLocaleString()+'만 원을 지킵니다';
+  document.getElementById('v2PriceSub').textContent = '지금 이 누수 구조만 끊어도 앞으로 ' + year10Man.toLocaleString() + '만 원의 흐름이 달라집니다';
 
   // CTA → 페이지 내 주문 폼 열기 (chogyeon.html 이동 안 함)
   document.getElementById('v2MainCta').href = 'javascript:void(0)';
+  document.getElementById('v2MainCta').textContent = '지금 누수 끊기';
   document.getElementById('v2MainCta').onclick = function(){ openOrderForm('NUSU', 9900, '누수처방'); };
 
   document.getElementById('v2ExtraJaemul').href = 'javascript:void(0)';
   document.getElementById('v2ExtraJaemul').onclick = function(){ openOrderForm('HW2', 19800, '재물풀이'); };
 
   document.getElementById('v2TeaserSection').style.display='block';
+var extra = document.getElementById('v2ExtraSection');
+if (extra) {
+  if (leakLevel <= 2) {
+    extra.style.display = 'block';
+  } else {
+    extra.style.display = 'none';
+  }
+}
+  
 }
 
 
