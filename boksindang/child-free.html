@@ -1017,7 +1017,7 @@ fetch(API_BASE + '/api/track/visit', {
       return;
     }
     sessionStorage.removeItem('bok_order');
-    fetch(BOK_API + '/order', {
+    fetch(BOK_API + '/api/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1030,7 +1030,7 @@ fetch(API_BASE + '/api/track/visit', {
       })
     })
     .then(function() {
-      return fetch(BOK_API + '/payment/confirm', {
+      return fetch(BOK_API + '/api/payment/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentKey: paymentKey, orderId: orderId, amount: parseInt(amount) })
