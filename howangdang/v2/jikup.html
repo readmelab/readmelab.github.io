@@ -101,7 +101,11 @@ select option{background:#1a1008;color:#e8d5b0}
 .income-section-jikup .income-bar{background:linear-gradient(90deg,#c8a96e,#f0d090)}
 .income-divider{font-size:11px;color:#5a4a3a;letter-spacing:2px;margin:14px 0;text-align:center}
 
-.upsell-box{background:linear-gradient(180deg,rgba(139,26,26,.15),rgba(139,26,26,.05));border:1px solid #8B1A1A;border-radius:12px;padding:22px;margin-top:8px}
+.upsell-hero{background:linear-gradient(135deg,#8B1A1A 0%,#5a1010 100%);border:1px solid #c5975b;border-radius:12px;padding:24px 20px;margin-top:8px;text-align:center;box-shadow:0 0 30px rgba(197,151,91,.2)}
+.upsell-hero-tag{display:inline-block;font-size:11px;color:#c5975b;background:rgba(197,151,91,.15);padding:5px 12px;border-radius:20px;letter-spacing:2px;margin-bottom:14px;font-weight:700}
+.upsell-hero-title{font-size:20px;color:#fff;font-weight:900;line-height:1.5;margin-bottom:12px;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.upsell-hero-sub{font-size:13px;color:#e8d5b0;line-height:1.7;letter-spacing:0.5px}
+.upsell-box{background:linear-gradient(180deg,rgba(139,26,26,.15),rgba(139,26,26,.05));border:1px solid #8B1A1A;border-radius:12px;padding:22px;margin-top:0}
 .upsell-title{font-size:15px;color:#e8c89a;font-weight:700;margin-bottom:14px;letter-spacing:1px;line-height:1.5}
 .upsell-list{list-style:none;margin-bottom:18px}
 .upsell-list li{font-size:13px;color:#d8c8a0;padding:6px 0 6px 18px;position:relative;line-height:1.6}
@@ -122,17 +126,20 @@ select option{background:#1a1008;color:#e8d5b0}
 .btn-retry{margin-top:12px;padding:12px 28px;background:transparent;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;letter-spacing:2px}
 .btn-retry:hover{border-color:#c5975b;color:#c5975b}
 
-.cross-funnel{margin-top:30px;width:100%;max-width:380px;text-align:center}
-.cross-title{font-size:12px;color:#8a7a5a;margin-bottom:14px;letter-spacing:2px}
-.cross-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.cross-btn{padding:10px 16px;background:rgba(26,16,8,.6);border:1px solid #3a2a1a;border-radius:8px;color:#a89878;font-family:'Noto Serif KR',serif;font-size:12px;cursor:pointer;text-decoration:none;transition:all .3s}
-.cross-btn:hover{border-color:#c5975b;color:#c5975b}
+.cross-funnel{margin-top:36px;width:100%;max-width:380px;text-align:center}
+.cross-title{font-size:11px;color:#5a4a3a;margin-bottom:18px;letter-spacing:3px}
+.cross-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cross-card{display:flex;flex-direction:column;align-items:center;padding:18px 10px;background:rgba(26,16,8,.6);border:1px solid #2a1a0a;border-radius:10px;text-decoration:none;transition:all .3s}
+.cross-card:hover{border-color:#c5975b;background:rgba(197,151,91,.05);transform:translateY(-2px)}
+.cross-card-icon{font-size:24px;margin-bottom:8px}
+.cross-card-name{font-size:13px;color:#c5975b;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.cross-card-desc{font-size:10px;color:#8a7a5a;letter-spacing:1px}
 </style>
 </head>
 <body>
 
 <!-- 토스트 -->
-<div id="toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(26,16,8,.95);border:1px solid #c5975b;color:#e8d5b0;padding:12px 24px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.5)"></div>
+<div id="toast" style="display:none;position:fixed;bottom:40px;left:0;right:0;margin:0 auto;background:rgba(26,16,8,.97);border:1px solid #c5975b;color:#e8d5b0;padding:14px 28px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,.6);text-align:center;max-width:280px;width:fit-content;letter-spacing:1px;font-family:'Noto Serif KR',serif"></div>
 
 <!-- ════ 입력 화면 ════ -->
 <div id="screen-input">
@@ -265,6 +272,11 @@ select option{background:#1a1008;color:#e8d5b0}
     </div>
 
     <!-- ⑤ 직업처방 업셀 -->
+    <div class="upsell-hero">
+      <div class="upsell-hero-tag">⚡ 직업패에서 끝나면 안 된다</div>
+      <div class="upsell-hero-title" id="upsellHeroTitle">너의 운이 언제 열리는지<br>지금 알아야 한다</div>
+      <div class="upsell-hero-sub" id="upsellHeroSub">직업패는 너의 자리만 보여준다.<br>직업처방은 너의 운이 풀리는 시기를 알려준다.</div>
+    </div>
     <div class="upsell-box">
       <div class="upsell-title" id="upsellTitle"></div>
       <ul class="upsell-list" id="upsellList"></ul>
@@ -288,12 +300,28 @@ select option{background:#1a1008;color:#e8d5b0}
 
   <!-- 다른 무료 카드 -->
   <div class="cross-funnel">
-    <div class="cross-title">결제 전, 다른 무료 사주 카드도 보세요</div>
-    <div class="cross-row">
-      <a class="cross-btn" href="howangpae.html">🐯 호왕패</a>
-      <a class="cross-btn" href="suhopae.html">🛡️ 수호패</a>
-      <a class="cross-btn" href="nusu.html">💧 누수패</a>
-      <a class="cross-btn" href="gm.html">🏺 기명패</a>
+    <div class="cross-title">─── 다른 무료 사주 카드 ───</div>
+    <div class="cross-grid">
+      <a class="cross-card" href="howangpae.html">
+        <div class="cross-card-icon">🐯</div>
+        <div class="cross-card-name">호왕패</div>
+        <div class="cross-card-desc">기본 사주</div>
+      </a>
+      <a class="cross-card" href="suhopae.html">
+        <div class="cross-card-icon">🛡️</div>
+        <div class="cross-card-name">수호패</div>
+        <div class="cross-card-desc">나의 수호신</div>
+      </a>
+      <a class="cross-card" href="nusu.html">
+        <div class="cross-card-icon">💧</div>
+        <div class="cross-card-name">누수패</div>
+        <div class="cross-card-desc">새는 돈</div>
+      </a>
+      <a class="cross-card" href="gm.html">
+        <div class="cross-card-icon">🏺</div>
+        <div class="cross-card-name">기명패</div>
+        <div class="cross-card-desc">돈 그릇</div>
+      </a>
     </div>
   </div>
 </div>
@@ -586,12 +614,20 @@ function shareKakao() {
 async function saveCard() {
   if (typeof html2canvas === 'undefined') return showToast('저장 기능 로딩 중');
   try {
+    // 이미지에 crossOrigin 강제 설정 (R2 이미지)
+    const cardImg = document.getElementById('cardImage');
+    if (cardImg && !cardImg.crossOrigin) {
+      cardImg.crossOrigin = 'anonymous';
+      cardImg.src = cardImg.src + '?t=' + Date.now();
+      await new Promise(r => { cardImg.onload = r; setTimeout(r, 1500); });
+    }
     const el = document.getElementById('card-capture');
     const canvas = await html2canvas(el, {
       backgroundColor: '#000',
       scale: 2,
-      useCORS: false,
-      allowTaint: true
+      useCORS: true,
+      allowTaint: false,
+      logging: false
     });
     const link = document.createElement('a');
     const title = lastResult ? lastResult.card.main.replace(/\s/g, '') : 'card';
@@ -617,12 +653,19 @@ function copyLink() {
 // ── 인스타 공유 ──
 async function shareInsta() {
   try {
+    const cardImg = document.getElementById('cardImage');
+    if (cardImg && !cardImg.crossOrigin) {
+      cardImg.crossOrigin = 'anonymous';
+      cardImg.src = cardImg.src + '?t=' + Date.now();
+      await new Promise(r => { cardImg.onload = r; setTimeout(r, 1500); });
+    }
     const el = document.getElementById('card-capture');
     const canvas = await html2canvas(el, {
       backgroundColor: '#000',
       scale: 2,
-      useCORS: false,
-      allowTaint: true
+      useCORS: true,
+      allowTaint: false,
+      logging: false
     });
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const title = lastResult ? lastResult.card.main.replace(/\s/g, '') : 'card';
