@@ -275,6 +275,38 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 var HW_SERVER = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
 
+// sessionStorage에서 직업패 데이터 자동 로딩
+window.addEventListener('DOMContentLoaded', function(){
+  try {
+    var p = new URLSearchParams(location.search);
+    if (p.get('autofill') === '1' && p.get('product') === 'JIKUP') {
+      var stored = sessionStorage.getItem('jikupOrder');
+      if (stored) {
+        var u = JSON.parse(stored);
+        // JIKUP 상품 자동 선택
+        setTimeout(function(){
+          if (typeof selectProduct === 'function') selectProduct('JIKUP');
+          // 폼 자동 채우기
+          if (u.birthYear) document.getElementById('birthYear').value = u.birthYear;
+          if (u.birthMonth) document.getElementById('birthMonth').value = u.birthMonth;
+          if (u.birthDay) document.getElementById('birthDay').value = u.birthDay;
+          if (u.birthHour !== undefined) document.getElementById('birthHour').value = u.birthHour;
+          if (u.calendarType) {
+            var calBtn = document.querySelector('[data-cal="'+u.calendarType+'"]');
+            if (calBtn) calBtn.click();
+          }
+          if (u.gender) {
+            var gBtn = document.querySelector('[data-gender="'+u.gender+'"]');
+            if (gBtn) gBtn.click();
+          }
+          // 직업패에서 받은 currentJob을 추가 sessionStorage로 보관 (서버에 보낼 때 사용)
+          window._jikupCurrentJob = u.currentJob;
+        }, 200);
+      }
+    }
+  } catch(e) { console.warn('autofill error:', e); }
+});
+
 var PRICES = { HW1: 4900, HW2: 19800, HW3: 49700, NUSU: 9900, JIKUP: 9900 };
 var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이', NUSU: '누수처방', JIKUP: '직업처방' };
 var RESULT_PAGES = {

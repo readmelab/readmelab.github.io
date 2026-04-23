@@ -101,7 +101,15 @@ select option{background:#1a1008;color:#e8d5b0}
 .income-section-jikup .income-bar{background:linear-gradient(90deg,#c8a96e,#f0d090)}
 .income-divider{font-size:11px;color:#5a4a3a;letter-spacing:2px;margin:14px 0;text-align:center}
 
-.upsell-hero{background:linear-gradient(135deg,#8B1A1A 0%,#5a1010 100%);border:1px solid #c5975b;border-radius:12px;padding:24px 20px;margin-top:8px;text-align:center;box-shadow:0 0 30px rgba(197,151,91,.2)}
+.blind-section{background:#0a0806;border:1px solid #2a1a0a;border-radius:12px;padding:22px 18px;margin-top:8px}
+.blind-title{font-size:14px;color:#c5975b;font-weight:700;letter-spacing:1px;margin-bottom:16px;line-height:1.5}
+.blind-preview{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.blind-line{font-size:13px;color:#a89878;line-height:1.7;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:6px;border-left:2px solid #c5975b33;filter:blur(0.5px);position:relative}
+.blind-lock-hint{font-size:11px;color:#8a7a5a;text-align:center;letter-spacing:1px;font-style:italic;padding-top:10px;border-top:1px dashed #2a1a0a}
+.main-cta-btn{display:block;width:100%;padding:18px 0;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:10px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:17px;font-weight:900;text-align:center;text-decoration:none;letter-spacing:2px;transition:all .3s;margin-top:16px;box-shadow:0 0 20px rgba(139,26,26,.3)}
+.main-cta-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+.cta-sub{text-align:center;font-size:11px;color:#8a7a5a;margin-top:10px;letter-spacing:2px}
+.upsell-hero{display:none}
 .upsell-hero-tag{display:inline-block;font-size:11px;color:#c5975b;background:rgba(197,151,91,.15);padding:5px 12px;border-radius:20px;letter-spacing:2px;margin-bottom:14px;font-weight:700}
 .upsell-hero-title{font-size:20px;color:#fff;font-weight:900;line-height:1.5;margin-bottom:12px;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
 .upsell-hero-sub{font-size:13px;color:#e8d5b0;line-height:1.7;letter-spacing:0.5px}
@@ -271,19 +279,21 @@ select option{background:#1a1008;color:#e8d5b0}
       <div class="section-body" id="destinyBody"></div>
     </div>
 
-    <!-- ⑤ 직업처방 업셀 -->
-    <div class="upsell-hero">
-      <div class="upsell-hero-tag">⚡ 직업패에서 끝나면 안 된다</div>
-      <div class="upsell-hero-title" id="upsellHeroTitle">너의 운이 언제 열리는지<br>지금 알아야 한다</div>
-      <div class="upsell-hero-sub" id="upsellHeroSub">직업패는 너의 자리만 보여준다.<br>직업처방은 너의 운이 풀리는 시기를 알려준다.</div>
+    <!-- ⑤ 블라인드 영역 (직업처방 미리보기 잠금) -->
+    <div class="blind-section">
+      <div class="blind-title">🔒 <span id="blindJikupName">사업가</span>의 운이 열리는 시기</div>
+      <div class="blind-preview">
+        <div class="blind-line">너의 <span id="blindJikupName2">사업가</span> 운이 열리는 첫 폭발기는 ████ 시작…</div>
+        <div class="blind-line">두 번째 도약 시기는 ████ 사이…</div>
+        <div class="blind-line">반드시 피해야 할 시기는 ████…</div>
+        <div class="blind-line">지금 자리에서 운을 살리는 행동 5가지: ████████████</div>
+      </div>
+      <div class="blind-lock-hint">✨ 직업처방에서 너의 사주에 맞춰 풀어준다</div>
     </div>
-    <div class="upsell-box">
-      <div class="upsell-title" id="upsellTitle"></div>
-      <ul class="upsell-list" id="upsellList"></ul>
-      <div class="upsell-closer" id="upsellCloser"></div>
-      <a class="upsell-cta" id="upsellCta" href="#">직업처방 받기 · 9,900원</a>
-      <div class="upsell-disc" id="upsellDisc"></div>
-    </div>
+
+    <!-- 메인 CTA -->
+    <a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="goToOrder(event)">지금 운 열리는 시기 보기</a>
+    <div class="cta-sub">직업처방 · 9,900원 · 평생 소장</div>
 
   </div>
 
@@ -515,19 +525,9 @@ function renderResult(d) {
     '<div style="font-size:13px;color:#a89878;margin-bottom:10px;font-style:italic">' + card.essence + '</div>' +
     '<div>' + card.destiny + '</div>';
 
-  // 업셀
-  document.getElementById('upsellTitle').textContent = up.title;
-  const ul = document.getElementById('upsellList');
-  ul.innerHTML = '';
-  up.items.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    ul.appendChild(li);
-  });
-  document.getElementById('upsellCloser').textContent = up.closer;
-  document.getElementById('upsellCta').textContent = '직업처방 받기 · ' + up.price.replace('직업처방 ', '');
-  document.getElementById('upsellCta').href = 'order.html?product=JIKUP&from=jikupCard';
-  document.getElementById('upsellDisc').textContent = up.disclaimer;
+  // 블라인드 영역에 직업명
+  document.getElementById('blindJikupName').textContent = card.main;
+  document.getElementById('blindJikupName2').textContent = card.main;
 
   // 결과 화면 표시
   const r = document.getElementById('screen-result');
