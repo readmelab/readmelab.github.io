@@ -100,6 +100,34 @@ select option{background:#1a1008;color:#e8d5b0}
 .income-row-val{width:auto;text-align:right;font-size:11px;color:#c5975b;white-space:nowrap}
 
 .income-section-jikup .income-bar{background:linear-gradient(90deg,#c8a96e,#f0d090)}
+
+/* ════ 비교 차트 ════ */
+.compare-legend{display:flex;gap:16px;justify-content:center;margin-bottom:16px;font-size:11px;letter-spacing:1px;flex-wrap:wrap}
+.lg-current{color:#8a7a5a}
+.lg-gap{color:#c8a96e;font-weight:700}
+
+.income-compare{display:flex;flex-direction:column;gap:18px;margin-top:8px}
+.cmp-row{display:flex;flex-direction:column;gap:6px;opacity:0;transform:translateY(10px);transition:all .5s}
+.cmp-row.visible{opacity:1;transform:translateY(0)}
+
+.cmp-period{font-size:13px;color:#c5975b;font-weight:700;letter-spacing:1px;display:flex;justify-content:space-between;align-items:baseline}
+.cmp-period .cmp-gap-amt{font-size:14px;color:#c8a96e;font-weight:900;text-shadow:0 0 8px rgba(200,169,110,.4)}
+
+.cmp-bar-wrap{position:relative;height:38px;background:#0a0806;border-radius:8px;overflow:hidden;border:1px solid #1a1208;box-shadow:inset 0 1px 4px rgba(0,0,0,.5)}
+
+/* 지금 자리 막대 */
+.cmp-bar-current{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#3a2a1a,#5a4a3a);width:0;transition:width 1.2s cubic-bezier(0.25,0.46,0.45,0.94);z-index:1}
+
+/* 운 열렸을 때 추가 막대 (지금 자리 위로 누적) */
+.cmp-bar-gap{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#c8a96e,#f0d090,#c8a96e);background-size:200% 100%;width:0;transition:width 1.4s cubic-bezier(0.25,0.46,0.45,0.94) 0.5s,left 0s;z-index:2;animation:none;box-shadow:0 0 20px rgba(200,169,110,.5)}
+.cmp-row.visible .cmp-bar-gap{animation:pulseGold 2s ease-in-out 1.9s infinite,shimmer 3s linear 1.9s infinite}
+
+@keyframes pulseGold{0%,100%{box-shadow:0 0 20px rgba(200,169,110,.5)}50%{box-shadow:0 0 30px rgba(200,169,110,.9),0 0 50px rgba(200,169,110,.4)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.cmp-labels{display:flex;justify-content:space-between;font-size:11px;color:#8a7a5a;padding:0 4px;margin-top:2px}
+.cmp-lbl-cur{color:#8a7a5a}
+.cmp-lbl-jk{color:#c8a96e;font-weight:700}
 .income-divider{font-size:11px;color:#5a4a3a;letter-spacing:2px;margin:14px 0;text-align:center}
 
 .treat-preview{background:#0a0806;border:1px solid #2a1a0a;border-radius:12px;padding:22px 18px;margin-top:8px}
@@ -301,15 +329,14 @@ select option{background:#1a1008;color:#e8d5b0}
       </div>
     </div>
 
-    <!-- ③ 잠재 수입 범위 -->
-    <div class="section income-section-current">
-      <div class="section-title">💼 지금 자리에서 갈 수 있는 길</div>
-      <div class="income-box" id="incomeCurrent"></div>
-    </div>
-
-    <div class="section income-section-jikup">
-      <div class="section-title">💎 <span id="jikupNameForIncome">사업가</span>의 운이 살아났을 때</div>
-      <div class="income-box" id="incomeJikup"></div>
+    <!-- ③ 잠재 수입 비교 (애니메이션) -->
+    <div class="section">
+      <div class="section-title">📊 지금 자리 vs <span id="jikupNameForIncome">사업가</span>의 운</div>
+      <div class="compare-legend">
+        <span class="lg-current">■ 지금 자리</span>
+        <span class="lg-gap">■ 운이 열렸을 때 추가</span>
+      </div>
+      <div class="income-compare" id="incomeCompare"></div>
       <div class="income-divider">─── 통계청 KEIS 2024 기준 ───</div>
     </div>
 
@@ -594,12 +621,11 @@ function renderResult(d) {
   document.getElementById('cellCurrent').textContent = g.currentJob;
   document.getElementById('cellJikup').textContent = card.main;
 
-  // 잠재 수입 (현재 + 사주)
+  // 잠재 수입 통합 비교 (애니메이션)
   document.getElementById('jikupNameForIncome').textContent = card.main;
   document.getElementById('jikupNameForDestiny').textContent = card.main;
 
-  renderIncome('incomeCurrent', inc.currentJob, '#c5975b');
-  renderIncome('incomeJikup', inc.jikupDestiny, '#e8c89a');
+  renderCompare('incomeCompare', inc.currentJob, inc.jikupDestiny);
 
   // 운명이 가는 길
   document.getElementById('destinyBody').innerHTML =
@@ -618,6 +644,78 @@ function renderResult(d) {
   const r = document.getElementById('screen-result');
   r.style.display = 'flex';
   setTimeout(() => r.classList.add('show'), 50);
+}
+
+function renderCompare(containerId, cur, jk) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  if (cur.isPreparing) {
+    c.innerHTML = '<div style="text-align:center;color:#8a7a5a;padding:20px;font-size:13px">지금은 준비기 — 사주의 운이 열리면 ' + formatWon(jk.year10.max) + '까지 가능</div>';
+    return;
+  }
+
+  const periods = [
+    { label: '1년',   cur: cur.year,   jk: jk.year },
+    { label: '3년',   cur: cur.year3,  jk: jk.year3 },
+    { label: '5년',   cur: cur.year5,  jk: jk.year5 },
+    { label: '10년',  cur: cur.year10, jk: jk.year10 }
+  ];
+
+  // 전체 max (모든 기간 사주 max 중 최대)
+  const overallMax = Math.max.apply(null, periods.map(p => p.jk.max));
+
+  periods.forEach((p, idx) => {
+    // 평균값 사용 (min/max 평균이 아니라 max 기준으로 비교 — 임팩트)
+    const curAvg = (p.cur.min + p.cur.max) / 2;
+    const jkAvg  = (p.jk.min  + p.jk.max)  / 2;
+    const gap = Math.max(jkAvg - curAvg, 0);
+
+    const curPct = (curAvg / overallMax) * 100;
+    const jkPct  = (jkAvg  / overallMax) * 100;
+
+    const row = document.createElement('div');
+    row.className = 'cmp-row';
+    row.innerHTML =
+      '<div class="cmp-period">' +
+        '<span>' + p.label + ' 누적</span>' +
+        '<span class="cmp-gap-amt">+' + formatWon(gap) + '</span>' +
+      '</div>' +
+      '<div class="cmp-bar-wrap">' +
+        '<div class="cmp-bar-current" data-w="' + curPct + '"></div>' +
+        '<div class="cmp-bar-gap" data-w="' + (jkPct - curPct) + '" data-left="' + curPct + '"></div>' +
+      '</div>' +
+      '<div class="cmp-labels">' +
+        '<span class="cmp-lbl-cur">지금: ' + formatWon(curAvg) + '</span>' +
+        '<span class="cmp-lbl-jk">운 열림: ' + formatWon(jkAvg) + '</span>' +
+      '</div>';
+    c.appendChild(row);
+  });
+
+  // 스크롤 옵저버 — 화면에 들어오면 발동
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        const curBar = e.target.querySelector('.cmp-bar-current');
+        const gapBar = e.target.querySelector('.cmp-bar-gap');
+        const curW = curBar.dataset.w;
+        const gapW = gapBar.dataset.w;
+        const left = gapBar.dataset.left;
+
+        // 1단계: 지금 자리 막대 차오름
+        setTimeout(() => { curBar.style.width = curW + '%'; }, 100);
+        // 2단계: 운 열린 부분이 그 위로 추가되며 펄스 시작
+        setTimeout(() => {
+          gapBar.style.left = left + '%';
+          gapBar.style.width = gapW + '%';
+        }, 600);
+
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  c.querySelectorAll('.cmp-row').forEach(r => obs.observe(r));
 }
 
 function renderIncome(containerId, data, color) {
