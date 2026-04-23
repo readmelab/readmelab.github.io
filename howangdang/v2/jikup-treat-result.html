@@ -87,6 +87,30 @@ body::before{
 
 /* 에러 */
 .error-box{background:#1a0a0a;border:1px solid #8B1A1A;color:#e8d5b0;padding:30px;text-align:center;border-radius:8px;margin:60px 0;}
+
+/* 업셀 결제 오버레이 */
+.order-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9998;overflow-y:auto;padding:40px 20px;animation:ovFade .3s;}
+.order-overlay.show{display:flex;align-items:flex-start;justify-content:center;}
+@keyframes ovFade{from{opacity:0}to{opacity:1}}
+.order-box{width:100%;max-width:380px;background:linear-gradient(180deg,#1a1208,#0a0806);border:1px solid #c8a96e;border-radius:14px;padding:30px 24px;position:relative;box-shadow:0 0 50px rgba(200,169,110,.2);}
+.order-close{position:absolute;top:14px;right:18px;font-size:22px;color:#8a7a60;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .3s;}
+.order-close:hover{color:#c8a96e;background:rgba(200,169,110,.1);}
+.order-title-up{font-size:22px;color:#c8a96e;font-weight:900;text-align:center;letter-spacing:3px;margin-bottom:8px;}
+.order-price-up{font-size:28px;color:#fff;font-weight:900;text-align:center;letter-spacing:1px;margin-bottom:6px;}
+.order-price-old{font-size:13px;color:#6a5a4a;text-decoration:line-through;text-align:center;margin-bottom:6px;}
+.order-desc-up{font-size:12px;color:#8a7a60;text-align:center;line-height:1.6;margin-bottom:20px;padding-bottom:16px;border-bottom:1px dashed #2a1f14;}
+.order-row-up{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.order-row-up label{font-size:12px;color:#8a7a60;letter-spacing:1px;}
+.order-row-up input[type=text],.order-row-up input[type=tel]{padding:13px 14px;background:rgba(0,0,0,.6);border:1px solid #2a1f14;border-radius:8px;color:#e8dcc8;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;}
+.order-row-up input:focus{border-color:#c8a96e;}
+.opt-btn-up{padding:10px 14px;background:rgba(0,0,0,.6);border:1px solid #2a1f14;border-radius:8px;color:#8a7a60;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s;}
+.opt-btn-up.active{border-color:#c8a96e;color:#c8a96e;background:rgba(200,169,110,.1);}
+.opt-row-up{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.agree-row-up{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#a89878;line-height:1.5;cursor:pointer;margin-top:6px;}
+.agree-row-up input[type=checkbox]{margin-top:2px;width:16px;height:16px;accent-color:#c8a96e;cursor:pointer;flex:0 0 auto;}
+.pay-btn-up{width:100%;margin-top:14px;padding:18px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c8a96e;border-radius:10px;color:#e8dcc8;font-family:'Noto Serif KR',serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:2px;transition:all .3s;}
+.pay-btn-up:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02);}
+.toast-up{position:fixed;bottom:40px;left:0;right:0;margin:0 auto;background:rgba(26,18,8,.97);border:1px solid #c8a96e;color:#e8dcc8;padding:14px 28px;border-radius:8px;font-size:14px;z-index:9999;text-align:center;max-width:280px;width:fit-content;letter-spacing:1px;font-family:'Noto Serif KR',serif;display:none;}
 </style>
 </head>
 <body>
@@ -142,9 +166,68 @@ body::before{
     <div class="upsell-final-tag">⚡ 직업처방의 다음 단계</div>
     <div class="upsell-final-title">너의 직업의 운명은 알았다<br>이제 너의 돈의 운명을 보아라</div>
     <div class="upsell-final-desc">직업처방은 너의 자리·시기·실전을 알려주었다.<br>재물풀이는 그 자리에서 들어오는 돈이<br>너에게 어떻게 머무는지를 본다.</div>
-    <a class="upsell-final-cta" id="upsellFinalCta" href="order.html?product=HW2&from=jikupTreat&upgrade=1">재물풀이로 가기 · 19,800원</a>
+    <div style="text-align:center;margin:10px 0 14px">
+      <div style="font-size:13px;color:rgba(255,255,255,.5);text-decoration:line-through">원가 19,800원</div>
+      <div style="font-size:28px;color:#c8a96e;font-weight:900;margin-top:2px">9,900원</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">직업처방을 본 사람만 · 지금 이어서 확인</div>
+    </div>
+    <a class="upsell-final-cta" id="upsellFinalCta" href="javascript:void(0)">재물풀이로 가기 · 9,900원</a>
     <div class="upsell-final-disc">두 가지가 만날 때 평생의 부의 지도가 완성됩니다</div>
   </div>
+
+  <!-- 업셀 결제 오버레이 -->
+  <div class="order-overlay" id="upOrderOverlay">
+    <div class="order-box">
+      <div class="order-close" onclick="closeUpOrder()">✕</div>
+      <div class="order-title-up">재물풀이</div>
+      <div class="order-price-old">원가 19,800원</div>
+      <div class="order-price-up">9,900원</div>
+      <div class="order-desc-up">돈 그릇 · 재물 통로 · 투자 성향 · 직업 궁합 · 월별 재물운 · 3년 흐름</div>
+
+      <div class="order-row-up">
+        <label>이름</label>
+        <input type="text" id="upName" maxlength="20" placeholder="이름">
+      </div>
+      <div class="order-row-up">
+        <label>연락처</label>
+        <input type="tel" id="upPhone" maxlength="13" placeholder="010-0000-0000">
+      </div>
+      <div class="order-row-up">
+        <label>결혼 여부</label>
+        <div class="opt-row-up" id="upMarriageRow">
+          <button type="button" class="opt-btn-up" data-val="미혼" onclick="upSelectMarriage(this)">미혼</button>
+          <button type="button" class="opt-btn-up" data-val="연애중" onclick="upSelectMarriage(this)">연애중</button>
+          <button type="button" class="opt-btn-up" data-val="기혼" onclick="upSelectMarriage(this)">기혼</button>
+          <button type="button" class="opt-btn-up" data-val="이혼·사별" onclick="upSelectMarriage(this)">이혼·사별</button>
+        </div>
+      </div>
+      <div class="order-row-up">
+        <label>자녀 여부</label>
+        <div class="opt-row-up" id="upChildRow">
+          <button type="button" class="opt-btn-up" data-val="없음" onclick="upSelectChild(this)">없음</button>
+          <button type="button" class="opt-btn-up" data-val="1명" onclick="upSelectChild(this)">1명</button>
+          <button type="button" class="opt-btn-up" data-val="2명 이상" onclick="upSelectChild(this)">2명 이상</button>
+        </div>
+      </div>
+
+      <label class="agree-row-up">
+        <input type="checkbox" id="upAgreePriv">
+        <span>개인정보 수집·이용 동의 (이름·연락처·생년월일·직업·결혼·자녀)</span>
+      </label>
+      <label class="agree-row-up">
+        <input type="checkbox" id="upAgreeTerm">
+        <span>본 결과는 사주 기반 <strong style="color:#c8a96e">참고 자료</strong>이며 <strong style="color:#c8a96e">수익·결과를 보장하지 않음</strong>에 동의</span>
+      </label>
+
+      <button class="pay-btn-up" id="upPayBtn" onclick="submitUpOrder()">재물풀이 결제하기 (9,900원)</button>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast-up" id="upToast"></div>
+
+  <!-- Toss SDK v2 -->
+  <script src="https://js.tosspayments.com/v2/standard"></script>
 
   <div class="footer">호왕당 · 虎王堂 · 사주 기반 참고용</div>
 
@@ -313,6 +396,179 @@ function showError(msg) {
   document.getElementById('errorMsg').textContent = msg;
   document.getElementById('errorContainer').style.display = 'block';
 }
+
+// ════ 업셀 결제 (재물풀이) ════
+const UP_TOSS_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+const UP_HW = API_BASE;
+let upPrev = null;
+let upSelMarriage = '';
+let upSelChild = '';
+
+function upToast(msg){
+  const t = document.getElementById('upToast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(()=>{ t.style.display='none'; }, 2200);
+}
+function upSelectMarriage(btn){
+  document.querySelectorAll('#upMarriageRow .opt-btn-up').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  upSelMarriage = btn.dataset.val;
+}
+function upSelectChild(btn){
+  document.querySelectorAll('#upChildRow .opt-btn-up').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  upSelChild = btn.dataset.val;
+}
+function closeUpOrder(){
+  document.getElementById('upOrderOverlay').classList.remove('show');
+}
+
+async function openUpOrderForm(){
+  try{
+    const r = await fetch(API_BASE + '/order-info/' + orderId);
+    const j = await r.json();
+    if(!j.success || !j.data){ upToast('주문 정보를 불러오지 못했습니다'); return; }
+    upPrev = j.data;
+
+    // 자동 채움
+    const u = upPrev.user || {};
+    if(u.name) document.getElementById('upName').value = u.name;
+    if(u.phone) document.getElementById('upPhone').value = u.phone;
+
+    // 이전 주문에 결혼/자녀 있으면 선택
+    if(upPrev.marriage){
+      const mb = document.querySelector('#upMarriageRow .opt-btn-up[data-val="'+upPrev.marriage+'"]');
+      if(mb){ mb.classList.add('active'); upSelMarriage = upPrev.marriage; }
+    }
+    if(upPrev.hasChild){
+      const cb = document.querySelector('#upChildRow .opt-btn-up[data-val="'+upPrev.hasChild+'"]');
+      if(cb){ cb.classList.add('active'); upSelChild = upPrev.hasChild; }
+    }
+
+    const ov = document.getElementById('upOrderOverlay');
+    ov.classList.add('show');
+    setTimeout(()=>ov.scrollIntoView({behavior:'smooth',block:'start'}), 50);
+  }catch(e){
+    console.error(e);
+    upToast('오류: ' + e.message);
+  }
+}
+
+document.getElementById('upsellFinalCta').addEventListener('click', function(e){
+  e.preventDefault();
+  openUpOrderForm();
+});
+
+function submitUpOrder(){
+  const name = document.getElementById('upName').value.trim();
+  const phone = document.getElementById('upPhone').value.trim();
+  if(!name) return upToast('이름을 입력해주세요');
+  if(!phone) return upToast('연락처를 입력해주세요');
+  if(!upSelMarriage) return upToast('결혼 여부를 선택해주세요');
+  if(!upSelChild) return upToast('자녀 여부를 선택해주세요');
+  if(!document.getElementById('upAgreePriv').checked) return upToast('개인정보 수집·이용에 동의해주세요');
+  if(!document.getElementById('upAgreeTerm').checked) return upToast('참고 자료 안내에 동의해주세요');
+  if(!upPrev) return upToast('이전 정보를 불러오지 못했습니다');
+
+  const u = upPrev.user || {};
+  const newOrderId = 'jikup-up-' + orderId + '-' + Date.now();
+
+  sessionStorage.setItem('hw_jikup_upsell', JSON.stringify({
+    orderId: newOrderId,
+    product: 'HW2',
+    price: 9900,
+    name, phone,
+    gender: u.gender || '',
+    birthDate: u.birthDate || '',
+    birthTime: u.birthTime || '',
+    calendarType: u.calendar || 'solar',
+    job: upPrev.job || u.job || '직장인',
+    marriage: upSelMarriage,
+    hasChild: upSelChild,
+    upgradeFrom: orderId,
+    fromProduct: 'JIKUP'
+  }));
+
+  try{
+    const toss = TossPayments(UP_TOSS_KEY);
+    const payment = toss.payment({customerKey:'ANONYMOUS'});
+    payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: 9900 },
+      orderId: newOrderId,
+      orderName: '호왕당 재물풀이 (직업처방 업그레이드)',
+      customerName: name,
+      customerMobilePhone: phone.replace(/[^0-9]/g,''),
+      successUrl: window.location.origin + window.location.pathname + '?payment=success&fromOrderId=' + orderId,
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card: { flowMode: 'DEFAULT' }
+    }).catch(e=>{
+      if(e.code==='USER_CANCEL') upToast('결제가 취소되었습니다');
+      else { console.error(e); upToast('결제 오류: '+(e.message||'')); }
+    });
+  }catch(e){
+    console.error(e);
+    upToast('결제 모듈 로드 실패');
+  }
+}
+
+// ════ 업셀 결제 콜백 ════
+(function handleUpCallback(){
+  const p = new URLSearchParams(location.search);
+  if(p.get('payment')==='success'){
+    const paymentKey = p.get('paymentKey');
+    const pOrderId = p.get('orderId');
+    const amount = p.get('amount');
+
+    const stored = sessionStorage.getItem('hw_jikup_upsell');
+    if(!stored){ upToast('주문 정보를 찾을 수 없습니다'); return; }
+    const od = JSON.parse(stored);
+    if(od.orderId !== pOrderId){ upToast('결제 정보 불일치'); return; }
+
+    fetch(API_BASE + '/order', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        orderId: od.orderId,
+        product: od.product,
+        price: od.price,
+        name: od.name,
+        phone: od.phone,
+        gender: od.gender,
+        birthDate: od.birthDate,
+        birthTime: od.birthTime,
+        calendarType: od.calendarType,
+        job: od.job,
+        marriage: od.marriage,
+        hasChild: od.hasChild,
+        upgradeFrom: od.upgradeFrom,
+        fromProduct: od.fromProduct
+      })
+    })
+    .then(r=>r.json())
+    .then(orderRes=>{
+      if(!orderRes.success) throw new Error(orderRes.error||'주문 생성 실패');
+      return fetch(API_BASE + '/payment/confirm', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({paymentKey, orderId: pOrderId, amount: Number(amount)})
+      });
+    })
+    .then(r=>r.json())
+    .then(conf=>{
+      if(!conf.success) throw new Error(conf.error||'결제 승인 실패');
+      sessionStorage.removeItem('hw_jikup_upsell');
+      location.href = 'jaemul-result.html?id=' + pOrderId;
+    })
+    .catch(err=>{
+      console.error(err);
+      upToast('결제 처리 오류: ' + err.message);
+    });
+  } else if(p.get('payment')==='fail'){
+    upToast('결제가 취소되었거나 실패했습니다');
+    history.replaceState(null,'',location.pathname + '?orderId=' + orderId);
+  }
+})();
 </script>
 
 </body>
