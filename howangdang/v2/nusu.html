@@ -152,6 +152,15 @@ select option{background:#1a1008;color:#e8d5b0}
 .share-section{margin-top:24px;width:360px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
+.cross-funnel-nusu{margin:36px auto 20px;width:360px;text-align:center}
+.cross-title-nusu{font-size:11px;color:#5a4a3a;margin-bottom:18px;letter-spacing:3px}
+.cross-grid-nusu{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cross-card-nusu{display:flex;flex-direction:column;align-items:center;padding:18px 10px;background:rgba(26,16,8,.6);border:1px solid #2a1a0a;border-radius:10px;text-decoration:none;transition:all .3s}
+.cross-card-nusu:hover{border-color:#c5975b;background:rgba(197,151,91,.05);transform:translateY(-2px)}
+.cross-icon{font-size:24px;margin-bottom:8px}
+.cross-name{font-size:13px;color:#c5975b;font-weight:700;letter-spacing:1px;margin-bottom:4px;font-family:'Noto Serif KR',serif}
+.cross-desc{font-size:10px;color:#8a7a5a;letter-spacing:1px;font-family:'Noto Serif KR',serif}
+
 .disclaimer-box-nusu{margin:30px auto 20px;width:360px;background:rgba(26,16,8,.4);border:1px solid #1a1208;border-radius:8px;overflow:hidden}
 .disclaimer-toggle-nusu{width:100%;padding:12px 16px;background:transparent;border:none;color:#5a4a3a;font-family:'Noto Serif KR',serif;font-size:11px;letter-spacing:1px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .3s}
 .disclaimer-toggle-nusu:hover{color:#8a7a5a}
@@ -918,6 +927,33 @@ function submitOrder(){
 <script>
 fetch(API_BASE+'/api/track/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:'nusupae',referrer:document.referrer,userAgent:navigator.userAgent})}).catch(function(){});
 </script>
+<!-- 다른 무료 카드 -->
+<div class="cross-funnel-nusu">
+  <div class="cross-title-nusu">─── 다른 무료 사주 카드 ───</div>
+  <div class="cross-grid-nusu">
+    <a class="cross-card-nusu" href="howangpae.html">
+      <div class="cross-icon">🐯</div>
+      <div class="cross-name">호왕패</div>
+      <div class="cross-desc">기본 사주</div>
+    </a>
+    <a class="cross-card-nusu" href="suhopae.html">
+      <div class="cross-icon">🛡️</div>
+      <div class="cross-name">수호패</div>
+      <div class="cross-desc">나의 수호신</div>
+    </a>
+    <a class="cross-card-nusu" href="jikup.html">
+      <div class="cross-icon">📜</div>
+      <div class="cross-name">직업패</div>
+      <div class="cross-desc">사주 직업운</div>
+    </a>
+    <a class="cross-card-nusu" href="gm.html">
+      <div class="cross-icon">🏺</div>
+      <div class="cross-name">기명패</div>
+      <div class="cross-desc">돈 그릇</div>
+    </a>
+  </div>
+</div>
+
 <!-- 면책 안내 (접이식) -->
 <div class="disclaimer-box-nusu">
   <button class="disclaimer-toggle-nusu" onclick="toggleDisclaimerNusu()">
