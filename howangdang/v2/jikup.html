@@ -988,7 +988,9 @@ function submitOrder() {
 
   sessionStorage.setItem('hw_jikup_order', JSON.stringify({
     orderId, product: 'JIKUP', price: 9900,
-    name, phone, gender, birthDate, birthTime, calType, currentJob, marriage: selectedMarriage, hasChild: selectedChild
+    name, phone, gender, birthDate, birthTime, calType, currentJob,
+    marriage: selectedMarriage, hasChild: selectedChild,
+    jikupCard: lastResult || null
   }));
 
   try {
@@ -1044,6 +1046,7 @@ function submitOrder() {
         currentJob: orderData.currentJob,
         marriage: orderData.marriage,
         hasChild: orderData.hasChild,
+        jikupCard: orderData.jikupCard || null,
         source: 'v2-jikup-card'
       })
     })
