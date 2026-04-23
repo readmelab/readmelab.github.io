@@ -496,7 +496,8 @@ async function submitOrder() {
       interest: selectedInterest || '전체',
       question2: question2 || '',
       hasChild: selectedChild || '',
-      source: 'v2-order'
+      source: 'v2-order',
+      currentJob: window._jikupCurrentJob || ''
     };
 
     var res = await fetch(HW_SERVER + '/order', {
