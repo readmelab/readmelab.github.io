@@ -374,6 +374,7 @@ select option{background:#1a1008;color:#e8d5b0}
       <div class="loss-warning-text">
         <strong id="lossAmount">5억</strong> 차이가 난다<br>
         <span class="ch-jikup-name">사업가</span>의 운을 알고 가는 자와 모르는 자는
+        <div style="font-size:10px;color:#5a4a3a;margin-top:8px;font-weight:400;letter-spacing:0">※ 통계청 KEIS 평균치 기준 추정</div>
       </div>
     </div>
 
@@ -416,6 +417,10 @@ select option{background:#1a1008;color:#e8d5b0}
           <label class="agree-label">
             <input type="checkbox" id="agreePrivacy">
             <span>개인정보 수집·이용 동의 (이름·연락처·생년월일·직업)</span>
+          </label>
+          <label class="agree-label" style="margin-top:8px">
+            <input type="checkbox" id="agreeTerm">
+            <span>본 결과는 사주 기반 <strong style="color:#c5975b">참고 자료</strong>이며 <strong style="color:#c5975b">수익·결과를 보장하지 않음</strong>에 동의합니다</span>
           </label>
         </div>
         <button class="pay-btn" id="payBtn" onclick="submitOrder()">직업 처방 결제하기 (9,900원)</button>
@@ -701,7 +706,7 @@ function renderCompare(containerId, cur, jk) {
     row.innerHTML =
       '<div class="cmp-period">' +
         '<span>' + p.label + ' 누적</span>' +
-        '<span class="cmp-gap-amt">+' + formatWon(gap) + '</span>' +
+        '<span class="cmp-gap-amt">+' + formatWon(gap) + '</span><span class="cmp-gap-note">통계 추정</span>' +
       '</div>' +
       '<div class="cmp-bar-wrap">' +
         '<div class="cmp-bar-current" data-w="' + curPct + '"></div>' +
@@ -940,6 +945,7 @@ function submitOrder() {
   if (!name) return showToast('이름을 입력해주세요');
   if (!phone) return showToast('연락처를 입력해주세요');
   if (!document.getElementById('agreePrivacy').checked) return showToast('개인정보 수집·이용에 동의해주세요');
+  if (!document.getElementById('agreeTerm').checked) return showToast('참고 자료 안내에 동의해주세요');
 
   const orderId = 'JIKUP' + Date.now();
   const gender = (document.querySelector('[data-gender].active') || {dataset:{gender:'male'}}).dataset.gender;
