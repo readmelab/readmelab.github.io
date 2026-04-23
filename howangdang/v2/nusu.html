@@ -151,6 +151,13 @@ select option{background:#1a1008;color:#e8d5b0}
 /* 공유 버튼 */
 .share-section{margin-top:24px;width:360px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .share-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.disclaimer-box-nusu{margin:30px auto 20px;width:360px;background:rgba(26,16,8,.4);border:1px solid #1a1208;border-radius:8px;overflow:hidden}
+.disclaimer-toggle-nusu{width:100%;padding:12px 16px;background:transparent;border:none;color:#5a4a3a;font-family:'Noto Serif KR',serif;font-size:11px;letter-spacing:1px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .3s}
+.disclaimer-toggle-nusu:hover{color:#8a7a5a}
+.disclaimer-arrow-nusu{transition:transform .3s;font-size:9px}
+.disclaimer-arrow-nusu.open{transform:rotate(180deg)}
+.disclaimer-body-nusu{padding:14px 16px 18px;font-size:10px;color:#5a4a3a;line-height:1.7;letter-spacing:0.3px;border-top:1px dashed #1a1208;background:rgba(0,0,0,.3)}
 .share-btn{display:flex;align-items:center;gap:6px;padding:12px 20px;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .3s}
 .share-btn:hover{transform:scale(1.03)}
 .btn-kakao{background:#FEE500;color:#3C1E1E}
@@ -906,5 +913,35 @@ function submitOrder(){
 <script>
 fetch(API_BASE+'/api/track/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:'nusupae',referrer:document.referrer,userAgent:navigator.userAgent})}).catch(function(){});
 </script>
+<!-- 면책 안내 (접이식) -->
+<div class="disclaimer-box-nusu">
+  <button class="disclaimer-toggle-nusu" onclick="toggleDisclaimerNusu()">
+    <span>ⓘ 누수패·누수처방 안내사항</span>
+    <span class="disclaimer-arrow-nusu" id="disclaimerArrowNusu">▼</span>
+  </button>
+  <div class="disclaimer-body-nusu" id="disclaimerBodyNusu" style="display:none">
+    본 누수패·누수처방은 사주 명리학에 기반한 참고 자료이며, 실제 재정·소비 결정의 절대적 기준이 아닙니다.<br><br>
+    · 사주 해석은 통계적 경향성을 따르며, 개인차가 있을 수 있습니다<br>
+    · 표시된 누수 금액은 일반 통계 추정치이며 보장된 수치가 아닙니다<br>
+    · 본 처방은 자기이해·소비 점검 목적으로 제공됩니다<br>
+    · 의료·법률·재무 자문이 아니며, 실제 결정은 본인 책임입니다<br><br>
+    문의: readmelab.kr@gmail.com
+  </div>
+</div>
+
+<script>
+function toggleDisclaimerNusu() {
+  var body = document.getElementById('disclaimerBodyNusu');
+  var arrow = document.getElementById('disclaimerArrowNusu');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    arrow.classList.add('open');
+  } else {
+    body.style.display = 'none';
+    arrow.classList.remove('open');
+  }
+}
+</script>
+
 </body>
 </html>
