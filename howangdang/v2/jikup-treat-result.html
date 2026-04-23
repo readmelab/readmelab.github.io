@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>직업처방 | 호왕당</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Serif KR',serif;background:#0d0906;color:#e8dcc8;min-height:100vh;overflow-x:hidden;}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 0%,#1a120a 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,#1a120a 0%,transparent 50%);
+  opacity:0.6;
+}
+
+/* 로딩 */
+.loading-screen{position:fixed;inset:0;z-index:9999;background:#0d0906;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s;}
+.loading-screen.hide{opacity:0;pointer-events:none;}
+.loading-circle{width:48px;height:48px;border:2px solid #2a1f14;border-top-color:#c8a96e;border-radius:50%;animation:spin 1.2s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{margin-top:20px;color:#c8a96e;font-size:13px;letter-spacing:6px;}
+
+.container{max-width:480px;margin:0 auto;padding:0 20px 60px;position:relative;z-index:1;}
+.divider{height:1px;margin:36px 0;background:linear-gradient(90deg,transparent 0%,#c8a96e33 30%,#c8a96e55 50%,#c8a96e33 70%,transparent 100%);}
+
+/* 헤더 */
+.header{text-align:center;padding:48px 0 20px;}
+.header-stamp{width:72px;height:72px;margin:0 auto 16px;border:2px solid #c8a96e55;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;background:radial-gradient(circle,#1a120a,#0d0906);}
+.header h1{font-size:24px;color:#c8a96e;font-weight:900;letter-spacing:6px;}
+.header .sub{font-size:12px;color:#8a7a60;margin-top:8px;letter-spacing:4px;}
+.user-badge{display:inline-block;margin-top:16px;padding:6px 20px;border:1px solid #c8a96e33;font-size:13px;color:#c8a96e;background:#c8a96e0a;letter-spacing:2px;}
+
+/* 카드 이미지 영역 */
+.card-hero{margin:30px 0;border:1px solid #c8a96e33;border-radius:12px;overflow:hidden;background:#0a0806;position:relative;}
+.card-hero img{width:100%;display:block;}
+.card-hero-overlay{position:absolute;top:5%;left:0;right:0;text-align:center;padding:0 20px;}
+.card-hero-sub{font-size:12px;color:#c8a96e;letter-spacing:4px;text-shadow:0 2px 8px rgba(0,0,0,.95);margin-bottom:8px;}
+.card-hero-main{font-size:26px;color:#fff;font-weight:900;letter-spacing:4px;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 20px rgba(200,169,110,.4);}
+.card-hero-bottom{position:absolute;bottom:6%;left:0;right:0;text-align:center;}
+.gunghap-badge{display:inline-block;padding:5px 18px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:8px;text-shadow:0 1px 4px rgba(0,0,0,.5);}
+.gunghap-line{font-size:13px;color:#e8d5b0;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.95);}
+.gunghap-line b{color:#c8a96e;font-weight:900;font-size:16px;}
+
+/* 사주 패널 */
+.saju-panel{background:#110e09;border:1px solid #c8a96e22;padding:28px 16px;margin:20px 0;text-align:center;position:relative;border-radius:8px;}
+.saju-label{font-size:11px;color:#8a7a60;letter-spacing:6px;margin-bottom:16px;}
+.pillars{display:flex;justify-content:center;gap:8px;margin-bottom:16px;}
+.pillar{width:68px;padding:14px 0;background:#0d0906;border:1px solid #c8a96e33;text-align:center;border-radius:6px;}
+.pillar .pos{font-size:10px;color:#8a7a60;margin-bottom:8px;letter-spacing:2px;}
+.pillar .hanja{font-size:24px;color:#c8a96e;font-weight:700;line-height:1.2;}
+.pillar .hangul{font-size:10px;color:#aa9a7a;margin-top:6px;}
+
+/* 챕터 */
+.chapter{margin:36px 0;}
+.chapter-title{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.chapter-num{flex:0 0 auto;width:36px;height:36px;border:1px solid #c8a96e55;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#c8a96e;font-weight:900;font-size:14px;background:#0a0806;}
+.chapter-title h2{flex:1;font-size:17px;color:#c8a96e;font-weight:700;letter-spacing:1px;line-height:1.4;}
+.chapter-body{font-size:15px;color:#d8c8a0;line-height:2;letter-spacing:0.5px;background:#0a0806;border-left:2px solid #c8a96e44;padding:18px 18px 18px 22px;border-radius:0 8px 8px 0;white-space:pre-line;}
+
+/* Ch6 액션 리스트 */
+.action-list{list-style:none;padding:0;margin:0;}
+.action-list li{padding:14px 14px 14px 44px;background:#0a0806;border:1px solid #c8a96e22;border-radius:8px;margin-bottom:10px;font-size:14px;color:#d8c8a0;line-height:1.8;position:relative;}
+.action-list li::before{content:counter(action-counter);counter-increment:action-counter;position:absolute;left:14px;top:14px;width:20px;height:20px;background:#c8a96e;color:#0a0806;border-radius:50%;text-align:center;font-size:11px;font-weight:900;line-height:20px;}
+.action-list{counter-reset:action-counter;}
+
+/* 잠재 수입 박스 */
+.income-box{background:#110e09;border:1px solid #c8a96e22;border-radius:8px;padding:20px;margin:20px 0;}
+.income-title{font-size:12px;color:#8a7a60;letter-spacing:3px;margin-bottom:14px;}
+.income-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:#a89878;}
+.income-row-label{width:50px;}
+.income-bar-wrap{flex:1;height:14px;background:#0a0806;border-radius:7px;overflow:hidden;}
+.income-bar{height:100%;border-radius:7px;background:linear-gradient(90deg,#c8a96e,#e8c89a);width:0;transition:width 1.5s;}
+.income-row-val{font-size:11px;color:#c8a96e;white-space:nowrap;}
+
+/* 재물풀이 업셀 */
+.upsell-final{background:linear-gradient(135deg,#8B1A1A 0%,#5a1010 100%);border:1px solid #c8a96e;border-radius:12px;padding:28px 22px;margin:40px 0 20px;text-align:center;}
+.upsell-final-tag{display:inline-block;font-size:11px;color:#c8a96e;background:rgba(200,169,110,.15);padding:5px 14px;border-radius:20px;letter-spacing:2px;margin-bottom:14px;font-weight:700;}
+.upsell-final-title{font-size:20px;color:#fff;font-weight:900;line-height:1.5;margin-bottom:16px;letter-spacing:1px;}
+.upsell-final-desc{font-size:13px;color:#e8d5b0;line-height:1.8;margin-bottom:22px;}
+.upsell-final-cta{display:block;width:100%;padding:18px;background:linear-gradient(135deg,#c8a96e 0%,#a08555 100%);border:none;border-radius:8px;color:#1a0a0a;font-family:'Noto Serif KR',serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .3s;}
+.upsell-final-cta:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(200,169,110,.4);}
+.upsell-final-disc{font-size:10px;color:rgba(255,255,255,.5);margin-top:14px;}
+
+/* 푸터 */
+.footer{text-align:center;margin-top:40px;font-size:11px;color:#5a4a3a;letter-spacing:2px;}
+
+/* 에러 */
+.error-box{background:#1a0a0a;border:1px solid #8B1A1A;color:#e8d5b0;padding:30px;text-align:center;border-radius:8px;margin:60px 0;}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-circle"></div>
+  <div class="loading-text">호왕이 처방을 살피는 중</div>
+</div>
+
+<div class="container" id="container" style="display:none">
+
+  <div class="header">
+    <div class="header-stamp">📜</div>
+    <h1 id="headerTitle">직업처방</h1>
+    <div class="sub">호왕 할머니가 내리는 직업의 처방</div>
+    <div class="user-badge" id="userBadge">—</div>
+  </div>
+
+  <!-- 카드 -->
+  <div class="card-hero">
+    <img id="cardImage" src="" alt="">
+    <div class="card-hero-overlay">
+      <div class="card-hero-sub" id="cardSub"></div>
+      <div class="card-hero-main" id="cardMain"></div>
+    </div>
+    <div class="card-hero-bottom">
+      <div class="gunghap-badge" id="gunghapBadge"></div>
+      <div class="gunghap-line">직업 궁합 <b id="gunghapScore">—</b>%</div>
+    </div>
+  </div>
+
+  <!-- 사주 패널 -->
+  <div class="saju-panel">
+    <div class="saju-label">너의 사주</div>
+    <div class="pillars" id="pillars"></div>
+  </div>
+
+  <!-- 챕터들 -->
+  <div id="chaptersContainer"></div>
+
+  <!-- 잠재 수입 (Ch5 끝나고) -->
+  <div class="income-box" id="incomeBoxCurrent" style="display:none">
+    <div class="income-title">💼 지금 자리에서 (10년)</div>
+    <div id="incomeCurrent"></div>
+  </div>
+  <div class="income-box" id="incomeBoxJikup" style="display:none">
+    <div class="income-title">💎 <span id="incomeJikupName"></span>의 운이 살아났을 때 (10년)</div>
+    <div id="incomeJikup"></div>
+  </div>
+
+  <!-- 최종 업셀 (재물풀이) -->
+  <div class="upsell-final">
+    <div class="upsell-final-tag">⚡ 직업처방의 다음 단계</div>
+    <div class="upsell-final-title">너의 직업의 운명은 알았다<br>이제 너의 돈의 운명을 보아라</div>
+    <div class="upsell-final-desc">직업처방은 너의 자리·시기·실전을 알려주었다.<br>재물풀이는 그 자리에서 들어오는 돈이<br>너에게 어떻게 머무는지를 본다.</div>
+    <a class="upsell-final-cta" id="upsellFinalCta" href="order.html?product=HW2&from=jikupTreat&upgrade=1">재물풀이로 가기 · 19,800원</a>
+    <div class="upsell-final-disc">두 가지가 만날 때 평생의 부의 지도가 완성됩니다</div>
+  </div>
+
+  <div class="footer">호왕당 · 虎王堂 · 사주 기반 참고용</div>
+
+</div>
+
+<div class="container" id="errorContainer" style="display:none">
+  <div class="error-box">
+    <h2 style="color:#c8a96e;margin-bottom:16px">결과를 불러올 수 없습니다</h2>
+    <p style="color:#a89878;line-height:1.8" id="errorMsg">잠시 후 다시 시도해주세요</p>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
+
+// orderId 추출 (URL 파라미터)
+const params = new URLSearchParams(location.search);
+const orderId = params.get('orderId');
+
+if (!orderId) {
+  showError('주문 정보가 없습니다');
+} else {
+  loadResult();
+}
+
+async function loadResult() {
+  try {
+    const res = await fetch(API_BASE + '/api/v2/jikup-treat/' + orderId);
+    const data = await res.json();
+    if (!data.success) {
+      showError(data.error || '결과를 불러올 수 없습니다');
+      return;
+    }
+    render(data.result);
+  } catch (e) {
+    console.error(e);
+    showError('서버 연결 실패');
+  }
+}
+
+function render(r) {
+  const card = r.card;
+  const g = r.gunghap;
+  const u = r.user;
+  const inc = r.incomeRange;
+  const meta = r.sajuMeta;
+
+  // 헤더
+  document.getElementById('headerTitle').textContent = card.main + '의 처방';
+  document.getElementById('userBadge').textContent = (u.name || '회원') + ' · ' + u.age + '세 · ' + (u.gender === 'male' ? '남' : '여');
+
+  // 카드
+  document.getElementById('cardImage').src = card.imageUrl;
+  document.getElementById('cardSub').textContent = card.sub;
+  document.getElementById('cardMain').textContent = card.main;
+
+  const badge = document.getElementById('gunghapBadge');
+  badge.textContent = g.emoji + ' ' + g.label;
+  badge.style.background = g.color;
+  badge.style.color = '#fff';
+  badge.style.border = '1px solid ' + g.accent;
+  document.getElementById('gunghapScore').textContent = g.score;
+
+  // 사주 4기둥
+  const fp = meta.fourPillars;
+  const fph = { year:'년', month:'월', day:'일', hour:'시' };
+  const pillars = document.getElementById('pillars');
+  pillars.innerHTML = '';
+  ['year','month','day','hour'].forEach(k => {
+    const div = document.createElement('div');
+    div.className = 'pillar';
+    div.innerHTML = '<div class="pos">'+fph[k]+'</div><div class="hanja">'+(fp[k]||'')+'</div>';
+    pillars.appendChild(div);
+  });
+
+  // 챕터 렌더 (Ch1~Ch7)
+  const cont = document.getElementById('chaptersContainer');
+  cont.innerHTML = '';
+  r.chapters.forEach((ch, idx) => {
+    const div = document.createElement('div');
+    div.className = 'chapter';
+
+    // Ch6 (액션 리스트)인 경우 다른 렌더
+    if (ch.actions && ch.actions.length > 0) {
+      let listHtml = '<ol class="action-list">';
+      ch.actions.forEach(a => { listHtml += '<li>' + a + '</li>'; });
+      listHtml += '</ol>';
+      div.innerHTML =
+        '<div class="chapter-title">' +
+          '<div class="chapter-num">' + (idx+1) + '</div>' +
+          '<h2>' + ch.title.replace(/^Ch\d+\.\s*/, '') + '</h2>' +
+        '</div>' +
+        listHtml;
+    } else {
+      div.innerHTML =
+        '<div class="chapter-title">' +
+          '<div class="chapter-num">' + (idx+1) + '</div>' +
+          '<h2>' + ch.title.replace(/^Ch\d+\.\s*/, '') + '</h2>' +
+        '</div>' +
+        '<div class="chapter-body">' + ch.body + '</div>';
+    }
+
+    cont.appendChild(div);
+
+    // Ch5 후에 잠재수입 박스 삽입
+    if (idx === 4) {
+      const incomeWrap = document.createElement('div');
+      incomeWrap.innerHTML = document.getElementById('incomeBoxCurrent').outerHTML + document.getElementById('incomeBoxJikup').outerHTML;
+      cont.appendChild(incomeWrap);
+    }
+  });
+
+  // 잠재수입 렌더
+  document.getElementById('incomeJikupName').textContent = card.main;
+  renderIncome('incomeCurrent', inc.currentJob);
+  renderIncome('incomeJikup', inc.jikupDestiny);
+  // 위에서 outerHTML로 복제했으므로 원본 표시
+  document.querySelectorAll('#incomeBoxCurrent, #incomeBoxJikup').forEach(el => el.style.display = 'block');
+
+  // 로딩 종료
+  document.getElementById('loadingScreen').classList.add('hide');
+  document.getElementById('container').style.display = 'block';
+}
+
+function renderIncome(containerId, data) {
+  // 모든 동일 ID 컨테이너에 렌더 (outerHTML 복제 때문에 2개 있을 수 있음)
+  document.querySelectorAll('#' + containerId).forEach(c => {
+    c.innerHTML = '';
+    if (data.isPreparing) {
+      c.innerHTML = '<div style="text-align:center;color:#8a7a60;padding:14px;font-size:13px">지금은 준비기</div>';
+      return;
+    }
+    const periods = [
+      { label: '1년', val: data.year },
+      { label: '3년', val: data.year3 },
+      { label: '5년', val: data.year5 },
+      { label: '10년', val: data.year10 }
+    ];
+    const maxAll = Math.max.apply(null, periods.map(p => p.val.max));
+    periods.forEach((p, idx) => {
+      const pct = Math.round((p.val.max / maxAll) * 100);
+      const row = document.createElement('div');
+      row.className = 'income-row';
+      row.innerHTML =
+        '<div class="income-row-label">' + p.label + '</div>' +
+        '<div class="income-bar-wrap"><div class="income-bar"></div></div>' +
+        '<div class="income-row-val">' + formatWon(p.val.min) + ' ~ ' + formatWon(p.val.max) + '</div>';
+      c.appendChild(row);
+      setTimeout(() => { row.querySelector('.income-bar').style.width = pct + '%'; }, 200 + idx * 150);
+    });
+  });
+}
+
+function formatWon(manwon) {
+  if (manwon >= 10000) {
+    const eok = Math.floor(manwon / 10000);
+    const rest = manwon % 10000;
+    if (rest === 0) return eok + '억';
+    return eok + '억 ' + rest.toLocaleString() + '만';
+  }
+  return manwon.toLocaleString() + '만';
+}
+
+function showError(msg) {
+  document.getElementById('loadingScreen').classList.add('hide');
+  document.getElementById('errorMsg').textContent = msg;
+  document.getElementById('errorContainer').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -114,6 +114,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       <div class="includes">포함: 누수 등급 진단 · 누수 유형 분석 · 누수 금액 예측 · 위험한 달 캘린더 · 맞춤 처방전 · 재물 연결</div>
     </div>
 
+    <div class="product-card" data-code="JIKUP" onclick="selectProduct('JIKUP')">
+      <span class="badge" style="background:#c8a96e;color:#1a0a0a;">신규</span>
+      <h3>직업처방</h3>
+      <div class="price">9,900원</div>
+      <div class="desc">너의 사주가 정한 직업의 운명, 그 운이 언제 열리는지</div>
+      <div class="includes">포함: 5직업군 정체성 · 사주 원리 · 너의 현실 · 막힘의 이유 · 커리어 타이밍 · 실전 5가지 처방 · 재물풀이 연결</div>
+    </div>
     <div class="product-card" data-code="HW3" onclick="selectProduct('HW3')">
       <span class="badge" style="background:#8B4513;">프리미엄</span>
       <h3>본풀이 本解</h3>
@@ -268,13 +275,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 var HW_SERVER = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 var TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
 
-var PRICES = { HW1: 4900, HW2: 19800, HW3: 49700, NUSU: 9900 };
-var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이', NUSU: '누수처방' };
+var PRICES = { HW1: 4900, HW2: 19800, HW3: 49700, NUSU: 9900, JIKUP: 9900 };
+var PRODUCT_NAMES = { HW1: '초견', HW2: '재물풀이', HW3: '본풀이', NUSU: '누수처방', JIKUP: '직업처방' };
 var RESULT_PAGES = {
   HW1: 'chogyeon-result.html',
   HW2: 'jaemul-result.html',
   HW3: 'bonpuli-result.html',
-  NUSU: 'nusu-result.html'
+  NUSU: 'nusu-result.html',
+  JIKUP: 'jikup-treat-result.html'
 };
 
 var selectedProduct = '';
