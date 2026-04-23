@@ -303,7 +303,7 @@ select option{background:#1a1008;color:#e8d5b0}
 // 호왕 직업패 — 클라이언트 JS
 // ═══════════════════════════════════
 
-const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/api/jikup';
+const API_URL = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/jikup';
 
 let selectedCal = 'solar';
 let selectedGender = null;
@@ -430,7 +430,7 @@ async function submitForm() {
     }, 1200);
 
     // 트래킹
-    fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/card', {
+    fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/card', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cardType: 'jikupCard', name: name || '익명' })
@@ -650,7 +650,7 @@ function retry() {
 }
 
 // 트래킹 — 페이지 진입
-fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/visit', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ page: 'jikup-card', referrer: document.referrer, userAgent: navigator.userAgent })
