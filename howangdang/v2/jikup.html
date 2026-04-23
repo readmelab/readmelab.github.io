@@ -413,6 +413,23 @@ select option{background:#1a1008;color:#e8d5b0}
           <label>연락처</label>
           <input type="tel" id="userPhone" placeholder="010-1234-5678" maxlength="13">
         </div>
+        <div class="order-row">
+          <label>결혼 여부</label>
+          <div class="btn-row" id="marriageRow" style="flex-wrap:wrap">
+            <button type="button" class="opt-btn" data-val="미혼" onclick="selectMarriage(this)">미혼</button>
+            <button type="button" class="opt-btn" data-val="연애중" onclick="selectMarriage(this)">연애중</button>
+            <button type="button" class="opt-btn" data-val="기혼" onclick="selectMarriage(this)">기혼</button>
+            <button type="button" class="opt-btn" data-val="이혼·사별" onclick="selectMarriage(this)">이혼·사별</button>
+          </div>
+        </div>
+        <div class="order-row">
+          <label>자녀 여부</label>
+          <div class="btn-row" id="childRow">
+            <button type="button" class="opt-btn" data-val="없음" onclick="selectChild(this)">없음</button>
+            <button type="button" class="opt-btn" data-val="1명" onclick="selectChild(this)">1명</button>
+            <button type="button" class="opt-btn" data-val="2명 이상" onclick="selectChild(this)">2명 이상</button>
+          </div>
+        </div>
         <div class="order-row order-agree">
           <label class="agree-label">
             <input type="checkbox" id="agreePrivacy">
@@ -484,6 +501,8 @@ let selectedGender = null;
 let selectedJob = null;
 let unknownTime = false;
 let lastResult = null;
+let selectedMarriage = '';
+let selectedChild = '';
 
 // ── 드롭다운 초기화 ──
 const yearSel = document.getElementById('birthYear');
@@ -535,6 +554,16 @@ function selectJob(btn) {
   document.querySelectorAll('[data-job]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   selectedJob = btn.dataset.job;
+}
+function selectMarriage(btn) {
+  document.querySelectorAll('#marriageRow .opt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedMarriage = btn.dataset.val;
+}
+function selectChild(btn) {
+  document.querySelectorAll('#childRow .opt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedChild = btn.dataset.val;
 }
 function toggleUnknownTime() {
   unknownTime = !unknownTime;
@@ -945,6 +974,8 @@ function submitOrder() {
   if (!name) return showToast('이름을 입력해주세요');
   if (!phone) return showToast('연락처를 입력해주세요');
   if (!document.getElementById('agreePrivacy').checked) return showToast('개인정보 수집·이용에 동의해주세요');
+  if (!selectedMarriage) return showToast('결혼 여부를 선택해주세요');
+  if (!selectedChild) return showToast('자녀 여부를 선택해주세요');
   if (!document.getElementById('agreeTerm').checked) return showToast('참고 자료 안내에 동의해주세요');
 
   const orderId = 'JIKUP' + Date.now();
@@ -957,7 +988,7 @@ function submitOrder() {
 
   sessionStorage.setItem('hw_jikup_order', JSON.stringify({
     orderId, product: 'JIKUP', price: 9900,
-    name, phone, gender, birthDate, birthTime, calType, currentJob
+    name, phone, gender, birthDate, birthTime, calType, currentJob, marriage: selectedMarriage, hasChild: selectedChild
   }));
 
   try {
@@ -1000,10 +1031,20 @@ function submitOrder() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderId: orderData.orderId, product: orderData.product, amount: orderData.price,
-        name: orderData.name, gender: orderData.gender, birthDate: orderData.birthDate,
-        birthTime: orderData.birthTime, calType: orderData.calType, phone: orderData.phone,
-        currentJob: orderData.currentJob, source: 'v2-jikup-card'
+        orderId: orderData.orderId,
+        product: orderData.product,
+        price: orderData.price,
+        name: orderData.name,
+        phone: orderData.phone,
+        gender: orderData.gender,
+        birthDate: orderData.birthDate,
+        birthTime: orderData.birthTime,
+        calendarType: orderData.calType,
+        job: orderData.currentJob,
+        currentJob: orderData.currentJob,
+        marriage: orderData.marriage,
+        hasChild: orderData.hasChild,
+        source: 'v2-jikup-card'
       })
     })
     .then(r => r.json())
