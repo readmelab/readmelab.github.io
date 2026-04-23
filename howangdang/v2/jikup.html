@@ -294,7 +294,7 @@ select option{background:#1a1008;color:#e8d5b0}
 <div id="screen-result">
   <div class="result-header">
     <div class="result-header-sub">호왕 직업패</div>
-    <div class="result-header-main" id="resultHeaderMain">너의 직업 운명</div>
+    <div class="result-header-main" id="resultHeaderMain">지금 자리와 사주의 결</div>
   </div>
 
   <div id="card-capture">
@@ -339,6 +339,9 @@ select option{background:#1a1008;color:#e8d5b0}
     <!-- ③ 잠재 수입 비교 (애니메이션) -->
     <div class="section">
       <div class="section-title">📊 지금 자리 vs <span id="jikupNameForIncome">사업가</span>의 운</div>
+      <div style="color:#c5975b;font-weight:700;font-size:14px;margin-bottom:10px;text-align:center;line-height:1.6;">
+        지금 자리와 사주의 결이 맞을 때, 벌어지는 차이를 비교해봅니다
+      </div>
       <div class="compare-legend">
         <span class="lg-current">■ 지금 자리</span>
         <span class="lg-gap">■ 운이 열렸을 때 추가</span>
@@ -372,8 +375,8 @@ select option{background:#1a1008;color:#e8d5b0}
     <div class="loss-warning">
       <div class="loss-warning-icon">⚠️</div>
       <div class="loss-warning-text">
-        <strong id="lossAmount">5억</strong> 차이가 난다<br>
-        <span class="ch-jikup-name">사업가</span>의 운을 알고 가는 자와 모르는 자는
+        <strong id="lossAmount">5억</strong>까지 차이가 벌어질 수 있다<br>
+        <span class="ch-jikup-name">사업가</span>의 운을 알고 가는 사람과 모르고 가는 사람은 흐름이 달라질 수 있다
         <div style="font-size:10px;color:#5a4a3a;margin-top:8px;font-weight:400;letter-spacing:0">※ 통계청 KEIS 평균치 기준 추정</div>
       </div>
     </div>
@@ -381,7 +384,10 @@ select option{background:#1a1008;color:#e8d5b0}
     <!-- 메인 가격 + CTA -->
     <div class="cta-price">9,900원</div>
     <div class="cta-price-sub">한 번만 결제 · 평생 소장 · 사주 변하지 않는다</div>
-    <a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="openOrderForm(event)">나만의 직업 처방 받기</a>
+    <div style="text-align:center;color:#8a7355;font-size:12px;margin-top:8px;">
+한 번 확인하면, 이후 선택 기준이 완전히 달라진다
+</div>
+<a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="openOrderForm(event)">내 직업 흐름 이어서 보기</a>
 
   </div>
 
@@ -400,9 +406,9 @@ select option{background:#1a1008;color:#e8d5b0}
   <div id="orderOverlay" class="order-overlay">
     <div class="order-box">
       <div class="order-close" onclick="closeOrderForm()">✕</div>
-      <div class="order-title">직업 처방</div>
+      <div class="order-title">직업 흐름 처방</div>
       <div class="order-price">9,900원</div>
-      <div class="order-desc">너의 사주가 정한 직업의 운명, 그 운이 열리는 시기 — 7챕터 처방전</div>
+      <div class="order-desc">지금 자리와 사주의 결, 그리고 그 흐름이 풀리는 시기를 7챕터로 정리해드립니다</div>
 
       <div class="order-form">
         <div class="order-row">
@@ -668,7 +674,7 @@ function renderResult(d) {
   document.getElementById('gunghapScore').textContent = g.score;
 
   // 헤더
-  document.getElementById('resultHeaderMain').textContent = '너는 ' + card.main + '의 운명';
+  document.getElementById('resultHeaderMain').textContent = '지금 자리와 사주의 결';
 
   // 카피
   document.getElementById('copyTitle').textContent = c.title;
@@ -1078,3 +1084,10 @@ function submitOrder() {
 
 </body>
 </html>
+
+
+
+
+
+
+
