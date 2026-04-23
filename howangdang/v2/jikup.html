@@ -118,6 +118,7 @@ select option{background:#1a1008;color:#e8d5b0}
 .btn-kakao{background:#FEE500;color:#3C1E1E}
 .btn-save{background:rgba(197,151,91,.15);color:#c5975b;border:1px solid #c5975b}
 .btn-copy{background:rgba(255,255,255,.1);color:#e8d5b0;border:1px solid #3a2a1a}
+.btn-insta{background:linear-gradient(135deg,#833AB4,#FD1D1D,#F77737);color:#fff}
 .btn-retry{margin-top:12px;padding:12px 28px;background:transparent;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;letter-spacing:2px}
 .btn-retry:hover{border-color:#c5975b;color:#c5975b}
 
@@ -129,6 +130,9 @@ select option{background:#1a1008;color:#e8d5b0}
 </style>
 </head>
 <body>
+
+<!-- 토스트 -->
+<div id="toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(26,16,8,.95);border:1px solid #c5975b;color:#e8d5b0;padding:12px 24px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.5)"></div>
 
 <!-- ════ 입력 화면 ════ -->
 <div id="screen-input">
@@ -277,6 +281,7 @@ select option{background:#1a1008;color:#e8d5b0}
       <button class="share-btn btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
       <button class="share-btn btn-save" onclick="saveCard()">📥 이미지 저장</button>
       <button class="share-btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>
+      <button class="share-btn btn-insta" onclick="shareInsta()">📸 인스타 스토리</button>
     </div>
     <button class="btn-retry" onclick="retry()">다시 뽑기</button>
   </div>
@@ -544,26 +549,97 @@ function formatWon(manwon) {
   return manwon.toLocaleString() + '만';
 }
 
-// ── 공유 ──
-async function shareKakao() {
-  alert('카카오 공유 준비 중');
+// ── Kakao 초기화 ──
+if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
+  Kakao.init('e10b076b8b32f081e2563cc1b3f6c815');
 }
+const SHARE_URL = 'https://readmelab.co.kr/howangdang/v2/jikup.html';
+
+// ── 토스트 ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2200);
+}
+
+// ── 카카오 공유 ──
+function shareKakao() {
+  if (!lastResult) return;
+  const card = lastResult.card;
+  const g = lastResult.gunghap;
+  Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: '호왕 직업패 — ' + card.main,
+      description: '직업 궁합 ' + g.score + '% · ' + g.label + ' · ' + card.sub,
+      imageUrl: card.imageUrl,
+      link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL }
+    },
+    buttons: [
+      { title: '나도 뽑아보기', link: { mobileWebUrl: SHARE_URL, webUrl: SHARE_URL } }
+    ]
+  });
+}
+
+// ── 이미지 저장 ──
 async function saveCard() {
-  if (typeof html2canvas === 'undefined') return alert('저장 기능 로딩 중');
-  const el = document.getElementById('card-capture');
+  if (typeof html2canvas === 'undefined') return showToast('저장 기능 로딩 중');
   try {
-    const canvas = await html2canvas(el, { backgroundColor: '#000', scale: 2 });
+    const el = document.getElementById('card-capture');
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#000',
+      scale: 2,
+      useCORS: false,
+      allowTaint: true
+    });
     const link = document.createElement('a');
-    link.download = '호왕직업패_' + (lastResult.card.main || 'card') + '.png';
-    link.href = canvas.toDataURL();
+    const title = lastResult ? lastResult.card.main.replace(/\s/g, '') : 'card';
+    link.download = '호왕직업패_' + title + '.png';
+    link.href = canvas.toDataURL('image/png');
     link.click();
+    showToast('이미지가 저장되었습니다');
   } catch (e) {
-    console.error(e);
-    alert('저장 실패');
+    console.error('saveCard error:', e);
+    showToast('이미지 저장 실패');
   }
 }
+
+// ── 링크 복사 ──
 function copyLink() {
-  navigator.clipboard.writeText(location.href).then(() => alert('링크가 복사되었습니다'));
+  navigator.clipboard.writeText(SHARE_URL).then(() => {
+    showToast('링크가 복사되었습니다');
+  }).catch(() => {
+    showToast('링크 복사 실패');
+  });
+}
+
+// ── 인스타 공유 ──
+async function shareInsta() {
+  try {
+    const el = document.getElementById('card-capture');
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#000',
+      scale: 2,
+      useCORS: false,
+      allowTaint: true
+    });
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const title = lastResult ? lastResult.card.main.replace(/\s/g, '') : 'card';
+    const file = new File([blob], '호왕직업패_' + title + '.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: '호왕 직업패', text: '내 직업 운명을 확인했어! ' + SHARE_URL });
+    } else {
+      const link = document.createElement('a');
+      link.download = '호왕직업패_' + title + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('이미지를 저장했습니다. 인스타 스토리에 올려주세요');
+    }
+  } catch (e) {
+    console.error('shareInsta error:', e);
+    showToast('이미지 저장 실패');
+  }
 }
 function retry() {
   document.getElementById('screen-input').style.display = 'flex';
