@@ -101,15 +101,27 @@ select option{background:#1a1008;color:#e8d5b0}
 .income-section-jikup .income-bar{background:linear-gradient(90deg,#c8a96e,#f0d090)}
 .income-divider{font-size:11px;color:#5a4a3a;letter-spacing:2px;margin:14px 0;text-align:center}
 
-.blind-section{background:#0a0806;border:1px solid #2a1a0a;border-radius:12px;padding:22px 18px;margin-top:8px}
-.blind-title{font-size:14px;color:#c5975b;font-weight:700;letter-spacing:1px;margin-bottom:16px;line-height:1.5}
-.blind-preview{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-.blind-line{font-size:13px;color:#a89878;line-height:1.7;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:6px;border-left:2px solid #c5975b33;filter:blur(0.5px);position:relative}
-.blind-lock-hint{font-size:11px;color:#8a7a5a;text-align:center;letter-spacing:1px;font-style:italic;padding-top:10px;border-top:1px dashed #2a1a0a}
-.main-cta-btn{display:block;width:100%;padding:18px 0;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:10px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:17px;font-weight:900;text-align:center;text-decoration:none;letter-spacing:2px;transition:all .3s;margin-top:16px;box-shadow:0 0 20px rgba(139,26,26,.3)}
+.treat-preview{background:#0a0806;border:1px solid #2a1a0a;border-radius:12px;padding:22px 18px;margin-top:8px}
+.treat-preview-title{font-size:14px;color:#c5975b;font-weight:700;letter-spacing:2px;margin-bottom:18px;text-align:center}
+.treat-chapters{display:flex;flex-direction:column;gap:0}
+.treat-ch{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid #1a1208}
+.treat-ch:last-child{border-bottom:none}
+.treat-ch-num{flex:0 0 auto;font-size:11px;color:#8a7a5a;letter-spacing:1px;padding-top:2px;font-weight:700}
+.treat-ch-info{flex:1}
+.treat-ch-name{font-size:14px;color:#c5975b;font-weight:700;margin-bottom:4px;letter-spacing:0.5px}
+.treat-ch-desc{font-size:12px;color:#8a7a5a;line-height:1.5}
+.treat-lock-hint{font-size:12px;color:#c5975b;text-align:center;letter-spacing:2px;padding-top:14px;margin-top:8px;border-top:1px dashed #2a1a0a;font-weight:700}
+
+.loss-warning{background:linear-gradient(135deg,rgba(139,26,26,.15),rgba(139,26,26,.08));border:1px solid #8B1A1A;border-radius:10px;padding:18px;margin-top:18px;display:flex;align-items:center;gap:14px}
+.loss-warning-icon{font-size:26px;flex:0 0 auto}
+.loss-warning-text{flex:1;font-size:14px;color:#e8d5b0;line-height:1.6}
+.loss-warning-text strong{color:#c44a4a;font-size:18px;font-weight:900}
+
+.cta-price{text-align:center;font-size:32px;color:#c5975b;font-weight:900;letter-spacing:2px;margin-top:24px;text-shadow:0 0 20px rgba(197,151,91,.3)}
+.cta-price-sub{text-align:center;font-size:11px;color:#8a7a5a;margin-top:6px;margin-bottom:16px;letter-spacing:1px}
+.main-cta-btn{display:block;width:100%;padding:20px 0;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:10px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:900;text-align:center;text-decoration:none;letter-spacing:3px;transition:all .3s;box-shadow:0 0 30px rgba(139,26,26,.4)}
 .main-cta-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
-.cta-sub{text-align:center;font-size:11px;color:#8a7a5a;margin-top:10px;letter-spacing:2px}
-.upsell-hero{display:none}
+.upsell-hero,.cta-sub{display:none}
 .upsell-hero-tag{display:inline-block;font-size:11px;color:#c5975b;background:rgba(197,151,91,.15);padding:5px 12px;border-radius:20px;letter-spacing:2px;margin-bottom:14px;font-weight:700}
 .upsell-hero-title{font-size:20px;color:#fff;font-weight:900;line-height:1.5;margin-bottom:12px;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
 .upsell-hero-sub{font-size:13px;color:#e8d5b0;line-height:1.7;letter-spacing:0.5px}
@@ -279,21 +291,34 @@ select option{background:#1a1008;color:#e8d5b0}
       <div class="section-body" id="destinyBody"></div>
     </div>
 
-    <!-- ⑤ 블라인드 영역 (직업처방 미리보기 잠금) -->
-    <div class="blind-section">
-      <div class="blind-title">🔒 <span id="blindJikupName">사업가</span>의 운이 열리는 시기</div>
-      <div class="blind-preview">
-        <div class="blind-line">너의 <span id="blindJikupName2">사업가</span> 운이 열리는 첫 폭발기는 ████ 시작…</div>
-        <div class="blind-line">두 번째 도약 시기는 ████ 사이…</div>
-        <div class="blind-line">반드시 피해야 할 시기는 ████…</div>
-        <div class="blind-line">지금 자리에서 운을 살리는 행동 5가지: ████████████</div>
+    <!-- ⑤ 7챕터 미리보기 (누수패 패턴) -->
+    <div class="treat-preview">
+      <div class="treat-preview-title">📜 직업처방 7챕터 미리보기</div>
+      <div class="treat-chapters">
+        <div class="treat-ch"><span class="treat-ch-num">Ch.1</span><div class="treat-ch-info"><div class="treat-ch-name"><span class="ch-jikup-name">사업가</span>의 정체성</div><div class="treat-ch-desc">너의 사주가 정한 직업의 본성</div></div></div>
+        <div class="treat-ch"><span class="treat-ch-num">Ch.2</span><div class="treat-ch-info"><div class="treat-ch-name">사주가 너를 이렇게 본다</div><div class="treat-ch-desc">십성·일간·강약으로 본 적성</div></div></div>
+        <div class="treat-ch"><span class="treat-ch-num">Ch.3</span><div class="treat-ch-info"><div class="treat-ch-name">너의 현실</div><div class="treat-ch-desc">지금 자리·성별·나이별 분석</div></div></div>
+        <div class="treat-ch"><span class="treat-ch-num">Ch.4</span><div class="treat-ch-info"><div class="treat-ch-name">막힘의 이유</div><div class="treat-ch-desc">왜 답답한지, 무엇이 신호인지</div></div></div>
+        <div class="treat-ch"><span class="treat-ch-num">Ch.5</span><div class="treat-ch-info"><div class="treat-ch-name"><span class="ch-jikup-name">사업가</span>의 운이 열리는 시기</div><div class="treat-ch-desc">초년·중년·장년·말년 4단계 타이밍</div></div></div>
+        <div class="treat-ch"><span class="treat-ch-num">Ch.6</span><div class="treat-ch-info"><div class="treat-ch-name">실전 5가지 처방</div><div class="treat-ch-desc">지금 자리에서 운 살리는 법</div></div></div>
+        <div class="treat-ch"><span class="treat-ch-num">Ch.7</span><div class="treat-ch-info"><div class="treat-ch-name">재물풀이 연결</div><div class="treat-ch-desc">너의 직업과 돈의 운명 연결</div></div></div>
       </div>
-      <div class="blind-lock-hint">✨ 직업처방에서 너의 사주에 맞춰 풀어준다</div>
+      <div class="treat-lock-hint">🔒 직업처방에서 확인하세요</div>
     </div>
 
-    <!-- 메인 CTA -->
-    <a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="goToOrder(event)">지금 운 열리는 시기 보기</a>
-    <div class="cta-sub">직업처방 · 9,900원 · 평생 소장</div>
+    <!-- 기회비용 경고 -->
+    <div class="loss-warning">
+      <div class="loss-warning-icon">⚠️</div>
+      <div class="loss-warning-text">
+        <span class="ch-jikup-name">사업가</span>의 운을 모르고 가면<br>
+        <strong id="lossAmount">13억</strong>의 잠재가 흩어진다
+      </div>
+    </div>
+
+    <!-- 메인 가격 + CTA -->
+    <div class="cta-price">9,900원</div>
+    <div class="cta-price-sub">한 번만 결제 · 평생 소장 · 사주 변하지 않는다</div>
+    <a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="goToOrder(event)">나만의 직업 처방 받기</a>
 
   </div>
 
@@ -525,9 +550,13 @@ function renderResult(d) {
     '<div style="font-size:13px;color:#a89878;margin-bottom:10px;font-style:italic">' + card.essence + '</div>' +
     '<div>' + card.destiny + '</div>';
 
-  // 블라인드 영역에 직업명
-  document.getElementById('blindJikupName').textContent = card.main;
-  document.getElementById('blindJikupName2').textContent = card.main;
+  // 7챕터 미리보기에 직업명 채우기
+  document.querySelectorAll('.ch-jikup-name').forEach(el => { el.textContent = card.main; });
+  // 차액 계산 (10년 기준)
+  const diffMin = (inc.jikupDestiny.year10.min - inc.currentJob.year10.min);
+  const diffMax = (inc.jikupDestiny.year10.max - inc.currentJob.year10.max);
+  const diff = Math.max(diffMin, diffMax, 0);
+  document.getElementById('lossAmount').textContent = formatWon(diff);
 
   // 결과 화면 표시
   const r = document.getElementById('screen-result');
