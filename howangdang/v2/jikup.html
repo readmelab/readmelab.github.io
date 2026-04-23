@@ -9,6 +9,7 @@
 <meta property="og:image" content="https://audio.readmelab.co.kr/howang/jikup/geosang.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<script src="https://js.tosspayments.com/v2/standard"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700;900&display=swap');
 
@@ -122,6 +123,33 @@ select option{background:#1a1008;color:#e8d5b0}
 .main-cta-btn{display:block;width:100%;padding:20px 0;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:10px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:18px;font-weight:900;text-align:center;text-decoration:none;letter-spacing:3px;transition:all .3s;box-shadow:0 0 30px rgba(139,26,26,.4)}
 .main-cta-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
 .upsell-hero,.cta-sub{display:none}
+
+/* ════ 결제 폼 오버레이 ════ */
+.order-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);z-index:9998;overflow-y:auto;padding:40px 20px;animation:fadeIn .3s}
+.order-overlay.show{display:flex;align-items:flex-start;justify-content:center}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.order-box{width:100%;max-width:380px;background:linear-gradient(180deg,#1a1208 0%,#0a0806 100%);border:1px solid #c5975b;border-radius:14px;padding:30px 24px;position:relative;box-shadow:0 0 50px rgba(197,151,91,.2)}
+.order-close{position:absolute;top:14px;right:18px;font-size:22px;color:#8a7a5a;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .3s}
+.order-close:hover{color:#c5975b;background:rgba(197,151,91,.1)}
+
+.order-title{font-size:22px;color:#c5975b;font-weight:900;text-align:center;letter-spacing:3px;margin-bottom:10px}
+.order-price{font-size:28px;color:#fff;font-weight:900;text-align:center;letter-spacing:1px;margin-bottom:14px;text-shadow:0 0 20px rgba(197,151,91,.3)}
+.order-desc{font-size:12px;color:#8a7a5a;text-align:center;line-height:1.6;margin-bottom:24px;letter-spacing:0.5px;padding-bottom:18px;border-bottom:1px dashed #2a1a0a}
+
+.order-form{display:flex;flex-direction:column;gap:14px}
+.order-row{display:flex;flex-direction:column;gap:6px}
+.order-row label{font-size:12px;color:#8a7a5a;letter-spacing:1px}
+.order-row input[type=text],.order-row input[type=tel]{padding:13px 14px;background:rgba(0,0,0,.6);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;transition:border .3s}
+.order-row input[type=text]:focus,.order-row input[type=tel]:focus{border-color:#c5975b}
+
+.order-agree{margin-top:6px}
+.agree-label{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#a89878;line-height:1.5;cursor:pointer}
+.agree-label input[type=checkbox]{margin-top:2px;flex:0 0 auto;cursor:pointer;width:16px;height:16px;accent-color:#c5975b}
+
+.pay-btn{margin-top:8px;padding:18px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:10px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:2px;transition:all .3s;box-shadow:0 0 25px rgba(139,26,26,.3)}
+.pay-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .upsell-hero-tag{display:inline-block;font-size:11px;color:#c5975b;background:rgba(197,151,91,.15);padding:5px 12px;border-radius:20px;letter-spacing:2px;margin-bottom:14px;font-weight:700}
 .upsell-hero-title{font-size:20px;color:#fff;font-weight:900;line-height:1.5;margin-bottom:12px;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
 .upsell-hero-sub{font-size:13px;color:#e8d5b0;line-height:1.7;letter-spacing:0.5px}
@@ -318,7 +346,7 @@ select option{background:#1a1008;color:#e8d5b0}
     <!-- 메인 가격 + CTA -->
     <div class="cta-price">9,900원</div>
     <div class="cta-price-sub">한 번만 결제 · 평생 소장 · 사주 변하지 않는다</div>
-    <a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="goToOrder(event)">나만의 직업 처방 받기</a>
+    <a class="main-cta-btn" id="mainCtaBtn" href="#" onclick="openOrderForm(event)">나만의 직업 처방 받기</a>
 
   </div>
 
@@ -331,6 +359,34 @@ select option{background:#1a1008;color:#e8d5b0}
       <button class="share-btn btn-insta" onclick="shareInsta()">📸 인스타 스토리</button>
     </div>
     <button class="btn-retry" onclick="retry()">다시 뽑기</button>
+  </div>
+
+  <!-- ════ 결제 폼 오버레이 ════ -->
+  <div id="orderOverlay" class="order-overlay">
+    <div class="order-box">
+      <div class="order-close" onclick="closeOrderForm()">✕</div>
+      <div class="order-title">직업 처방</div>
+      <div class="order-price">9,900원</div>
+      <div class="order-desc">너의 사주가 정한 직업의 운명, 그 운이 열리는 시기 — 7챕터 처방전</div>
+
+      <div class="order-form">
+        <div class="order-row">
+          <label>이름</label>
+          <input type="text" id="userName" placeholder="홍길동" maxlength="20">
+        </div>
+        <div class="order-row">
+          <label>연락처</label>
+          <input type="tel" id="userPhone" placeholder="010-1234-5678" maxlength="13">
+        </div>
+        <div class="order-row order-agree">
+          <label class="agree-label">
+            <input type="checkbox" id="agreePrivacy">
+            <span>개인정보 수집·이용 동의 (이름·연락처·생년월일·직업)</span>
+          </label>
+        </div>
+        <button class="pay-btn" id="payBtn" onclick="submitOrder()">직업 처방 결제하기 (9,900원)</button>
+      </div>
+    </div>
   </div>
 
   <!-- 다른 무료 카드 -->
@@ -727,6 +783,114 @@ fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/visi
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ page: 'jikup-card', referrer: document.referrer, userAgent: navigator.userAgent })
 }).catch(() => {});
+
+// ════ 결제 폼 ════
+const TOSS_CLIENT_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+const HW_SERVER = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
+
+function openOrderForm(e) {
+  if (e) e.preventDefault();
+  if (!lastResult) return;
+  const overlay = document.getElementById('orderOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => { overlay.scrollIntoView({behavior:'smooth', block:'start'}); }, 50);
+}
+
+function closeOrderForm() {
+  document.getElementById('orderOverlay').classList.remove('show');
+}
+
+function submitOrder() {
+  const name = document.getElementById('userName').value.trim();
+  const phone = document.getElementById('userPhone').value.trim();
+
+  if (!name) return showToast('이름을 입력해주세요');
+  if (!phone) return showToast('연락처를 입력해주세요');
+  if (!document.getElementById('agreePrivacy').checked) return showToast('개인정보 수집·이용에 동의해주세요');
+
+  const orderId = 'JIKUP' + Date.now();
+  const gender = (document.querySelector('[data-gender].active') || {dataset:{gender:'male'}}).dataset.gender;
+  const calType = (document.querySelector('[data-cal].active') || {dataset:{cal:'solar'}}).dataset.cal;
+  const currentJob = (document.querySelector('[data-job].active') || {dataset:{job:'직장인'}}).dataset.job;
+
+  const birthDate = document.getElementById('birthYear').value + '년 ' + document.getElementById('birthMonth').value + '월 ' + document.getElementById('birthDay').value + '일';
+  const birthTime = unknownTime ? '모름' : (document.getElementById('birthHour').value + '시 0분');
+
+  sessionStorage.setItem('hw_jikup_order', JSON.stringify({
+    orderId, product: 'JIKUP', price: 9900,
+    name, phone, gender, birthDate, birthTime, calType, currentJob
+  }));
+
+  try {
+    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    const payment = tossPayments.payment({customerKey:'ANONYMOUS'});
+    payment.requestPayment({
+      method: 'CARD',
+      amount: { currency: 'KRW', value: 9900 },
+      orderId: orderId,
+      orderName: '호왕당 직업처방',
+      customerName: name,
+      customerMobilePhone: phone.replace(/[^0-9]/g, ''),
+      successUrl: window.location.origin + window.location.pathname + '?payment=success',
+      failUrl: window.location.origin + window.location.pathname + '?payment=fail',
+      card: { flowMode: 'DEFAULT' }
+    }).catch(e => {
+      if (e.code === 'USER_CANCEL') showToast('결제가 취소되었습니다');
+      else { console.error(e); showToast('결제 중 오류: ' + (e.message || '')); }
+    });
+  } catch (e) {
+    console.error(e);
+    showToast('결제 모듈 로드 실패. 새로고침 후 다시 시도해주세요.');
+  }
+}
+
+// ════ 결제 콜백 ════
+(function handlePaymentCallback() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('payment') === 'success') {
+    const paymentKey = urlParams.get('paymentKey');
+    const pOrderId = urlParams.get('orderId');
+    const amount = urlParams.get('amount');
+
+    const stored = sessionStorage.getItem('hw_jikup_order');
+    if (!stored) { showToast('결제 정보를 찾을 수 없습니다'); return; }
+    const orderData = JSON.parse(stored);
+    if (orderData.orderId !== pOrderId) { showToast('결제 정보가 일치하지 않습니다'); return; }
+
+    fetch(HW_SERVER + '/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderData.orderId, product: orderData.product, amount: orderData.price,
+        name: orderData.name, gender: orderData.gender, birthDate: orderData.birthDate,
+        birthTime: orderData.birthTime, calType: orderData.calType, phone: orderData.phone,
+        currentJob: orderData.currentJob, source: 'v2-jikup-card'
+      })
+    })
+    .then(r => r.json())
+    .then(orderRes => {
+      if (!orderRes.success) throw new Error('주문 저장 실패');
+      return fetch(HW_SERVER + '/payment/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentKey, orderId: pOrderId, amount: Number(amount) })
+      });
+    })
+    .then(r => r.json())
+    .then(confirmRes => {
+      if (!confirmRes.success) throw new Error(confirmRes.error || '결제 승인 실패');
+      sessionStorage.removeItem('hw_jikup_order');
+      location.href = 'jikup-treat-result.html?orderId=' + pOrderId;
+    })
+    .catch(err => {
+      console.error(err);
+      showToast('결제 처리 중 오류: ' + err.message);
+    });
+  } else if (urlParams.get('payment') === 'fail') {
+    showToast('결제가 취소되었거나 실패했습니다');
+  }
+})();
+
 </script>
 
 </body>
