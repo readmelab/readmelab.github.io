@@ -1,0 +1,585 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>호왕 직업패 — 사주가 정한 너의 직업 운명</title>
+<meta property="og:title" content="호왕 직업패 — 사주가 정한 너의 직업 운명">
+<meta property="og:description" content="네 사주의 직업 그릇이 무엇인지, 지금 자리와 얼마나 맞는지 보아라.">
+<meta property="og:image" content="https://audio.readmelab.co.kr/howang/jikup/geosang.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:100vh;overflow-x:hidden}
+
+/* ── 입력 화면 ── */
+#screen-input{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at center,#1a1008 0%,#000 70%);position:relative}
+#screen-input::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('https://audio.readmelab.co.kr/howang/jikup/geosang.png') center/cover no-repeat;opacity:.08;z-index:0;filter:blur(3px)}
+#screen-input>*{position:relative;z-index:1}
+
+.logo-text{font-size:38px;font-weight:900;color:#c5975b;text-shadow:0 0 20px rgba(197,151,91,.5);letter-spacing:6px;margin-bottom:8px;text-align:center}
+.logo-sub{font-size:13px;color:#8a7a5a;margin-bottom:32px;letter-spacing:2px;text-align:center;line-height:1.6}
+
+.form-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px}
+.form-row{display:flex;gap:8px}
+
+label{font-size:12px;color:#8a7a5a;margin-bottom:4px;display:block;letter-spacing:1px}
+
+input[type=text],select{flex:1;padding:13px 4px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;outline:none;-webkit-appearance:none;text-align:center}
+input[type=text]:focus,select:focus{border-color:#c5975b}
+select option{background:#1a1008;color:#e8d5b0}
+
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.opt-btn{flex:1;min-width:0;padding:12px 4px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s;white-space:nowrap}
+.opt-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.1)}
+
+.job-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.job-btn{padding:12px 4px;background:rgba(26,16,8,.9);border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .3s}
+.job-btn.active{border-color:#c5975b;color:#c5975b;background:rgba(197,151,91,.15)}
+
+.submit-btn{margin-top:16px;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:4px;transition:all .3s}
+.submit-btn:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── 로딩 화면 ── */
+#screen-loading{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
+.loading-img-wrap{width:90%;max-width:380px;position:relative;border-radius:8px;overflow:hidden}
+.loading-img{width:100%;display:block;opacity:.7;transition:transform 1.2s ease,opacity .8s ease}
+.loading-img.zoom{transform:scale(1.6);opacity:0}
+.loading-text{margin-top:24px;font-size:15px;color:#c5975b;text-shadow:0 0 10px rgba(197,151,91,.6);letter-spacing:2px;opacity:0;transition:opacity .5s}
+.loading-text.show{opacity:1}
+
+/* ── 결과 화면 ── */
+#screen-result{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:24px 16px 60px;background:radial-gradient(ellipse at center top,#1a1008 0%,#000 60%);opacity:0;transition:opacity 1s ease}
+#screen-result.show{opacity:1}
+
+.result-header{text-align:center;margin-bottom:20px}
+.result-header-sub{font-size:12px;color:#8a7a5a;letter-spacing:3px;margin-bottom:6px}
+.result-header-main{font-size:24px;color:#c5975b;font-weight:900;letter-spacing:4px}
+
+#card-capture{width:100%;max-width:380px;background:#000;border:1px solid #3a2a1a;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(197,151,91,.15);position:relative}
+
+.card-image-wrap{width:100%;position:relative;overflow:hidden}
+.card-image-wrap img{width:100%;height:auto;display:block}
+
+.card-overlay-top{position:absolute;top:6%;left:0;right:0;text-align:center;padding:0 20px}
+.card-overlay-top-sub{font-size:11px;color:#c5975b;letter-spacing:3px;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.card-overlay-top-main{font-size:24px;color:#fff;font-weight:900;letter-spacing:3px;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 20px rgba(197,151,91,.4)}
+
+.card-overlay-bottom{position:absolute;bottom:7%;left:0;right:0;text-align:center;padding:0 20px}
+.gunghap-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:8px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.gunghap-score-line{font-size:13px;color:#e8d5b0;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.95)}
+.gunghap-score-line b{color:#c5975b;font-weight:900;font-size:16px}
+
+.card-brand{position:absolute;bottom:8px;right:14px;font-size:9px;color:rgba(197,151,91,0.5);letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
+
+/* ── 결과 본문 (카드 밖) ── */
+.result-body{width:100%;max-width:380px;margin-top:24px;display:flex;flex-direction:column;gap:18px}
+
+.section{background:rgba(26,16,8,.6);border:1px solid #2a1a0a;border-radius:12px;padding:18px}
+.section-title{font-size:13px;color:#c5975b;letter-spacing:2px;margin-bottom:12px;font-weight:700}
+.section-body{font-size:14px;color:#e8d5b0;line-height:1.8}
+
+.copy-title{font-size:18px;color:#c5975b;font-weight:900;letter-spacing:1px;margin-bottom:10px;line-height:1.4}
+.copy-body{font-size:14px;color:#d8c8a0;line-height:1.85}
+
+.job-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.job-cell{background:rgba(0,0,0,.4);padding:10px;border-radius:8px;text-align:center;border:1px solid #2a1a0a}
+.job-cell-label{font-size:11px;color:#8a7a5a;margin-bottom:4px;letter-spacing:1px}
+.job-cell-val{font-size:14px;color:#c5975b;font-weight:700}
+
+.income-box{margin-top:6px}
+.income-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:#a89878}
+.income-row-label{width:60px}
+.income-bar-wrap{flex:1;height:14px;background:#1a1208;border-radius:7px;overflow:hidden;position:relative}
+.income-bar{height:100%;border-radius:7px;background:linear-gradient(90deg,#c5975b,#e8c89a);transition:width 1.5s ease;width:0}
+.income-row-val{width:auto;text-align:right;font-size:11px;color:#c5975b;white-space:nowrap}
+
+.income-section-jikup .income-bar{background:linear-gradient(90deg,#c8a96e,#f0d090)}
+.income-divider{font-size:11px;color:#5a4a3a;letter-spacing:2px;margin:14px 0;text-align:center}
+
+.upsell-box{background:linear-gradient(180deg,rgba(139,26,26,.15),rgba(139,26,26,.05));border:1px solid #8B1A1A;border-radius:12px;padding:22px;margin-top:8px}
+.upsell-title{font-size:15px;color:#e8c89a;font-weight:700;margin-bottom:14px;letter-spacing:1px;line-height:1.5}
+.upsell-list{list-style:none;margin-bottom:18px}
+.upsell-list li{font-size:13px;color:#d8c8a0;padding:6px 0 6px 18px;position:relative;line-height:1.6}
+.upsell-list li::before{content:'·';position:absolute;left:6px;color:#c5975b;font-weight:900;font-size:18px;line-height:1}
+.upsell-closer{font-size:13px;color:#a89878;font-style:italic;text-align:center;margin-bottom:16px;line-height:1.6}
+.upsell-cta{display:block;width:100%;padding:16px;background:linear-gradient(135deg,#8B1A1A,#5a1010);border:1px solid #c5975b;border-radius:8px;color:#e8d5b0;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .3s}
+.upsell-cta:hover{background:linear-gradient(135deg,#a52020,#7a1a1a);transform:scale(1.02)}
+.upsell-disc{font-size:10px;color:#5a4a3a;text-align:center;margin-top:10px;line-height:1.5}
+
+.share-section{margin-top:24px;width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.share-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.share-btn{display:flex;align-items:center;gap:5px;padding:11px 16px;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .3s}
+.share-btn:hover{transform:scale(1.03)}
+.btn-kakao{background:#FEE500;color:#3C1E1E}
+.btn-save{background:rgba(197,151,91,.15);color:#c5975b;border:1px solid #c5975b}
+.btn-copy{background:rgba(255,255,255,.1);color:#e8d5b0;border:1px solid #3a2a1a}
+.btn-retry{margin-top:12px;padding:12px 28px;background:transparent;border:1px solid #3a2a1a;border-radius:8px;color:#8a7a5a;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;letter-spacing:2px}
+.btn-retry:hover{border-color:#c5975b;color:#c5975b}
+
+.cross-funnel{margin-top:30px;width:100%;max-width:380px;text-align:center}
+.cross-title{font-size:12px;color:#8a7a5a;margin-bottom:14px;letter-spacing:2px}
+.cross-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cross-btn{padding:10px 16px;background:rgba(26,16,8,.6);border:1px solid #3a2a1a;border-radius:8px;color:#a89878;font-family:'Noto Serif KR',serif;font-size:12px;cursor:pointer;text-decoration:none;transition:all .3s}
+.cross-btn:hover{border-color:#c5975b;color:#c5975b}
+</style>
+</head>
+<body>
+
+<!-- ════ 입력 화면 ════ -->
+<div id="screen-input">
+  <div class="logo-text">호왕 직업패</div>
+  <div class="logo-sub">사주가 정한 너의 직업 운명을 보아라</div>
+
+  <div class="form-box">
+    <div>
+      <label>생년월일</label>
+      <div class="form-row">
+        <select id="birthYear"><option value="" disabled selected>년</option></select>
+        <select id="birthMonth"><option value="" disabled selected>월</option></select>
+        <select id="birthDay"><option value="" disabled selected>일</option></select>
+      </div>
+    </div>
+
+    <div>
+      <label>태어난 시간</label>
+      <div class="form-row">
+        <select id="birthHour"><option value="" disabled selected>시</option></select>
+        <button class="opt-btn" id="unknownTimeBtn" onclick="toggleUnknownTime()" style="flex:0 0 auto;padding:12px 14px;font-size:12px">모름</button>
+      </div>
+    </div>
+
+    <div>
+      <label>달력</label>
+      <div class="btn-row">
+        <button class="opt-btn active" data-cal="solar" onclick="selectCal(this)">양력</button>
+        <button class="opt-btn" data-cal="lunar" onclick="selectCal(this)">음력</button>
+      </div>
+    </div>
+
+    <div>
+      <label>성별</label>
+      <div class="btn-row">
+        <button class="opt-btn" data-gender="male" onclick="selectGender(this)">남</button>
+        <button class="opt-btn" data-gender="female" onclick="selectGender(this)">여</button>
+      </div>
+    </div>
+
+    <div>
+      <label>지금 하고 있는 일</label>
+      <div class="job-grid">
+        <button class="job-btn" data-job="직장인" onclick="selectJob(this)">직장인</button>
+        <button class="job-btn" data-job="기술직" onclick="selectJob(this)">기술직</button>
+        <button class="job-btn" data-job="자영업" onclick="selectJob(this)">자영업</button>
+        <button class="job-btn" data-job="프리랜서" onclick="selectJob(this)">프리랜서</button>
+        <button class="job-btn" data-job="공무원" onclick="selectJob(this)">공무원</button>
+        <button class="job-btn" data-job="주부" onclick="selectJob(this)">주부</button>
+        <button class="job-btn" data-job="구직중" onclick="selectJob(this)">구직중</button>
+        <button class="job-btn" data-job="학생" onclick="selectJob(this)">학생</button>
+        <button class="job-btn" data-job="은퇴" onclick="selectJob(this)">은퇴</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()">직업패 받기</button>
+  </div>
+</div>
+
+<!-- ════ 로딩 화면 ════ -->
+<div id="screen-loading">
+  <div class="loading-img-wrap">
+    <img src="https://audio.readmelab.co.kr/howang/jikup/geosang.png" class="loading-img" id="loadingImg">
+  </div>
+  <div class="loading-text" id="loadingText">호왕이 네 직업 그릇을 살피는 중…</div>
+</div>
+
+<!-- ════ 결과 화면 ════ -->
+<div id="screen-result">
+  <div class="result-header">
+    <div class="result-header-sub">호왕 직업패</div>
+    <div class="result-header-main" id="resultHeaderMain">너의 직업 운명</div>
+  </div>
+
+  <div id="card-capture">
+    <div class="card-image-wrap">
+      <img id="cardImage" src="" alt="">
+      <div class="card-overlay-top">
+        <div class="card-overlay-top-sub" id="cardSub">사업가의 운명</div>
+        <div class="card-overlay-top-main" id="cardMain">사업가</div>
+      </div>
+      <div class="card-overlay-bottom">
+        <div class="gunghap-badge" id="gunghapBadge">천직</div>
+        <div class="gunghap-score-line">직업 궁합 <b id="gunghapScore">95</b>%</div>
+      </div>
+      <div class="card-brand">호왕당 · 虎王堂</div>
+    </div>
+  </div>
+
+  <div class="result-body">
+
+    <!-- ① 정체성 -->
+    <div class="section">
+      <div class="section-title">너의 직업 운명</div>
+      <div class="copy-title" id="copyTitle">타고난 자리에 있다</div>
+      <div class="copy-body" id="copyBody"></div>
+    </div>
+
+    <!-- ② 직업 궁합 -->
+    <div class="section">
+      <div class="section-title">지금 자리 × 사주 자리</div>
+      <div class="job-compare">
+        <div class="job-cell">
+          <div class="job-cell-label">지금 자리</div>
+          <div class="job-cell-val" id="cellCurrent">직장인</div>
+        </div>
+        <div class="job-cell">
+          <div class="job-cell-label">사주 자리</div>
+          <div class="job-cell-val" id="cellJikup">사업가</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 잠재 수입 범위 -->
+    <div class="section income-section-current">
+      <div class="section-title">💼 지금 자리에서 갈 수 있는 길</div>
+      <div class="income-box" id="incomeCurrent"></div>
+    </div>
+
+    <div class="section income-section-jikup">
+      <div class="section-title">💎 <span id="jikupNameForIncome">사업가</span>의 운이 살아났을 때</div>
+      <div class="income-box" id="incomeJikup"></div>
+      <div class="income-divider">─── 통계청 KEIS 2024 기준 ───</div>
+    </div>
+
+    <!-- ④ 운명이 가는 길 -->
+    <div class="section">
+      <div class="section-title"><span id="jikupNameForDestiny">사업가</span> 운명이 가는 길</div>
+      <div class="section-body" id="destinyBody"></div>
+    </div>
+
+    <!-- ⑤ 직업처방 업셀 -->
+    <div class="upsell-box">
+      <div class="upsell-title" id="upsellTitle"></div>
+      <ul class="upsell-list" id="upsellList"></ul>
+      <div class="upsell-closer" id="upsellCloser"></div>
+      <a class="upsell-cta" id="upsellCta" href="#">직업처방 받기 · 9,900원</a>
+      <div class="upsell-disc" id="upsellDisc"></div>
+    </div>
+
+  </div>
+
+  <!-- 공유 -->
+  <div class="share-section">
+    <div class="share-row">
+      <button class="share-btn btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
+      <button class="share-btn btn-save" onclick="saveCard()">📥 이미지 저장</button>
+      <button class="share-btn btn-copy" onclick="copyLink()">🔗 링크 복사</button>
+    </div>
+    <button class="btn-retry" onclick="retry()">다시 뽑기</button>
+  </div>
+
+  <!-- 다른 무료 카드 -->
+  <div class="cross-funnel">
+    <div class="cross-title">결제 전, 다른 무료 사주 카드도 보세요</div>
+    <div class="cross-row">
+      <a class="cross-btn" href="howangpae.html">🐯 호왕패</a>
+      <a class="cross-btn" href="suhopae.html">🛡️ 수호패</a>
+      <a class="cross-btn" href="nusu.html">💧 누수패</a>
+      <a class="cross-btn" href="gm.html">🏺 기명패</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// 호왕 직업패 — 클라이언트 JS
+// ═══════════════════════════════════
+
+const API_URL = 'https://hw-server-1075269376260.asia-northeast3.run.app/api/jikup-card';
+
+let selectedCal = 'solar';
+let selectedGender = null;
+let selectedJob = null;
+let unknownTime = false;
+let lastResult = null;
+
+// ── 드롭다운 초기화 ──
+const yearSel = document.getElementById('birthYear');
+const monthSel = document.getElementById('birthMonth');
+const daySel = document.getElementById('birthDay');
+const hourSel = document.getElementById('birthHour');
+
+const nowYear = new Date().getFullYear();
+for (let y = nowYear; y >= 1930; y--) {
+  const o = document.createElement('option');
+  o.value = y; o.textContent = y + '년';
+  yearSel.appendChild(o);
+}
+yearSel.value = 1990;
+
+for (let m = 1; m <= 12; m++) {
+  const o = document.createElement('option');
+  o.value = m; o.textContent = m + '월';
+  monthSel.appendChild(o);
+}
+monthSel.value = 6;
+
+for (let d = 1; d <= 31; d++) {
+  const o = document.createElement('option');
+  o.value = d; o.textContent = d + '일';
+  daySel.appendChild(o);
+}
+daySel.value = 15;
+
+for (let h = 0; h <= 23; h++) {
+  const o = document.createElement('option');
+  o.value = h; o.textContent = h + '시';
+  hourSel.appendChild(o);
+}
+hourSel.value = 12;
+
+// ── 선택 핸들러 ──
+function selectCal(btn) {
+  document.querySelectorAll('[data-cal]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCal = btn.dataset.cal;
+}
+function selectGender(btn) {
+  document.querySelectorAll('[data-gender]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedGender = btn.dataset.gender;
+}
+function selectJob(btn) {
+  document.querySelectorAll('[data-job]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedJob = btn.dataset.job;
+}
+function toggleUnknownTime() {
+  unknownTime = !unknownTime;
+  const btn = document.getElementById('unknownTimeBtn');
+  if (unknownTime) {
+    btn.classList.add('active');
+    hourSel.value = 12;
+    hourSel.disabled = true;
+  } else {
+    btn.classList.remove('active');
+    hourSel.disabled = false;
+  }
+}
+
+// ── 제출 ──
+async function submitForm() {
+  const year = document.getElementById('birthYear').value;
+  const month = document.getElementById('birthMonth').value;
+  const day = document.getElementById('birthDay').value;
+  const hour = document.getElementById('birthHour').value;
+  const name = '직업패';
+
+  if (!year || !month || !day) { alert('생년월일을 선택해주세요.'); return; }
+  if (!selectedGender) { alert('성별을 선택해주세요.'); return; }
+  if (!selectedJob) { alert('지금 하고 있는 일을 선택해주세요.'); return; }
+
+  // 로딩 화면
+  document.getElementById('screen-input').style.display = 'none';
+  document.getElementById('screen-loading').style.display = 'flex';
+  document.getElementById('loadingText').classList.add('show');
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name || '직업패',
+        gender: selectedGender,
+        birthYear: Number(year),
+        birthMonth: Number(month),
+        birthDay: Number(day),
+        birthHour: unknownTime ? 12 : Number(hour),
+        birthMinute: 0,
+        calendarType: selectedCal,
+        currentJob: selectedJob
+      })
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      alert('오류: ' + (data.error || ''));
+      retry();
+      return;
+    }
+
+    lastResult = data;
+
+    // 로딩 줌인 → 결과로
+    const lImg = document.getElementById('loadingImg');
+    lImg.src = data.card.imageUrl;
+    setTimeout(() => {
+      lImg.classList.add('zoom');
+      setTimeout(() => {
+        document.getElementById('screen-loading').style.display = 'none';
+        renderResult(data);
+      }, 1000);
+    }, 1200);
+
+    // 트래킹
+    fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cardType: 'jikupCard', name: name || '익명' })
+    }).catch(() => {});
+
+  } catch (err) {
+    console.error(err);
+    alert('서버 연결에 실패했습니다. 다시 시도해주세요.');
+    retry();
+  }
+}
+
+// ── 결과 렌더 ──
+function renderResult(d) {
+  const card = d.card;
+  const g = d.gunghap;
+  const c = d.copy;
+  const inc = d.incomeRange;
+  const up = d.upsell;
+
+  // 카드 이미지·오버레이
+  document.getElementById('cardImage').src = card.imageUrl;
+  document.getElementById('cardSub').textContent = card.sub;
+  document.getElementById('cardMain').textContent = card.main;
+
+  // 궁합 배지
+  const badge = document.getElementById('gunghapBadge');
+  badge.textContent = g.emoji + ' ' + g.label;
+  badge.style.background = g.color;
+  badge.style.color = '#fff';
+  badge.style.border = '1px solid ' + g.accent;
+  document.getElementById('gunghapScore').textContent = g.score;
+
+  // 헤더
+  document.getElementById('resultHeaderMain').textContent = '너는 ' + card.main + '의 운명';
+
+  // 카피
+  document.getElementById('copyTitle').textContent = c.title;
+  document.getElementById('copyBody').textContent = c.body;
+
+  // 직업 비교
+  document.getElementById('cellCurrent').textContent = g.currentJob;
+  document.getElementById('cellJikup').textContent = card.main;
+
+  // 잠재 수입 (현재 + 사주)
+  document.getElementById('jikupNameForIncome').textContent = card.main;
+  document.getElementById('jikupNameForDestiny').textContent = card.main;
+
+  renderIncome('incomeCurrent', inc.currentJob, '#c5975b');
+  renderIncome('incomeJikup', inc.jikupDestiny, '#e8c89a');
+
+  // 운명이 가는 길
+  document.getElementById('destinyBody').innerHTML =
+    '<div style="font-size:13px;color:#a89878;margin-bottom:10px;font-style:italic">' + card.essence + '</div>' +
+    '<div>' + card.destiny + '</div>';
+
+  // 업셀
+  document.getElementById('upsellTitle').textContent = up.title;
+  const ul = document.getElementById('upsellList');
+  ul.innerHTML = '';
+  up.items.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    ul.appendChild(li);
+  });
+  document.getElementById('upsellCloser').textContent = up.closer;
+  document.getElementById('upsellCta').textContent = '직업처방 받기 · ' + up.price.replace('직업처방 ', '');
+  document.getElementById('upsellCta').href = 'order.html?product=JIKUP&from=jikupCard';
+  document.getElementById('upsellDisc').textContent = up.disclaimer;
+
+  // 결과 화면 표시
+  const r = document.getElementById('screen-result');
+  r.style.display = 'flex';
+  setTimeout(() => r.classList.add('show'), 50);
+}
+
+function renderIncome(containerId, data, color) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  if (data.isPreparing) {
+    c.innerHTML = '<div style="text-align:center;color:#8a7a5a;padding:14px;font-size:13px">지금은 준비기 (수입 환산 별도)</div>';
+    return;
+  }
+  const periods = [
+    { label: '1년', val: data.year },
+    { label: '3년', val: data.year3 },
+    { label: '5년', val: data.year5 },
+    { label: '10년', val: data.year10 }
+  ];
+  // 최대 max로 비율 계산
+  const maxAll = Math.max.apply(null, periods.map(p => p.val.max));
+  periods.forEach((p, idx) => {
+    const pct = Math.round((p.val.max / maxAll) * 100);
+    const minStr = formatWon(p.val.min);
+    const maxStr = formatWon(p.val.max);
+    const row = document.createElement('div');
+    row.className = 'income-row';
+    row.innerHTML =
+      '<div class="income-row-label">' + p.label + '</div>' +
+      '<div class="income-bar-wrap"><div class="income-bar" style="background:' + color + '"></div></div>' +
+      '<div class="income-row-val">' + minStr + ' ~ ' + maxStr + '</div>';
+    c.appendChild(row);
+    setTimeout(() => {
+      row.querySelector('.income-bar').style.width = pct + '%';
+    }, 200 + idx * 150);
+  });
+}
+
+function formatWon(manwon) {
+  if (manwon >= 10000) {
+    const eok = Math.floor(manwon / 10000);
+    const rest = manwon % 10000;
+    if (rest === 0) return eok + '억';
+    return eok + '억 ' + rest.toLocaleString() + '만';
+  }
+  return manwon.toLocaleString() + '만';
+}
+
+// ── 공유 ──
+async function shareKakao() {
+  alert('카카오 공유 준비 중');
+}
+async function saveCard() {
+  if (typeof html2canvas === 'undefined') return alert('저장 기능 로딩 중');
+  const el = document.getElementById('card-capture');
+  try {
+    const canvas = await html2canvas(el, { backgroundColor: '#000', scale: 2 });
+    const link = document.createElement('a');
+    link.download = '호왕직업패_' + (lastResult.card.main || 'card') + '.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  } catch (e) {
+    console.error(e);
+    alert('저장 실패');
+  }
+}
+function copyLink() {
+  navigator.clipboard.writeText(location.href).then(() => alert('링크가 복사되었습니다'));
+}
+function retry() {
+  document.getElementById('screen-input').style.display = 'flex';
+  document.getElementById('screen-loading').style.display = 'none';
+  document.getElementById('screen-result').style.display = 'none';
+  document.getElementById('screen-result').classList.remove('show');
+  document.getElementById('loadingImg').classList.remove('zoom');
+}
+
+// 트래킹 — 페이지 진입
+fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ page: 'jikup-card', referrer: document.referrer, userAgent: navigator.userAgent })
+}).catch(() => {});
+</script>
+
+</body>
+</html>
