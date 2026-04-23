@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -296,7 +296,7 @@ const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
 const params = new URLSearchParams(location.search);
 const orderId = params.get('orderId') || params.get('id');
 let askCount = 0;
-const MAX_ASK = 3;
+let MAX_ASK = 3;
 
 if (!orderId) {
   document.getElementById('loading').classList.add('hide');
@@ -624,6 +624,8 @@ async function loadPreviousQuestions() {
     
     const order = json.data;
     askCount = order.askCount || 0;
+    // 기본 3 + extraQ
+    MAX_ASK = 3 + (order.extraQ || 0);
     
     const histEl = document.getElementById('askHistory');
     for (let i = 1; i <= askCount; i++) {
