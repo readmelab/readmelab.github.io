@@ -402,6 +402,10 @@ select option{background:#1a1008;color:#e8d5b0}
       <input type="checkbox" id="agreePrivacy">
       <label for="agreePrivacy">[필수] 개인정보 수집·이용에 동의합니다.<br><span style="color:#6a5a4a">수집 항목: 이름, 연락처, 생년월일시 | 목적: 사주 풀이 제공 | 보유 기간: 서비스 제공 후 1년</span></label>
     </div>
+    <div class="privacy-row" style="margin-top:10px">
+      <input type="checkbox" id="agreeTerm">
+      <label for="agreeTerm">[필수] 본 결과는 사주 기반 <strong style="color:#c5975b">참고 자료</strong>이며 <strong style="color:#c5975b">절약·재정 결과를 보장하지 않음</strong>에 동의합니다</label>
+    </div>
 
     <button class="pay-btn" id="payBtn" onclick="submitOrder()">결제하기</button>
   </div>
@@ -795,6 +799,7 @@ function submitOrder(){
   if(!selectedMarriage){showToast('결혼 여부를 선택해주세요');return}
   if(!selectedChild){showToast('자녀 여부를 선택해주세요');return}
   if(!document.getElementById('agreePrivacy').checked){showToast('개인정보 수집·이용에 동의해주세요');return}
+  if(!document.getElementById('agreeTerm').checked){showToast('참고 자료 안내에 동의해주세요');return}
 
   var birthDate = document.getElementById('birthYear').value+'년 '+document.getElementById('birthMonth').value+'월 '+document.getElementById('birthDay').value+'일';
   var birthTime = unknownTime ? '모름' : document.getElementById('birthHour').value+'시 '+document.getElementById('birthMinute').value+'분';
