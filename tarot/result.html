@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -6,56 +6,12 @@
   <title>타로 결과 | 나를읽다</title>
   <meta property="og:title" content="나를읽다 타로 결과" />
   <meta property="og:description" content="그 사람의 속마음을 카드로 열어봤어요." />
-  <script src="https://cdn.tailwindcss.com">async function renderAddons(topicSlug) {
-  const res = await fetch(${API_BASE}/api/tarot/topic/);
-  const data = await res.json();
-
-  const addons = data.products.filter(p => p.type === "addon");
-  const container = document.getElementById("addon-container");
-
-  container.innerHTML = "";
-
-  addons.forEach(p => {
-    const btn = document.createElement("button");
-    btn.style.cssText = "width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#f5e6c8;font-weight:bold;";
-    btn.innerText = ${p.title} (+원);
-
-    btn.onclick = () => {
-      // 이후 결제 연결 예정
-      alert("애드온 결제 연결 예정");
-    };
-
-    container.appendChild(btn);
-  });
-}
-</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">async function renderAddons(topicSlug) {
-  const res = await fetch(${API_BASE}/api/tarot/topic/);
-  const data = await res.json();
-
-  const addons = data.products.filter(p => p.type === "addon");
-  const container = document.getElementById("addon-container");
-
-  container.innerHTML = "";
-
-  addons.forEach(p => {
-    const btn = document.createElement("button");
-    btn.style.cssText = "width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#f5e6c8;font-weight:bold;";
-    btn.innerText = ${p.title} (+원);
-
-    btn.onclick = () => {
-      // 이후 결제 연결 예정
-      alert("애드온 결제 연결 예정");
-    };
-
-    container.appendChild(btn);
-  });
-}
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+KR:wght@400;500;700&family=Pretendard:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
     :root{--bg-cream:#FAF5F0;--bg-blush:#F5E6E0;--rose-soft:#E8B4B8;--rose-deep:#C8707C;--lavender-soft:#CDB8E0;--lavender-deep:#8B7AA8;--gold-warm:#D4A574;--gold-foil:#B89968;--ink-black:#2D1B1E;--ink-muted:#6B5B5E;--ink-whisper:#A89A9C;--gradient-foil:linear-gradient(120deg,#D4A574 0%,#F0D9A8 50%,#B89968 100%);--font-display:'Instrument Serif','Cormorant Garamond','Noto Serif KR',serif;--font-body:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg-cream);color:var(--ink-black);font-family:var(--font-body)}body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");opacity:.055;pointer-events:none;z-index:50;mix-blend-mode:multiply}.page{max-width:440px;margin:0 auto;min-height:100vh;overflow:hidden;background:linear-gradient(180deg,#FAF5F0 0%,#F5E6E0 60%,#FAF5F0 100%);position:relative}.blob{position:absolute;border-radius:999px;filter:blur(50px);opacity:.42;animation:float 14s ease-in-out infinite}.blob1{width:210px;height:210px;background:#E8B4B8;top:60px;right:-90px}.blob2{width:230px;height:230px;background:#CDB8E0;top:420px;left:-110px}@keyframes float{50%{transform:translate(18px,-20px) scale(1.08)}}.serif{font-family:'Cormorant Garamond','Noto Serif KR',serif}.display{font-family:var(--font-display)}.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.45);box-shadow:0 24px 55px rgba(200,112,124,.13)}.small-caps{letter-spacing:.12em;text-transform:uppercase;font-size:11px;color:var(--ink-whisper)}.cta{background:var(--gradient-foil);color:#3b2426;box-shadow:0 18px 35px rgba(184,153,104,.32);transition:.25s}.cta:active{transform:scale(.97)}.card-img{width:178px;height:296px;object-fit:cover;border-radius:20px;box-shadow:0 32px 62px rgba(45,27,30,.22);border:1px solid rgba(255,255,255,.7)}.section-card{min-height:180px}.section-card:nth-child(1){transform:rotate(-.8deg)}.section-card:nth-child(2){transform:rotate(.7deg)}.section-card:nth-child(3){transform:rotate(.5deg)}.section-card:nth-child(4){transform:rotate(-.6deg)}.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.reveal.revealed{opacity:1;transform:translateY(0)}.dot{width:12px;height:12px;border-radius:50%;background:#D4A574;opacity:.25;animation:pulse 1.2s infinite}.dot:nth-child(2){animation-delay:.22s}.dot:nth-child(3){animation-delay:.44s}@keyframes pulse{50%{opacity:1;transform:scale(1.25)}}.loading-copy{min-height:56px}.bento{display:grid;grid-template-columns:1fr;gap:16px}.share-btn{background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.65)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg-cream);color:var(--ink-black);font-family:var(--font-body)}body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");opacity:.055;pointer-events:none;z-index:50;mix-blend-mode:multiply}.page{max-width:440px;margin:0 auto;min-height:100vh;overflow:hidden;background:linear-gradient(180deg,#FAF5F0 0%,#F5E6E0 60%,#FAF5F0 100%);position:relative}.blob{position:absolute;border-radius:999px;filter:blur(50px);opacity:.42;animation:float 14s ease-in-out infinite}.blob1{width:210px;height:210px;background:#E8B4B8;top:60px;right:-90px}.blob2{width:230px;height:230px;background:#CDB8E0;top:420px;left:-110px}@keyframes float{50%{transform:translate(18px,-20px) scale(1.08)}}.serif{font-family:'Cormorant Garamond','Noto Serif KR',serif}.display{font-family:var(--font-display)}.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.45);box-shadow:0 24px 55px rgba(200,112,124,.13)}.small-caps{letter-spacing:.12em;text-transform:uppercase;font-size:11px;color:var(--ink-whisper)}.cta{background:var(--gradient-foil);color:#3b2426;box-shadow:0 18px 35px rgba(184,153,104,.32);transition:.25s}.cta:active{transform:scale(.97)}.card-img{width:178px;height:296px;object-fit:cover;border-radius:20px;box-shadow:0 32px 62px rgba(45,27,30,.22);border:1px solid rgba(255,255,255,.7)}.section-card{min-height:180px}.section-card:nth-child(1){transform:rotate(-.8deg)}.section-card:nth-child(2){transform:rotate(.7deg)}.section-card:nth-child(3){transform:rotate(.5deg)}.section-card:nth-child(4){transform:rotate(-.6deg)}.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.reveal.revealed{opacity:1;transform:translateY(0)}.dot{width:12px;height:12px;border-radius:50%;background:#D4A574;opacity:.25;animation:pulse 1.2s infinite}.dot:nth-child(2){animation-delay:.22s}.dot:nth-child(3){animation-delay:.44s}@keyframes pulse{50%{opacity:1;transform:scale(1.25)}}.loading-copy{min-height:56px}.bento{display:grid;grid-template-columns:1fr;gap:16px}.share-btn{background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.65)}.addon-btn{width:100%;text-align:left;border-radius:22px;padding:20px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.7);transition:.2s;cursor:pointer;font-family:var(--font-body)}.addon-btn:hover{background:rgba(255,255,255,.8);transform:translateY(-1px)}.addon-btn:active{transform:scale(.98)}.addon-btn b{display:block;font-size:15px;color:var(--ink-black);margin-bottom:4px}.addon-btn span{display:block;font-size:13px;color:#8b7f82}
   </style>
 </head>
 <body>
@@ -84,10 +40,7 @@
       <div class="glass rounded-[30px] p-6 mb-7 reveal">
         <p class="small-caps mb-3">deeper?</p>
         <h2 class="serif text-[31px] leading-tight">더 깊이<br>들어가볼까요?</h2>
-        <div class="mt-5 space-y-3">
-          <button class="w-full text-left rounded-[22px] p-5 bg-white/60 border border-white/70"><b>연락 올 가능성 심층 분석</b><br><span class="text-sm text-[#8b7f82]">+1,900원 · 곧 연결 예정</span></button>
-          <button class="w-full text-left rounded-[22px] p-5 bg-white/60 border border-white/70"><b>7일 관계 흐름 정밀 리딩</b><br><span class="text-sm text-[#8b7f82]">+2,900원 · 곧 연결 예정</span></button>
-        </div>
+        <div id="addon-container" class="mt-5 space-y-3"></div>
       </div>
       <div class="glass rounded-[30px] p-6 reveal">
         <h2 class="serif text-[30px] leading-tight mb-4">이 결과,<br>보관하시겠어요?</h2>
@@ -109,6 +62,7 @@
 
   <script>
     const API_BASE='https://tarot-server-1075269376260.asia-northeast3.run.app';
+    const TOPIC_SLUG='love-mind';
     const token = new URL(location.href).searchParams.get('token');
     const paymentKey = new URL(location.href).searchParams.get('paymentKey');
     const orderId = new URL(location.href).searchParams.get('orderId');
@@ -148,42 +102,48 @@
       const wrap=document.getElementById('sections'); wrap.innerHTML='';
       (data.sections||[]).forEach((s,idx)=>{
         const div=document.createElement('article'); div.className='section-card glass rounded-[28px] p-6 reveal';
-        div.innerHTML=`<p class="small-caps mb-3">0${idx+1}</p><h3 class="serif text-[29px] leading-tight mb-4">${escapeHtml(s.title)}</h3><p class="text-[15px] leading-8 text-[#6B5B5E]">${escapeHtml(s.body)}</p>`;
+        const num = String(idx+1).padStart(2,'0');
+        div.innerHTML=`<p class="small-caps mb-3">${num}</p><h3 class="serif text-[29px] leading-tight mb-4">${escapeHtml(s.title)}</h3><p class="text-[15px] leading-8 text-[#6B5B5E]">${escapeHtml(s.body)}</p>`;
         wrap.appendChild(div);
       });
+      renderAddons(data.topic_slug || TOPIC_SLUG);
       document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
       gsap.from('#mainCardImg',{y:24,opacity:0,scale:.94,duration:.8,ease:'power3.out'});
     }
+
+    async function renderAddons(topicSlug){
+      const container = document.getElementById('addon-container');
+      if(!container) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/tarot/topic/${topicSlug}`);
+        const data = await res.json();
+        const products = (data && (data.products || (data.topic && data.topic.products))) || [];
+        const addons = products.filter(p => p.type === 'addon');
+        container.innerHTML = '';
+        if(addons.length === 0){
+          container.innerHTML = '<p class="text-[13px] text-[#A89A9C] text-center py-3">추가 리딩은 곧 열릴 예정이에요.</p>';
+          return;
+        }
+        addons.forEach(p => {
+          const btn = document.createElement('button');
+          btn.className = 'addon-btn';
+          const price = (p.price != null) ? p.price.toLocaleString('ko-KR') : '';
+          btn.innerHTML = `<b>${escapeHtml(p.title || '추가 리딩')}</b><span>+${escapeHtml(price)}원 · 곧 연결 예정</span>`;
+          btn.onclick = () => { alert('애드온 결제는 곧 열릴 예정이에요.'); };
+          container.appendChild(btn);
+        });
+      } catch(e){
+        console.warn('addon render failed', e);
+        container.innerHTML = '<p class="text-[13px] text-[#A89A9C] text-center py-3">추가 리딩을 불러오지 못했어요.</p>';
+      }
+    }
+
     function showError(msg){ document.getElementById('loading').classList.add('hidden'); document.getElementById('resultView').classList.add('hidden'); document.getElementById('errorView').classList.remove('hidden'); document.getElementById('errorMsg').textContent=msg; }
     function escapeHtml(str){return String(str||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
     async function copyLink(){try{await navigator.clipboard.writeText(location.href); msg('링크를 복사했어요. 30일 동안 다시 볼 수 있어요.')}catch(e){msg('복사에 실패했어요. 주소창의 링크를 직접 복사해 주세요.')}}
     async function shareKakaoLike(){ if(navigator.share){try{await navigator.share({title:'나를읽다 타로 결과',text:'내 타로 결과를 저장해뒀어요.',url:location.href}); msg('공유 창을 열었어요.')}catch(e){}} else { copyLink(); }}
     function gift(){ location.href='./love-mind.html?gift=1'; }
     function msg(t){document.getElementById('shareMsg').textContent=t;}
-  async function renderAddons(topicSlug) {
-  const res = await fetch(${API_BASE}/api/tarot/topic/);
-  const data = await res.json();
-
-  const addons = data.products.filter(p => p.type === "addon");
-  const container = document.getElementById("addon-container");
-
-  container.innerHTML = "";
-
-  addons.forEach(p => {
-    const btn = document.createElement("button");
-    btn.style.cssText = "width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#f5e6c8;font-weight:bold;";
-    btn.innerText = ${p.title} (+원);
-
-    btn.onclick = () => {
-      // 이후 결제 연결 예정
-      alert("애드온 결제 연결 예정");
-    };
-
-    container.appendChild(btn);
-  });
-}
-</script>
-<script>renderAddons('love-mind');</script>
+  </script>
 </body>
 </html>
-
