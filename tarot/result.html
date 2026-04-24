@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -6,8 +6,52 @@
   <title>타로 결과 | 나를읽다</title>
   <meta property="og:title" content="나를읽다 타로 결과" />
   <meta property="og:description" content="그 사람의 속마음을 카드로 열어봤어요." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdn.tailwindcss.com">async function renderAddons(topicSlug) {
+  const res = await fetch(${API_BASE}/api/tarot/topic/);
+  const data = await res.json();
+
+  const addons = data.products.filter(p => p.type === "addon");
+  const container = document.getElementById("addon-container");
+
+  container.innerHTML = "";
+
+  addons.forEach(p => {
+    const btn = document.createElement("button");
+    btn.style.cssText = "width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#f5e6c8;font-weight:bold;";
+    btn.innerText = ${p.title} (+원);
+
+    btn.onclick = () => {
+      // 이후 결제 연결 예정
+      alert("애드온 결제 연결 예정");
+    };
+
+    container.appendChild(btn);
+  });
+}
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">async function renderAddons(topicSlug) {
+  const res = await fetch(${API_BASE}/api/tarot/topic/);
+  const data = await res.json();
+
+  const addons = data.products.filter(p => p.type === "addon");
+  const container = document.getElementById("addon-container");
+
+  container.innerHTML = "";
+
+  addons.forEach(p => {
+    const btn = document.createElement("button");
+    btn.style.cssText = "width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#f5e6c8;font-weight:bold;";
+    btn.innerText = ${p.title} (+원);
+
+    btn.onclick = () => {
+      // 이후 결제 연결 예정
+      alert("애드온 결제 연결 예정");
+    };
+
+    container.appendChild(btn);
+  });
+}
+</script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+KR:wght@400;500;700&family=Pretendard:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
     :root{--bg-cream:#FAF5F0;--bg-blush:#F5E6E0;--rose-soft:#E8B4B8;--rose-deep:#C8707C;--lavender-soft:#CDB8E0;--lavender-deep:#8B7AA8;--gold-warm:#D4A574;--gold-foil:#B89968;--ink-black:#2D1B1E;--ink-muted:#6B5B5E;--ink-whisper:#A89A9C;--gradient-foil:linear-gradient(120deg,#D4A574 0%,#F0D9A8 50%,#B89968 100%);--font-display:'Instrument Serif','Cormorant Garamond','Noto Serif KR',serif;--font-body:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
@@ -116,6 +160,30 @@
     async function shareKakaoLike(){ if(navigator.share){try{await navigator.share({title:'나를읽다 타로 결과',text:'내 타로 결과를 저장해뒀어요.',url:location.href}); msg('공유 창을 열었어요.')}catch(e){}} else { copyLink(); }}
     function gift(){ location.href='./love-mind.html?gift=1'; }
     function msg(t){document.getElementById('shareMsg').textContent=t;}
-  </script>
+  async function renderAddons(topicSlug) {
+  const res = await fetch(${API_BASE}/api/tarot/topic/);
+  const data = await res.json();
+
+  const addons = data.products.filter(p => p.type === "addon");
+  const container = document.getElementById("addon-container");
+
+  container.innerHTML = "";
+
+  addons.forEach(p => {
+    const btn = document.createElement("button");
+    btn.style.cssText = "width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#f5e6c8;font-weight:bold;";
+    btn.innerText = ${p.title} (+원);
+
+    btn.onclick = () => {
+      // 이후 결제 연결 예정
+      alert("애드온 결제 연결 예정");
+    };
+
+    container.appendChild(btn);
+  });
+}
+</script>
+<script>renderAddons('love-mind');</script>
 </body>
 </html>
+
