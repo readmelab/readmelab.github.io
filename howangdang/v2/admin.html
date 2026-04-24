@@ -288,6 +288,7 @@ tr:hover td{background:rgba(197,151,91,.03)}
       <button class="action-btn btn-result" onclick="testAPI('suhopae')">수호패</button>
       <button class="action-btn btn-result" style="background:rgba(122,90,156,.15);color:var(--purple);border-color:var(--purple)" onclick="testAPI('nusu-card')">누수패</button>
       <button class="action-btn btn-result" style="background:rgba(197,151,91,.15);color:var(--gold);border-color:var(--gold)" onclick="testAPI('gimyeong-card')">기명패</button>
+      <button class="action-btn btn-result" style="background:rgba(74,140,92,.15);color:var(--green);border-color:var(--green)" onclick="testAPI('jikup-card')">직업패</button>
     </div>
     <div id="freeTestResult" style="margin-bottom:24px"></div>
 
@@ -636,11 +637,15 @@ function renderChart(stats){
   function searchByName(){
   var name = document.getElementById('searchName').value.trim();
   if(!name){showToast('이름을 입력하세요');return}
-  fetch(API+'/admin/orders?pw='+encodeURIComponent(PW)+'&name='+encodeURIComponent(name))
+  fetch(API+'/admin/orders?pw='+encodeURIComponent(PW))
     .then(function(r){return r.json()})
     .then(function(d){
       if(!d.success){showToast('검색 실패');return}
-      allOrders=d.orders.filter(function(o){return !clientIsTestOrder(o)});
+      var all=d.orders.filter(function(o){return !clientIsTestOrder(o)});
+      allOrders=all.filter(function(o){
+        var n=(o.user&&o.user.name||o.userName||'').toLowerCase();
+        return n.includes(name.toLowerCase());
+      });
       updateOrderStats();
       renderOrders();
       showToast('"'+name+'" 검색 결과: '+allOrders.length+'건');
@@ -671,7 +676,7 @@ function loadOrders(){
 function updateOrderStats(){
   var paid=allOrders.filter(function(o){return o.paymentStatus==='confirmed'||o.status==='done'});
   var rev=paid.reduce(function(s,o){return s+(o.price||0)},0);
-  var today=new Date().toISOString().slice(0,10);
+  var today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'});
   var todayO=allOrders.filter(function(o){return o.createdAt&&o.createdAt.slice(0,10)===today});
   document.getElementById('oStatTotal').textContent=allOrders.length;
   document.getElementById('oStatPaid').textContent=paid.length;
@@ -1037,6 +1042,7 @@ function testAPI(type){
   var endpoint = type==='nusu-card' ? '/api/v2/nusu-card' : '/api/howangpae';
   if(type==='suhopae') endpoint='/api/howangpae';
   if(type==='gimyeong-card') endpoint='/api/v2/gimyeong-card';
+  if(type==='jikup-card') endpoint='/api/jikup';
 
   fetch(API+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
     .then(function(r){return r.json()})
