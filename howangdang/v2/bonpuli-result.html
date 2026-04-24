@@ -305,7 +305,7 @@ let MAX_ASK = 3;
 // PRODUCT GUARD
 (function(){
   if (!orderId) return;
-  var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','HW1':'chogyeon-result.html','HW2':'jaemul-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html'};
+  var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html'};
   for (var __p in __PG) { if (orderId.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+orderId); return; } }
 })();
 if (!orderId) {

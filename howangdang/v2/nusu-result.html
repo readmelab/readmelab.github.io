@@ -340,7 +340,7 @@ body::before{
   (function(){
     var oid = getOrderId();
     if (!oid) return;
-    var __PG = {'JIKUP':'jikup-treat-result.html','HW1':'chogyeon-result.html','HW2':'jaemul-result.html','HW3':'bonpuli-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html','bp-up-':'bonpuli-result.html'};
+    var __PG = {'JIKUP':'jikup-treat-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html','bp-up-':'bonpuli-result.html'};
     for (var __p in __PG) { if (oid.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+oid); return; } }
   })();
   function formatMoney(n){
