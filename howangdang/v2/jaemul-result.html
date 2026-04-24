@@ -816,7 +816,6 @@ interests.forEach(function(item){
 });
 
 function openBpModal(e){ e.preventDefault(); document.getElementById('bpModal').style.display='block'; }
-document.getElementById('ctaBtn').addEventListener('click', openBpModal);
 var bpCta = document.getElementById('v2BpCta');
 if(bpCta) bpCta.addEventListener('click', openBpModal);
 document.getElementById('bpModalClose').addEventListener('click', function(e){ e.preventDefault(); document.getElementById('bpModal').style.display='none'; });
