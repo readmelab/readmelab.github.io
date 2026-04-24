@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>결제 실패 | 나를읽다 타로</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Noto+Serif+KR:wght@400;500;700&family=Pretendard:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+    :root{--bg-cream:#FAF5F0;--bg-blush:#F5E6E0;--rose-deep:#C8707C;--gold-warm:#D4A574;--ink-black:#2D1B1E;--ink-muted:#6B5B5E;--gradient-foil:linear-gradient(120deg,#D4A574 0%,#F0D9A8 50%,#B89968 100%);--font-display:'Instrument Serif','Cormorant Garamond','Noto Serif KR',serif;--font-body:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg-cream);font-family:var(--font-body);color:var(--ink-black)}.page{max-width:440px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg,#FAF5F0 0%,#F5E6E0 100%);position:relative;overflow:hidden}.blob{position:absolute;border-radius:999px;filter:blur(55px);opacity:.42}.blob1{width:230px;height:230px;background:#E8B4B8;top:70px;right:-100px}.blob2{width:230px;height:230px;background:#CDB8E0;bottom:90px;left:-110px}.display{font-family:var(--font-display)}.cta{background:var(--gradient-foil);color:#3b2426;box-shadow:0 18px 35px rgba(184,153,104,.32)}.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.45);box-shadow:0 24px 55px rgba(200,112,124,.13)}
+  </style>
+</head>
+<body>
+  <main class="page px-7 py-12 flex items-center justify-center text-center">
+    <div class="blob blob1"></div><div class="blob blob2"></div>
+    <section class="relative z-10 glass rounded-[34px] p-8 w-full">
+      <p class="text-[12px] tracking-[.16em] uppercase text-[#A89A9C] mb-7">read me lab · tarot</p>
+      <h1 class="display text-[54px] leading-none mb-5">결제가<br><em class="italic text-[#C8707C]">완료되지</em><br>않았어요</h1>
+      <p id="msg" class="text-[15px] leading-8 text-[#6B5B5E] mb-8">괜찮아요. 다시 시도해볼까요?</p>
+      <a href="./love-mind.html" class="cta block rounded-full py-5 font-bold">다시 시도하기</a>
+      <a href="./love-mind.html" class="block mt-5 text-[13px] text-[#8b7f82]">처음으로 돌아가기</a>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const m = params.get('message');
+    if(m) document.getElementById('msg').textContent = decodeURIComponent(m);
+  </script>
+</body>
+</html>
