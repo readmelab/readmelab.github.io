@@ -312,7 +312,7 @@ body{font-family:'Noto Serif KR',serif;background:#000;color:#e8d5b0;min-height:
 </div>
 
 <script>
-const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 
 const dayGanNames = {
   '甲': '갑목 · 큰 나무', '乙': '을목 · 풀과 덩굴', '丙': '병화 · 태양',
@@ -323,6 +323,11 @@ const dayGanNames = {
 (async function init() {
   const params = new URLSearchParams(location.search);
   const orderId = params.get('id');
+
+    // PRODUCT GUARD
+  var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html','bp-up-':'bonpuli-result.html'};
+  for (var __p in __PG) { if (orderId && orderId.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+orderId); return; } }
+
 
   if (!orderId) {
     showError('주문번호가 없습니다.');
@@ -438,7 +443,7 @@ function showError(msg) {
 }
 </script>
 <script>
-fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/visit', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({ page: 'chogyeon-result-v2', referrer: document.referrer, userAgent: navigator.userAgent })

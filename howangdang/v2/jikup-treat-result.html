@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -395,6 +395,25 @@ const API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 
 const params = new URLSearchParams(location.search);
 const orderId = params.get('orderId') || params.get('id');
+
+// PRODUCT GUARD
+(function(){
+  if (!orderId) return;
+  var REDIRECTS = {
+    'NUSU':      'nusu-result.html',
+    'HW1':       'chogyeon-result.html',
+    'HW2':       'jaemul-result.html',
+    'HW3':       'bonpuli-result.html',
+    'nusu-up-':  'jaemul-result.html',
+    'bp-up-':    'bonpuli-result.html'
+  };
+  for (var prefix in REDIRECTS) {
+    if (orderId.indexOf(prefix) === 0) {
+      location.replace(REDIRECTS[prefix] + '?id=' + orderId);
+      return;
+    }
+  }
+})();
 
 if (!orderId) {
   showError('주문 정보가 없습니다');

@@ -335,6 +335,14 @@ body::before{
     return p.get('id') || p.get('orderId') || '';
   }
 
+
+  // PRODUCT GUARD
+  (function(){
+    var oid = getOrderId();
+    if (!oid) return;
+    var __PG = {'JIKUP':'jikup-treat-result.html','HW1':'chogyeon-result.html','HW2':'jaemul-result.html','HW3':'bonpuli-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html','bp-up-':'bonpuli-result.html'};
+    for (var __p in __PG) { if (oid.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+oid); return; } }
+  })();
   function formatMoney(n){
     if(n>=100000000) return Math.round(n/100000000)+'억';
     if(n>=10000) return Math.round(n/10000).toLocaleString()+'만';

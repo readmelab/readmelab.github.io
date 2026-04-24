@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -295,12 +295,19 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 </div>
 
 <script>
-const API_BASE = 'https://hw-server-1075269376260.asia-northeast3.run.app';
+const API_BASE = 'https://hw-server-v2-1075269376260.asia-northeast3.run.app';
 const params = new URLSearchParams(location.search);
 const orderId = params.get('orderId') || params.get('id');
 let askCount = 0;
 let MAX_ASK = 3;
 
+
+// PRODUCT GUARD
+(function(){
+  if (!orderId) return;
+  var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','HW1':'chogyeon-result.html','HW2':'jaemul-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html'};
+  for (var __p in __PG) { if (orderId.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+orderId); return; } }
+})();
 if (!orderId) {
   document.getElementById('loading').classList.add('hide');
   document.getElementById('content').style.display = 'block';
@@ -683,7 +690,7 @@ async function submitAsk() {
 if (orderId) loadResult();
 </script>
   <script>
-fetch('https://hw-server-1075269376260.asia-northeast3.run.app/api/track/visit', {
+fetch('https://hw-server-v2-1075269376260.asia-northeast3.run.app/api/track/visit', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({ page: 'bonpuli-result-v2', referrer: document.referrer, userAgent: navigator.userAgent })

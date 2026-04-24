@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -608,6 +608,14 @@
     return p.get('orderId') || p.get('id') || '';
   }
 
+
+  // PRODUCT GUARD
+  (function(){
+    var oid = getOrderId();
+    if (!oid) return;
+    var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','HW1':'chogyeon-result.html','HW3':'bonpuli-result.html','bp-up-':'bonpuli-result.html'};
+    for (var __p in __PG) { if (oid.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+oid); return; } }
+  })();
   async function loadResult(){
     const orderId = getOrderId();
     if(!orderId){alert('주문 정보를 찾을 수 없습니다.');return;}
