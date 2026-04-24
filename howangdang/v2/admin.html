@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1035,7 +1035,7 @@ function testAPI(type){
   };
 
   var endpoint = type==='nusu-card' ? '/api/v2/nusu-card' : '/api/howangpae';
-  if(type==='suhopae') endpoint='/api/suhopae';
+  if(type==='suhopae') endpoint='/api/howangpae';
   if(type==='gimyeong-card') endpoint='/api/v2/gimyeong-card';
 
   fetch(API+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
