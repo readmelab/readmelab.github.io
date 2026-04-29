@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script>
+/* === 운영중단 가드 (2026-04-29) ===
+   '나를읽다' 상품 운영 중단으로 호왕당으로 자동 리다이렉트.
+   부활 시 이 <script>...</script> 블록만 제거. */
+(function(){
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
+  if (location.search.indexOf('preview=1') !== -1) return;
+  location.replace('https://readmelab.co.kr/howangdang/v2/order.html');
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>나를읽다 연구소 — 프라이빗 예약 주문</title>
