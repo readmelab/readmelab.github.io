@@ -68,6 +68,7 @@
       <div class="mt-12">
         <button onclick="scrollToMood()" class="cta w-full rounded-full py-5 text-[17px] font-semibold">시작하기 →</button>
         <p class="mt-4 text-center text-[13px] text-[#8b7aa8]">오늘의 마음을 조용히 열어보세요</p>
+        <a id="lastResultLink" href="#" class="hidden mt-5 block text-center text-[13px] text-[#c9a961] underline underline-offset-4 decoration-[#c9a961]/40">이전에 본 결과 다시 보기 →</a>
       </div>
     </section>
 
@@ -227,6 +228,18 @@
     const io = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('revealed'); }), { threshold:.12 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     window.addEventListener('load', () => gsap.from('.hero-title', { y: 24, opacity: 0, duration: .9, ease: 'power3.out' }));
+
+    // 이전 결과 토큰 있으면 "다시 보기" 링크 활성화
+    try {
+      const lastToken = localStorage.getItem('last_result_token');
+      if(lastToken){
+        const link = document.getElementById('lastResultLink');
+        if(link){
+          link.href = './result.html?token=' + encodeURIComponent(lastToken);
+          link.classList.remove('hidden');
+        }
+      }
+    } catch(e){}
     function scrollToMood(){ document.getElementById('mood').scrollIntoView({behavior:'smooth'}); }
     function showCards(){ const sec=document.getElementById('cards'); sec.classList.remove('hidden'); setTimeout(()=>sec.classList.add('revealed'),40); sec.scrollIntoView({behavior:'smooth'}); }
     document.querySelectorAll('.tarot-card').forEach(card => {
