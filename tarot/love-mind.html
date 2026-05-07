@@ -12,6 +12,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://js.tosspayments.com/v1/payment"></script>
+  <script src="./admin.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
     :root{
@@ -132,7 +133,7 @@
 
     async function loadTopic(){
       try {
-        const res = await fetch(`${API_BASE}/api/tarot/topic/${TOPIC_SLUG}`);
+        const res = await (window.adminFetch || fetch)(`${API_BASE}/api/tarot/topic/${TOPIC_SLUG}`);
         const data = await res.json();
         if(!res.ok || data.success === false) throw new Error(data.error || '토픽 정보를 불러오지 못했어요.');
         topicData = data;
@@ -189,7 +190,7 @@
       document.getElementById('tarotStage').classList.add('zoomed'); selectedEl.classList.add('shaking'); document.querySelectorAll('.tarot-card').forEach(c => { if(c!==selectedEl) c.classList.add('dim'); });
       selectedEl.classList.add('selected'); setCardLoading(true);
       try{
-        const res = await fetch(`${API_BASE}/api/tarot/start`, { method:'POST', headers:{'Content-Type':'application/json; charset=utf-8'}, body: JSON.stringify({ topic_slug: TOPIC_SLUG, mood: selectedMood, selected_card_index:index }) });
+        const res = await (window.adminFetch || fetch)(`${API_BASE}/api/tarot/start`, { method:'POST', headers:{'Content-Type':'application/json; charset=utf-8'}, body: JSON.stringify({ topic_slug: TOPIC_SLUG, mood: selectedMood, selected_card_index:index }) });
         const data = await res.json();
         if(!res.ok || data.success === false) throw new Error(data.error || '무료 해설 생성에 실패했어요.');
         currentSessionId = data.session_id;
@@ -232,7 +233,7 @@
       const btns=[document.getElementById('payBtn'),document.getElementById('stickyPayBtn')].filter(Boolean);
       btns.forEach(b=>{ if(!originalButtonHTML.has(b)) originalButtonHTML.set(b,b.innerHTML); b.disabled=true; b.innerHTML='<span class="spinner"></span><span>결제 준비 중...</span>'; });
       try{
-        const res=await fetch(`${API_BASE}/api/tarot/order`, { method:'POST', headers:{'Content-Type':'application/json; charset=utf-8'}, body: JSON.stringify({ session_id: currentSessionId, product_id: basicProduct.product_id }) });
+        const res=await (window.adminFetch || fetch)(`${API_BASE}/api/tarot/order`, { method:'POST', headers:{'Content-Type':'application/json; charset=utf-8'}, body: JSON.stringify({ session_id: currentSessionId, product_id: basicProduct.product_id }) });
         const data=await res.json();
         if(!res.ok || data.success === false) throw new Error(data.error || '주문 생성에 실패했어요.');
         localStorage.setItem('tarot_order', JSON.stringify(data));
