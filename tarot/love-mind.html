@@ -36,8 +36,8 @@
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.reveal.revealed{opacity:1;transform:translateY(0)}
     .skeleton{position:relative;overflow:hidden;color:transparent!important;background:rgba(244,232,208,.1);border-radius:12px}.skeleton::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(244,232,208,.13),transparent);animation:shimmer 1.35s infinite}@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
     .mood-card{border:1px solid rgba(201,169,97,.18);background:rgba(26,20,40,.62);box-shadow:0 18px 40px rgba(0,0,0,.22);transition:.25s ease;color:var(--ivory)}.mood-card.selected{border-color:var(--gold);background:rgba(201,169,97,.12);transform:translateY(-3px);box-shadow:0 22px 45px rgba(201,169,97,.16)}.mood-card small{color:var(--muted)}
-    .tarot-stage{height:326px;position:relative;margin-top:22px}.tarot-card{position:absolute;width:132px;height:220px;top:42px;left:50%;margin-left:-66px;perspective:1200px;cursor:pointer;transition:transform .42s ease,filter .42s ease,opacity .42s ease}.tarot-card:nth-child(1){transform:translateX(-92px) rotate(-12deg)}.tarot-card:nth-child(2){transform:translateX(0) rotate(0)}.tarot-card:nth-child(3){transform:translateX(92px) rotate(12deg)}.tarot-card:hover,.tarot-card.prepared{filter:brightness(1.08);z-index:4}.tarot-card.selected{z-index:10;transform:translateX(0) translateY(-14px) rotate(0) scale(1.14)!important}.tarot-card.dim{opacity:.22;filter:blur(1px) saturate(.75)}
-    .card-inner{width:100%;height:100%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.645,.045,.355,1)}.tarot-card.flipped .card-inner{transform:rotateY(180deg)}.card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;overflow:hidden;box-shadow:0 28px 50px -16px rgba(0,0,0,.58),0 0 0 1px rgba(201,169,97,.28);border:1px solid rgba(201,169,97,.3);background:#120d1c}.card-face img{width:100%;height:100%;object-fit:cover;display:block}.card-front{transform:rotateY(180deg)}
+    .tarot-stage{height:326px;position:relative;margin-top:22px;transition:height .5s ease}.tarot-stage.zoomed{height:480px}.tarot-card{position:absolute;width:132px;height:220px;top:42px;left:50%;margin-left:-66px;perspective:1200px;cursor:pointer;transition:transform .42s ease,filter .42s ease,opacity .42s ease}.tarot-card:nth-child(1){transform:translateX(-92px) rotate(-12deg)}.tarot-card:nth-child(2){transform:translateX(0) rotate(0)}.tarot-card:nth-child(3){transform:translateX(92px) rotate(12deg)}.tarot-card:hover,.tarot-card.prepared{filter:brightness(1.08);z-index:4}.tarot-card.selected{z-index:10;transform:translateX(0) translateY(-32px) rotate(0) scale(1.7)!important;animation:cardGlow 1.6s ease-in-out infinite alternate}.tarot-card.dim{opacity:0;transform:scale(.6) translateY(20px)!important;pointer-events:none;filter:blur(2px)}
+    .card-inner{width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.4s cubic-bezier(.645,.045,.355,1)}@keyframes cardShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px) rotate(-1deg)}40%{transform:translateX(4px) rotate(1deg)}60%{transform:translateX(-3px) rotate(-.6deg)}80%{transform:translateX(3px) rotate(.6deg)}}@keyframes cardGlow{from{box-shadow:0 28px 50px -16px rgba(0,0,0,.58),0 0 0 1px rgba(201,169,97,.4),0 0 24px rgba(201,169,97,.35)}to{box-shadow:0 28px 50px -16px rgba(0,0,0,.58),0 0 0 1px rgba(201,169,97,.7),0 0 60px rgba(201,169,97,.7)}}@keyframes flipFlash{0%{opacity:0}50%{opacity:.85}100%{opacity:0}}.tarot-card.shaking .card-inner{animation:cardShake .55s ease-in-out}.flip-flash{position:absolute;inset:-40px;border-radius:30px;background:radial-gradient(circle,rgba(234,215,157,.85) 0%,rgba(201,169,97,.4) 35%,transparent 70%);pointer-events:none;opacity:0;z-index:20}.flip-flash.fire{animation:flipFlash 1.1s ease-out}.tarot-card.flipped .card-inner{transform:rotateY(180deg)}.card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;overflow:hidden;box-shadow:0 28px 50px -16px rgba(0,0,0,.58),0 0 0 1px rgba(201,169,97,.28);border:1px solid rgba(201,169,97,.3);background:#120d1c}.card-face img{width:100%;height:100%;object-fit:cover;display:block}.card-front{transform:rotateY(180deg)}
     .result-text{font-size:16px;line-height:1.9;color:var(--muted);white-space:pre-line}.sticky-cta{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:min(424px,calc(100vw - 28px));z-index:40;display:none}.sticky-cta.show{display:block;animation:slideUp .35s ease}@keyframes slideUp{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
     .safe-bottom{padding-bottom:112px}.spinner{width:18px;height:18px;border:2px solid rgba(26,20,40,.25);border-top-color:#1a1428;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}@keyframes spin{to{transform:rotate(360deg)}}.loader-text{color:var(--muted)}
   </style>
@@ -58,7 +58,7 @@
     </section>
 
     <section class="relative z-10 px-7 py-16 reveal">
-      <div class="glass rounded-[30px] p-7 -rotate-1">
+      <div class="glass rounded-[30px] p-7">
         <p class="small-caps mb-4">midnight mucha</p>
         <h2 class="serif text-[32px] leading-tight mb-5">정답보다 먼저,<br>내 마음이 정리되는 시간</h2>
         <p class="text-[15px] leading-8 muted">이 타로는 마음을 단정짓는 예언이 아니라, 지금 당신이 느끼는 불안과 기대를 차분히 정리하는 작은 리딩이에요.</p>
@@ -186,7 +186,7 @@
     async function chooseCard(index){
       if(started) return; started = true; hideError();
       const selectedEl = document.querySelector(`.tarot-card[data-index="${index}"]`);
-      document.querySelectorAll('.tarot-card').forEach(c => { if(c!==selectedEl) c.classList.add('dim'); });
+      document.getElementById('tarotStage').classList.add('zoomed'); selectedEl.classList.add('shaking'); document.querySelectorAll('.tarot-card').forEach(c => { if(c!==selectedEl) c.classList.add('dim'); });
       selectedEl.classList.add('selected'); setCardLoading(true);
       try{
         const res = await fetch(`${API_BASE}/api/tarot/start`, { method:'POST', headers:{'Content-Type':'application/json; charset=utf-8'}, body: JSON.stringify({ topic_slug: TOPIC_SLUG, mood: selectedMood, selected_card_index:index }) });
@@ -203,10 +203,10 @@
           return decodeImage(img);
         });
         await Promise.all(decodeJobs);
-        selectedEl.classList.add('flipped');
-        setTimeout(()=> renderFree(data), 850);
+        selectedEl.classList.remove('shaking'); const flash=document.createElement('div'); flash.className='flip-flash'; selectedEl.appendChild(flash); requestAnimationFrame(()=>flash.classList.add('fire')); setTimeout(()=>flash.remove(), 1200); selectedEl.classList.add('flipped');
+        setTimeout(()=> renderFree(data), 1500);
       }catch(err){
-        started=false; setCardLoading(false); selectedEl.classList.remove('selected'); document.querySelectorAll('.tarot-card').forEach(c=>c.classList.remove('dim'));
+        started=false; setCardLoading(false); selectedEl.classList.remove('selected','shaking'); document.getElementById('tarotStage').classList.remove('zoomed'); document.querySelectorAll('.tarot-card').forEach(c=>c.classList.remove('dim'));
         showError(err.message.includes('daily') || err.message.includes('limit') ? '오늘 무료 확인 횟수를 모두 사용했어요. 내일 다시 열어볼 수 있어요.' : err.message);
       }
     }
