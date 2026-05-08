@@ -172,7 +172,7 @@ body::before{
 ::-webkit-scrollbar-track{background:#0d0906;}
 ::-webkit-scrollbar-thumb{background:#c44a4a33;}
 </style>
-<script src="https://js.tosspayments.com/v1/payment"></script>  
+<script src="https://js.tosspayments.com/v2/standard"></script>  
 </head>
 <body>
 
@@ -435,76 +435,12 @@ body::before{
     document.getElementById('secCh5LeakTip').textContent = ch5.leakTip || '';
     document.getElementById('secCh5JobTip').textContent = ch5.jobTip || '';
 
-    // 업셀 CTA
-// 업셀: 재물풀이 바로 결제
-document.getElementById('upsellCta').addEventListener('click', async function(e){
-  e.preventDefault();
-  var fromId = d.orderId || getOrderId();
-  var newOrderId = 'nusu-up-' + fromId + '-' + Date.now();
-  
-  // 0) 이전 주문 정보 가져오기
-var prevPhone = '';
-var prevName = d.userName || '';
-var prevBirthDate = '';
-var prevBirthTime = '';
-var prevCalendar = 'solar';
-var prevGender = '';
-var prevMarriage = '';
-var prevHasChild = '';
-try {
-  var infoRes = await fetch(API_BASE+'/order-info/'+fromId);
-  var infoData = await infoRes.json();
-  if(infoData.success){
-    var u = infoData.data.user || infoData.data || {};
-    prevPhone = u.phone || infoData.data.phone || '';
-    prevName = u.name || infoData.data.name || prevName;
-    prevBirthDate = u.birthDate || '';
-    prevBirthTime = u.birthTime || '';
-    prevCalendar = u.calendar || 'solar';
-    prevGender = u.gender || '';
-    prevMarriage = infoData.data.marriage || '';
-    prevHasChild = infoData.data.hasChild || '';
-  }
-} catch(err){}
-
-
-  // 1) 주문 생성
-  try {
-    var res = await fetch(API_BASE+'/order', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-body: JSON.stringify({
-  orderId: newOrderId,
-  product: 'HW2',
-  name: prevName,
-  phone: prevPhone,
-  birthDate: prevBirthDate || d.nusuCard?.birthDate || '',
-  birthTime: prevBirthTime || d.nusuCard?.birthTime || '',
-  calendarType: prevCalendar || 'solar',
-  gender: prevGender || d.nusuCard?.gender || d.genderKey || '',
-  job: (function(){ var m={'employed':'직장인','self':'자영업','freelance':'프리랜서','student':'학생','unemployed':'무직','housewife':'주부'}; return m[d.jobKey]||d.jobKey||'직장인'; })(),
-  marriage: prevMarriage || '',    // ← 추가
-  hasChild: prevHasChild || '',    // ← 추가
-  question: '',
-  price: 9900,
-  upgradeFrom: fromId,
-  fromProduct: 'NUSU'
-})
+    // 업셀 CTA — 재물풀이 결제 (v2 SDK + sessionStorage 패턴)
+    document.getElementById('upsellCta').addEventListener('click', function(e){
+      e.preventDefault();
+      startNusuUpsellPayment(d);
     });
-    var orderResult = await res.json();
-    if(!orderResult.success){ alert('주문 생성 실패: '+(orderResult.error||'')); return; }
-  } catch(err){ alert('주문 오류: '+err.message); return; }
 
-  // 2) 토스 결제
-  var toss = TossPayments('live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY');
-  toss.requestPayment('카드', {
-    amount: 9900,
-    orderId: newOrderId,
-    orderName: '호왕당 재물풀이 (누수처방 업그레이드)',
-    successUrl: location.origin + '/howangdang/v2/nusu-upsell-success.html',
-    failUrl: location.href
-  });
-});
 
     // 표시
     document.getElementById('resultWrap').style.display='block';
@@ -532,6 +468,150 @@ body: JSON.stringify({
       els.forEach(function(el){obs.observe(el);});
     }else{els.forEach(function(el){el.classList.add('show');});}
   }
+
+  // ════ 업셀 결제 (재물풀이) — v2 SDK 패턴 ════
+  var UP_TOSS_KEY = 'live_ck_yL0qZ4G1VOjWoLAzw5LY3oWb2MQY';
+
+  function upToast(msg){ alert(msg); }
+
+  async function startNusuUpsellPayment(d){
+    try {
+      var fromId = (d && d.orderId) || getOrderId();
+      var newOrderId = 'nusu-up-' + fromId + '-' + Date.now();
+
+      // 1) 이전 주문 정보 가져오기 (두 단계 접근 보존)
+      var prevName = (d && d.userName) || '';
+      var prevPhone = '', prevBirthDate = '', prevBirthTime = '';
+      var prevCalendar = 'solar', prevGender = '';
+      var prevMarriage = '', prevHasChild = '', prevJob = '';
+      try {
+        var infoRes = await fetch(API_BASE + '/order-info/' + fromId);
+        var infoData = await infoRes.json();
+        if (infoData.success && infoData.data) {
+          var u = infoData.data.user || {};
+          prevName       = u.name       || infoData.data.name || prevName;
+          prevPhone      = u.phone      || infoData.data.phone || '';
+          prevBirthDate  = u.birthDate  || '';
+          prevBirthTime  = u.birthTime  || '';
+          prevCalendar   = u.calendar   || 'solar';
+          prevGender     = u.gender     || '';
+          prevMarriage   = infoData.data.marriage || '';
+          prevHasChild   = infoData.data.hasChild || '';
+          prevJob        = infoData.data.job || u.job || '';
+        }
+      } catch(err){ console.warn('order-info fetch 실패', err); }
+
+      // jobKey → 한글 매핑 (백업 fallback)
+      var jobMap = {employed:'직장인',self:'자영업',freelance:'프리랜서',student:'학생',unemployed:'무직',housewife:'주부'};
+      var jobLabel = prevJob || jobMap[d.jobKey] || d.jobKey || '직장인';
+      var genderVal = prevGender || (d && d.nusuCard && d.nusuCard.gender) || (d && d.genderKey) || '';
+      var birthVal = prevBirthDate || (d && d.nusuCard && d.nusuCard.birthDate) || '';
+      var birthTimeVal = prevBirthTime || (d && d.nusuCard && d.nusuCard.birthTime) || '';
+
+      if (!prevName || !prevPhone) {
+        upToast('이전 주문 정보가 부족합니다'); return;
+      }
+
+      // 2) sessionStorage에 주문 정보 저장 (콜백에서 /order, /payment/confirm)
+      sessionStorage.setItem('hw_nusu_upsell', JSON.stringify({
+        orderId: newOrderId,
+        product: 'HW2',
+        price: 9900,
+        name: prevName,
+        phone: prevPhone,
+        gender: genderVal,
+        birthDate: birthVal,
+        birthTime: birthTimeVal,
+        calendarType: prevCalendar,
+        job: jobLabel,
+        marriage: prevMarriage,
+        hasChild: prevHasChild,
+        upgradeFrom: fromId,
+        fromProduct: 'NUSU'
+      }));
+
+      // 3) 토스 v2 결제창 호출
+      var toss = TossPayments(UP_TOSS_KEY);
+      var payment = toss.payment({customerKey: 'ANONYMOUS'});
+      payment.requestPayment({
+        method: 'CARD',
+        amount: { currency: 'KRW', value: 9900 },
+        orderId: newOrderId,
+        orderName: '호왕당 재물풀이 (누수처방 업그레이드)',
+        customerName: prevName,
+        customerMobilePhone: String(prevPhone).replace(/[^0-9]/g, ''),
+        successUrl: window.location.origin + window.location.pathname + '?payment=success&fromOrderId=' + fromId,
+        failUrl: window.location.origin + window.location.pathname + '?payment=fail&fromOrderId=' + fromId,
+        card: { flowMode: 'DEFAULT' }
+      }).catch(function(e){
+        if (e && e.code === 'USER_CANCEL') upToast('결제가 취소되었습니다');
+        else { console.error(e); upToast('결제 오류: ' + (e && e.message || '')); }
+      });
+    } catch(e) {
+      console.error(e);
+      upToast('오류: ' + (e && e.message || ''));
+    }
+  }
+
+  // ════ 업셀 결제 콜백 ════
+  (function handleNusuUpCallback(){
+    var p = new URLSearchParams(location.search);
+    if (p.get('payment') === 'success') {
+      var paymentKey = p.get('paymentKey');
+      var pOrderId   = p.get('orderId');
+      var amount     = p.get('amount');
+
+      var stored = sessionStorage.getItem('hw_nusu_upsell');
+      if (!stored) { upToast('주문 정보를 찾을 수 없습니다'); return; }
+      var od;
+      try { od = JSON.parse(stored); } catch(e) { upToast('주문 정보 파싱 실패'); return; }
+      if (od.orderId !== pOrderId) { upToast('결제 정보 불일치'); return; }
+
+      fetch(API_BASE + '/order', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          orderId: od.orderId,
+          product: od.product,
+          price: od.price,
+          name: od.name,
+          phone: od.phone,
+          gender: od.gender,
+          birthDate: od.birthDate,
+          birthTime: od.birthTime,
+          calendarType: od.calendarType,
+          job: od.job,
+          marriage: od.marriage,
+          hasChild: od.hasChild,
+          upgradeFrom: od.upgradeFrom,
+          fromProduct: od.fromProduct
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(orderRes){
+        if (!orderRes.success) throw new Error(orderRes.error || '주문 생성 실패');
+        return fetch(API_BASE + '/payment/confirm', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({paymentKey: paymentKey, orderId: pOrderId, amount: Number(amount)})
+        });
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(conf){
+        if (!conf.success) throw new Error(conf.error || '결제 승인 실패');
+        sessionStorage.removeItem('hw_nusu_upsell');
+        location.href = 'jaemul-result.html?id=' + pOrderId;
+      })
+      .catch(function(err){
+        console.error(err);
+        upToast('결제 처리 오류: ' + (err && err.message || ''));
+      });
+    } else if (p.get('payment') === 'fail') {
+      upToast('결제가 취소되었거나 실패했습니다');
+      var fromId = p.get('fromOrderId') || '';
+      if (fromId) history.replaceState(null, '', location.pathname + '?id=' + fromId);
+    }
+  })();
 
   loadResult();
 })();
