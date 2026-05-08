@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -503,7 +503,7 @@ async function submitOrder(){
       orderId:orderId, product:product, name:name, phone:phone,
       gender:birthPayload.gender, birthDate:birthDate, birthTime:birthTime,
       calendarType:selectedCal, job:selectedJob, marriage:selectedMarriage,
-      hasChild:selectedChild, upgradeFrom:'GM'
+      hasChild:selectedChild,
     })});
     var json=await res.json();
     if(!json.success)throw new Error(json.error||'주문 생성 실패');
