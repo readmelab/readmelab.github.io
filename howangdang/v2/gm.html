@@ -516,8 +516,8 @@ async function submitOrder(){
       orderId:orderId,
       orderName:'호왕 '+NAMES[product],
       customerName:name,
-      successUrl:API_BASE+'/payment/confirm',
-      failUrl:API_BASE+'/payment/fail'
+      successUrl: location.origin + '/howangdang/v2/order.html?payment=success&orderId=' + orderId + '&product=' + product,
+      failUrl: location.origin + '/howangdang/v2/order.html?payment=fail&orderId=' + orderId
     });
   }catch(e){alert('오류: '+e.message)}
 }
