@@ -325,8 +325,10 @@ const dayGanNames = {
   const orderId = params.get('id');
 
     // PRODUCT GUARD
+  if (params.get('payment')) { /* skip guard on payment callback */ } else {
   var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html','bp-up-':'bonpuli-result.html'};
   for (var __p in __PG) { if (orderId && orderId.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+orderId); return; } }
+  }
 
 
   if (!orderId) {

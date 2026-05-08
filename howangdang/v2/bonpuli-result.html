@@ -304,6 +304,8 @@ let MAX_ASK = 3;
 
 // PRODUCT GUARD
 (function(){
+  var _qp = new URLSearchParams(window.location.search);
+  if (_qp.get('payment')) return;
   if (!orderId) return;
   var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','jikup-up-':'jaemul-result.html','nusu-up-':'jaemul-result.html'};
   for (var __p in __PG) { if (orderId.indexOf(__p)===0) { location.replace(__PG[__p]+'?id='+orderId); return; } }

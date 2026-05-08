@@ -398,6 +398,8 @@ const orderId = params.get('orderId') || params.get('id');
 
 // PRODUCT GUARD
 (function(){
+  var _qp = new URLSearchParams(window.location.search);
+  if (_qp.get('payment')) return;
   if (!orderId) return;
   var REDIRECTS = {
     'NUSU':      'nusu-result.html',

@@ -611,6 +611,8 @@
 
   // PRODUCT GUARD
   (function(){
+    var _qp = new URLSearchParams(window.location.search);
+    if (_qp.get('payment')) return;
     var oid = getOrderId();
     if (!oid) return;
     var __PG = {'JIKUP':'jikup-treat-result.html','NUSU':'nusu-result.html','bp-up-':'bonpuli-result.html'};
