@@ -1,1 +1,6 @@
-﻿*.bak_phase2
+*.bak_phase2
+
+# 작업 중 생성된 백업/임시 파일
+tarot/.backups/
+*.bak
+*.bak-*
