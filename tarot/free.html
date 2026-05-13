@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F0A1A" />
+  <title>나를읽다 타로</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <script src="https://js.tosspayments.com/v1/payment"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0F0A1A;
+      --bg-secondary: #1A1428;
+      --bg-tertiary: #221A35;
+      --text-primary: #F4E8D0;
+      --text-secondary: #C9B8D9;
+      --text-tertiary: #8B7AA8;
+      --text-muted: #5C4F77;
+      --gold-primary: #C9A961;
+      --gold-bright: #E0BF7A;
+      --gold-soft: #A89050;
+      --gold-glow: rgba(201, 169, 97, 0.25);
+      --lavender: #8B7AA8;
+      --rose: #D4A5A5;
+      --ash: #7A8896;
+      --border-subtle: rgba(201, 169, 97, 0.15);
+      --border-strong: rgba(201, 169, 97, 0.4);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 40px rgba(201, 169, 97, 0.15);
+      --font-serif: 'Noto Serif KR', serif;
+      --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --page-max: 480px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(139, 122, 168, 0.18), transparent 38%),
+        radial-gradient(circle at 80% 20%, rgba(201, 169, 97, 0.08), transparent 28%),
+        var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      letter-spacing: -0.02em;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 25% 30%, rgba(244,232,208,0.42), transparent),
+        radial-gradient(1px 1px at 70% 60%, rgba(201,169,97,0.32), transparent),
+        radial-gradient(1px 1px at 40% 80%, rgba(244,232,208,0.28), transparent),
+        radial-gradient(1px 1px at 90% 20%, rgba(201,169,97,0.38), transparent),
+        radial-gradient(1px 1px at 10% 50%, rgba(244,232,208,0.22), transparent);
+      background-size: 200% 200%;
+      animation: starsDrift 60s linear infinite;
+      opacity: 0.72;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(15,10,26,0.8), transparent 18%, transparent 82%, rgba(15,10,26,0.8));
+      z-index: 0;
+    }
+
+    @keyframes starsDrift {
+      from { background-position: 0% 0%; }
+      to { background-position: 200% 200%; }
+    }
+
+    a, button, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: 0.45; }
+    img { max-width: 100%; display: block; }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: var(--page-max);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 0 20px 48px;
+    }
+
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 56px;
+      margin: 0 -20px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(15, 10, 26, 0.96), rgba(15, 10, 26, 0.72));
+      border-bottom: 1px solid rgba(201,169,97,0.08);
+      backdrop-filter: blur(14px);
+      transition: height 0.35s ease;
+    }
+
+    .top-header.compact { height: 44px; }
+    .logo {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 18px;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
+    }
+    .sound-toggle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(201,169,97,0.08);
+      border: 1px solid var(--border-subtle);
+      color: var(--gold-primary);
+      display: grid;
+      place-items: center;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+    .sound-toggle[aria-pressed="true"] {
+      background: rgba(201,169,97,0.16);
+      border-color: var(--border-strong);
+      box-shadow: 0 0 24px rgba(201,169,97,0.12);
+    }
+
+    .section {
+      min-height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 44px 0;
+    }
+    .section.hidden { display: none; }
+
+    .stagger > * {
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+    .stagger > *:nth-child(2) { animation-delay: 0.11s; }
+    .stagger > *:nth-child(3) { animation-delay: 0.17s; }
+    .stagger > *:nth-child(4) { animation-delay: 0.23s; }
+    .stagger > *:nth-child(5) { animation-delay: 0.29s; }
+    .stagger > *:nth-child(6) { animation-delay: 0.35s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    @keyframes goldPulse {
+      0%, 100% { box-shadow: 0 0 20px var(--gold-glow); }
+      50% { box-shadow: 0 0 40px var(--gold-glow), 0 0 60px var(--gold-glow); }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 auto 22px;
+      color: var(--gold-primary);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--border-strong);
+    }
+    .hero-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: clamp(34px, 10vw, 46px);
+      font-weight: 400;
+      line-height: 1.32;
+      text-align: center;
+      letter-spacing: -0.045em;
+    }
+    .hero-subtitle {
+      margin: 24px auto 0;
+      max-width: 300px;
+      color: var(--text-secondary);
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 1.85;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    .btn {
+      min-height: 52px;
+      width: 100%;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 22px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease, border-color 0.28s ease;
+    }
+    .btn:hover:not(:disabled) { transform: scale(1.02); }
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      color: #17101F;
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-bright));
+      box-shadow: 0 10px 30px rgba(201,169,97,0.2);
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.24), transparent);
+      transition: left 0.6s;
+    }
+    .btn-primary:hover:not(:disabled)::after { left: 100%; }
+    .btn-primary:hover:not(:disabled) { box-shadow: 0 0 36px var(--gold-glow), 0 12px 34px rgba(0,0,0,0.35); }
+    .btn-ghost {
+      background: rgba(244,232,208,0.04);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .hero-cta { margin-top: 44px; }
+
+    .step-title {
+      margin: 0 0 14px;
+      font-family: var(--font-serif);
+      font-size: 25px;
+      font-weight: 400;
+      line-height: 1.45;
+      letter-spacing: -0.04em;
+    }
+    .step-desc {
+      margin: 0 0 26px;
+      color: var(--text-tertiary);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .textarea-wrap {
+      position: relative;
+      border: 1px solid var(--border-subtle);
+      background: rgba(26,20,40,0.84);
+      border-radius: 24px;
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .textarea-wrap:focus-within {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 4px rgba(201,169,97,0.08), var(--shadow-card);
+    }
+    textarea {
+      width: 100%;
+      min-height: 152px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      padding: 22px 22px 44px;
+      color: var(--text-primary);
+      background: transparent;
+      font-size: 16px;
+      line-height: 1.7;
+      letter-spacing: -0.02em;
+    }
+    textarea::placeholder {
+      color: var(--text-tertiary);
+      font-family: var(--font-serif);
+      font-style: italic;
+      opacity: 0.8;
+    }
+    .counter {
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      color: var(--text-muted);
+      font-size: 12px;
+      transition: color 0.25s ease;
+    }
+    .counter.invalid { color: var(--rose); }
+
+    .examples-toggle {
+      margin: 18px 0 18px;
+      color: var(--text-secondary);
+      background: transparent;
+      font-size: 14px;
+      padding: 0;
+    }
+    .examples {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .example-chip {
+      min-height: 48px;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: rgba(34,26,53,0.72);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: left;
+      transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+    .example-chip:hover { transform: translateY(-2px); border-color: var(--border-strong); color: var(--text-primary); }
+
+    .mood-list { display: grid; gap: 12px; }
+    .mood-card {
+      position: relative;
+      width: 100%;
+      min-height: 72px;
+      padding: 0 18px;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(26,20,40,0.75);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      text-align: left;
+      overflow: hidden;
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    }
+    .mood-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18px;
+      bottom: 18px;
+      width: 2px;
+      background: var(--gold-primary);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .mood-card:hover, .mood-card.selected {
+      background: rgba(34,26,53,0.92);
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+    .mood-card:hover::before, .mood-card.selected::before { opacity: 1; }
+    .mood-emoji { font-size: 22px; width: 28px; text-align: center; }
+    .mood-main { font-family: var(--font-serif); font-size: 18px; font-weight: 400; }
+    .mood-check { margin-left: auto; color: var(--gold-primary); opacity: 0; }
+    .mood-card.selected .mood-check { opacity: 1; }
+
+    .shuffle-zone {
+      position: relative;
+      padding: 24px 0 8px;
+    }
+    .floating-particles {
+      position: absolute;
+      inset: -20px 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .choice-cards {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 22px -4px 0;
+      min-height: 240px;
+    }
+    .choice-card {
+      display: block;
+      padding: 0;
+      width: 31.5%;
+      max-width: 126px;
+      aspect-ratio: 2 / 3;
+      margin: 0 -4px;
+      border-radius: 14px;
+      background: transparent;
+      perspective: 1200px;
+      opacity: 1;
+      transition: transform 0.35s ease, opacity 0.3s ease, filter 0.35s ease;
+      animation: float 4s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 0.2s);
+    }
+    .choice-card:hover:not(:disabled) { transform: translateY(-8px) rotate(-1deg); filter: drop-shadow(0 0 18px rgba(201,169,97,0.22)); }
+    .choice-card.fade-away { opacity: 0; transform: scale(0.88); pointer-events: none; }
+    .choice-card.shuffling:nth-child(1) { animation: shuffleOne 1.5s ease-in-out both; }
+    .choice-card.shuffling:nth-child(2) { animation: shuffleTwo 1.5s ease-in-out both; }
+    .choice-card.shuffling:nth-child(3) { animation: shuffleThree 1.5s ease-in-out both; }
+    @keyframes shuffleOne {
+      0% { transform: translateX(0) rotate(0); }
+      18% { transform: translateX(86px) rotate(6deg); }
+      36% { transform: translateX(172px) rotate(-4deg); }
+      54% { transform: translateX(70px) rotate(5deg); }
+      72% { transform: translateX(0) rotate(-2deg); }
+      100% { transform: translateX(0) rotate(0); filter: drop-shadow(0 0 18px rgba(201,169,97,0.3)); }
+    }
+    @keyframes shuffleTwo {
+      0% { transform: translateX(0) rotate(0); }
+      18% { transform: translateX(-82px) rotate(-5deg); }
+      36% { transform: translateX(86px) rotate(4deg); }
+      54% { transform: translateX(-74px) rotate(-4deg); }
+      72% { transform: translateX(0) rotate(2deg); }
+      100% { transform: translateX(0) rotate(0); filter: drop-shadow(0 0 18px rgba(201,169,97,0.3)); }
+    }
+    @keyframes shuffleThree {
+      0% { transform: translateX(0) rotate(0); }
+      18% { transform: translateX(-92px) rotate(-5deg); }
+      36% { transform: translateX(-180px) rotate(4deg); }
+      54% { transform: translateX(-64px) rotate(-6deg); }
+      72% { transform: translateX(0) rotate(1deg); }
+      100% { transform: translateX(0) rotate(0); filter: drop-shadow(0 0 18px rgba(201,169,97,0.3)); }
+    }
+
+    .card-flip {
+      display: block;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-flip.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      backface-visibility: hidden;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,169,97,0.2);
+      background: var(--bg-secondary);
+    }
+    .card-back {
+      background:
+        radial-gradient(circle at 50% 36%, rgba(201,169,97,0.18), transparent 34%),
+        linear-gradient(145deg, #1A1428, #0F0A1A 62%, #221A35);
+      border: 1px solid rgba(201,169,97,0.42);
+    }
+    .card-back::before {
+      content: '☾';
+      position: absolute;
+      inset: 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(201,169,97,0.35);
+      border-radius: 10px;
+      color: rgba(201,169,97,0.82);
+      font-family: var(--font-serif);
+      font-size: 42px;
+      z-index: 0;
+    }
+    .card-back::after {
+      content: '';
+      position: absolute;
+      inset: 7px;
+      border-radius: 11px;
+      background:
+        radial-gradient(1px 1px at 18% 24%, rgba(244,232,208,0.55), transparent),
+        radial-gradient(1px 1px at 78% 62%, rgba(201,169,97,0.55), transparent),
+        radial-gradient(1px 1px at 42% 82%, rgba(244,232,208,0.4), transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .card-front { transform: rotateY(180deg); }
+    .card-face img { display: block; width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
+    .card-back img { position: absolute; inset: 0; }
+    .card-back img[src=''], .card-back img:not([src]) { display: none; }
+    .waiting-card { animation: goldPulse 2s ease-in-out infinite; }
+
+    .free-result-card {
+      text-align: center;
+      padding-top: 8px;
+    }
+    .selected-image {
+      width: min(62%, 260px);
+      margin: 0 auto 22px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card), 0 0 0 1px var(--border-subtle), var(--shadow-glow);
+      animation: float 4s ease-in-out infinite;
+    }
+    .selected-name {
+      margin: 0;
+      color: var(--gold-primary);
+      font-family: var(--font-serif);
+      font-size: 29px;
+      font-weight: 400;
+      letter-spacing: -0.045em;
+    }
+    .keywords {
+      margin: 10px 0 24px;
+      color: var(--text-tertiary);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+    .message-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 0 20px;
+      color: var(--gold-primary);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    .message-label::before, .message-label::after {
+      content: '';
+      flex: 1;
+      max-width: 88px;
+      height: 1px;
+      background: var(--border-subtle);
+    }
+    .free-message {
+      margin: 0;
+      color: var(--text-primary);
+      font-family: var(--font-serif);
+      font-size: 17px;
+      line-height: 1.85;
+      letter-spacing: -0.01em;
+      white-space: pre-line;
+    }
+    .ornament-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 30px 0;
+      color: var(--gold-primary);
+    }
+    .ornament-divider::before, .ornament-divider::after {
+      content: '';
+      height: 1px;
+      flex: 1;
+      background: var(--border-subtle);
+    }
+    .price-note {
+      margin: 12px 0 0;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .modal-backdrop, .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 18px;
+    }
+    .modal-backdrop.active, .loading-overlay.active { display: flex; }
+    .modal-panel {
+      width: 100%;
+      max-width: 460px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 22px;
+      border-radius: 30px 30px 24px 24px;
+      background: linear-gradient(180deg, rgba(34,26,53,0.98), rgba(26,20,40,0.98));
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 -8px 48px rgba(0,0,0,0.5);
+      animation: slideUp 0.42s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 400;
+    }
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(244,232,208,0.05);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+    .product-list { display: grid; gap: 12px; margin-bottom: 18px; }
+    .product-card {
+      position: relative;
+      width: 100%;
+      min-height: 162px;
+      padding: 19px;
+      border-radius: 22px;
+      background: rgba(15,10,26,0.34);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      text-align: left;
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    }
+    .product-card:hover, .product-card.selected {
+      border-color: var(--gold-primary);
+      background: rgba(34,26,53,0.88);
+      transform: translateY(-2px);
+    }
+    .product-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .product-name { font-family: var(--font-serif); font-size: 19px; }
+    .badge {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(201,169,97,0.14);
+      color: var(--gold-bright);
+      font-size: 11px;
+    }
+    .product-line { width: 36px; height: 1px; margin: 12px 0; background: var(--border-strong); }
+    .product-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.65; }
+    .secure-note { margin: 14px 0 2px; text-align: center; color: var(--text-muted); font-size: 12px; }
+
+    .loading-overlay { align-items: center; }
+    .loading-box { text-align: center; }
+    .rotating-card {
+      width: 92px;
+      height: 138px;
+      margin: 0 auto 20px;
+      border-radius: 14px;
+      background: url('https://audio.readmelab.co.kr/tarot/basic/back.webp') center / cover;
+      box-shadow: var(--shadow-glow), 0 0 0 1px var(--border-subtle);
+      animation: slowRotate 2.4s linear infinite;
+    }
+    @keyframes slowRotate { to { transform: rotateY(360deg); } }
+    .loading-text { color: var(--text-secondary); font-family: var(--font-serif); }
+
+    .error-dialog {
+      width: 100%;
+      max-width: 420px;
+      padding: 26px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(34,26,53,0.98), rgba(26,20,40,0.98));
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      animation: fadeUp 0.35s ease both;
+    }
+    .error-dialog h3 {
+      margin: 0 0 12px;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 23px;
+    }
+    .error-dialog p {
+      margin: 0 0 22px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(24px + var(--safe-bottom));
+      z-index: 80;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      min-width: 210px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      text-align: center;
+      background: rgba(34,26,53,0.96);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-card);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .particle-pop {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold-primary);
+      box-shadow: 0 0 8px var(--gold-glow);
+      animation: particlePop 1.5s ease-out forwards;
+    }
+    @keyframes particlePop {
+      from { opacity: 1; transform: translate(0, 0) scale(1); }
+      to { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2); }
+    }
+
+    .dev-pill {
+      position: fixed;
+      z-index: 90;
+      right: 12px;
+      bottom: 12px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(201,169,97,0.12);
+      border: 1px solid var(--border-subtle);
+      color: var(--gold-primary);
+      font-size: 11px;
+      display: none;
+    }
+    .dev-pill.active { display: block; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    @media (min-width: 481px) {
+      .app-shell { box-shadow: 0 0 80px rgba(0,0,0,0.25); }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="top-header" id="topHeader">
+      <div class="logo">나를읽다</div>
+      <button class="sound-toggle" id="soundToggle" type="button" aria-label="사운드 토글" aria-pressed="false">♪</button>
+    </header>
+
+    <section class="section stagger" id="heroStep">
+      <div class="eyebrow">✦ READ ME LAB ✦</div>
+      <h1 class="hero-title">카드가 당신에게<br />건네고 싶은 말이 있어요</h1>
+      <p class="hero-subtitle">78장의 카드 중 단 한 장이<br />당신의 오늘에 응답해요</p>
+      <button class="btn btn-primary hero-cta" type="button" id="goQuestion">고민을 적어주세요 ↓</button>
+    </section>
+
+    <section class="section hidden" id="questionStep">
+      <div class="stagger">
+        <h2 class="step-title">당신의 고민은<br />무엇인가요?</h2>
+        <p class="step-desc">마음에 걸리는 것을 솔직하게 적어주세요. 카드가 읽을 수 있도록 10자 이상이면 충분해요.</p>
+        <div class="textarea-wrap">
+          <textarea id="questionInput" maxlength="200" placeholder="마음에 걸리는 것을 솔직하게...&#10;(10자 ~ 200자)"></textarea>
+          <div class="counter" id="questionCounter">0 / 200</div>
+        </div>
+        <button class="examples-toggle" type="button" id="examplesToggle">예시 보기 ▾</button>
+        <div class="examples hidden" id="examplesBox">
+          <button class="example-chip" type="button">남자친구의 마음이 식은 것 같아요. 어떻게 해야 할까요?</button>
+          <button class="example-chip" type="button">이 직장을 그만두는 게 맞는 선택일까요?</button>
+          <button class="example-chip" type="button">친구와의 관계가 예전 같지 않아요. 회복할 수 있을까요?</button>
+          <button class="example-chip" type="button">요즘 자꾸 무기력해요. 어디서부터 시작해야 할까요?</button>
+        </div>
+        <button class="btn btn-primary" id="toMood" type="button" disabled>다음으로 →</button>
+      </div>
+    </section>
+
+    <section class="section hidden" id="moodStep">
+      <div class="stagger">
+        <h2 class="step-title">카드가 어떻게<br />답해주길 바라나요?</h2>
+        <p class="step-desc">지금 마음에 가장 가까운 온도를 골라주세요.</p>
+        <div class="mood-list">
+          <button class="mood-card" type="button" data-mood="positive">
+            <span class="mood-emoji">☀️</span><span class="mood-main">따뜻하게 보고 싶어요</span><span class="mood-check">✓</span>
+          </button>
+          <button class="mood-card" type="button" data-mood="neutral">
+            <span class="mood-emoji">🌙</span><span class="mood-main">있는 그대로 알고 싶어요</span><span class="mood-check">✓</span>
+          </button>
+          <button class="mood-card" type="button" data-mood="negative">
+            <span class="mood-emoji">🍂</span><span class="mood-main">불안한 부분까지 알고 싶어요</span><span class="mood-check">✓</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section hidden" id="cardStep">
+      <div class="stagger">
+        <h2 class="step-title">당신을 위한 카드<br />3장이 준비됐어요</h2>
+        <p class="step-desc">천천히 바라보다가, 마음이 가는 카드를 골라주세요.</p>
+        <div class="shuffle-zone">
+          <div class="floating-particles" id="popParticles"></div>
+          <div class="choice-cards" id="choiceCards">
+            <button class="choice-card" type="button" data-index="0" style="--i:0">
+              <span class="card-flip"><span class="card-face card-back"><img alt="카드 뒷면" src="https://audio.readmelab.co.kr/tarot/basic/back.webp" /></span><span class="card-face card-front"><img alt="선택된 카드" /></span></span>
+            </button>
+            <button class="choice-card" type="button" data-index="1" style="--i:1">
+              <span class="card-flip"><span class="card-face card-back"><img alt="카드 뒷면" src="https://audio.readmelab.co.kr/tarot/basic/back.webp" /></span><span class="card-face card-front"><img alt="선택된 카드" /></span></span>
+            </button>
+            <button class="choice-card" type="button" data-index="2" style="--i:2">
+              <span class="card-flip"><span class="card-face card-back"><img alt="카드 뒷면" src="https://audio.readmelab.co.kr/tarot/basic/back.webp" /></span><span class="card-face card-front"><img alt="선택된 카드" /></span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section hidden" id="freeResultStep">
+      <div class="free-result-card stagger">
+        <div class="selected-image"><img id="selectedImage" alt="선택된 타로 카드" /></div>
+        <h2 class="selected-name" id="selectedName">카드 이름</h2>
+        <div class="keywords" id="selectedKeywords">마음 • 흐름 • 선택</div>
+        <div class="message-label">카드의 첫 메시지</div>
+        <p class="free-message" id="freeMessage"></p>
+        <div class="ornament-divider">◆</div>
+        <button class="btn btn-primary" type="button" id="openProductModal">더 깊이 들여다보기 →</button>
+        <p class="price-note">기본 4,900원 · 심층 8,900원</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="productModal" role="dialog" aria-modal="true" aria-labelledby="productTitle">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2 class="modal-title" id="productTitle">어떻게 만나볼까요?</h2>
+        <button class="modal-close" type="button" data-close-modal>×</button>
+      </div>
+      <div class="product-list">
+        <button class="product-card" type="button" data-product="basic">
+          <div class="product-row"><span class="product-name">기본 · 4,900원</span></div>
+          <div class="product-line"></div>
+          <div class="product-desc">카드 3장의 입체적 해석<br />• 현재 상황<br />• 핵심<br />• 흐름과 조언<br />+ 무료 후속 질문 2회</div>
+        </button>
+        <button class="product-card" type="button" data-product="premium">
+          <div class="product-row"><span class="product-name">심층 · 8,900원</span><span class="badge">✨ 추천</span></div>
+          <div class="product-line"></div>
+          <div class="product-desc">카드 5장의 켈틱 크로스 축소판<br />• 기본 3섹션<br />• 무의식 영역<br />• 시간 흐름<br />+ 무료 후속 질문 3회</div>
+        </button>
+      </div>
+      <button class="btn btn-primary" type="button" id="payButton" disabled>결제로 진행하기 →</button>
+      <p class="secure-note">안전한 토스 결제 · 부분 환불 가능</p>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="paymentLoading" aria-live="polite">
+    <div class="loading-box">
+      <div class="rotating-card"></div>
+      <div class="loading-text">결제 페이지로 이동 중이에요…</div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="errorModal" role="dialog" aria-modal="true">
+    <div class="error-dialog">
+      <h3 id="errorTitle">잠시 멈춰볼게요</h3>
+      <p id="errorMessage">잠시 후 다시 시도해주세요.</p>
+      <button class="btn btn-primary" id="errorAction" type="button">다시 써볼게요</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="dev-pill" id="devPill">admin mode</div>
+
+  <script>
+    (function() {
+      const url = new URL(location.href);
+      const devKey = url.searchParams.get('dev');
+      if (devKey) {
+        localStorage.setItem('admin_key', devKey);
+        url.searchParams.delete('dev');
+        history.replaceState(null, '', url.toString());
+      }
+      window.ADMIN_KEY = localStorage.getItem('admin_key') || '';
+    })();
+
+    const API_BASE = 'https://tarot-server-1075269376260.asia-northeast3.run.app';
+    const CARD_BACK_URL = 'https://audio.readmelab.co.kr/tarot/basic/back.webp';
+    const state = {
+      question: '',
+      mood: '',
+      selectedIndex: null,
+      sessionId: '',
+      cards: [],
+      selectedCard: null,
+      selectedProduct: '',
+      soundOn: false,
+      isStarting: false,
+      isPaying: false,
+    };
+
+    const CARD_KEYWORDS = {
+      0: ['시작', '가능성', '순수함'], 1: ['의지', '집중', '창조'], 2: ['직관', '비밀', '내면'], 3: ['풍요', '돌봄', '감각'],
+      4: ['질서', '책임', '기준'], 5: ['신뢰', '전통', '배움'], 6: ['선택', '연결', '끌림'], 7: ['전진', '의지', '방향'],
+      8: ['균형', '공정함', '판단'], 9: ['성찰', '고요', '지혜'], 10: ['전환', '흐름', '기회'], 11: ['용기', '부드러움', '인내'],
+      12: ['멈춤', '관점', '기다림'], 13: ['끝맺음', '변화', '비움'], 14: ['조율', '회복', '절제'], 15: ['집착', '욕망', '그림자'],
+      16: ['균열', '해방', '재정렬'], 17: ['희망', '치유', '영감'], 18: ['불안', '꿈', '무의식'], 19: ['명확함', '생기', '기쁨'],
+      20: ['각성', '부름', '재평가'], 21: ['완성', '통합', '도달']
+    };
+
+    const els = {
+      topHeader: document.getElementById('topHeader'),
+      heroStep: document.getElementById('heroStep'),
+      questionStep: document.getElementById('questionStep'),
+      moodStep: document.getElementById('moodStep'),
+      cardStep: document.getElementById('cardStep'),
+      freeResultStep: document.getElementById('freeResultStep'),
+      goQuestion: document.getElementById('goQuestion'),
+      questionInput: document.getElementById('questionInput'),
+      questionCounter: document.getElementById('questionCounter'),
+      examplesToggle: document.getElementById('examplesToggle'),
+      examplesBox: document.getElementById('examplesBox'),
+      toMood: document.getElementById('toMood'),
+      choiceCards: document.getElementById('choiceCards'),
+      popParticles: document.getElementById('popParticles'),
+      selectedImage: document.getElementById('selectedImage'),
+      selectedName: document.getElementById('selectedName'),
+      selectedKeywords: document.getElementById('selectedKeywords'),
+      freeMessage: document.getElementById('freeMessage'),
+      productModal: document.getElementById('productModal'),
+      openProductModal: document.getElementById('openProductModal'),
+      payButton: document.getElementById('payButton'),
+      paymentLoading: document.getElementById('paymentLoading'),
+      errorModal: document.getElementById('errorModal'),
+      errorTitle: document.getElementById('errorTitle'),
+      errorMessage: document.getElementById('errorMessage'),
+      errorAction: document.getElementById('errorAction'),
+      toast: document.getElementById('toast'),
+      soundToggle: document.getElementById('soundToggle'),
+      devPill: document.getElementById('devPill'),
+    };
+
+    if (window.ADMIN_KEY) els.devPill.classList.add('active');
+
+    async function apiCall(path, options = {}) {
+      const headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        ...(options.headers || {}),
+      };
+      if (window.ADMIN_KEY) headers['X-Admin-Key'] = window.ADMIN_KEY;
+
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+      let data = null;
+      try { data = await res.json(); } catch (_) { data = { success: false, user_message: '응답을 읽지 못했어요.' }; }
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    function showStep(stepEl) {
+      [els.heroStep, els.questionStep, els.moodStep, els.cardStep, els.freeResultStep].forEach(el => el.classList.add('hidden'));
+      stepEl.classList.remove('hidden');
+      els.topHeader.classList.toggle('compact', stepEl !== els.heroStep);
+      requestAnimationFrame(() => stepEl.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add('show');
+      setTimeout(() => els.toast.classList.remove('show'), 2000);
+    }
+
+    function playSoftTone(type = 'flip') {
+      if (!state.soundOn) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = type === 'chime' ? 660 : 420;
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.24);
+      } catch (_) {}
+    }
+
+    function updateQuestionState() {
+      const len = els.questionInput.value.trim().length;
+      els.questionCounter.textContent = `${els.questionInput.value.length} / 200`;
+      els.questionCounter.classList.toggle('invalid', len > 0 && len < 10);
+      els.toMood.disabled = len < 10;
+    }
+
+    function runShuffleAnimation() {
+      const cards = [...document.querySelectorAll('.choice-card')];
+      cards.forEach(card => card.classList.add('shuffling'));
+      setTimeout(() => cards.forEach(card => card.classList.remove('shuffling')), 1550);
+    }
+
+    function cardImageUrl(card) {
+      if (!card) return CARD_BACK_URL;
+      return card.image_url || `https://audio.readmelab.co.kr/tarot/basic/${card.id}.webp`;
+    }
+
+    function getKeywords(card) {
+      if (!card) return ['마음', '흐름', '선택'];
+      if (Array.isArray(card.keywords) && card.keywords.length) return card.keywords.slice(0, 3);
+      return CARD_KEYWORDS[card.id] || suitKeywords(card.id);
+    }
+
+    function suitKeywords(id) {
+      if (id >= 22 && id <= 35) return ['감정', '관계', '마음'];
+      if (id >= 36 && id <= 49) return ['현실', '안정', '가치'];
+      if (id >= 50 && id <= 63) return ['열정', '움직임', '시작'];
+      if (id >= 64 && id <= 77) return ['생각', '판단', '정리'];
+      return ['흐름', '선택', '가능성'];
+    }
+
+    function spawnCardParticles() {
+      els.popParticles.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const p = document.createElement('span');
+        p.className = 'particle-pop';
+        p.style.left = `${42 + Math.random() * 18}%`;
+        p.style.top = `${45 + Math.random() * 18}%`;
+        p.style.setProperty('--tx', `${(Math.random() - 0.5) * 120}px`);
+        p.style.setProperty('--ty', `${-30 - Math.random() * 70}px`);
+        els.popParticles.appendChild(p);
+      }
+      setTimeout(() => { els.popParticles.innerHTML = ''; }, 1600);
+    }
+
+    function revealFreeResult(data) {
+      state.sessionId = data.session_id;
+      state.cards = data.cards || [];
+      state.selectedCard = data.selected_card || state.cards[state.selectedIndex];
+
+      const selectedButton = document.querySelector(`.choice-card[data-index="${state.selectedIndex}"]`);
+      if (selectedButton) {
+        const frontImg = selectedButton.querySelector('.card-front img');
+        frontImg.src = cardImageUrl(state.selectedCard);
+        frontImg.alt = state.selectedCard?.name_ko || '선택된 카드';
+        selectedButton.querySelector('.card-flip').classList.add('flipped');
+        selectedButton.querySelector('.card-face').classList.remove('waiting-card');
+      }
+      document.querySelectorAll('.choice-card').forEach(card => {
+        if (Number(card.dataset.index) !== state.selectedIndex) card.classList.add('fade-away');
+      });
+      spawnCardParticles();
+      playSoftTone('flip');
+
+      setTimeout(() => {
+        els.selectedImage.src = cardImageUrl(state.selectedCard);
+        els.selectedImage.alt = state.selectedCard?.name_ko || '선택된 카드';
+        els.selectedName.textContent = state.selectedCard?.name_ko || '선택된 카드';
+        els.selectedKeywords.textContent = getKeywords(state.selectedCard).join(' • ');
+        els.freeMessage.textContent = data.free_result || '카드가 지금의 마음을 천천히 비추고 있어요. 조금 더 들여다보면, 흐름 안에 숨어 있던 단서가 보일 수 있어요.';
+        showStep(els.freeResultStep);
+      }, 900);
+    }
+
+    async function chooseCard(index) {
+      if (state.isStarting) return;
+      state.isStarting = true;
+      state.selectedIndex = index;
+
+      const selectedButton = document.querySelector(`.choice-card[data-index="${index}"]`);
+      selectedButton?.querySelector('.card-face')?.classList.add('waiting-card');
+      document.querySelectorAll('.choice-card').forEach(card => card.disabled = true);
+
+      try {
+        const result = await apiCall('/api/tarot/free/start', {
+          method: 'POST',
+          body: JSON.stringify({
+            user_question: state.question,
+            mood: state.mood,
+            selected_card_index: index,
+          }),
+        });
+
+        if (!result.ok || !result.data?.success) {
+          handleStartError(result.status, result.data);
+          return;
+        }
+        revealFreeResult(result.data);
+      } catch (error) {
+        showError('잠시 연결이 흐려졌어요', '잠시 후 다시 시도해주세요.', () => location.reload());
+      } finally {
+        state.isStarting = false;
+      }
+    }
+
+    function handleStartError(status, data = {}) {
+      document.querySelectorAll('.choice-card').forEach(card => {
+        card.disabled = false;
+        card.querySelector('.card-face')?.classList.remove('waiting-card');
+      });
+      if (status === 422 && data.error === 'content_blocked') {
+        showError('다른 고민으로 다시 써볼게요', data.user_message || '이 질문은 타로로 답하기 어려운 주제예요. 다른 고민으로 다시 시도해주세요.', () => showStep(els.questionStep));
+        return;
+      }
+      if (status === 429) {
+        showError('오늘의 무료 흐름을 모두 보셨어요', data.user_message || '오늘 무료 뽑기는 모두 사용하셨어요. 내일 다시 만나요.', () => showStep(els.questionStep));
+        return;
+      }
+      showError('잠시 멈춰볼게요', data.user_message || '잠시 후 다시 시도해주세요.', () => location.reload());
+    }
+
+    function showError(title, message, action) {
+      els.errorTitle.textContent = title;
+      els.errorMessage.textContent = message;
+      els.errorAction.onclick = () => {
+        els.errorModal.classList.remove('active');
+        if (typeof action === 'function') action();
+      };
+      els.errorModal.classList.add('active');
+    }
+
+    async function startPayment() {
+      if (!state.sessionId || !state.selectedProduct || state.isPaying) return;
+      state.isPaying = true;
+      els.paymentLoading.classList.add('active');
+      try {
+        const result = await apiCall('/api/tarot/free/order', {
+          method: 'POST',
+          body: JSON.stringify({ session_id: state.sessionId, product_type: state.selectedProduct }),
+        });
+        if (!result.ok || !result.data?.success) {
+          throw new Error(result.data?.user_message || '결제 주문을 만들지 못했어요.');
+        }
+
+        const data = result.data;
+        const tossPayments = TossPayments(data.toss_client_key);
+        await tossPayments.requestPayment('카드', {
+          amount: data.amount,
+          orderId: data.order_id,
+          orderName: data.product_title,
+          successUrl: `${location.origin}/tarot/result.html?token=${data.result_token}`,
+          failUrl: `${location.origin}/tarot/fail.html`,
+        });
+      } catch (error) {
+        els.paymentLoading.classList.remove('active');
+        showError('결제 페이지로 이동하지 못했어요', error.message || '잠시 후 다시 시도해주세요.', null);
+      } finally {
+        state.isPaying = false;
+      }
+    }
+
+    els.goQuestion.addEventListener('click', () => showStep(els.questionStep));
+    els.questionInput.addEventListener('input', updateQuestionState);
+    els.examplesToggle.addEventListener('click', () => {
+      els.examplesBox.classList.toggle('hidden');
+      els.examplesToggle.textContent = els.examplesBox.classList.contains('hidden') ? '예시 보기 ▾' : '예시 접기 ▴';
+    });
+    els.examplesBox.addEventListener('click', (event) => {
+      const btn = event.target.closest('.example-chip');
+      if (!btn) return;
+      els.questionInput.value = btn.textContent.trim();
+      updateQuestionState();
+      els.questionInput.focus();
+    });
+    els.toMood.addEventListener('click', () => {
+      state.question = els.questionInput.value.trim();
+      showStep(els.moodStep);
+    });
+    document.querySelectorAll('.mood-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mood-card').forEach(el => el.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.mood = btn.dataset.mood;
+        setTimeout(() => { showStep(els.cardStep); runShuffleAnimation(); }, 280);
+      });
+    });
+    document.querySelectorAll('.choice-card').forEach(btn => {
+      btn.addEventListener('click', () => chooseCard(Number(btn.dataset.index)));
+    });
+    els.openProductModal.addEventListener('click', () => els.productModal.classList.add('active'));
+    document.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', () => els.productModal.classList.remove('active')));
+    els.productModal.addEventListener('click', (event) => {
+      if (event.target === els.productModal) els.productModal.classList.remove('active');
+    });
+    document.querySelectorAll('.product-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.product-card').forEach(el => el.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.selectedProduct = btn.dataset.product;
+        els.payButton.disabled = false;
+      });
+    });
+    els.payButton.addEventListener('click', startPayment);
+    els.soundToggle.addEventListener('click', () => {
+      state.soundOn = !state.soundOn;
+      els.soundToggle.setAttribute('aria-pressed', String(state.soundOn));
+      showToast(state.soundOn ? '소리를 켰어요' : '소리를 껐어요');
+      playSoftTone('chime');
+    });
+
+    updateQuestionState();
+  </script>
+</body>
+</html>
