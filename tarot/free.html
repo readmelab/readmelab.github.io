@@ -358,23 +358,86 @@
       letter-spacing: -.01em;
     }
     .question-meta .dot { color: var(--text-muted); margin: 0 7px; }
-    .result-cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 24px; }
-    .result-card { text-align:center; }
-    .result-image { width:100%; aspect-ratio:2/3; border-radius:14px; overflow:hidden; box-shadow: var(--shadow-card), 0 0 0 1px var(--border-subtle); background:var(--bg-secondary); }
-    .result-image img { width:100%; height:100%; object-fit:cover; display:block; }
-    .result-name { margin-top:10px; color:var(--gold-primary); font-family:var(--font-serif); font-size: 14px; line-height:1.3; }
-    .result-kw { margin-top:4px; color:var(--text-tertiary); font-size:10px; line-height:1.3; }
-    .message-box {
-      margin: 22px 0;
-      padding: 24px 18px;
-      border-radius: 24px;
-      background: rgba(26,20,40,.62);
+    /* 세로 배치 카드 박스 (v4.1 result) */
+    .position-cards { display:flex; flex-direction:column; gap: 16px; margin: 24px 0; }
+    .position-card {
+      position: relative;
+      padding: 18px 18px 20px;
+      border-radius: 22px;
       border: 1px solid var(--border-subtle);
+      background: linear-gradient(180deg, rgba(34,26,53,.55), rgba(26,20,40,.78));
       box-shadow: var(--shadow-card);
     }
-    .ornament-title { display:flex; align-items:center; gap:10px; justify-content:center; color:var(--gold-primary); font-size:12px; margin-bottom: 16px; }
-    .ornament-title::before, .ornament-title::after { content:''; height:1px; flex:1; background:var(--border-subtle); }
-    .free-text { white-space: pre-line; font-family:var(--font-serif); font-size:17px; line-height:1.85; letter-spacing:-.01em; color:var(--text-primary); text-align:left; }
+    .position-card.locked { background: linear-gradient(180deg, rgba(26,20,40,.62), rgba(15,10,26,.7)); }
+    .position-card.locked .pc-image img { filter: brightness(.55) saturate(.65); }
+    .pc-label {
+      display:flex; align-items:center; gap:10px;
+      color: var(--gold-primary);
+      font-size: 11px;
+      letter-spacing: .06em;
+      margin-bottom: 14px;
+    }
+    .pc-label::before, .pc-label::after { content:''; height:1px; flex:1; background:var(--border-subtle); }
+    .pc-head { display:flex; gap: 14px; align-items: stretch; }
+    .pc-image {
+      flex: none;
+      width: 88px;
+      aspect-ratio: 2/3;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-secondary);
+      box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 1px var(--border-subtle);
+    }
+    .pc-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter .4s ease; }
+    .pc-meta { flex: 1; display:flex; flex-direction:column; justify-content:center; min-width: 0; }
+    .pc-name {
+      font-family: var(--font-serif);
+      color: var(--gold-primary);
+      font-size: 19px;
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+    .pc-kw {
+      margin-top: 6px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -.01em;
+    }
+    .pc-body {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .pc-body-label {
+      color: var(--gold-primary);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: .04em;
+      margin-bottom: 10px;
+    }
+    .pc-body-text {
+      white-space: pre-line;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 1.8;
+      letter-spacing: -.01em;
+      color: var(--text-primary);
+    }
+    .pc-locked {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-family: var(--font-serif);
+      letter-spacing: -.01em;
+    }
+    .pc-locked .lock-emoji { font-size: 14px; opacity: .8; }
     .locked-box {
       margin-top: 16px;
       border:1px solid var(--border-subtle);
@@ -531,11 +594,7 @@
           <div id="questionBody" class="question-body"></div>
           <div id="questionMeta" class="question-meta"></div>
         </div>
-        <div id="resultCards" class="result-cards"></div>
-        <div class="message-box">
-          <div class="ornament-title">카드의 첫 메시지</div>
-          <div id="freeResultText" class="free-text"></div>
-        </div>
+        <div id="positionCards" class="position-cards"></div>
         <div class="locked-box">
           <div class="lock-icon">🔒</div>
           <div class="locked-title">카드 세 장의 전체 흐름이<br />아직 펼쳐지지 않았어요</div>
@@ -830,18 +889,60 @@
         const moodKo = MOOD_KO[state.mood] || '있는 그대로';
         qMeta.innerHTML = `${escapeHtml(catKo)}<span class="dot">·</span>${escapeHtml(moodKo)}<span class="dot">·</span>3장 해석`;
       }
-      els.resultCards.innerHTML = '';
+
+      // 3장 세로 배치 (포지션별)
+      const POSITIONS = [
+        { label: '지금 드러난 흐름' },
+        { label: '마음속 핵심' },
+        { label: '앞으로의 방향' }
+      ];
+      const wrap = document.getElementById('positionCards');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+
       state.selected.forEach((card, i) => {
+        const pos = POSITIONS[i] || { label: '카드' };
+        const isFirst = (i === 0);
         const box = document.createElement('div');
-        box.className = 'result-card';
-        box.innerHTML = `
-          <div class="result-image"><img src="${cardImage(card)}" alt="${escapeHtml(card.name_ko)}" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;display:grid;place-items:center;width:100%;height:100%;padding:10px;color:#C9A961;font-family:serif;text-align:center;&quot;>${escapeHtml(card.name_ko)}</div>'"></div>
-          <div class="result-name">${escapeHtml(card.name_ko)}</div>
-          <div class="result-kw">${escapeHtml((card.keywords || []).slice(0,3).join(' · '))}</div>
+        box.className = 'position-card' + (isFirst ? '' : ' locked');
+
+        const kwHtml = escapeHtml((card.keywords || []).slice(0, 3).join(' · '));
+        const imgFallback = `<div style="display:grid;place-items:center;width:100%;height:100%;padding:10px;color:#C9A961;font-family:serif;text-align:center;font-size:13px;">${escapeHtml(card.name_ko)}</div>`;
+
+        const head = `
+          <div class="pc-label">${escapeHtml(pos.label)}</div>
+          <div class="pc-head">
+            <div class="pc-image">
+              <img src="${cardImage(card)}" alt="${escapeHtml(card.name_ko)}"
+                   onerror="this.style.display='none';this.parentElement.innerHTML='${imgFallback.replace(/'/g, "&#39;")}'">
+            </div>
+            <div class="pc-meta">
+              <div class="pc-name">${escapeHtml(card.name_ko)}</div>
+              <div class="pc-kw">${kwHtml}</div>
+            </div>
+          </div>
         `;
-        els.resultCards.appendChild(box);
+
+        let body;
+        if (isFirst) {
+          body = `
+            <div class="pc-body">
+              <div class="pc-body-label">카드의 첫 메시지</div>
+              <div class="pc-body-text">${escapeHtml(text || '')}</div>
+            </div>
+          `;
+        } else {
+          body = `
+            <div class="pc-locked">
+              <span class="lock-emoji">🔒</span>
+              <span>결제하면 풀이가 펼쳐져요</span>
+            </div>
+          `;
+        }
+
+        box.innerHTML = head + body;
+        wrap.appendChild(box);
       });
-      els.freeResultText.textContent = text;
     }
 
     async function startPayment() {
