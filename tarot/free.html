@@ -310,6 +310,54 @@
       transition: left .52s cubic-bezier(.2,.9,.2,1), top .52s cubic-bezier(.2,.9,.2,1), width .52s cubic-bezier(.2,.9,.2,1), transform .52s cubic-bezier(.2,.9,.2,1), opacity .3s ease;
     }
 
+    .question-box {
+      position: relative;
+      margin: 20px 0 22px;
+      padding: 22px 22px 18px;
+      border-radius: 22px;
+      border: 1px solid var(--border-subtle);
+      background: linear-gradient(180deg, rgba(34,26,53,.55), rgba(26,20,40,.78));
+      box-shadow: inset 0 0 30px rgba(201,169,97,.03);
+    }
+    .question-box::before, .question-box::after {
+      position: absolute;
+      font-family: var(--font-serif);
+      color: var(--gold-primary);
+      font-size: 22px;
+      line-height: 1;
+      opacity: .55;
+      text-shadow: 0 0 12px var(--gold-glow);
+    }
+    .question-box::before { content: '“'; top: 10px; left: 14px; }
+    .question-box::after { content: '”'; bottom: 4px; right: 16px; }
+    .question-label {
+      font-family: var(--font-sans);
+      color: var(--gold-primary);
+      font-size: 11px;
+      letter-spacing: .06em;
+      margin-bottom: 12px;
+      text-transform: none;
+    }
+    .question-body {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.7;
+      letter-spacing: -.01em;
+      padding: 0 6px;
+      white-space: pre-line;
+      word-break: keep-all;
+    }
+    .question-meta {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-tertiary);
+      font-size: 12px;
+      letter-spacing: -.01em;
+    }
+    .question-meta .dot { color: var(--text-muted); margin: 0 7px; }
     .result-cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 24px; }
     .result-card { text-align:center; }
     .result-image { width:100%; aspect-ratio:2/3; border-radius:14px; overflow:hidden; box-shadow: var(--shadow-card), 0 0 0 1px var(--border-subtle); background:var(--bg-secondary); }
@@ -478,6 +526,11 @@
       <div class="stagger">
         <h2 class="section-title">당신의 카드<br />세 장이 놓였어요</h2>
         <p class="section-desc">먼저 첫 번째 카드가 지금 가장 가까운 메시지를 보여줘요.</p>
+        <div class="question-box">
+          <div class="question-label">당신이 건넨 마음</div>
+          <div id="questionBody" class="question-body"></div>
+          <div id="questionMeta" class="question-meta"></div>
+        </div>
         <div id="resultCards" class="result-cards"></div>
         <div class="message-box">
           <div class="ornament-title">카드의 첫 메시지</div>
@@ -768,6 +821,15 @@
     }
 
     function renderFreeResult(text) {
+      // 질문 + 카테고리/mood 노출
+      const qBody = document.getElementById('questionBody');
+      const qMeta = document.getElementById('questionMeta');
+      if (qBody) qBody.textContent = state.question || '';
+      if (qMeta) {
+        const catKo = CATEGORY_KO[state.category] || '흐름';
+        const moodKo = MOOD_KO[state.mood] || '있는 그대로';
+        qMeta.innerHTML = `${escapeHtml(catKo)}<span class="dot">·</span>${escapeHtml(moodKo)}<span class="dot">·</span>3장 해석`;
+      }
       els.resultCards.innerHTML = '';
       state.selected.forEach((card, i) => {
         const box = document.createElement('div');
