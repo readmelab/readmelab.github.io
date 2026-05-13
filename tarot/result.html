@@ -434,9 +434,18 @@
 
     function updateFollowQuota(data = state.data) {
       const max = Number(data?.follow_ups_max || (data?.product_type === 'premium' ? 3 : 2));
-      const remaining = Number(data?.follow_ups_remaining ?? data?.remaining_count ?? 0);
-      els.followCount.textContent = `남은 횟수: ${remaining} / ${max}`;
-      if (remaining <= 0) {
+      const freeRemaining = Number(data?.follow_ups_remaining ?? 0);
+      const paidGranted = Number(data?.paid_follow_up_count ?? 0);
+      const followUps = Array.isArray(data?.follow_ups) ? data.follow_ups : [];
+      const paidUsed = followUps.filter(f => f && f.is_paid_addon).length;
+      const paidRemaining = Math.max(0, paidGranted - paidUsed);
+      const totalRemaining = freeRemaining + paidRemaining;
+      if (paidRemaining > 0) {
+        els.followCount.textContent = `남은 횟수: 무료 ${freeRemaining}/${max} + 추가 ${paidRemaining}회`;
+      } else {
+        els.followCount.textContent = `남은 횟수: ${freeRemaining} / ${max}`;
+      }
+      if (totalRemaining <= 0) {
         els.followInputWrap.style.display = 'none';
         els.addonBox.classList.add('visible');
       } else {
