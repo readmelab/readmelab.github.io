@@ -1,164 +1,752 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>타로 결과 | 나를읽다</title>
-  <meta property="og:title" content="나를읽다 타로 결과" />
-  <meta property="og:description" content="그 사람의 마음을 카드로 열어봤어요." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F0A1A" />
+  <title>나를읽다 타로 — 결과</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+  <script src="https://js.tosspayments.com/v1/payment"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
-    :root{--midnight:#1a1428;--midnight-2:#241b37;--midnight-3:#100c19;--gold:#c9a961;--gold-light:#ead79d;--gold-deep:#8d7134;--lavender:#8b7aa8;--ivory:#f4e8d0;--muted:#c9bdd9;--danger:#e0a5a5;--font-display:'Instrument Serif','Noto Serif KR',serif;--font-serif:'Noto Serif KR',serif;--font-body:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif}
-    *{box-sizing:border-box}body{margin:0;background:var(--midnight);color:var(--ivory);font-family:var(--font-body)}body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");opacity:.06;pointer-events:none;z-index:50;mix-blend-mode:screen}.page{max-width:460px;margin:0 auto;min-height:100vh;overflow:hidden;background:radial-gradient(circle at 50% -10%,rgba(201,169,97,.2),transparent 36%),radial-gradient(circle at 0% 28%,rgba(139,122,168,.25),transparent 35%),linear-gradient(180deg,var(--midnight) 0%,var(--midnight-2) 60%,var(--midnight-3) 100%);position:relative;box-shadow:0 0 80px rgba(0,0,0,.32)}.page::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(244,232,208,.38) 0 1px,transparent 1.5px),radial-gradient(circle,rgba(201,169,97,.28) 0 1px,transparent 1.5px);background-size:54px 54px,91px 91px;background-position:9px 17px,35px 5px;opacity:.22}.aura{position:absolute;border-radius:999px;filter:blur(58px);opacity:.48;animation:float 15s ease-in-out infinite}.aura1{width:220px;height:220px;background:#5b437f;top:60px;right:-100px}.aura2{width:230px;height:230px;background:#6e5527;top:430px;left:-115px;animation-delay:-5s}@keyframes float{50%{transform:translate(18px,-20px) scale(1.08)}}.display{font-family:var(--font-display)}.serif{font-family:var(--font-serif)}.glass{background:linear-gradient(180deg,rgba(36,27,55,.78),rgba(20,15,31,.72));backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(201,169,97,.24);box-shadow:0 24px 60px rgba(0,0,0,.32),inset 0 1px rgba(244,232,208,.06)}.small-caps{letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:var(--lavender)}.cta{background:linear-gradient(135deg,var(--gold-light) 0%,var(--gold) 48%,var(--gold-deep) 100%);color:#1b1425;box-shadow:0 18px 35px rgba(201,169,97,.28);transition:.25s}.cta:active{transform:scale(.97)}.card-img{width:178px;height:296px;object-fit:cover;border-radius:20px;box-shadow:0 32px 62px rgba(0,0,0,.45);border:1px solid rgba(201,169,97,.38)}.section-card{min-height:180px}.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.reveal.revealed{opacity:1;transform:translateY(0)}.dot{width:12px;height:12px;border-radius:50%;background:var(--gold);opacity:.25;animation:pulse 1.2s infinite}.dot:nth-child(2){animation-delay:.22s}.dot:nth-child(3){animation-delay:.44s}@keyframes pulse{50%{opacity:1;transform:scale(1.25)}}.loading-copy{min-height:56px}.bento{display:grid;grid-template-columns:1fr;gap:16px}.share-btn{background:rgba(244,232,208,.08);border:1px solid rgba(201,169,97,.2);color:var(--ivory)}.addon-btn{width:100%;text-align:left;border-radius:22px;padding:20px;background:rgba(26,20,40,.62);border:1px solid rgba(201,169,97,.2);transition:.2s;cursor:pointer;font-family:var(--font-body);color:var(--ivory)}.addon-btn:hover{background:rgba(201,169,97,.1);transform:translateY(-1px)}.addon-btn:active{transform:scale(.98)}.addon-btn b{display:block;font-size:15px;color:var(--ivory);margin-bottom:4px}.addon-btn span{display:block;font-size:13px;color:var(--muted)}.muted{color:var(--muted)}.body-text{color:var(--muted);white-space:pre-line}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(16px);width:min(400px,calc(100vw - 32px));background:rgba(16,12,25,.95);border:1px solid rgba(201,169,97,.3);border-radius:999px;color:var(--ivory);padding:14px 18px;text-align:center;font-size:13px;z-index:80;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    :root {
+      --bg-primary: #0F0A1A;
+      --bg-secondary: #1A1428;
+      --bg-tertiary: #221A35;
+      --text-primary: #F4E8D0;
+      --text-secondary: #C9B8D9;
+      --text-tertiary: #8B7AA8;
+      --text-muted: #5C4F77;
+      --gold-primary: #C9A961;
+      --gold-bright: #E0BF7A;
+      --gold-soft: #A89050;
+      --gold-glow: rgba(201, 169, 97, 0.25);
+      --lavender: #8B7AA8;
+      --rose: #D4A5A5;
+      --ash: #7A8896;
+      --border-subtle: rgba(201, 169, 97, 0.15);
+      --border-strong: rgba(201, 169, 97, 0.4);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 40px rgba(201, 169, 97, 0.15);
+      --font-serif: 'Noto Serif KR', serif;
+      --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg-primary); min-height: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      letter-spacing: -0.02em;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(139, 122, 168, 0.18), transparent 38%),
+        radial-gradient(circle at 20% 20%, rgba(201, 169, 97, 0.05), transparent 25%),
+        linear-gradient(180deg, #0A0711 0%, var(--bg-primary) 48%, #090611 100%);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 25% 30%, rgba(244,232,208,0.42), transparent),
+        radial-gradient(1px 1px at 70% 60%, rgba(201,169,97,0.32), transparent),
+        radial-gradient(1px 1px at 40% 80%, rgba(244,232,208,0.28), transparent),
+        radial-gradient(1px 1px at 90% 20%, rgba(201,169,97,0.36), transparent),
+        radial-gradient(1px 1px at 10% 50%, rgba(244,232,208,0.20), transparent);
+      background-size: 200% 200%;
+      animation: starsDrift 60s linear infinite;
+      opacity: 0.75;
+      z-index: 0;
+    }
+    @keyframes starsDrift { from { background-position: 0% 0%; } to { background-position: 200% 200%; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes goldPulse { 0%, 100% { box-shadow: 0 0 20px var(--gold-glow); } 50% { box-shadow: 0 0 40px var(--gold-glow), 0 0 60px var(--gold-glow); } }
+    @keyframes rotateCard { from { transform: rotateY(0deg) translateY(0); } to { transform: rotateY(360deg) translateY(-3px); } }
+    @keyframes dotPulse { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.12); } }
+    @keyframes floatUp { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-110vh) translateX(20px); opacity: 0; } }
+    @keyframes shimmerMove { to { left: 100%; } }
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(26,20,40,.72), rgba(15,10,26,.88));
+      box-shadow: 0 0 80px rgba(0,0,0,.35);
+      overflow: hidden;
+    }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: 42px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10,7,17,.76);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201,169,97,.06);
+    }
+    .brand, .back-link {
+      color: var(--text-primary);
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .back-link { font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); }
+    .more-btn {
+      width: 32px; height: 32px; border: 1px solid var(--border-subtle); border-radius: 999px;
+      background: rgba(201,169,97,.07); color: var(--gold-primary); font-size: 18px;
+    }
+    main { min-height: calc(100vh - 42px); }
+    .screen { display: none; padding: 34px 20px calc(40px + var(--safe-bottom)); }
+    .screen.active { display: block; }
+    .stagger > * { opacity: 0; animation: fadeUp .6s cubic-bezier(.4,0,.2,1) forwards; }
+    .stagger > *:nth-child(1) { animation-delay: .05s; }
+    .stagger > *:nth-child(2) { animation-delay: .11s; }
+    .stagger > *:nth-child(3) { animation-delay: .17s; }
+    .stagger > *:nth-child(4) { animation-delay: .23s; }
+    .stagger > *:nth-child(5) { animation-delay: .29s; }
+    .stagger > .loading-card {
+      opacity: 1;
+      animation: rotateCard 8s linear infinite;
+    }
+    .generating {
+      min-height: calc(100vh - 42px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .particle-field { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .particle { position: absolute; bottom: -20px; width: 4px; height: 4px; background: var(--gold-primary); border-radius: 50%; box-shadow: 0 0 8px var(--gold-glow); animation: floatUp linear infinite; opacity: 0; }
+    .loading-card {
+      width: 124px;
+      aspect-ratio: 2 / 3;
+      margin: 0 auto 28px;
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      background:
+        radial-gradient(circle at 50% 35%, rgba(201,169,97,.15), transparent 32%),
+        linear-gradient(145deg, #221A35, #0F0A1A);
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+      animation: rotateCard 8s linear infinite;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+    .loading-card::before { content:'✦'; position:absolute; inset: 10px; border:1px solid rgba(201,169,97,.25); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--gold-primary); font-size:30px; font-family:var(--font-serif); }
+    .loading-title { font-family: var(--font-serif); font-size: 30px; line-height: 1.35; margin: 0 0 14px; color: var(--text-primary); }
+    .loading-sub { color: var(--text-secondary); font-size: 15px; line-height: 1.7; margin: 0; }
+    .late-note { display:none; margin-top: 18px; color: var(--text-tertiary); font-size: 13px; line-height: 1.7; }
+    .late-note.visible { display:block; animation: fadeUp .6s ease forwards; }
+    .progress-dots { display:flex; gap:8px; justify-content:center; margin: 24px 0 12px; }
+    .progress-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-primary); opacity:.25; animation: dotPulse 1.6s ease-in-out infinite; }
+    .progress-dots i:nth-child(2){ animation-delay:.2s; } .progress-dots i:nth-child(3){ animation-delay:.4s; } .progress-dots i:nth-child(4){ animation-delay:.6s; } .progress-dots i:nth-child(5){ animation-delay:.8s; } .progress-dots i:nth-child(6){ animation-delay:1s; } .progress-dots i:nth-child(7){ animation-delay:1.2s; } .progress-dots i:nth-child(8){ animation-delay:1.4s; }
+    .question-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      background: rgba(34,26,53,.58);
+      padding: 24px 22px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      margin-bottom: 34px;
+    }
+    .quote-mark { color: var(--gold-primary); font-family: var(--font-serif); font-size: 28px; line-height: 1; opacity: .85; }
+    .question-text { font-family: var(--font-serif); font-style: italic; color: var(--text-secondary); font-size: 16px; line-height: 1.8; margin: 8px 0 14px; white-space: pre-wrap; }
+    .meta { font-size: 12px; color: var(--text-tertiary); }
+    .cards-area { margin: 0 0 38px; }
+    .cards-scroll { display:flex; gap:12px; overflow-x:auto; padding: 8px 2px 16px; scrollbar-width: none; }
+    .cards-scroll::-webkit-scrollbar { display: none; }
+    .result-card { flex: 0 0 31%; min-width: 104px; opacity:0; transform: translateY(12px); animation: fadeUp .6s cubic-bezier(.4,0,.2,1) forwards; }
+    .result-card:nth-child(1){ animation-delay:.1s; } .result-card:nth-child(2){ animation-delay:.4s; } .result-card:nth-child(3){ animation-delay:.7s; } .result-card:nth-child(4){ animation-delay:1s; } .result-card:nth-child(5){ animation-delay:1.3s; }
+    .card-thumb { width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; border: 1px solid var(--border-subtle); overflow:hidden; background: linear-gradient(145deg, #221A35, #0F0A1A); box-shadow: 0 8px 24px rgba(0,0,0,.32); animation: float 4s ease-in-out infinite; }
+    .card-thumb img { width:100%; height:100%; display:block; object-fit:cover; }
+    .card-thumb.fallback { display:flex; align-items:center; justify-content:center; padding:10px; text-align:center; color:var(--gold-primary); font-family:var(--font-serif); font-size:14px; line-height:1.45; }
+    .card-name-small { margin-top: 8px; color: var(--text-secondary); font-size: 11px; text-align:center; line-height:1.35; }
+    .card-list-name { text-align:center; color: var(--text-tertiary); font-size: 12px; line-height: 1.7; margin-top: 4px; }
+    .section-block { opacity:0; transform: translateY(12px); transition: opacity .7s ease, transform .7s ease; margin: 42px 0; }
+    .section-block.visible { opacity:1; transform: translateY(0); }
+    .section-title { display:flex; align-items:center; gap:10px; color: var(--gold-primary); font-family: var(--font-serif); font-size: 18px; justify-content:center; margin-bottom: 20px; }
+    .section-title::before, .section-title::after { content:''; height:1px; flex:1; background: var(--border-subtle); }
+    .section-title span::before, .section-title span::after { content:'◆'; font-size:10px; margin:0 8px; color: var(--gold-primary); }
+    .section-body { font-family: var(--font-serif); font-size: 17px; line-height: 1.85; letter-spacing: -0.01em; color: var(--text-primary); white-space: pre-wrap; }
+    .card-name-highlight { color: var(--gold-bright); font-family: var(--font-serif); text-shadow: 0 0 18px rgba(201,169,97,.18); }
+    .section-divider { color: var(--gold-primary); text-align:center; margin: 30px auto 10px; opacity:.9; }
+    .follow-box {
+      margin: 48px 0 34px;
+      padding: 24px 20px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      background: rgba(34,26,53,.48);
+      box-shadow: var(--shadow-card);
+    }
+    .follow-title { margin:0 0 8px; font-family:var(--font-serif); font-size:22px; color:var(--text-primary); }
+    .follow-count { margin:0 0 18px; color:var(--text-tertiary); font-size:13px; }
+    textarea { width:100%; min-height: 118px; resize:none; border:1px solid var(--border-subtle); border-radius:18px; padding:16px; color:var(--text-primary); background: rgba(15,10,26,.72); font-family:var(--font-sans); font-size:15px; line-height:1.6; outline:none; transition: border .4s ease, box-shadow .4s ease; }
+    textarea::placeholder { color: var(--text-muted); font-style: italic; }
+    textarea:focus { border-color: var(--border-strong); box-shadow: 0 0 0 4px rgba(201,169,97,.08); }
+    .counter { margin: 8px 4px 14px; text-align:right; color: var(--text-muted); font-size:12px; }
+    .btn { width:100%; min-height:52px; border:0; border-radius:999px; font-family:var(--font-sans); font-weight:700; font-size:15px; letter-spacing:-.02em; cursor:pointer; transition: transform .3s ease, box-shadow .3s ease, opacity .3s ease; }
+    .btn-primary { position:relative; overflow:hidden; color:#0F0A1A; background: linear-gradient(180deg, var(--gold-bright), var(--gold-primary)); box-shadow: 0 10px 28px rgba(201,169,97,.18); }
+    .btn-primary::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); }
+    .btn-primary:hover { transform: scale(1.02); box-shadow: 0 14px 36px rgba(201,169,97,.28); }
+    .btn-primary:hover::after { animation: shimmerMove .7s ease forwards; }
+    .btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+    .chat-list { display:flex; flex-direction:column; gap:14px; margin-bottom:18px; }
+    .bubble { max-width: 92%; padding: 14px 16px; border-radius: 18px; font-size: 14px; line-height:1.7; white-space:pre-wrap; }
+    .bubble.user { align-self:flex-end; color: var(--text-primary); background: rgba(139,122,168,.24); border: 1px solid rgba(139,122,168,.24); }
+    .bubble.ai { align-self:flex-start; background: rgba(15,10,26,.58); border: 1px solid var(--border-subtle); }
+    .bubble-card { color: var(--gold-primary); font-family: var(--font-serif); font-size: 13px; margin-bottom: 8px; }
+    .typing { display:inline-flex; gap:5px; align-items:center; }
+    .typing i { width:5px; height:5px; border-radius:50%; background: var(--gold-primary); animation: dotPulse 1.2s ease-in-out infinite; }
+    .typing i:nth-child(2){ animation-delay:.2s; } .typing i:nth-child(3){ animation-delay:.4s; }
+    .addon-box { display:none; text-align:center; padding: 22px 18px; border:1px solid var(--border-subtle); border-radius:22px; background: rgba(15,10,26,.45); }
+    .addon-box.visible { display:block; animation: fadeUp .5s ease forwards; }
+    .addon-box h3 { margin:0 0 10px; font-family:var(--font-serif); font-size:20px; color:var(--text-primary); }
+    .addon-box p { color:var(--text-secondary); line-height:1.7; margin:0 0 18px; }
+    .share-row { display:flex; gap:10px; margin: 18px 0; }
+    .btn-ghost { background: rgba(244,232,208,.05); border:1px solid var(--border-subtle); color: var(--text-secondary); }
+    .new-btn { margin-top: 8px; }
+    .status-screen { min-height: calc(100vh - 42px); display:flex; align-items:center; justify-content:center; text-align:center; padding: 40px 24px; }
+    .status-card { width:100%; padding: 32px 22px; border-radius:28px; border:1px solid var(--border-subtle); background: rgba(34,26,53,.72); box-shadow: var(--shadow-card); }
+    .status-card h1 { font-family:var(--font-serif); font-size:29px; line-height:1.35; margin: 0 0 14px; }
+    .status-card p { color:var(--text-secondary); line-height:1.75; margin:0 0 22px; }
+    .modal { position:fixed; inset:0; z-index:50; display:none; background:rgba(0,0,0,.82); backdrop-filter: blur(12px); align-items:center; justify-content:center; padding:24px; }
+    .modal.visible { display:flex; }
+    .modal-card { width:min(100%, 390px); max-height:88vh; overflow:auto; border-radius:24px; border:1px solid var(--border-subtle); background:#1A1428; box-shadow: var(--shadow-card); padding:20px; animation: fadeUp .35s ease forwards; }
+    .modal-close { float:right; border:0; background:transparent; color:var(--text-secondary); font-size:24px; }
+    .modal-image { width:68%; aspect-ratio:2/3; margin: 20px auto 18px; border-radius:16px; overflow:hidden; background:linear-gradient(145deg,#221A35,#0F0A1A); border:1px solid var(--border-subtle); }
+    .modal-image img { width:100%; height:100%; object-fit:cover; display:block; }
+    .modal h2 { clear:both; text-align:center; color:var(--gold-primary); font-family:var(--font-serif); margin:0 0 8px; }
+    .modal p { text-align:center; color:var(--text-secondary); line-height:1.7; }
+    .toast { position:fixed; left:50%; bottom:calc(24px + var(--safe-bottom)); transform:translateX(-50%) translateY(20px); opacity:0; z-index:80; padding:12px 16px; border-radius:999px; background:rgba(34,26,53,.96); border:1px solid var(--border-subtle); color:var(--text-primary); font-size:13px; transition:.35s ease; box-shadow:var(--shadow-card); pointer-events:none; }
+    .toast.visible { opacity:1; transform:translateX(-50%) translateY(0); }
+    .debug { margin-top:16px; color:var(--text-muted); font-size:11px; line-height:1.5; word-break:break-all; }
+    @media (min-width: 481px) { body { padding:0 18px; } .app { border-left:1px solid rgba(201,169,97,.05); border-right:1px solid rgba(201,169,97,.05); } }
   </style>
 </head>
 <body>
-  <main class="page pb-12">
-    <div class="aura aura1"></div><div class="aura aura2"></div>
-    <section id="loading" class="relative z-10 min-h-screen px-7 py-16 flex flex-col justify-center items-center text-center">
-      <div class="relative mb-9">
-        <div class="flex gap-3"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-      </div>
-      <h1 class="display text-[48px] leading-none mb-5">카드를<br><em class="italic text-[#c9a961]">읽고 있어요</em></h1>
-      <p id="loadingCopy" class="loading-copy text-[15px] leading-8 muted">카드가 말하는 흐름을 조심스럽게 정리하고 있어요.</p>
-      <p class="mt-8 text-[13px] text-[#8b7aa8]">최대 1분 정도 걸릴 수 있어요.</p>
-    </section>
-
-    <section id="resultView" class="relative z-10 hidden px-6 pt-12">
-      <p class="small-caps mb-8">read me lab · result</p>
-      <div class="text-center mb-12 reveal">
-        <p class="text-[13px] text-[#8b7aa8] mb-4">당신이 뽑은 카드</p>
-        <img id="mainCardImg" class="card-img mx-auto" alt="선택한 카드" loading="lazy" />
-        <h1 id="mainCardName" class="display italic text-[44px] leading-none mt-7"></h1>
-        <p class="text-[14px] muted mt-2">이 카드가 지금 관계의 첫 문을 열었어요</p>
-      </div>
-      <div id="freeBox" class="glass rounded-[30px] p-6 mb-6 reveal">
-        <p class="small-caps mb-3">first card</p>
-        <p id="freeResult" class="text-[15px] leading-8 body-text"></p>
-      </div>
-      <div id="sections" class="bento mb-9"></div>
-      <div class="glass rounded-[30px] p-6 mb-7 reveal">
-        <p class="small-caps mb-3">deeper?</p>
-        <h2 class="serif text-[30px] leading-tight">더 깊이<br>들어가볼까요?</h2>
-        <div id="addon-container" class="mt-5 space-y-3"></div>
-      </div>
-      <div class="glass rounded-[30px] p-6 reveal">
-        <h2 class="serif text-[29px] leading-tight mb-4">결과를<br>안전하게 보관하세요</h2>
-        <div class="grid grid-cols-2 gap-3">
-          <button onclick="copyLink()" class="share-btn rounded-full py-4 text-sm font-semibold">내 결과 링크</button>
-          <button onclick="recommendToFriend()" class="share-btn rounded-full py-4 text-sm font-semibold">친구에게 추천</button>
+  <div class="app">
+    <header class="header">
+      <a class="back-link" href="./free.html">← 처음으로</a>
+      <div class="brand">나를읽다</div>
+      <button class="more-btn" id="moreBtn" aria-label="더보기">⋯</button>
+    </header>
+    <main>
+      <section id="generatingScreen" class="screen generating active">
+        <div class="particle-field" id="particleField"></div>
+        <div class="stagger">
+          <div class="loading-card"></div>
+          <h1 class="loading-title">카드가 당신을<br>읽고 있어요</h1>
+          <div class="progress-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="loading-sub">잠시만 기다려주세요…<br>약 30초 이내에 완성돼요.</p>
+          <p class="late-note" id="lateNote">조금 더 오래 걸릴 수 있어요.<br>새로고침은 안 하셔도 돼요.</p>
         </div>
-        <p id="shareMsg" class="text-center text-[12px] text-[#8b7aa8] mt-3"></p>
-      </div>
-    </section>
+      </section>
 
-    <section id="errorView" class="hidden relative z-10 min-h-screen px-7 py-16 flex flex-col justify-center text-center">
-      <h1 class="display text-[52px] leading-none mb-5">잠시<br><em class="italic text-[#c9a961]">멈췄어요</em></h1>
-      <p id="errorMsg" class="text-[15px] leading-8 muted">결과를 불러오지 못했어요.</p>
-      <a href="./love-mind.html" class="cta rounded-full py-5 mt-8 font-bold">처음으로 돌아가기</a>
-    </section>
-  </main>
-  <div id="toast" class="toast"></div>
+      <section id="resultScreen" class="screen">
+        <div class="stagger">
+          <article class="question-card">
+            <div class="quote-mark">⌐</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="quote-mark" style="transform:rotate(180deg); width:max-content; margin-left:auto;">⌐</div>
+            <div class="meta" id="questionMeta"></div>
+          </article>
+          <section class="cards-area">
+            <div class="cards-scroll" id="cardsScroll"></div>
+            <div class="card-list-name" id="cardsNames"></div>
+          </section>
+        </div>
+        <div id="sectionsWrap"></div>
+        <section class="follow-box" id="followBox">
+          <h2 class="follow-title">💬 더 궁금한 게 있나요?</h2>
+          <p class="follow-count" id="followCount">남은 횟수: -</p>
+          <div class="chat-list" id="chatList"></div>
+          <div id="followInputWrap">
+            <textarea id="followInput" maxlength="200" placeholder="카드에게 더 물어보고 싶은 것을 적어주세요"></textarea>
+            <div class="counter" id="followCounter">0 / 200</div>
+            <button class="btn btn-primary" id="followSubmit" disabled>질문하기 →</button>
+          </div>
+          <div class="addon-box" id="addonBox">
+            <h3>💭 카드가 아직 보여주고 싶은 게 남았어요</h3>
+            <p>한 번 더 같이 들여다볼까요?</p>
+            <button class="btn btn-primary" id="addonBtn">한 번 더 물어보기 · 1,900원</button>
+          </div>
+        </section>
+        <section class="share-area">
+          <div class="share-row">
+            <button class="btn btn-ghost" id="copyBtn">🔗 링크 복사</button>
+            <button class="btn btn-ghost" id="kakaoBtn">💬 카톡 공유</button>
+          </div>
+          <button class="btn btn-primary new-btn" id="newReadingBtn">새로운 카드 만나기</button>
+        </section>
+      </section>
+
+      <section id="statusScreen" class="screen status-screen">
+        <div class="status-card">
+          <h1 id="statusTitle">카드가 잠시<br>고개를 돌렸어요</h1>
+          <p id="statusMessage">결과 생성에 문제가 생겼어요.<br>잠시 후 다시 시도해주세요.</p>
+          <button class="btn btn-primary" id="statusPrimary">새로고침</button>
+          <button class="btn btn-ghost" id="statusSecondary" style="margin-top:10px;">처음으로 돌아가기</button>
+          <div class="debug" id="debugBox"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="cardModal">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-image" id="modalImage"></div>
+      <h2 id="modalTitle"></h2>
+      <p id="modalKeywords"></p>
+    </div>
+  </div>
+  <div class="toast" id="toast">복사됐어요</div>
 
   <script>
-    const API_BASE='https://tarot-server-1075269376260.asia-northeast3.run.app';
-    const TOPIC_SLUG='love-mind';
-    const CARD_BACK_URL='https://audio.readmelab.co.kr/tarot/back/default.webp';
-    const url = new URL(location.href);
-    const token = url.searchParams.get('token');
-    if(token){ try{ localStorage.setItem('last_result_token', token); }catch(e){} }
-    const paymentKey = url.searchParams.get('paymentKey');
-    const orderId = url.searchParams.get('orderId');
-    const amount = url.searchParams.get('amount');
-    const copies=['카드가 말하는 흐름을 조심스럽게 정리하고 있어요.','지금 가장 중요한 감정의 결을 찾고 있어요.','당신이 놓치지 말아야 할 신호를 고르고 있어요.','조금만 더... 문장이 정리되고 있어요.','결과가 열리면 네 개의 흐름으로 보여드릴게요.'];
-    let copyIndex=0; setInterval(()=>{copyIndex=(copyIndex+1)%copies.length; const el=document.getElementById('loadingCopy'); if(!el || document.getElementById('loading').classList.contains('hidden')) return; gsap.to(el,{opacity:0,y:-6,duration:.25,onComplete:()=>{el.textContent=copies[copyIndex]; gsap.to(el,{opacity:1,y:0,duration:.35});}})},2600);
-    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('revealed')}),{threshold:.12});
+    (function() {
+      const url = new URL(location.href);
+      const devKey = url.searchParams.get('dev');
+      if (devKey) {
+        localStorage.setItem('admin_key', devKey);
+        url.searchParams.delete('dev');
+        history.replaceState(null, '', url.toString());
+      }
+      window.ADMIN_KEY = localStorage.getItem('admin_key') || '';
+    })();
 
-    boot();
-    async function boot(){
-      if(!token){ return showError('결과 토큰이 없어요. 링크를 다시 확인해 주세요.'); }
-      try{
-        if(paymentKey && orderId && amount){
-          const res=await fetch(`${API_BASE}/api/tarot/payment/confirm`,{method:'POST',headers:{'Content-Type':'application/json; charset=utf-8'},body:JSON.stringify({paymentKey, orderId, amount:Number(amount)})});
-          const data=await res.json(); if(!res.ok || data.success === false) throw new Error(data.detail || data.error || '결제 승인에 실패했어요.');
-          history.replaceState(null,'',`./result.html?token=${token}`);
-        }
-        await pollResult(token);
-      }catch(e){ showError(e.message); }
+    const BASE_URL = 'https://tarot-server-1075269376260.asia-northeast3.run.app';
+    const CATEGORY_KO = { love: '마음', career: '일', money: '돈', decision: '결정', relationship: '관계', self: '나', health: '건강', general: '흐름' };
+    const MOOD_KO = { positive: '따뜻하게', neutral: '있는 그대로', negative: '가감없이' };
+    const CARD_BACK = 'https://audio.readmelab.co.kr/tarot/basic/back.webp';
+
+    const els = {
+      generating: document.getElementById('generatingScreen'),
+      result: document.getElementById('resultScreen'),
+      status: document.getElementById('statusScreen'),
+      lateNote: document.getElementById('lateNote'),
+      particleField: document.getElementById('particleField'),
+      questionText: document.getElementById('questionText'),
+      questionMeta: document.getElementById('questionMeta'),
+      cardsScroll: document.getElementById('cardsScroll'),
+      cardsNames: document.getElementById('cardsNames'),
+      sectionsWrap: document.getElementById('sectionsWrap'),
+      followCount: document.getElementById('followCount'),
+      chatList: document.getElementById('chatList'),
+      followInput: document.getElementById('followInput'),
+      followCounter: document.getElementById('followCounter'),
+      followSubmit: document.getElementById('followSubmit'),
+      followInputWrap: document.getElementById('followInputWrap'),
+      addonBox: document.getElementById('addonBox'),
+      addonBtn: document.getElementById('addonBtn'),
+      copyBtn: document.getElementById('copyBtn'),
+      kakaoBtn: document.getElementById('kakaoBtn'),
+      newReadingBtn: document.getElementById('newReadingBtn'),
+      statusTitle: document.getElementById('statusTitle'),
+      statusMessage: document.getElementById('statusMessage'),
+      statusPrimary: document.getElementById('statusPrimary'),
+      statusSecondary: document.getElementById('statusSecondary'),
+      debugBox: document.getElementById('debugBox'),
+      cardModal: document.getElementById('cardModal'),
+      modalClose: document.getElementById('modalClose'),
+      modalImage: document.getElementById('modalImage'),
+      modalTitle: document.getElementById('modalTitle'),
+      modalKeywords: document.getElementById('modalKeywords'),
+      toast: document.getElementById('toast')
+    };
+
+    const state = {
+      token: '',
+      data: null,
+      pollCount: 0,
+      pollTimer: null,
+      confirmStarted: false,
+      isSubmittingFollow: false,
+      isAddonProcessing: false
+    };
+
+    function showScreen(name) {
+      [els.generating, els.result, els.status].forEach(el => el.classList.remove('active'));
+      if (name === 'generating') els.generating.classList.add('active');
+      if (name === 'result') els.result.classList.add('active');
+      if (name === 'status') els.status.classList.add('active');
     }
-    async function pollResult(t){
-      for(let i=0;i<60;i++){
-        const res=await fetch(`${API_BASE}/api/tarot/result/${t}`); const data=await res.json();
-        if(!res.ok || data.success === false) throw new Error(data.error || '결과를 불러오지 못했어요.');
-        if(data.mode==='full'){ return renderResult(data); }
-        if(data.mode==='failed'||data.mode==='timeout'){ return showError(data.generation_error || '해석 생성이 지연되고 있어요. 잠시 후 다시 확인해 주세요.'); }
-        await new Promise(r=>setTimeout(r,2000));
+
+    async function apiCall(path, options = {}) {
+      const headers = { 'Content-Type': 'application/json; charset=utf-8', ...(options.headers || {}) };
+      if (window.ADMIN_KEY) headers['X-Admin-Key'] = window.ADMIN_KEY;
+      const url = `${BASE_URL}${path}`;
+      console.log('[API request]', options.method || 'GET', url, options.body ? JSON.parse(options.body) : '');
+      const res = await fetch(url, { ...options, headers });
+      let data = null;
+      try { data = await res.json(); } catch (e) { data = { success:false, error:'invalid_json', user_message:'응답을 읽지 못했어요.' }; }
+      console.log('[API response]', res.status, data);
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    function spawnParticles(count = 6) {
+      els.particleField.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = 8 + Math.random() * 7 + 's';
+        p.style.animationDelay = Math.random() * 5 + 's';
+        els.particleField.appendChild(p);
       }
-      showError('결과를 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
     }
-    async function decodeImage(img){ try{ if(img.decode) await img.decode(); }catch(e){} }
-    async function renderResult(data){
-      document.getElementById('loading').classList.add('hidden'); document.getElementById('resultView').classList.remove('hidden');
-      const selected = data.selected_card || (data.selected_cards||[]).find(c=>String(c.id)===String(data.selected_card_id)) || (data.selected_cards||[])[0] || (data.cards||[])[0] || {};
-      const img=document.getElementById('mainCardImg'); img.src=selected.image_url || CARD_BACK_URL; img.onerror=()=>{img.onerror=null; img.src=CARD_BACK_URL}; await decodeImage(img);
-      document.getElementById('mainCardName').textContent=selected.name_ko || '선택한 카드';
-      document.getElementById('freeResult').textContent=data.free_result || '';
-      const wrap=document.getElementById('sections'); wrap.innerHTML='';
-      (data.sections||[]).forEach((s,idx)=>{
-        const div=document.createElement('article'); div.className='section-card glass rounded-[28px] p-6 reveal';
-        const num = String(idx+1).padStart(2,'0');
-        div.innerHTML=`<p class="small-caps mb-3">${num}</p><h3 class="serif text-[28px] leading-tight mb-4">${escapeHtml(s.title)}</h3><p class="text-[15px] leading-8 body-text">${escapeHtml(s.body)}</p>`;
-        wrap.appendChild(div);
+
+    function cardImageUrl(card) {
+      if (!card) return CARD_BACK;
+      return card.image_url || `https://audio.readmelab.co.kr/tarot/basic/${card.id}.webp`;
+    }
+
+    function escapeHtml(str = '') {
+      return String(str).replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch]));
+    }
+
+    function escapeRegExp(str = '') { return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+    function highlightCardNames(text = '', cards = []) {
+      let html = escapeHtml(text);
+      const names = [...new Set((cards || []).map(c => c && c.name_ko).filter(Boolean))].sort((a,b) => b.length - a.length);
+      names.forEach(name => {
+        const re = new RegExp(escapeRegExp(escapeHtml(name)), 'g');
+        html = html.replace(re, `<span class="card-name-highlight">${escapeHtml(name)}</span>`);
       });
-      renderAddons(data.topic_slug || TOPIC_SLUG);
-      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-      gsap.from('#mainCardImg',{y:24,opacity:0,scale:.94,duration:.8,ease:'power3.out'});
+      return html;
     }
-    async function renderAddons(topicSlug){
-      const container = document.getElementById('addon-container'); if(!container) return;
-      container.innerHTML = '<p class="text-[13px] text-[#8b7aa8] text-center py-3">추가 리딩을 불러오는 중이에요...</p>';
-      try {
-        const res = await fetch(`${API_BASE}/api/tarot/topic/${topicSlug}`); const data = await res.json();
-        if(!res.ok || data.success === false) throw new Error(data.error || '상품 정보를 불러오지 못했어요.');
-        const topic = data.topic || data;
-        const products = Array.isArray(data.products) ? data.products : (Array.isArray(topic.products) ? topic.products : []);
-        const addons = products.filter(p => p.type === 'addon');
-        container.innerHTML = '';
-        if(addons.length === 0){ container.innerHTML = '<p class="text-[13px] text-[#8b7aa8] text-center py-3">추가 리딩은 곧 열릴 예정이에요.</p>'; return; }
-        addons.forEach(p => {
-          const btn = document.createElement('button'); btn.className = 'addon-btn';
-          const price = (p.price != null) ? Number(p.price).toLocaleString('ko-KR') : '';
-          btn.innerHTML = `<b>${escapeHtml(p.title || '추가 리딩')}</b><span>${price ? '+' + escapeHtml(price) + '원 · ' : ''}곧 연결 예정</span>`;
-          btn.onclick = () => showToast('애드온 결제는 곧 열릴 예정이에요.');
-          container.appendChild(btn);
-        });
-      } catch(e){ console.warn('addon render failed', e); container.innerHTML = '<p class="text-[13px] text-[#8b7aa8] text-center py-3">추가 리딩을 불러오지 못했어요.</p>'; }
+
+    function showToast(message = '복사됐어요') {
+      els.toast.textContent = message;
+      els.toast.classList.add('visible');
+      setTimeout(() => els.toast.classList.remove('visible'), 2000);
     }
-    function showError(msg){ document.getElementById('loading').classList.add('hidden'); document.getElementById('resultView').classList.add('hidden'); document.getElementById('errorView').classList.remove('hidden'); document.getElementById('errorMsg').textContent=msg; }
-    function escapeHtml(str){return String(str||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-    async function copyLink(){try{await navigator.clipboard.writeText(location.href); msg('내 결과 링크를 복사했어요. 30일 동안 다시 볼 수 있어요.')}catch(e){msg('복사에 실패했어요. 주소창의 링크를 직접 복사해 주세요.')}}
-    async function recommendToFriend(){
-      const recommendUrl = 'https://readmelab.github.io/tarot/love-mind.html';
-      const text = '나를읽다 타로 한번 해봤는데 마음이 정리되더라. 너도 한번 해볼래?';
-      if(navigator.share){
-        try{
-          await navigator.share({title:'나를읽다 타로', text: text, url: recommendUrl});
-          msg('친구에게 공유했어요.');
-        }catch(e){}
+
+    function updateFollowQuota(data = state.data) {
+      const max = Number(data?.follow_ups_max || (data?.product_type === 'premium' ? 3 : 2));
+      const remaining = Number(data?.follow_ups_remaining ?? data?.remaining_count ?? 0);
+      els.followCount.textContent = `남은 횟수: ${remaining} / ${max}`;
+      if (remaining <= 0) {
+        els.followInputWrap.style.display = 'none';
+        els.addonBox.classList.add('visible');
       } else {
-        try{
-          await navigator.clipboard.writeText(text + ' ' + recommendUrl);
-          msg('추천 메시지를 복사했어요. 친구에게 붙여넣기 해주세요.');
-        }catch(e){
-          msg('복사에 실패했어요. 다시 시도해주세요.');
+        els.followInputWrap.style.display = 'block';
+        els.addonBox.classList.remove('visible');
+      }
+    }
+
+    function renderCard(card, index) {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'result-card';
+      item.style.background = 'transparent';
+      item.style.border = '0';
+      item.style.padding = '0';
+      item.style.color = 'inherit';
+      item.setAttribute('aria-label', `${card.name_ko} 확대`);
+      const thumb = document.createElement('div');
+      thumb.className = 'card-thumb';
+      const img = document.createElement('img');
+      img.src = cardImageUrl(card);
+      img.alt = card.name_ko || '타로 카드';
+      img.loading = 'lazy';
+      img.onerror = () => {
+        thumb.classList.add('fallback');
+        thumb.innerHTML = `<span>${escapeHtml(card.name_ko || '카드')}</span>`;
+      };
+      thumb.appendChild(img);
+      const name = document.createElement('div');
+      name.className = 'card-name-small';
+      name.textContent = card.name_ko || '';
+      item.appendChild(thumb);
+      item.appendChild(name);
+      item.addEventListener('click', () => openCardModal(card));
+      return item;
+    }
+
+    function openCardModal(card) {
+      els.modalImage.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = cardImageUrl(card);
+      img.alt = card.name_ko || '타로 카드';
+      img.onerror = () => { els.modalImage.innerHTML = `<div class="card-thumb fallback" style="width:100%;height:100%;"><span>${escapeHtml(card.name_ko || '카드')}</span></div>`; };
+      els.modalImage.appendChild(img);
+      els.modalTitle.textContent = card.name_ko || '카드';
+      els.modalKeywords.textContent = Array.isArray(card.keywords) ? card.keywords.join(' · ') : '';
+      els.cardModal.classList.add('visible');
+    }
+
+    function renderFollowUps(followUps = []) {
+      els.chatList.innerHTML = '';
+      followUps.forEach(f => {
+        if (f.question || f.follow_up_question) addBubble('user', f.question || f.follow_up_question);
+        if (f.answer || f.follow_up_answer) addBubble('ai', f.answer || f.follow_up_answer, f.used_card_name);
+      });
+    }
+
+    function addBubble(type, text, cardName) {
+      const b = document.createElement('div');
+      b.className = `bubble ${type}`;
+      if (type === 'ai' && cardName) {
+        const c = document.createElement('div');
+        c.className = 'bubble-card';
+        c.textContent = `✦ ${cardName}`;
+        b.appendChild(c);
+      }
+      const t = document.createElement('div');
+      t.innerHTML = type === 'ai' ? highlightCardNames(text, state.data?.paid_cards || []) : escapeHtml(text);
+      b.appendChild(t);
+      els.chatList.appendChild(b);
+      return b;
+    }
+
+    function addTypingBubble() {
+      const b = document.createElement('div');
+      b.className = 'bubble ai';
+      b.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>';
+      els.chatList.appendChild(b);
+      b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return b;
+    }
+
+    function setupSectionObserver() {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.section-block').forEach(el => io.observe(el));
+    }
+
+    function renderFull(data) {
+      state.data = data;
+      showScreen('result');
+      els.questionText.textContent = data.user_question || '';
+      const category = CATEGORY_KO[data.category] || '흐름';
+      const mood = MOOD_KO[data.mood] || '있는 그대로';
+      const count = (data.paid_cards || []).length || (data.product_type === 'premium' ? 5 : 3);
+      els.questionMeta.textContent = `· ${category} · ${mood} · ${count}장 해석`;
+
+      els.cardsScroll.innerHTML = '';
+      (data.paid_cards || []).forEach((card, idx) => els.cardsScroll.appendChild(renderCard(card, idx)));
+      els.cardsNames.textContent = (data.paid_cards || []).map(c => c.name_ko).filter(Boolean).join(' · ');
+
+      els.sectionsWrap.innerHTML = '';
+      (data.sections || []).forEach((section, idx) => {
+        const block = document.createElement('section');
+        block.className = 'section-block';
+        block.innerHTML = `
+          <h2 class="section-title"><span>${escapeHtml(section.title || '')}</span></h2>
+          <div class="section-body">${highlightCardNames(section.body || '', data.paid_cards || [])}</div>
+          ${idx < (data.sections || []).length - 1 ? '<div class="section-divider">✦</div>' : ''}
+        `;
+        els.sectionsWrap.appendChild(block);
+      });
+      setupSectionObserver();
+      renderFollowUps(data.follow_ups || []);
+      updateFollowQuota(data);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showStatus(type, message, debug = '') {
+      showScreen('status');
+      if (type === 'expired') {
+        els.statusTitle.innerHTML = '이 결과는 30일이 지나<br>숨을 거두었어요';
+        els.statusMessage.innerHTML = '기억은 사라져도<br>다음 카드는 늘 준비돼있어요';
+        els.statusPrimary.textContent = '새로운 카드 만나기';
+        els.statusPrimary.onclick = () => location.href = './free.html';
+      } else {
+        els.statusTitle.innerHTML = '카드가 잠시<br>고개를 돌렸어요';
+        els.statusMessage.innerHTML = escapeHtml(message || '결과 생성에 문제가 생겼어요. 잠시 후 다시 시도해주세요.').replace(/\n/g, '<br>') + '<br><br>영수증은 안전히 보관됐어요.<br>필요시 확인할 수 있어요.';
+        els.statusPrimary.textContent = '새로고침';
+        els.statusPrimary.onclick = () => location.reload();
+      }
+      els.statusSecondary.onclick = () => location.href = './free.html';
+      els.debugBox.textContent = debug;
+    }
+
+    async function confirmPaymentIfNeeded() {
+      const url = new URL(location.href);
+      const paymentKey = url.searchParams.get('paymentKey');
+      const orderId = url.searchParams.get('orderId');
+      const amount = url.searchParams.get('amount');
+      if (!paymentKey || !orderId || !amount || state.confirmStarted) return;
+      state.confirmStarted = true;
+      const isAddon = url.searchParams.get('addon') === '1' || Number(amount) === 1900;
+      const path = isAddon ? '/api/tarot/free/addon/payment/confirm' : '/api/tarot/free/payment/confirm';
+      apiCall(path, {
+        method: 'POST',
+        body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) })
+      }).then(({ status, data }) => {
+        if (!data?.success) console.warn('[payment confirm failed]', status, data);
+        const clean = new URL(location.href);
+        ['paymentKey', 'orderId', 'amount', 'addon'].forEach(k => clean.searchParams.delete(k));
+        history.replaceState(null, '', clean.toString());
+      }).catch(err => console.error('[payment confirm error]', err));
+    }
+
+    async function pollResult() {
+      if (!state.token) return;
+      state.pollCount += 1;
+      try {
+        const { ok, status, data } = await apiCall(`/api/tarot/free/result/${encodeURIComponent(state.token)}`);
+        if (status === 410 || data?.mode === 'expired' || data?.error === 'expired') {
+          clearInterval(state.pollTimer);
+          showStatus('expired', data?.user_message || '이 결과는 만료됐어요.');
+          return;
+        }
+        if (!ok && status !== 404) {
+          clearInterval(state.pollTimer);
+          showStatus('failed', data?.user_message || '결과를 불러오지 못했어요.', `status=${status} error=${data?.error || ''}`);
+          return;
+        }
+        if (data.mode === 'full') {
+          clearInterval(state.pollTimer);
+          renderFull(data);
+          return;
+        }
+        if (data.mode === 'failed' || data.mode === 'timeout') {
+          clearInterval(state.pollTimer);
+          showStatus(data.mode, data.user_message || '결과 생성 중 오류가 발생했어요.', `mode=${data.mode}`);
+          return;
+        }
+        if (data.mode === 'generating') {
+          showScreen('generating');
+          return;
+        }
+        if (state.pollCount >= 60) {
+          clearInterval(state.pollTimer);
+          showStatus('timeout', '결과 생성이 예상보다 오래 걸리고 있어요. 잠시 후 다시 확인해주세요.', 'client polling timeout');
+        }
+      } catch (err) {
+        console.error('[poll error]', err);
+        if (state.pollCount >= 3) {
+          clearInterval(state.pollTimer);
+          showStatus('failed', '잠시 연결이 흐려졌어요. 잠시 후 다시 시도해주세요.', String(err));
         }
       }
     }
-    
-    function msg(t){document.getElementById('shareMsg').textContent=t;}
-    function showToast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>el.classList.remove('show'),1800); }
+
+    function startPolling() {
+      clearInterval(state.pollTimer);
+      showScreen('generating');
+      spawnParticles(6);
+      setTimeout(() => els.lateNote.classList.add('visible'), 30000);
+      pollResult();
+      state.pollTimer = setInterval(pollResult, 2000);
+    }
+
+    async function submitFollowUp() {
+      const q = els.followInput.value.trim();
+      if (q.length < 5 || state.isSubmittingFollow) return;
+      state.isSubmittingFollow = true;
+      els.followSubmit.disabled = true;
+      addBubble('user', q);
+      els.followInput.value = '';
+      els.followCounter.textContent = '0 / 200';
+      const typing = addTypingBubble();
+      try {
+        const { status, data } = await apiCall('/api/tarot/free/follow-up', {
+          method: 'POST',
+          body: JSON.stringify({ result_token: state.token, follow_up_question: q })
+        });
+        typing.remove();
+        if (data?.success) {
+          addBubble('ai', data.follow_up_answer || '', data.used_card_name);
+          const remaining = Number(data.remaining_count ?? data.free_remaining ?? 0) + Number(data.paid_remaining ?? 0);
+          state.data.follow_ups_remaining = remaining;
+          updateFollowQuota(state.data);
+          els.chatList.lastElementChild?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        } else if (data?.error === 'quota_exceeded' || data?.upgrade_required) {
+          state.data.follow_ups_remaining = 0;
+          updateFollowQuota(state.data);
+          showToast(data.user_message || '추가 질문권이 필요해요');
+        } else {
+          showToast(data?.user_message || '질문을 보내지 못했어요');
+        }
+      } catch (err) {
+        typing.remove();
+        console.error(err);
+        showToast('잠시 후 다시 시도해주세요');
+      } finally {
+        state.isSubmittingFollow = false;
+        els.followSubmit.disabled = true;
+      }
+    }
+
+    async function startAddonPayment() {
+      if (state.isAddonProcessing) return;
+      state.isAddonProcessing = true;
+      els.addonBtn.disabled = true;
+      els.addonBtn.textContent = '결제 페이지로 이동 중이에요…';
+      try {
+        const { data } = await apiCall('/api/tarot/free/addon/order', {
+          method: 'POST',
+          body: JSON.stringify({ result_token: state.token })
+        });
+        if (!data?.success) throw new Error(data?.user_message || '추가 질문권 주문 생성 실패');
+        const tossPayments = TossPayments(data.toss_client_key);
+        const successUrl = `${location.origin}${location.pathname}?token=${encodeURIComponent(state.token)}&addon=1`;
+        await tossPayments.requestPayment('카드', {
+          amount: data.amount || 1900,
+          orderId: data.order_id,
+          orderName: data.product_title || '추가 질문권',
+          successUrl,
+          failUrl: `${location.origin}/tarot/fail.html?token=${encodeURIComponent(state.token)}`
+        });
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || '결제 연결에 실패했어요');
+        els.addonBtn.disabled = false;
+        els.addonBtn.textContent = '한 번 더 물어보기 · 1,900원';
+        state.isAddonProcessing = false;
+      }
+    }
+
+    function bindEvents() {
+      els.modalClose.addEventListener('click', () => els.cardModal.classList.remove('visible'));
+      els.cardModal.addEventListener('click', e => { if (e.target === els.cardModal) els.cardModal.classList.remove('visible'); });
+      els.followInput.addEventListener('input', () => {
+        const len = els.followInput.value.trim().length;
+        els.followCounter.textContent = `${els.followInput.value.length} / 200`;
+        els.followSubmit.disabled = len < 5 || state.isSubmittingFollow;
+      });
+      els.followSubmit.addEventListener('click', submitFollowUp);
+      els.addonBtn.addEventListener('click', startAddonPayment);
+      els.copyBtn.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(location.href); showToast('복사됐어요'); }
+        catch { showToast('주소를 복사하지 못했어요'); }
+      });
+      els.kakaoBtn.addEventListener('click', () => alert('준비 중이에요.'));
+      els.newReadingBtn.addEventListener('click', () => location.href = './free.html');
+      document.getElementById('moreBtn').addEventListener('click', () => showToast('결과 링크를 보관해두면 다시 볼 수 있어요'));
+    }
+
+    async function init() {
+      bindEvents();
+      const url = new URL(location.href);
+      state.token = url.searchParams.get('token') || url.searchParams.get('result_token') || '';
+      if (!state.token) {
+        showStatus('failed', '잘못된 접근입니다.', 'missing token');
+        return;
+      }
+      await confirmPaymentIfNeeded();
+      startPolling();
+    }
+
+    init();
   </script>
 </body>
 </html>
