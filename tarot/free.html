@@ -358,55 +358,95 @@
       letter-spacing: -.01em;
     }
     .question-meta .dot { color: var(--text-muted); margin: 0 7px; }
-    /* 세로 배치 카드 박스 (v4.1 result) */
-    .position-cards { display:flex; flex-direction:column; gap: 16px; margin: 24px 0; }
+    /* v4.1 결과 화면 — 1번 큰 카드 단독 + 2/3번 가로 2분할 */
+    .position-cards { display:flex; flex-direction:column; gap: 14px; margin: 24px 0; }
     .position-card {
       position: relative;
-      padding: 18px 18px 20px;
+      padding: 20px 18px 22px;
       border-radius: 22px;
       border: 1px solid var(--border-subtle);
       background: linear-gradient(180deg, rgba(34,26,53,.55), rgba(26,20,40,.78));
       box-shadow: var(--shadow-card);
     }
-    .position-card.locked { background: linear-gradient(180deg, rgba(26,20,40,.62), rgba(15,10,26,.7)); }
-    .position-card.locked .pc-image img { filter: brightness(.55) saturate(.65); }
+    .position-card.locked {
+      background: linear-gradient(180deg, rgba(26,20,40,.62), rgba(15,10,26,.7));
+    }
+    .position-card.locked .pc-image img { filter: brightness(.5) saturate(.6); }
+
     .pc-label {
       display:flex; align-items:center; gap:10px;
       color: var(--gold-primary);
       font-size: 11px;
       letter-spacing: .06em;
-      margin-bottom: 14px;
+      text-align: center;
+      justify-content: center;
+      margin-bottom: 16px;
     }
     .pc-label::before, .pc-label::after { content:''; height:1px; flex:1; background:var(--border-subtle); }
+
+    /* 1번 카드 (펼침) — 이미지 중앙 큼직 */
+    .position-card.featured { padding: 22px 20px 24px; }
+    .position-card.featured .pc-head {
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .position-card.featured .pc-image {
+      width: 60%;
+      max-width: 200px;
+    }
+    .position-card.featured .pc-meta {
+      text-align: center;
+      align-items: center;
+    }
+    .position-card.featured .pc-name { font-size: 22px; }
+    .position-card.featured .pc-kw { font-size: 12.5px; }
+
     .pc-head { display:flex; gap: 14px; align-items: stretch; }
     .pc-image {
       flex: none;
-      width: 88px;
       aspect-ratio: 2/3;
       border-radius: 12px;
       overflow: hidden;
       background: var(--bg-secondary);
       box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 1px var(--border-subtle);
+      position: relative;
     }
-    .pc-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter .4s ease; }
+    .pc-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: filter .4s ease;
+    }
+    .pc-image-fallback {
+      position:absolute; inset:0;
+      display:grid; place-items:center;
+      padding:10px;
+      color:var(--gold-primary);
+      font-family:var(--font-serif);
+      text-align:center;
+      font-size:13px;
+      line-height: 1.3;
+      background: var(--bg-secondary);
+    }
     .pc-meta { flex: 1; display:flex; flex-direction:column; justify-content:center; min-width: 0; }
     .pc-name {
       font-family: var(--font-serif);
       color: var(--gold-primary);
-      font-size: 19px;
+      font-size: 18px;
       line-height: 1.3;
       letter-spacing: -.02em;
     }
     .pc-kw {
       margin-top: 6px;
       color: var(--text-tertiary);
-      font-size: 12px;
+      font-size: 11.5px;
       line-height: 1.5;
       letter-spacing: -.01em;
     }
     .pc-body {
-      margin-top: 16px;
-      padding-top: 14px;
+      margin-top: 18px;
+      padding-top: 16px;
       border-top: 1px solid var(--border-subtle);
     }
     .pc-body-label {
@@ -415,29 +455,60 @@
       font-size: 11px;
       letter-spacing: .04em;
       margin-bottom: 10px;
+      text-align: center;
     }
     .pc-body-text {
       white-space: pre-line;
       font-family: var(--font-serif);
       font-size: 16px;
-      line-height: 1.8;
+      line-height: 1.85;
       letter-spacing: -.01em;
       color: var(--text-primary);
     }
     .pc-locked {
-      margin-top: 16px;
-      padding-top: 14px;
+      margin-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       color: var(--text-tertiary);
-      font-size: 13px;
+      font-size: 12px;
       font-family: var(--font-serif);
       letter-spacing: -.01em;
     }
-    .pc-locked .lock-emoji { font-size: 14px; opacity: .8; }
+    .pc-locked .lock-emoji { font-size: 13px; opacity: .8; }
+
+    /* 2/3번 카드 가로 2분할 */
+    .locked-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .locked-row .position-card {
+      padding: 14px 12px 16px;
+    }
+    .locked-row .pc-label {
+      font-size: 10px;
+      margin-bottom: 12px;
+    }
+    .locked-row .pc-head {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .locked-row .pc-image {
+      width: 78%;
+      max-width: 130px;
+    }
+    .locked-row .pc-meta {
+      text-align: center;
+      align-items: center;
+    }
+    .locked-row .pc-name { font-size: 15px; }
+    .locked-row .pc-kw { font-size: 10.5px; }
+    .locked-row .pc-locked { font-size: 11px; }
     .locked-box {
       margin-top: 16px;
       border:1px solid var(--border-subtle);
@@ -890,59 +961,90 @@
         qMeta.innerHTML = `${escapeHtml(catKo)}<span class="dot">·</span>${escapeHtml(moodKo)}<span class="dot">·</span>3장 해석`;
       }
 
-      // 3장 세로 배치 (포지션별)
-      const POSITIONS = [
-        { label: '지금 드러난 흐름' },
-        { label: '마음속 핵심' },
-        { label: '앞으로의 방향' }
-      ];
+      // 3장 배치: 1번 큰 카드 단독 + 2/3번 가로 2분할
+      const POSITIONS = ['지금 드러난 흐름', '마음속 핵심', '앞으로의 방향'];
       const wrap = document.getElementById('positionCards');
       if (!wrap) return;
       wrap.innerHTML = '';
 
-      state.selected.forEach((card, i) => {
-        const pos = POSITIONS[i] || { label: '카드' };
-        const isFirst = (i === 0);
+      function buildCard(card, label, isFirst) {
         const box = document.createElement('div');
-        box.className = 'position-card' + (isFirst ? '' : ' locked');
+        box.className = 'position-card' + (isFirst ? ' featured' : ' locked');
 
-        const kwHtml = escapeHtml((card.keywords || []).slice(0, 3).join(' · '));
-        const imgFallback = `<div style="display:grid;place-items:center;width:100%;height:100%;padding:10px;color:#C9A961;font-family:serif;text-align:center;font-size:13px;">${escapeHtml(card.name_ko)}</div>`;
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'pc-label';
+        labelDiv.textContent = label;
+        box.appendChild(labelDiv);
 
-        const head = `
-          <div class="pc-label">${escapeHtml(pos.label)}</div>
-          <div class="pc-head">
-            <div class="pc-image">
-              <img src="${cardImage(card)}" alt="${escapeHtml(card.name_ko)}"
-                   onerror="this.style.display='none';this.parentElement.innerHTML='${imgFallback.replace(/'/g, "&#39;")}'">
-            </div>
-            <div class="pc-meta">
-              <div class="pc-name">${escapeHtml(card.name_ko)}</div>
-              <div class="pc-kw">${kwHtml}</div>
-            </div>
-          </div>
-        `;
+        const head = document.createElement('div');
+        head.className = 'pc-head';
 
-        let body;
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'pc-image';
+        const img = document.createElement('img');
+        img.src = cardImage(card);
+        img.alt = card.name_ko || '';
+        img.addEventListener('error', () => {
+          img.style.display = 'none';
+          if (!imgWrap.querySelector('.pc-image-fallback')) {
+            const fb = document.createElement('div');
+            fb.className = 'pc-image-fallback';
+            fb.textContent = card.name_ko || '';
+            imgWrap.appendChild(fb);
+          }
+        });
+        imgWrap.appendChild(img);
+
+        const meta = document.createElement('div');
+        meta.className = 'pc-meta';
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'pc-name';
+        nameDiv.textContent = card.name_ko || '';
+        const kwDiv = document.createElement('div');
+        kwDiv.className = 'pc-kw';
+        kwDiv.textContent = (card.keywords || []).slice(0, 3).join(' · ');
+        meta.appendChild(nameDiv);
+        meta.appendChild(kwDiv);
+
+        head.appendChild(imgWrap);
+        head.appendChild(meta);
+        box.appendChild(head);
+
         if (isFirst) {
-          body = `
-            <div class="pc-body">
-              <div class="pc-body-label">카드의 첫 메시지</div>
-              <div class="pc-body-text">${escapeHtml(text || '')}</div>
-            </div>
-          `;
+          const body = document.createElement('div');
+          body.className = 'pc-body';
+          const bl = document.createElement('div');
+          bl.className = 'pc-body-label';
+          bl.textContent = '카드의 첫 메시지';
+          const bt = document.createElement('div');
+          bt.className = 'pc-body-text';
+          bt.textContent = text || '';
+          body.appendChild(bl);
+          body.appendChild(bt);
+          box.appendChild(body);
         } else {
-          body = `
-            <div class="pc-locked">
-              <span class="lock-emoji">🔒</span>
-              <span>결제하면 풀이가 펼쳐져요</span>
-            </div>
-          `;
+          const locked = document.createElement('div');
+          locked.className = 'pc-locked';
+          locked.innerHTML = '<span class="lock-emoji">🔒</span><span>결제하면 풀이가 펼쳐져요</span>';
+          box.appendChild(locked);
         }
 
-        box.innerHTML = head + body;
-        wrap.appendChild(box);
-      });
+        return box;
+      }
+
+      // 1번 카드 (단독)
+      if (state.selected[0]) {
+        wrap.appendChild(buildCard(state.selected[0], POSITIONS[0], true));
+      }
+
+      // 2번 + 3번 카드 (가로 2분할)
+      if (state.selected[1] || state.selected[2]) {
+        const row = document.createElement('div');
+        row.className = 'locked-row';
+        if (state.selected[1]) row.appendChild(buildCard(state.selected[1], POSITIONS[1], false));
+        if (state.selected[2]) row.appendChild(buildCard(state.selected[2], POSITIONS[2], false));
+        wrap.appendChild(row);
+      }
     }
 
     async function startPayment() {
