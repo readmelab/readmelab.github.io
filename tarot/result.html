@@ -194,7 +194,7 @@
       position: relative;
       animation: float 4s ease-in-out infinite;
     }
-    .section-card-image img {
+    .section-card-image img, .section-card-image video {
       width: 100%; height: 100%;
       object-fit: cover;
       display: block;
@@ -378,6 +378,7 @@
     const CATEGORY_KO = { love: '마음', career: '일', money: '돈', decision: '결정', relationship: '관계', self: '나', health: '건강', general: '흐름' };
     const MOOD_KO = { positive: '따뜻하게', neutral: '있는 그대로', negative: '가감없이' };
     const CARD_BACK = 'https://audio.readmelab.co.kr/tarot/basic/back.webp';
+    const CARD_BACK_VIDEO = 'https://audio.readmelab.co.kr/tarot/basic/back.webm';
 
     const els = {
       generating: document.getElementById('generatingScreen'),
@@ -458,6 +459,13 @@
     function cardImageUrl(card) {
       if (!card) return CARD_BACK;
       return card.image_url || `https://audio.readmelab.co.kr/tarot/basic/${card.id}.webp`;
+    }
+
+    function cardVideoUrl(card) {
+      if (!card) return CARD_BACK_VIDEO;
+      const img = card.image_url;
+      if (img && img.endsWith('.webp')) return img.replace(/\.webp$/, '.webm');
+      return `https://audio.readmelab.co.kr/tarot/basic/${card.id}.webm`;
     }
 
     function escapeHtml(str = '') {
@@ -618,7 +626,7 @@
           cardHead = `
             <div class="section-card-head">
               <div class="section-card-image">
-                <img src="${imgUrl}" alt="${safeName}" data-name="${safeName}">
+                <video src="${cardVideoUrl(card)}" poster="${imgUrl}" autoplay muted loop playsinline aria-label="${safeName}"></video>
               </div>
               <div class="section-card-meta">
                 <div class="section-card-name">${safeName}</div>

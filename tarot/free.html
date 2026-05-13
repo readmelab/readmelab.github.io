@@ -270,7 +270,7 @@
     .card-back::before { content:'✦'; color:var(--gold-primary); font-size:22px; text-shadow:0 0 16px var(--gold-glow); }
     .card-back::after { content:''; position:absolute; inset:7px; border:1px solid rgba(201,169,97,.28); border-radius:10px; }
     .card-front { transform: rotateY(180deg); }
-    .card-front img { width:100%; height:100%; object-fit:cover; display:block; }
+    .card-front img, .card-front video { width:100%; height:100%; object-fit:cover; display:block; }
     .slot-card-inner.flipped { transform: rotateY(180deg); }
 
     .selected-area {
@@ -724,6 +724,7 @@
 
     const BASE_URL = 'https://tarot-server-1075269376260.asia-northeast3.run.app';
     const BACK_IMAGE = 'https://audio.readmelab.co.kr/tarot/basic/back.webp';
+    const BACK_VIDEO = 'https://audio.readmelab.co.kr/tarot/basic/back.webm';
     const CATEGORY_KO = { love: '마음', career: '일', money: '돈', decision: '결정', relationship: '관계', self: '나', health: '건강', general: '흐름' };
     const MOOD_KO = { positive: '따뜻하게', neutral: '있는 그대로', negative: '가감없이' };
 
@@ -788,6 +789,12 @@
 
     function cardImage(card) {
       return card?.image_url || `https://audio.readmelab.co.kr/tarot/basic/${card?.id}.webp`;
+    }
+
+    function cardVideo(card) {
+      const img = card?.image_url;
+      if (img && img.endsWith('.webp')) return img.replace(/\.webp$/, '.webm');
+      return `https://audio.readmelab.co.kr/tarot/basic/${card?.id}.webm`;
     }
 
     function preloadImages(cards) {
@@ -887,7 +894,8 @@
       stage.classList.add('has-card');
       const inner = createBackInner('slot-card-inner');
       const imgSrc = cardImage(card);
-      inner.querySelector('.card-front').innerHTML = `<img src="${imgSrc}" alt="${escapeHtml(card.name_ko)}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=&quot;display:grid;place-items:center;width:100%;height:100%;padding:10px;color:#C9A961;font-family:serif;text-align:center;font-size:13px;&quot;>${escapeHtml(card.name_ko)}</div>'">`;
+      const videoSrc = cardVideo(card);
+      inner.querySelector('.card-front').innerHTML = `<video src="${videoSrc}" poster="${imgSrc}" autoplay muted loop playsinline aria-label="${escapeHtml(card.name_ko)}"></video>`;
       stage.appendChild(inner);
       requestAnimationFrame(() => setTimeout(() => inner.classList.add('flipped'), 80));
       await wait(920);
