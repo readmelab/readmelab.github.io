@@ -117,11 +117,7 @@
     .stagger > *:nth-child(3) { animation-delay: .17s; }
     .stagger > *:nth-child(4) { animation-delay: .23s; }
     .stagger > *:nth-child(5) { animation-delay: .29s; }
-    .stagger > .loading-card {
-      opacity: 1;
-      animation: rotateCard 8s linear infinite;
-    }
-    .generating {
+    .screen.active.generating {
       min-height: calc(100vh - 42px);
       display: flex;
       flex-direction: column;
@@ -219,7 +215,7 @@
     .share-row { display:flex; gap:10px; margin: 18px 0; }
     .btn-ghost { background: rgba(244,232,208,.05); border:1px solid var(--border-subtle); color: var(--text-secondary); }
     .new-btn { margin-top: 8px; }
-    .status-screen { min-height: calc(100vh - 42px); display:flex; align-items:center; justify-content:center; text-align:center; padding: 40px 24px; }
+    .screen.active.status-screen { min-height: calc(100vh - 42px); display:flex; align-items:center; justify-content:center; text-align:center; padding: 40px 24px; }
     .status-card { width:100%; padding: 32px 22px; border-radius:28px; border:1px solid var(--border-subtle); background: rgba(34,26,53,.72); box-shadow: var(--shadow-card); }
     .status-card h1 { font-family:var(--font-serif); font-size:29px; line-height:1.35; margin: 0 0 14px; }
     .status-card p { color:var(--text-secondary); line-height:1.75; margin:0 0 22px; }
