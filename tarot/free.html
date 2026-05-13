@@ -495,11 +495,18 @@
     }
     .selected-image {
       width: min(62%, 260px);
+      aspect-ratio: 2 / 3;
       margin: 0 auto 22px;
       border-radius: 18px;
       overflow: hidden;
       box-shadow: var(--shadow-card), 0 0 0 1px var(--border-subtle), var(--shadow-glow);
       animation: float 4s ease-in-out infinite;
+    }
+    .selected-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .selected-name {
       margin: 0;
