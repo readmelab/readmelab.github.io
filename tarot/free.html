@@ -341,7 +341,15 @@
     .lock-icon { font-size: 22px; margin-bottom: 10px; }
     .locked-title { font-family:var(--font-serif); font-size:20px; line-height:1.45; }
     .locked-copy { margin:10px 0 0; color:var(--text-secondary); line-height:1.7; font-size:14px; }
-    .price-note { margin-top: 10px; text-align:center; color:var(--text-muted); font-size:12px; }
+    .value-divider { display:flex; align-items:center; gap:10px; margin:20px 0 16px; color:var(--gold-primary); font-size:11px; letter-spacing:.04em; }
+    .value-divider::before, .value-divider::after { content:''; height:1px; flex:1; background:var(--border-subtle); }
+    .value-list { display:flex; flex-direction:column; gap:14px; text-align:left; padding:0 4px; }
+    .value-item { display:flex; gap:12px; align-items:flex-start; }
+    .value-mark { flex:none; color:var(--gold-primary); font-size:14px; margin-top:3px; text-shadow:0 0 12px var(--gold-glow); }
+    .value-body { flex:1; }
+    .value-main { font-family:var(--font-serif); color:var(--text-primary); font-size:15px; line-height:1.5; }
+    .value-sub { margin-top:4px; color:var(--text-tertiary); font-size:12px; line-height:1.55; }
+    .price-note { margin-top: 12px; text-align:center; color:var(--text-muted); font-size:12px; }
 
     .toast {
       position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
@@ -477,10 +485,27 @@
         </div>
         <div class="locked-box">
           <div class="lock-icon">🔒</div>
-          <div class="locked-title">두 번째와 세 번째 카드는<br />아직 조용히 기다리고 있어요</div>
-          <p class="locked-copy">이 카드들이 함께 만드는 흐름까지 이어서 볼 수 있어요.</p>
+          <div class="locked-title">카드 세 장의 전체 흐름이<br />아직 펼쳐지지 않았어요</div>
+          <p class="locked-copy">방금 본 메시지는 첫 번째 카드의 짧은 인사예요.</p>
+          <div class="value-divider">결제하면 함께 만날 수 있어요</div>
+          <div class="value-list">
+            <div class="value-item">
+              <span class="value-mark">✦</span>
+              <div class="value-body">
+                <div class="value-main">세 장 카드 각각의 깊은 해석</div>
+                <div class="value-sub">지금 드러난 흐름 · 마음속 핵심 · 앞으로의 방향, 카드별로 풀어드려요</div>
+              </div>
+            </div>
+            <div class="value-item">
+              <span class="value-mark">✦</span>
+              <div class="value-body">
+                <div class="value-main">카드에게 다시 묻는 후속 질문 2회</div>
+                <div class="value-sub">같은 카드 안에서 다른 측면을 비춰주는 상담형 대화예요</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <button id="payBtn" class="btn btn-primary" type="button">나머지 두 장의 흐름까지 보기 → 4,900원</button>
+        <button id="payBtn" class="btn btn-primary" type="button">흐름을 끝까지 들여다보기 → 4,900원</button>
         <div class="price-note">안전한 토스 결제 · 부분 환불 가능</div>
       </div>
     </section>
