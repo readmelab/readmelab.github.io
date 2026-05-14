@@ -279,6 +279,58 @@
     .modal-image img { width:100%; height:100%; object-fit:cover; display:block; }
     .modal h2 { clear:both; text-align:center; color:var(--gold-primary); font-family:var(--font-serif); margin:0 0 8px; }
     .modal p { text-align:center; color:var(--text-secondary); line-height:1.7; }
+    /* === 이미지 저장 기능 === */
+    .btn-save-image {
+      width: 100%;
+      margin-top: 10px;
+      background: linear-gradient(135deg, rgba(201,169,97,.15), rgba(244,232,208,.05));
+      color: var(--gold-bright);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-save-image:hover { background: linear-gradient(135deg, rgba(201,169,97,.25), rgba(244,232,208,.08)); }
+    .save-image-modal {
+      position: fixed; inset: 0; z-index: 100;
+      display: none; place-items: center;
+      background: rgba(0,0,0,.92); backdrop-filter: blur(16px);
+      padding: 20px;
+    }
+    .save-image-modal.open { display: grid; }
+    .save-image-modal .preview-wrap {
+      width: min(100%, 360px);
+      max-height: 80vh;
+      display: flex; flex-direction: column; gap: 16px;
+      align-items: center;
+    }
+    .save-image-modal canvas {
+      width: 100%;
+      height: auto;
+      max-height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      border: 1px solid var(--border-strong);
+    }
+    .save-image-modal .save-actions { display: flex; gap: 10px; width: 100%; }
+    .save-image-modal .save-actions .btn { flex: 1; }
+    .save-image-loading {
+      display: grid; place-items: center;
+      height: 200px;
+      color: var(--gold-primary);
+      font-family: var(--font-serif);
+      font-size: 16px;
+    }
+    .save-image-loading::before {
+      content: '✦';
+      font-size: 32px;
+      animation: float 2s ease-in-out infinite;
+      margin-bottom: 12px;
+    }
+    .save-image-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 44px; height: 44px;
+      border-radius: 50%; border: 1px solid var(--border-subtle);
+      background: rgba(26,20,40,.8); color: var(--text-primary);
+      font-size: 20px; cursor: pointer;
+    }
     .toast { position:fixed; left:50%; bottom:calc(24px + var(--safe-bottom)); transform:translateX(-50%) translateY(20px); opacity:0; z-index:80; padding:12px 16px; border-radius:999px; background:rgba(34,26,53,.96); border:1px solid var(--border-subtle); color:var(--text-primary); font-size:13px; transition:.35s ease; box-shadow:var(--shadow-card); pointer-events:none; }
     .toast.visible { opacity:1; transform:translateX(-50%) translateY(0); }
     .debug { margin-top:16px; color:var(--text-muted); font-size:11px; line-height:1.5; word-break:break-all; }
@@ -335,6 +387,7 @@
             <button class="btn btn-ghost" id="copyBtn">🔗 링크 복사</button>
             <button class="btn btn-ghost" id="kakaoBtn">💬 카톡 공유</button>
           </div>
+          <button class="btn btn-save-image" id="saveImageBtn">✦ 결과를 이미지로 저장</button>
           <button class="btn btn-primary new-btn" id="newReadingBtn">새로운 카드 만나기</button>
         </section>
       </section>
@@ -360,6 +413,17 @@
     </div>
   </div>
   <div class="toast" id="toast">복사됐어요</div>
+<div class="save-image-modal" id="saveImageModal">
+  <button class="save-image-close" id="saveImageClose">×</button>
+  <div class="preview-wrap">
+    <div class="save-image-loading" id="saveImageLoading">이미지를 그리는 중이에요</div>
+    <canvas id="saveImageCanvas" width="1080" height="1920" style="display:none;"></canvas>
+    <div class="save-actions" id="saveImageActions" style="display:none;">
+      <button class="btn btn-ghost" id="saveImageCopy">📋 복사</button>
+      <button class="btn btn-primary" id="saveImageDownload">⬇ 다운로드</button>
+    </div>
+  </div>
+</div>
 
   <script>
     (function() {
@@ -411,7 +475,15 @@
       modalImage: document.getElementById('modalImage'),
       modalTitle: document.getElementById('modalTitle'),
       modalKeywords: document.getElementById('modalKeywords'),
-      toast: document.getElementById('toast')
+      toast: document.getElementById('toast'),
+      saveImageBtn: document.getElementById('saveImageBtn'),
+      saveImageModal: document.getElementById('saveImageModal'),
+      saveImageClose: document.getElementById('saveImageClose'),
+      saveImageLoading: document.getElementById('saveImageLoading'),
+      saveImageCanvas: document.getElementById('saveImageCanvas'),
+      saveImageActions: document.getElementById('saveImageActions'),
+      saveImageCopy: document.getElementById('saveImageCopy'),
+      saveImageDownload: document.getElementById('saveImageDownload')
     };
 
     const state = {
@@ -695,6 +767,308 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ====================================================================
+    // 9:16 비주얼 카드 자동 생성 시스템 (인스타 스토리용)
+    // ====================================================================
+    const SaveImage = (function() {
+      const W = 1080;
+      const H = 1920;
+      const COLORS = {
+        bgDark: '#0F0A1A', bgMid: '#1A1428',
+        gold: '#C9A961', goldBright: '#E0BF7A',
+        ivory: '#F4E8D0', lavender: '#C9B8D9', muted: '#8B7AA8'
+      };
+
+      async function loadImage(url) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error('img load failed: ' + url));
+          img.src = url;
+        });
+      }
+
+      function drawGradientBg(ctx) {
+        const grd = ctx.createLinearGradient(0, 0, 0, H);
+        grd.addColorStop(0, '#0A0711');
+        grd.addColorStop(0.5, COLORS.bgDark);
+        grd.addColorStop(1, '#080511');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, W, H);
+        const glow1 = ctx.createRadialGradient(W/2, -100, 50, W/2, -100, 600);
+        glow1.addColorStop(0, 'rgba(139, 122, 168, 0.25)');
+        glow1.addColorStop(1, 'rgba(139, 122, 168, 0)');
+        ctx.fillStyle = glow1;
+        ctx.fillRect(0, 0, W, 800);
+        const glow2 = ctx.createRadialGradient(W*0.8, 200, 50, W*0.8, 200, 400);
+        glow2.addColorStop(0, 'rgba(201, 169, 97, 0.15)');
+        glow2.addColorStop(1, 'rgba(201, 169, 97, 0)');
+        ctx.fillStyle = glow2;
+        ctx.fillRect(0, 0, W, 600);
+      }
+
+      function drawStars(ctx) {
+        const stars = [
+          { x: 270, y: 270, r: 2, alpha: 0.45, color: COLORS.ivory },
+          { x: 756, y: 460, r: 2, alpha: 0.35, color: COLORS.gold },
+          { x: 432, y: 750, r: 2, alpha: 0.30, color: COLORS.ivory },
+          { x: 972, y: 200, r: 2, alpha: 0.38, color: COLORS.gold },
+          { x: 108, y: 530, r: 1.5, alpha: 0.22, color: COLORS.ivory },
+          { x: 626, y: 1200, r: 2, alpha: 0.35, color: COLORS.gold },
+          { x: 200, y: 1500, r: 1.5, alpha: 0.28, color: COLORS.ivory },
+          { x: 880, y: 1700, r: 2, alpha: 0.32, color: COLORS.gold },
+          { x: 540, y: 1820, r: 1.5, alpha: 0.25, color: COLORS.ivory }
+        ];
+        stars.forEach(s => {
+          ctx.fillStyle = s.color;
+          ctx.globalAlpha = s.alpha;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+          const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 8);
+          glow.addColorStop(0, s.color);
+          glow.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.globalAlpha = s.alpha * 0.5;
+          ctx.fillStyle = glow;
+          ctx.fillRect(s.x - s.r*8, s.y - s.r*8, s.r*16, s.r*16);
+        });
+        ctx.globalAlpha = 1;
+      }
+
+      function drawHeader(ctx) {
+        ctx.fillStyle = COLORS.gold;
+        ctx.font = '38px serif';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(201, 169, 97, 0.6)';
+        ctx.shadowBlur = 20;
+        ctx.fillText('✦', W/2, 130);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = COLORS.ivory;
+        ctx.font = '300 42px "Noto Serif KR", serif';
+        ctx.fillText('나를읽다', W/2, 200);
+        ctx.fillStyle = COLORS.muted;
+        ctx.font = '24px "Noto Serif KR", serif';
+        ctx.fillText('READ ME LAB · TAROT', W/2, 235);
+      }
+
+      async function drawCards(ctx, cards) {
+        if (!cards || cards.length === 0) return;
+        const cardW = 220;
+        const cardH = 330;
+        const centerY = 660;
+        const count = Math.min(cards.length, 3);
+        const totalW = cardW * count + (count - 1) * 20;
+        const startX = (W - totalW) / 2;
+
+        for (let i = 0; i < count; i++) {
+          const card = cards[i];
+          const x = startX + i * (cardW + 20);
+          const y = centerY;
+          const rotation = (i - 1) * 0.06;
+          const imgUrl = card.image_url || ('https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.webp');
+
+          try {
+            const img = await loadImage(imgUrl);
+            ctx.save();
+            ctx.translate(x + cardW/2, y + cardH/2);
+            ctx.rotate(rotation);
+            ctx.shadowColor = 'rgba(0,0,0,0.6)';
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetY = 12;
+            const r = 14;
+            ctx.beginPath();
+            ctx.moveTo(-cardW/2 + r, -cardH/2);
+            ctx.lineTo(cardW/2 - r, -cardH/2);
+            ctx.quadraticCurveTo(cardW/2, -cardH/2, cardW/2, -cardH/2 + r);
+            ctx.lineTo(cardW/2, cardH/2 - r);
+            ctx.quadraticCurveTo(cardW/2, cardH/2, cardW/2 - r, cardH/2);
+            ctx.lineTo(-cardW/2 + r, cardH/2);
+            ctx.quadraticCurveTo(-cardW/2, cardH/2, -cardW/2, cardH/2 - r);
+            ctx.lineTo(-cardW/2, -cardH/2 + r);
+            ctx.quadraticCurveTo(-cardW/2, -cardH/2, -cardW/2 + r, -cardH/2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(img, -cardW/2, -cardH/2, cardW, cardH);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(201, 169, 97, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.restore();
+          } catch (e) {
+            ctx.save();
+            ctx.fillStyle = COLORS.bgMid;
+            ctx.fillRect(x, y, cardW, cardH);
+            ctx.strokeStyle = COLORS.gold;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, cardW, cardH);
+            ctx.fillStyle = COLORS.gold;
+            ctx.font = '40px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('✦', x + cardW/2, y + cardH/2 + 12);
+            ctx.restore();
+          }
+        }
+
+        ctx.fillStyle = COLORS.goldBright;
+        ctx.font = '300 28px "Noto Serif KR", serif';
+        ctx.textAlign = 'center';
+        const names = cards.slice(0, count).map(c => c.name_ko || '').join(' · ');
+        ctx.fillText(names, W/2, centerY + cardH + 60);
+      }
+
+      function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+        const chars = text.split('');
+        let line = '';
+        const lines = [];
+        for (const ch of chars) {
+          const testLine = line + ch;
+          if (ctx.measureText(testLine).width > maxWidth && line.length > 0) {
+            lines.push(line);
+            line = ch;
+            if (lines.length >= maxLines - 1) break;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line.length > 0) lines.push(line);
+        const sliced = lines.slice(0, maxLines);
+        sliced.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
+      }
+
+      function drawQuestion(ctx, question) {
+        const y = 1180;
+        ctx.fillStyle = COLORS.gold;
+        ctx.font = 'italic 48px "Noto Serif KR", serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('"', 100, y);
+        ctx.fillStyle = COLORS.lavender;
+        ctx.font = 'italic 28px "Noto Serif KR", serif';
+        const truncated = question.length > 60 ? question.slice(0, 60) + '...' : question;
+        wrapText(ctx, truncated, 140, y, W - 280, 40, 3);
+      }
+
+      function drawCoreMessage(ctx, sectionBody) {
+        if (!sectionBody) return;
+        const firstSentence = sectionBody.split(/[.。\n]/).map(s => s.trim()).filter(Boolean)[0] || '';
+        const text = firstSentence.length > 80 ? firstSentence.slice(0, 80) + '...' : firstSentence;
+        const lineY = 1430;
+        ctx.strokeStyle = 'rgba(201, 169, 97, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(W/2 - 200, lineY);
+        ctx.lineTo(W/2 - 30, lineY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(W/2 + 30, lineY);
+        ctx.lineTo(W/2 + 200, lineY);
+        ctx.stroke();
+        ctx.fillStyle = COLORS.gold;
+        ctx.font = '20px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('◆', W/2, lineY + 7);
+        ctx.fillStyle = COLORS.ivory;
+        ctx.font = '34px "Noto Serif KR", serif';
+        wrapText(ctx, text, W/2, lineY + 70, W - 200, 50, 3);
+      }
+
+      function drawFooter(ctx) {
+        const now = new Date();
+        const dateStr = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
+        const timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+        ctx.fillStyle = COLORS.muted;
+        ctx.font = '22px "Noto Serif KR", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(dateStr + ' · ' + timeStr, W/2, 1750);
+        ctx.fillStyle = COLORS.gold;
+        ctx.font = '24px "Noto Serif KR", serif';
+        ctx.fillText('readmelab.co.kr', W/2, 1820);
+        ctx.fillStyle = COLORS.gold;
+        ctx.font = '20px serif';
+        ctx.fillText('✦', W/2, 1860);
+      }
+
+      async function render(canvas, data) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, W, H);
+        drawGradientBg(ctx);
+        drawStars(ctx);
+        drawHeader(ctx);
+        await drawCards(ctx, data.paid_cards || []);
+        drawQuestion(ctx, data.user_question || '');
+        drawCoreMessage(ctx, (data.sections && data.sections[0]) ? data.sections[0].body : '');
+        drawFooter(ctx);
+      }
+
+      async function open() {
+        if (!state.data) {
+          showToast('결과 데이터를 먼저 불러와 주세요');
+          return;
+        }
+        els.saveImageModal.classList.add('open');
+        els.saveImageLoading.style.display = 'grid';
+        els.saveImageCanvas.style.display = 'none';
+        els.saveImageActions.style.display = 'none';
+        try {
+          if (document.fonts && document.fonts.ready) await document.fonts.ready;
+          await render(els.saveImageCanvas, state.data);
+          els.saveImageLoading.style.display = 'none';
+          els.saveImageCanvas.style.display = 'block';
+          els.saveImageActions.style.display = 'flex';
+        } catch (e) {
+          console.error('save-image render error:', e);
+          els.saveImageLoading.textContent = '이미지 생성에 실패했어요';
+        }
+      }
+
+      function close() {
+        els.saveImageModal.classList.remove('open');
+      }
+
+      function download() {
+        const dataUrl = els.saveImageCanvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        const ts = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        a.download = '나를읽다_' + ts + '.png';
+        a.href = dataUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('이미지를 저장했어요');
+      }
+
+      function copy() {
+        try {
+          els.saveImageCanvas.toBlob(async (blob) => {
+            if (!blob) { showToast('복사 실패'); return; }
+            try {
+              await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+              showToast('이미지가 복사됐어요');
+            } catch (err) {
+              console.error('clipboard write failed:', err);
+              showToast('복사 실패 — 다운로드를 사용해주세요');
+            }
+          }, 'image/png');
+        } catch (e) {
+          console.error('copy failed:', e);
+          showToast('복사 실패 — 다운로드를 사용해주세요');
+        }
+      }
+
+      function init() {
+        if (!els.saveImageBtn) return;
+        els.saveImageBtn.addEventListener('click', open);
+        els.saveImageClose.addEventListener('click', close);
+        els.saveImageModal.addEventListener('click', (e) => {
+          if (e.target === els.saveImageModal) close();
+        });
+        els.saveImageDownload.addEventListener('click', download);
+        els.saveImageCopy.addEventListener('click', copy);
+      }
+
+      return { init };
+    })();
+    SaveImage.init();
     function showStatus(type, message, debug = '') {
       showScreen('status');
       if (type === 'expired') {
