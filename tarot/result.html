@@ -625,7 +625,7 @@
           cardHead = `
             <div class="section-card-head">
               <div class="section-card-image">
-                <video src="${cardVideoUrl(card)}" poster="${imgUrl}" autoplay muted loop playsinline aria-label="${safeName}"></video>
+                <video src="${cardVideoUrl(card)}" poster="${imgUrl}" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-label="${safeName}"></video>
               </div>
               <div class="section-card-meta">
                 <div class="section-card-name">${safeName}</div>

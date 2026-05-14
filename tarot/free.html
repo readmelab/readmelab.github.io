@@ -895,7 +895,7 @@
       const inner = createBackInner('slot-card-inner');
       const imgSrc = cardImage(card);
       const videoSrc = cardVideo(card);
-      inner.querySelector('.card-front').innerHTML = `<video src="${videoSrc}" poster="${imgSrc}" autoplay muted loop playsinline aria-label="${escapeHtml(card.name_ko)}"></video>`;
+      inner.querySelector('.card-front').innerHTML = `<video src="${videoSrc}" poster="${imgSrc}" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-label="${escapeHtml(card.name_ko)}"></video>`;
       stage.appendChild(inner);
       requestAnimationFrame(() => setTimeout(() => inner.classList.add('flipped'), 80));
       await wait(920);
