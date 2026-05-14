@@ -528,7 +528,10 @@
     <header class="header">
       <a class="back-link" href="./free.html">← 처음으로</a>
       <div class="brand">나를읽다</div>
-      <button class="more-btn" id="moreBtn" aria-label="더보기">⋯</button>
+      <div class="header-actions">
+        <button class="sound-btn" id="soundToggle" type="button" aria-label="사운드 켜기">♪</button>
+        <button class="more-btn" id="moreBtn" aria-label="더보기">⋯</button>
+      </div>
     </header>
     <main>
       <section id="generatingScreen" class="screen generating active">
@@ -642,6 +645,262 @@
 </div>
 
   <script>
+    function createSoundSystem() {
+      const SOUND_TONES = [
+        261.63,261.63,293.66,293.66,329.63,349.23,349.23,392.00,440.00,440.00,493.88,
+        523.25,523.25,587.33,659.25,659.25,698.46,783.99,783.99,880.00,987.77,987.77,
+        261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77,
+        261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77,
+        261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77,
+        261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77
+      ];
+
+      const STORAGE_KEY = 'tarot_sound_enabled';
+      const HOVER_RATE_LIMIT_MS = 100;
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      let ctx = null;
+      let lastHoverAt = 0;
+
+      const api = {
+        enabled: localStorage.getItem(STORAGE_KEY) === 'true',
+        toggle, unlock, getContext,
+        playShuffle, playHover, playFlip,
+        playPaymentChime, playFollowupChime, vibrate
+      };
+
+      function getContext() {
+        if (!AudioContextClass) return null;
+        if (!ctx) ctx = new AudioContextClass();
+        return ctx;
+      }
+
+      function unlock() {
+        const audio = getContext();
+        if (audio && audio.state === 'suspended') {
+          return audio.resume().catch(() => {});
+        }
+        return Promise.resolve();
+      }
+
+      function toggle() {
+        api.enabled = !api.enabled;
+        localStorage.setItem(STORAGE_KEY, String(api.enabled));
+        if (api.enabled) {
+          unlock();
+          requestAnimationFrame(() => {
+            const audio = getContext();
+            if (audio && audio.state === 'running') {
+              playEnableChime();
+            } else if (audio && audio.state === 'suspended') {
+              audio.resume().then(() => playEnableChime()).catch(() => {});
+            }
+          });
+        }
+        return api.enabled;
+      }
+
+      function safeDisconnect(...nodes) {
+        window.setTimeout(() => {
+          nodes.forEach(node => {
+            try { node.disconnect(); } catch (_) {}
+          });
+        }, 900);
+      }
+
+      function makeGain(audio, gainValue, startTime, endTime) {
+        const gain = audio.createGain();
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, gainValue), startTime + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+        return gain;
+      }
+
+      function playTone(freq, durationMs, volume, type = 'sine', delayMs = 0, destination = null) {
+        if (!api.enabled) return;
+        const audio = getContext();
+        if (!audio) return;
+        const startTime = audio.currentTime + delayMs / 1000;
+        const endTime = startTime + durationMs / 1000;
+        const osc = audio.createOscillator();
+        const gain = makeGain(audio, volume, startTime, endTime);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, startTime);
+        osc.connect(gain);
+        gain.connect(destination || audio.destination);
+        osc.start(startTime);
+        osc.stop(endTime + 0.03);
+        safeDisconnect(osc, gain);
+      }
+
+      function playEnableChime() {
+        playTone(659.25, 100, 0.16, 'sine');
+      }
+
+      function playShuffle() {
+        if (!api.enabled) return;
+        const audio = getContext();
+        if (!audio) return;
+        const duration = 0.2;
+        const sampleRate = audio.sampleRate;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const buffer = audio.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.55;
+        }
+        const source = audio.createBufferSource();
+        const filter = audio.createBiquadFilter();
+        const gain = audio.createGain();
+        const t = audio.currentTime;
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(950, t);
+        filter.Q.setValueAtTime(0.65, t);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.15, t + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+        source.buffer = buffer;
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(audio.destination);
+        source.start(t);
+        source.stop(t + duration + 0.02);
+        safeDisconnect(source, filter, gain);
+      }
+
+      function playHover() {
+        if (!api.enabled) return;
+        const t = performance.now();
+        if (t - lastHoverAt < HOVER_RATE_LIMIT_MS) return;
+        lastHoverAt = t;
+        playTone(800, 50, 0.08, 'sine');
+      }
+
+      function playFlip(cardId) {
+        if (!api.enabled) return;
+        const audio = getContext();
+        if (!audio) return;
+        const id = Number(cardId);
+        const freq = SOUND_TONES[id] || 440;
+        const start = audio.currentTime;
+        const end = start + 0.3;
+        const osc = audio.createOscillator();
+        const gain = makeGain(audio, 0.18, start, end);
+        const dryGain = audio.createGain();
+        const delay1 = audio.createDelay();
+        const delay2 = audio.createDelay();
+        const delay3 = audio.createDelay();
+        const wet1 = audio.createGain();
+        const wet2 = audio.createGain();
+        const wet3 = audio.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+        dryGain.gain.value = 0.18;
+        delay1.delayTime.value = 0.08;
+        delay2.delayTime.value = 0.16;
+        delay3.delayTime.value = 0.24;
+        wet1.gain.value = 0.045;
+        wet2.gain.value = 0.025;
+        wet3.gain.value = 0.012;
+        osc.connect(gain);
+        gain.connect(dryGain);
+        dryGain.connect(audio.destination);
+        gain.connect(delay1);
+        gain.connect(delay2);
+        gain.connect(delay3);
+        delay1.connect(wet1);
+        delay2.connect(wet2);
+        delay3.connect(wet3);
+        wet1.connect(audio.destination);
+        wet2.connect(audio.destination);
+        wet3.connect(audio.destination);
+        osc.start(start);
+        osc.stop(end + 0.03);
+        safeDisconnect(osc, gain, dryGain, delay1, delay2, delay3, wet1, wet2, wet3);
+      }
+
+      function playPaymentChime() {
+        if (!api.enabled) return;
+        playTone(392.00, 200, 0.22, 'sine', 0);
+        playTone(493.88, 200, 0.20, 'sine', 200);
+        playTone(587.33, 200, 0.18, 'sine', 400);
+      }
+
+      function playFollowupChime() {
+        if (!api.enabled) return;
+        playTone(659.25, 150, 0.12, 'sine');
+        playTone(1200, 120, 0.045, 'sine', 18);
+      }
+
+      function vibrate(pattern) {
+        try {
+          if (!('vibrate' in navigator)) return;
+          navigator.vibrate(pattern);
+        } catch (_) {}
+      }
+
+      return api;
+    }
+    window.tarotSound = createSoundSystem();
+
+    function syncSoundToggleButton() {
+      const btn = document.getElementById('soundToggle');
+      if (!btn || !window.tarotSound) return;
+      btn.textContent = '♪';
+      btn.classList.toggle('sound-on', window.tarotSound.enabled);
+      btn.classList.toggle('sound-off', !window.tarotSound.enabled);
+      btn.setAttribute('aria-label', window.tarotSound.enabled ? '사운드 끄기' : '사운드 켜기');
+    }
+
+    function hasChimedFor(token) {
+      try {
+        const chimed = JSON.parse(localStorage.getItem('tarot_chimed_tokens') || '[]');
+        return chimed.includes(token);
+      } catch (e) { return false; }
+    }
+
+    function markChimed(token) {
+      try {
+        const chimed = JSON.parse(localStorage.getItem('tarot_chimed_tokens') || '[]');
+        if (!chimed.includes(token)) {
+          chimed.push(token);
+          if (chimed.length > 50) chimed.shift();
+          localStorage.setItem('tarot_chimed_tokens', JSON.stringify(chimed));
+        }
+      } catch (e) {}
+    }
+
+    async function tryPaymentChime() {
+      if (!window.tarotSound || !window.tarotSound.enabled) return;
+      if (hasChimedFor(state.token)) return;
+      await window.tarotSound.unlock();
+      const ctx = window.tarotSound.getContext ? window.tarotSound.getContext() : null;
+      if (!ctx || ctx.state !== 'running') {
+        const retry = () => {
+          window.tarotSound.unlock();
+          setTimeout(() => {
+            const c = window.tarotSound.getContext ? window.tarotSound.getContext() : null;
+            if (c && c.state === 'running' && !hasChimedFor(state.token)) {
+              markChimed(state.token);
+              window.tarotSound.playPaymentChime();
+              window.tarotSound.vibrate([50, 100, 50, 100, 80]);
+            }
+          }, 80);
+        };
+        ['touchstart', 'click'].forEach(evt => {
+          window.addEventListener(evt, retry, { once: true, passive: true });
+        });
+        return;
+      }
+      markChimed(state.token);
+      window.tarotSound.playPaymentChime();
+      window.tarotSound.vibrate([50, 100, 50, 100, 80]);
+    }
+
+    ['touchstart', 'click'].forEach(evt => {
+      window.addEventListener(evt, () => window.tarotSound.unlock(), { once: true, passive: true });
+    });
+
     (function() {
       const url = new URL(location.href);
       const devKey = url.searchParams.get('dev');
@@ -1241,6 +1500,7 @@
         if (data.mode === 'full') {
           clearInterval(state.pollTimer);
           renderFull(data);
+          tryPaymentChime();
           return;
         }
         if (data.mode === 'failed' || data.mode === 'timeout') {
@@ -1291,6 +1551,8 @@
         typing.remove();
         if (data?.success) {
           addBubble('ai', data.follow_up_answer || '', data.used_card_name);
+          window.tarotSound.playFollowupChime();
+          window.tarotSound.vibrate(15);
           const remaining = Number(data.remaining_count ?? data.free_remaining ?? 0) + Number(data.paid_remaining ?? 0);
           state.data.follow_ups_remaining = remaining;
           updateFollowQuota(state.data);
@@ -1357,6 +1619,13 @@
       });
       els.kakaoBtn.addEventListener('click', () => alert('준비 중이에요.'));
       els.newReadingBtn.addEventListener('click', () => location.href = './free.html');
+      document.getElementById('soundToggle').addEventListener('click', () => {
+        const enabled = window.tarotSound.toggle();
+        syncSoundToggleButton();
+        showToast(enabled ? '소리를 켰어요' : '소리를 껐어요');
+      });
+      syncSoundToggleButton();
+
       document.getElementById('moreBtn').addEventListener('click', () => showToast('결과 링크를 보관해두면 다시 볼 수 있어요'));
     }
 
