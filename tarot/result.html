@@ -678,6 +678,18 @@
           v.addEventListener('loadeddata', tryPlay, { once: true });
         });
       });
+      // iOS Safari: 유저 제스처 없이 페이지 진입 시 video autoplay 차단됨
+      // 첫 터치/클릭/스크롤 한 번에 모든 video 강제 play (unlock)
+      const unlockVideos = () => {
+        document.querySelectorAll('video').forEach(v => {
+          v.muted = true;
+          v.playsInline = true;
+          v.play().catch(() => {});
+        });
+      };
+      ['touchstart', 'click', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, unlockVideos, { once: true, passive: true });
+      });
       renderFollowUps(data.follow_ups || []);
       updateFollowQuota(data);
       window.scrollTo({ top: 0, behavior: 'smooth' });
