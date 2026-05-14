@@ -493,7 +493,9 @@
     }
     .save-image-modal .save-actions { display: none; gap: 10px; width: 100%; }
     .save-image-modal .save-actions.show { display: flex; }
-    .save-image-modal .save-actions .btn { flex: 1; }
+    .save-image-modal .save-actions .btn { flex: 1; font-size: 13px; padding: 0 6px; min-height: 48px; }
+    .save-image-modal #saveImageShare { display: none; }
+    .save-image-modal #saveImageShare.available { display: inline-flex; align-items: center; justify-content: center; }
     .save-image-loading {
       display: grid; place-items: center;
       height: 200px;
@@ -633,6 +635,7 @@
     <img class="preview-img" id="saveImagePreview" alt="결과 이미지 미리보기">
     <div class="save-actions" id="saveImageActions">
       <button class="btn btn-ghost" id="saveImageCopy">📋 복사</button>
+      <button class="btn btn-ghost" id="saveImageShare">📤 공유</button>
       <button class="btn btn-primary" id="saveImageDownload">⬇ 다운로드</button>
     </div>
   </div>
@@ -985,6 +988,7 @@
         actions: document.getElementById('saveImageActions'),
         copyBtn: document.getElementById('saveImageCopy'),
         downloadBtn: document.getElementById('saveImageDownload'),
+        shareBtn: document.getElementById('saveImageShare'),
         captureBox: document.getElementById('captureBox'),
         capCardsRow: document.getElementById('capCardsRow'),
         capCardNames: document.getElementById('capCardNames'),
@@ -1128,6 +1132,27 @@
         showToast('이미지를 저장했어요');
       }
 
+      async function shareImage() {
+        if (!lastBlob) { showToast('이미지가 준비되지 않았어요'); return; }
+        try {
+          const file = new File([lastBlob], '나를읽다_타로.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: '나를읽다 타로',
+              text: '내 타로 결과를 봐주세요 ✦'
+            });
+            showToast('공유가 시작됐어요');
+          } else {
+            showToast('이 기기에서는 공유가 지원되지 않아요');
+          }
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          console.error('share failed:', err);
+          showToast('공유에 실패했어요');
+        }
+      }
+
       async function copyImage() {
         if (!lastBlob) { showToast('이미지가 준비되지 않았어요'); return; }
         try {
@@ -1148,6 +1173,14 @@
         });
         els2.downloadBtn.addEventListener('click', download);
         els2.copyBtn.addEventListener('click', copyImage);
+        els2.shareBtn.addEventListener('click', shareImage);
+        // Web Share API 지원 환경에서만 공유 버튼 노출 (모바일)
+        try {
+          const testFile = new File([new Blob(['x'])], 'test.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [testFile] })) {
+            els2.shareBtn.classList.add('available');
+          }
+        } catch (e) { /* 미지원 — 그냥 숨김 */ }
       }
 
       return { init };
