@@ -797,6 +797,12 @@
       return `https://audio.readmelab.co.kr/tarot/basic/${card?.id}.webm`;
     }
 
+    function cardVideoMp4(card) {
+      const img = card && card.image_url;
+      if (img && img.endsWith('.webp')) return img.replace(/\.webp$/, '.mp4');
+      return 'https://audio.readmelab.co.kr/tarot/basic/' + (card && card.id) + '.mp4';
+    }
+
     function preloadImages(cards) {
       return Promise.allSettled(cards.map(c => new Promise(resolve => {
         const img = new Image();
@@ -895,7 +901,8 @@
       const inner = createBackInner('slot-card-inner');
       const imgSrc = cardImage(card);
       const videoSrc = cardVideo(card);
-      inner.querySelector('.card-front').innerHTML = `<video src="${videoSrc}" poster="${imgSrc}" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-label="${escapeHtml(card.name_ko)}"></video>`;
+      const mp4Src = cardVideoMp4(card);
+      inner.querySelector('.card-front').innerHTML = `<video poster="${imgSrc}" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-label="${escapeHtml(card.name_ko)}"><source src="${mp4Src}" type="video/mp4"><source src="${videoSrc}" type="video/webm"></video>`;
       stage.appendChild(inner);
       requestAnimationFrame(() => setTimeout(() => inner.classList.add('flipped'), 80));
       await wait(920);
@@ -990,7 +997,14 @@
         const imgWrap = document.createElement('div');
         imgWrap.className = 'pc-image';
         const vid = document.createElement('video');
-        vid.src = cardVideo(card);
+        const sourceMp4 = document.createElement('source');
+        sourceMp4.src = cardVideoMp4(card);
+        sourceMp4.type = 'video/mp4';
+        const sourceWebm = document.createElement('source');
+        sourceWebm.src = cardVideo(card);
+        sourceWebm.type = 'video/webm';
+        vid.appendChild(sourceMp4);
+        vid.appendChild(sourceWebm);
         vid.poster = cardImage(card);
         vid.autoplay = true;
         vid.muted = true;

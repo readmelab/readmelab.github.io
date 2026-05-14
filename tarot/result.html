@@ -467,6 +467,14 @@
       return `https://audio.readmelab.co.kr/tarot/basic/${card.id}.webm`;
     }
 
+    const CARD_BACK_VIDEO_MP4 = 'https://audio.readmelab.co.kr/tarot/basic/back.mp4';
+    function cardVideoMp4Url(card) {
+      if (!card) return CARD_BACK_VIDEO_MP4;
+      const img = card.image_url;
+      if (img && img.endsWith('.webp')) return img.replace(/\.webp$/, '.mp4');
+      return 'https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.mp4';
+    }
+
     function escapeHtml(str = '') {
       return String(str).replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch]));
     }
@@ -625,7 +633,7 @@
           cardHead = `
             <div class="section-card-head">
               <div class="section-card-image">
-                <video src="${cardVideoUrl(card)}" poster="${imgUrl}" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-label="${safeName}"></video>
+                <video poster="${imgUrl}" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture aria-label="${safeName}"><source src="${cardVideoMp4Url(card)}" type="video/mp4"><source src="${cardVideoUrl(card)}" type="video/webm"></video>
               </div>
               <div class="section-card-meta">
                 <div class="section-card-name">${safeName}</div>
