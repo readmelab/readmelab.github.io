@@ -595,7 +595,7 @@
 
     function setupSectionObserver() {
       const io = new IntersectionObserver(entries => {
-        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); entry.target.querySelectorAll('video').forEach(v => { v.play().catch(() => {}); }); } });
       }, { threshold: 0.14 });
       document.querySelectorAll('.section-block').forEach(el => io.observe(el));
     }
