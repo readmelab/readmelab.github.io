@@ -161,8 +161,10 @@
       margin-bottom: 34px;
     }
     .quote-mark { color: var(--gold-primary); font-family: var(--font-serif); font-size: 28px; line-height: 1; opacity: .85; }
-    .question-text { font-family: var(--font-serif); font-style: italic; color: var(--text-secondary); font-size: 16px; line-height: 1.8; margin: 8px 0 14px; white-space: pre-wrap; }
-    .meta { font-size: 12px; color: var(--text-tertiary); }
+    .question-card { text-align: center; }
+    .question-card .quote-mark.right { margin: 14px auto 0 !important; }
+    .question-text { font-family: var(--font-serif); font-style: italic; color: var(--text-secondary); font-size: 16px; line-height: 1.8; margin: 8px 0 14px; white-space: pre-wrap; text-align: center; }
+    .meta { font-size: 12px; color: var(--text-tertiary); text-align: center; }
     .cards-area { margin: 0 0 38px; }
     .cards-scroll { display:flex; gap:12px; overflow-x:auto; padding: 8px 2px 16px; scrollbar-width: none; }
     .cards-scroll::-webkit-scrollbar { display: none; }
@@ -387,9 +389,8 @@
     #captureBox .cap-question {
       position: relative;
       z-index: 2;
-      margin: 0 40px 50px;
-      padding-left: 50px;
-      border-left: 3px solid rgba(201,169,97,0.4);
+      margin: 0 80px 50px;
+      text-align: center;
     }
     #captureBox .cap-question-text {
       font-style: italic;
@@ -397,6 +398,7 @@
       font-size: 32px;
       line-height: 1.6;
       letter-spacing: -0.02em;
+      text-align: center;
     }
     #captureBox .cap-divider {
       display: flex;
@@ -417,15 +419,32 @@
       font-size: 22px;
     }
     #captureBox .cap-core {
-      text-align: center;
       color: var(--text-primary);
-      font-size: 38px;
-      line-height: 1.6;
+      font-size: 30px;
+      line-height: 1.55;
       letter-spacing: -0.02em;
-      padding: 0 60px;
+      padding: 0 80px;
       position: relative;
       z-index: 2;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+    #captureBox .cap-section {
+      text-align: center;
+    }
+    #captureBox .cap-section-title {
+      color: var(--gold-primary);
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+      font-weight: 400;
+    }
+    #captureBox .cap-section-body {
+      color: var(--text-primary);
+      font-size: 30px;
+      line-height: 1.6;
     }
     #captureBox .cap-footer {
       text-align: center;
@@ -526,7 +545,7 @@
           <article class="question-card">
             <div class="quote-mark">⌐</div>
             <div class="question-text" id="questionText"></div>
-            <div class="quote-mark" style="transform:rotate(180deg); width:max-content; margin-left:auto;">⌐</div>
+            <div class="quote-mark right" style="transform:rotate(180deg); width:max-content;">⌐</div>
             <div class="meta" id="questionMeta"></div>
           </article>
 
@@ -1000,15 +1019,26 @@
         const truncatedQ = question.length > 60 ? question.slice(0, 60) + '...' : question;
         els2.capQuestionText.textContent = '"' + truncatedQ + '"';
 
-        // 핵심 메시지 (sections[0].body 첫 문장)
-        const firstSection = (data.sections && data.sections[0]) || null;
-        let core = '';
-        if (firstSection && firstSection.body) {
-          const sentences = firstSection.body.split(/[.。\n]/).map(s => s.trim()).filter(Boolean);
-          core = sentences[0] || '';
-          if (core.length > 80) core = core.slice(0, 80) + '...';
-        }
-        els2.capCore.textContent = core;
+        // 3섹션 각각 첫 문장씩 렌더링
+        els2.capCore.innerHTML = '';
+        const sections = (data.sections || []).slice(0, 3);
+        sections.forEach(sec => {
+          if (!sec || !sec.body) return;
+          const sentences = sec.body.split(/[.。\n]/).map(s => s.trim()).filter(Boolean);
+          let first = sentences[0] || '';
+          if (first.length > 70) first = first.slice(0, 70) + '...';
+          const block = document.createElement('div');
+          block.className = 'cap-section';
+          const title = document.createElement('div');
+          title.className = 'cap-section-title';
+          title.textContent = sec.title || '';
+          const body = document.createElement('div');
+          body.className = 'cap-section-body';
+          body.textContent = first;
+          block.appendChild(title);
+          block.appendChild(body);
+          els2.capCore.appendChild(block);
+        });
 
         // 날짜
         const now = new Date();
