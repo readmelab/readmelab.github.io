@@ -984,7 +984,6 @@
           const cardEl = document.createElement('div');
           cardEl.className = 'cap-card';
           const img = document.createElement('img');
-          img.crossOrigin = 'anonymous';
           img.src = card.image_url || ('https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.webp');
           img.alt = card.name_ko || '';
           cardEl.appendChild(img);
@@ -1052,7 +1051,8 @@
 
           const canvas = await html2canvas(els2.captureBox, {
             backgroundColor: '#0F0A1A',
-            useCORS: true,
+            useCORS: false,
+            allowTaint: true,
             scale: 1,
             width: 1080,
             height: 1920,
