@@ -984,7 +984,9 @@
           const cardEl = document.createElement('div');
           cardEl.className = 'cap-card';
           const img = document.createElement('img');
-          img.src = card.image_url || ('https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.webp');
+          img.crossOrigin = 'anonymous';
+          const baseUrl = card.image_url || ('https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.webp');
+          img.src = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
           img.alt = card.name_ko || '';
           cardEl.appendChild(img);
           els2.capCardsRow.appendChild(cardEl);
@@ -1051,8 +1053,7 @@
 
           const canvas = await html2canvas(els2.captureBox, {
             backgroundColor: '#0F0A1A',
-            useCORS: false,
-            allowTaint: true,
+            useCORS: true,
             scale: 1,
             width: 1080,
             height: 1920,
