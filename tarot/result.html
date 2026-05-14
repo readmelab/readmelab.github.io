@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
   <script src="https://js.tosspayments.com/v1/payment"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --bg-primary: #0F0A1A;
@@ -279,7 +280,7 @@
     .modal-image img { width:100%; height:100%; object-fit:cover; display:block; }
     .modal h2 { clear:both; text-align:center; color:var(--gold-primary); font-family:var(--font-serif); margin:0 0 8px; }
     .modal p { text-align:center; color:var(--text-secondary); line-height:1.7; }
-    /* === 이미지 저장 기능 === */
+    /* === 이미지 저장 기능 (html2canvas 기반) === */
     .btn-save-image {
       width: 100%;
       margin-top: 10px;
@@ -288,6 +289,168 @@
       border: 1px solid var(--border-strong);
     }
     .btn-save-image:hover { background: linear-gradient(135deg, rgba(201,169,97,.25), rgba(244,232,208,.08)); }
+
+    /* 9:16 캡처용 숨김 박스 (html2canvas로 캡처될 영역) */
+    #captureBox {
+      position: fixed;
+      top: 0; left: -9999px;
+      width: 1080px; height: 1920px;
+      background: linear-gradient(180deg, #0A0711 0%, #0F0A1A 48%, #090611 100%);
+      overflow: hidden;
+      z-index: -1;
+      font-family: var(--font-serif);
+      color: var(--text-primary);
+      padding: 100px 80px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    #captureBox .cap-bg-glow {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(139, 122, 168, 0.25), transparent 38%),
+        radial-gradient(circle at 80% 25%, rgba(201, 169, 97, 0.15), transparent 30%);
+    }
+    #captureBox .cap-stars {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 25% 15%, rgba(244,232,208,0.45), transparent),
+        radial-gradient(2px 2px at 70% 28%, rgba(201,169,97,0.4), transparent),
+        radial-gradient(2px 2px at 40% 42%, rgba(244,232,208,0.32), transparent),
+        radial-gradient(2px 2px at 90% 12%, rgba(201,169,97,0.42), transparent),
+        radial-gradient(1.5px 1.5px at 10% 32%, rgba(244,232,208,0.28), transparent),
+        radial-gradient(2px 2px at 58% 65%, rgba(201,169,97,0.35), transparent),
+        radial-gradient(1.5px 1.5px at 18% 82%, rgba(244,232,208,0.3), transparent),
+        radial-gradient(2px 2px at 82% 90%, rgba(201,169,97,0.36), transparent);
+    }
+    #captureBox .cap-header {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 60px;
+    }
+    #captureBox .cap-star-mark {
+      color: var(--gold-primary);
+      font-size: 56px;
+      margin-bottom: 18px;
+      text-shadow: 0 0 30px rgba(201,169,97,0.6);
+    }
+    #captureBox .cap-brand {
+      font-size: 56px;
+      color: var(--ivory, #F4E8D0);
+      font-weight: 300;
+      margin: 0 0 12px;
+      letter-spacing: -0.03em;
+    }
+    #captureBox .cap-subtitle {
+      color: var(--text-tertiary);
+      font-size: 24px;
+      letter-spacing: 0.12em;
+    }
+    #captureBox .cap-cards-row {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 50px;
+    }
+    #captureBox .cap-card {
+      width: 240px;
+      height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 0 2px rgba(201,169,97,0.4);
+      background: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+    #captureBox .cap-card:nth-child(1) { transform: rotate(-3deg) translateY(8px); }
+    #captureBox .cap-card:nth-child(2) { transform: rotate(0deg) translateY(-12px); }
+    #captureBox .cap-card:nth-child(3) { transform: rotate(3deg) translateY(8px); }
+    #captureBox .cap-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #captureBox .cap-card-names {
+      text-align: center;
+      color: var(--gold-bright);
+      font-size: 32px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 2;
+    }
+    #captureBox .cap-question {
+      position: relative;
+      z-index: 2;
+      margin: 0 40px 50px;
+      padding-left: 50px;
+      border-left: 3px solid rgba(201,169,97,0.4);
+    }
+    #captureBox .cap-question-text {
+      font-style: italic;
+      color: var(--lavender);
+      font-size: 32px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+    }
+    #captureBox .cap-divider {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      justify-content: center;
+      margin: 50px 0 30px;
+      position: relative;
+      z-index: 2;
+    }
+    #captureBox .cap-divider-line {
+      flex: 0 0 180px;
+      height: 1px;
+      background: rgba(201,169,97,0.4);
+    }
+    #captureBox .cap-divider-mark {
+      color: var(--gold-primary);
+      font-size: 22px;
+    }
+    #captureBox .cap-core {
+      text-align: center;
+      color: var(--text-primary);
+      font-size: 38px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      padding: 0 60px;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+    #captureBox .cap-footer {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      padding-top: 40px;
+    }
+    #captureBox .cap-date {
+      color: var(--text-tertiary);
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    #captureBox .cap-url {
+      color: var(--gold-primary);
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    #captureBox .cap-footer-star {
+      color: var(--gold-primary);
+      font-size: 22px;
+    }
+
+    /* 미리보기/액션 모달 */
     .save-image-modal {
       position: fixed; inset: 0; z-index: 100;
       display: none; place-items: center;
@@ -297,19 +460,20 @@
     .save-image-modal.open { display: grid; }
     .save-image-modal .preview-wrap {
       width: min(100%, 360px);
-      max-height: 80vh;
+      max-height: 90vh;
       display: flex; flex-direction: column; gap: 16px;
       align-items: center;
     }
-    .save-image-modal canvas {
-      width: 100%;
-      height: auto;
+    .save-image-modal .preview-img {
+      width: 100%; height: auto;
       max-height: 70vh;
       border-radius: 12px;
       box-shadow: 0 20px 60px rgba(0,0,0,.5);
       border: 1px solid var(--border-strong);
+      display: none;
     }
-    .save-image-modal .save-actions { display: flex; gap: 10px; width: 100%; }
+    .save-image-modal .save-actions { display: none; gap: 10px; width: 100%; }
+    .save-image-modal .save-actions.show { display: flex; }
     .save-image-modal .save-actions .btn { flex: 1; }
     .save-image-loading {
       display: grid; place-items: center;
@@ -324,6 +488,7 @@
       animation: float 2s ease-in-out infinite;
       margin-bottom: 12px;
     }
+    .save-image-loading.hidden { display: none; }
     .save-image-close {
       position: absolute; top: 16px; right: 16px;
       width: 44px; height: 44px;
@@ -413,12 +578,41 @@
     </div>
   </div>
   <div class="toast" id="toast">복사됐어요</div>
+
+<!-- 9:16 캡처용 숨김 박스 (html2canvas가 캡처) -->
+<div id="captureBox" aria-hidden="true">
+  <div class="cap-bg-glow"></div>
+  <div class="cap-stars"></div>
+  <div class="cap-header">
+    <div class="cap-star-mark">✦</div>
+    <h1 class="cap-brand">나를읽다</h1>
+    <div class="cap-subtitle">READ ME LAB · TAROT</div>
+  </div>
+  <div class="cap-cards-row" id="capCardsRow"></div>
+  <div class="cap-card-names" id="capCardNames"></div>
+  <div class="cap-question">
+    <div class="cap-question-text" id="capQuestionText"></div>
+  </div>
+  <div class="cap-divider">
+    <div class="cap-divider-line"></div>
+    <div class="cap-divider-mark">◆</div>
+    <div class="cap-divider-line"></div>
+  </div>
+  <div class="cap-core" id="capCore"></div>
+  <div class="cap-footer">
+    <div class="cap-date" id="capDate"></div>
+    <div class="cap-url">readmelab.co.kr</div>
+    <div class="cap-footer-star">✦</div>
+  </div>
+</div>
+
+<!-- 미리보기 모달 -->
 <div class="save-image-modal" id="saveImageModal">
   <button class="save-image-close" id="saveImageClose">×</button>
   <div class="preview-wrap">
     <div class="save-image-loading" id="saveImageLoading">이미지를 그리는 중이에요</div>
-    <canvas id="saveImageCanvas" width="1080" height="1920" style="display:none;"></canvas>
-    <div class="save-actions" id="saveImageActions" style="display:none;">
+    <img class="preview-img" id="saveImagePreview" alt="결과 이미지 미리보기">
+    <div class="save-actions" id="saveImageActions">
       <button class="btn btn-ghost" id="saveImageCopy">📋 복사</button>
       <button class="btn btn-primary" id="saveImageDownload">⬇ 다운로드</button>
     </div>
@@ -475,15 +669,7 @@
       modalImage: document.getElementById('modalImage'),
       modalTitle: document.getElementById('modalTitle'),
       modalKeywords: document.getElementById('modalKeywords'),
-      toast: document.getElementById('toast'),
-      saveImageBtn: document.getElementById('saveImageBtn'),
-      saveImageModal: document.getElementById('saveImageModal'),
-      saveImageClose: document.getElementById('saveImageClose'),
-      saveImageLoading: document.getElementById('saveImageLoading'),
-      saveImageCanvas: document.getElementById('saveImageCanvas'),
-      saveImageActions: document.getElementById('saveImageActions'),
-      saveImageCopy: document.getElementById('saveImageCopy'),
-      saveImageDownload: document.getElementById('saveImageDownload')
+      toast: document.getElementById('toast')
     };
 
     const state = {
@@ -768,302 +954,169 @@
     }
 
     // ====================================================================
-    // 9:16 비주얼 카드 자동 생성 시스템 (인스타 스토리용)
+    // 9:16 비주얼 카드 자동 생성 (html2canvas 기반)
     // ====================================================================
     const SaveImage = (function() {
-      const W = 1080;
-      const H = 1920;
-      const COLORS = {
-        bgDark: '#0F0A1A', bgMid: '#1A1428',
-        gold: '#C9A961', goldBright: '#E0BF7A',
-        ivory: '#F4E8D0', lavender: '#C9B8D9', muted: '#8B7AA8'
+      const els2 = {
+        btn: document.getElementById('saveImageBtn'),
+        modal: document.getElementById('saveImageModal'),
+        close: document.getElementById('saveImageClose'),
+        loading: document.getElementById('saveImageLoading'),
+        preview: document.getElementById('saveImagePreview'),
+        actions: document.getElementById('saveImageActions'),
+        copyBtn: document.getElementById('saveImageCopy'),
+        downloadBtn: document.getElementById('saveImageDownload'),
+        captureBox: document.getElementById('captureBox'),
+        capCardsRow: document.getElementById('capCardsRow'),
+        capCardNames: document.getElementById('capCardNames'),
+        capQuestionText: document.getElementById('capQuestionText'),
+        capCore: document.getElementById('capCore'),
+        capDate: document.getElementById('capDate')
       };
 
-      async function loadImage(url) {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
+      let lastBlob = null;
+
+      function fillCaptureBox(data) {
+        // 카드 3장 (또는 데이터에 있는 만큼)
+        const cards = (data.paid_cards || []).slice(0, 3);
+        els2.capCardsRow.innerHTML = '';
+        cards.forEach(card => {
+          const cardEl = document.createElement('div');
+          cardEl.className = 'cap-card';
+          const img = document.createElement('img');
           img.crossOrigin = 'anonymous';
-          img.onload = () => resolve(img);
-          img.onerror = () => reject(new Error('img load failed: ' + url));
-          img.src = url;
+          img.src = card.image_url || ('https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.webp');
+          img.alt = card.name_ko || '';
+          cardEl.appendChild(img);
+          els2.capCardsRow.appendChild(cardEl);
         });
-      }
 
-      function drawGradientBg(ctx) {
-        const grd = ctx.createLinearGradient(0, 0, 0, H);
-        grd.addColorStop(0, '#0A0711');
-        grd.addColorStop(0.5, COLORS.bgDark);
-        grd.addColorStop(1, '#080511');
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, W, H);
-        const glow1 = ctx.createRadialGradient(W/2, -100, 50, W/2, -100, 600);
-        glow1.addColorStop(0, 'rgba(139, 122, 168, 0.25)');
-        glow1.addColorStop(1, 'rgba(139, 122, 168, 0)');
-        ctx.fillStyle = glow1;
-        ctx.fillRect(0, 0, W, 800);
-        const glow2 = ctx.createRadialGradient(W*0.8, 200, 50, W*0.8, 200, 400);
-        glow2.addColorStop(0, 'rgba(201, 169, 97, 0.15)');
-        glow2.addColorStop(1, 'rgba(201, 169, 97, 0)');
-        ctx.fillStyle = glow2;
-        ctx.fillRect(0, 0, W, 600);
-      }
+        // 카드 이름들
+        els2.capCardNames.textContent = cards.map(c => c.name_ko || '').join(' · ');
 
-      function drawStars(ctx) {
-        const stars = [
-          { x: 270, y: 270, r: 2, alpha: 0.45, color: COLORS.ivory },
-          { x: 756, y: 460, r: 2, alpha: 0.35, color: COLORS.gold },
-          { x: 432, y: 750, r: 2, alpha: 0.30, color: COLORS.ivory },
-          { x: 972, y: 200, r: 2, alpha: 0.38, color: COLORS.gold },
-          { x: 108, y: 530, r: 1.5, alpha: 0.22, color: COLORS.ivory },
-          { x: 626, y: 1200, r: 2, alpha: 0.35, color: COLORS.gold },
-          { x: 200, y: 1500, r: 1.5, alpha: 0.28, color: COLORS.ivory },
-          { x: 880, y: 1700, r: 2, alpha: 0.32, color: COLORS.gold },
-          { x: 540, y: 1820, r: 1.5, alpha: 0.25, color: COLORS.ivory }
-        ];
-        stars.forEach(s => {
-          ctx.fillStyle = s.color;
-          ctx.globalAlpha = s.alpha;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fill();
-          const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 8);
-          glow.addColorStop(0, s.color);
-          glow.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.globalAlpha = s.alpha * 0.5;
-          ctx.fillStyle = glow;
-          ctx.fillRect(s.x - s.r*8, s.y - s.r*8, s.r*16, s.r*16);
-        });
-        ctx.globalAlpha = 1;
-      }
+        // 질문
+        const question = data.user_question || '';
+        const truncatedQ = question.length > 60 ? question.slice(0, 60) + '...' : question;
+        els2.capQuestionText.textContent = '"' + truncatedQ + '"';
 
-      function drawHeader(ctx) {
-        ctx.fillStyle = COLORS.gold;
-        ctx.font = '38px serif';
-        ctx.textAlign = 'center';
-        ctx.shadowColor = 'rgba(201, 169, 97, 0.6)';
-        ctx.shadowBlur = 20;
-        ctx.fillText('✦', W/2, 130);
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = COLORS.ivory;
-        ctx.font = '300 42px "Noto Serif KR", serif';
-        ctx.fillText('나를읽다', W/2, 200);
-        ctx.fillStyle = COLORS.muted;
-        ctx.font = '24px "Noto Serif KR", serif';
-        ctx.fillText('READ ME LAB · TAROT', W/2, 235);
-      }
-
-      async function drawCards(ctx, cards) {
-        if (!cards || cards.length === 0) return;
-        const cardW = 220;
-        const cardH = 330;
-        const centerY = 660;
-        const count = Math.min(cards.length, 3);
-        const totalW = cardW * count + (count - 1) * 20;
-        const startX = (W - totalW) / 2;
-
-        for (let i = 0; i < count; i++) {
-          const card = cards[i];
-          const x = startX + i * (cardW + 20);
-          const y = centerY;
-          const rotation = (i - 1) * 0.06;
-          const imgUrl = card.image_url || ('https://audio.readmelab.co.kr/tarot/basic/' + card.id + '.webp');
-
-          try {
-            const img = await loadImage(imgUrl);
-            ctx.save();
-            ctx.translate(x + cardW/2, y + cardH/2);
-            ctx.rotate(rotation);
-            ctx.shadowColor = 'rgba(0,0,0,0.6)';
-            ctx.shadowBlur = 30;
-            ctx.shadowOffsetY = 12;
-            const r = 14;
-            ctx.beginPath();
-            ctx.moveTo(-cardW/2 + r, -cardH/2);
-            ctx.lineTo(cardW/2 - r, -cardH/2);
-            ctx.quadraticCurveTo(cardW/2, -cardH/2, cardW/2, -cardH/2 + r);
-            ctx.lineTo(cardW/2, cardH/2 - r);
-            ctx.quadraticCurveTo(cardW/2, cardH/2, cardW/2 - r, cardH/2);
-            ctx.lineTo(-cardW/2 + r, cardH/2);
-            ctx.quadraticCurveTo(-cardW/2, cardH/2, -cardW/2, cardH/2 - r);
-            ctx.lineTo(-cardW/2, -cardH/2 + r);
-            ctx.quadraticCurveTo(-cardW/2, -cardH/2, -cardW/2 + r, -cardH/2);
-            ctx.closePath();
-            ctx.clip();
-            ctx.drawImage(img, -cardW/2, -cardH/2, cardW, cardH);
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = 'rgba(201, 169, 97, 0.4)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.restore();
-          } catch (e) {
-            ctx.save();
-            ctx.fillStyle = COLORS.bgMid;
-            ctx.fillRect(x, y, cardW, cardH);
-            ctx.strokeStyle = COLORS.gold;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, cardW, cardH);
-            ctx.fillStyle = COLORS.gold;
-            ctx.font = '40px serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('✦', x + cardW/2, y + cardH/2 + 12);
-            ctx.restore();
-          }
+        // 핵심 메시지 (sections[0].body 첫 문장)
+        const firstSection = (data.sections && data.sections[0]) || null;
+        let core = '';
+        if (firstSection && firstSection.body) {
+          const sentences = firstSection.body.split(/[.。\n]/).map(s => s.trim()).filter(Boolean);
+          core = sentences[0] || '';
+          if (core.length > 80) core = core.slice(0, 80) + '...';
         }
+        els2.capCore.textContent = core;
 
-        ctx.fillStyle = COLORS.goldBright;
-        ctx.font = '300 28px "Noto Serif KR", serif';
-        ctx.textAlign = 'center';
-        const names = cards.slice(0, count).map(c => c.name_ko || '').join(' · ');
-        ctx.fillText(names, W/2, centerY + cardH + 60);
-      }
-
-      function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-        const chars = text.split('');
-        let line = '';
-        const lines = [];
-        for (const ch of chars) {
-          const testLine = line + ch;
-          if (ctx.measureText(testLine).width > maxWidth && line.length > 0) {
-            lines.push(line);
-            line = ch;
-            if (lines.length >= maxLines - 1) break;
-          } else {
-            line = testLine;
-          }
-        }
-        if (line.length > 0) lines.push(line);
-        const sliced = lines.slice(0, maxLines);
-        sliced.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
-      }
-
-      function drawQuestion(ctx, question) {
-        const y = 1180;
-        ctx.fillStyle = COLORS.gold;
-        ctx.font = 'italic 48px "Noto Serif KR", serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('"', 100, y);
-        ctx.fillStyle = COLORS.lavender;
-        ctx.font = 'italic 28px "Noto Serif KR", serif';
-        const truncated = question.length > 60 ? question.slice(0, 60) + '...' : question;
-        wrapText(ctx, truncated, 140, y, W - 280, 40, 3);
-      }
-
-      function drawCoreMessage(ctx, sectionBody) {
-        if (!sectionBody) return;
-        const firstSentence = sectionBody.split(/[.。\n]/).map(s => s.trim()).filter(Boolean)[0] || '';
-        const text = firstSentence.length > 80 ? firstSentence.slice(0, 80) + '...' : firstSentence;
-        const lineY = 1430;
-        ctx.strokeStyle = 'rgba(201, 169, 97, 0.4)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(W/2 - 200, lineY);
-        ctx.lineTo(W/2 - 30, lineY);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(W/2 + 30, lineY);
-        ctx.lineTo(W/2 + 200, lineY);
-        ctx.stroke();
-        ctx.fillStyle = COLORS.gold;
-        ctx.font = '20px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('◆', W/2, lineY + 7);
-        ctx.fillStyle = COLORS.ivory;
-        ctx.font = '34px "Noto Serif KR", serif';
-        wrapText(ctx, text, W/2, lineY + 70, W - 200, 50, 3);
-      }
-
-      function drawFooter(ctx) {
+        // 날짜
         const now = new Date();
         const dateStr = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
         const timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-        ctx.fillStyle = COLORS.muted;
-        ctx.font = '22px "Noto Serif KR", serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(dateStr + ' · ' + timeStr, W/2, 1750);
-        ctx.fillStyle = COLORS.gold;
-        ctx.font = '24px "Noto Serif KR", serif';
-        ctx.fillText('readmelab.co.kr', W/2, 1820);
-        ctx.fillStyle = COLORS.gold;
-        ctx.font = '20px serif';
-        ctx.fillText('✦', W/2, 1860);
+        els2.capDate.textContent = dateStr + ' · ' + timeStr;
       }
 
-      async function render(canvas, data) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, W, H);
-        drawGradientBg(ctx);
-        drawStars(ctx);
-        drawHeader(ctx);
-        await drawCards(ctx, data.paid_cards || []);
-        drawQuestion(ctx, data.user_question || '');
-        drawCoreMessage(ctx, (data.sections && data.sections[0]) ? data.sections[0].body : '');
-        drawFooter(ctx);
+      async function waitForImages() {
+        const imgs = els2.capCardsRow.querySelectorAll('img');
+        const promises = Array.from(imgs).map(img => {
+          if (img.complete && img.naturalHeight > 0) return Promise.resolve();
+          return new Promise(resolve => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+          });
+        });
+        await Promise.all(promises);
       }
 
-      async function open() {
+      async function generate() {
         if (!state.data) {
           showToast('결과 데이터를 먼저 불러와 주세요');
           return;
         }
-        els.saveImageModal.classList.add('open');
-        els.saveImageLoading.style.display = 'grid';
-        els.saveImageCanvas.style.display = 'none';
-        els.saveImageActions.style.display = 'none';
+        if (typeof html2canvas === 'undefined') {
+          showToast('이미지 라이브러리 로딩 중이에요. 잠시 후 다시 시도해주세요.');
+          return;
+        }
+
+        els2.modal.classList.add('open');
+        els2.loading.classList.remove('hidden');
+        els2.preview.style.display = 'none';
+        els2.actions.classList.remove('show');
+
         try {
+          fillCaptureBox(state.data);
           if (document.fonts && document.fonts.ready) await document.fonts.ready;
-          await render(els.saveImageCanvas, state.data);
-          els.saveImageLoading.style.display = 'none';
-          els.saveImageCanvas.style.display = 'block';
-          els.saveImageActions.style.display = 'flex';
+          await waitForImages();
+          // 한 프레임 대기 (레이아웃 안정화)
+          await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+          const canvas = await html2canvas(els2.captureBox, {
+            backgroundColor: '#0F0A1A',
+            useCORS: true,
+            scale: 1,
+            width: 1080,
+            height: 1920,
+            windowWidth: 1080,
+            windowHeight: 1920,
+            logging: false
+          });
+
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              els2.loading.textContent = '이미지 생성에 실패했어요';
+              return;
+            }
+            lastBlob = blob;
+            const url = URL.createObjectURL(blob);
+            els2.preview.src = url;
+            els2.preview.style.display = 'block';
+            els2.loading.classList.add('hidden');
+            els2.actions.classList.add('show');
+          }, 'image/png');
         } catch (e) {
-          console.error('save-image render error:', e);
-          els.saveImageLoading.textContent = '이미지 생성에 실패했어요';
+          console.error('save-image error:', e);
+          els2.loading.textContent = '이미지 생성에 실패했어요';
         }
       }
 
       function close() {
-        els.saveImageModal.classList.remove('open');
+        els2.modal.classList.remove('open');
       }
 
       function download() {
-        const dataUrl = els.saveImageCanvas.toDataURL('image/png');
+        if (!lastBlob) { showToast('이미지가 준비되지 않았어요'); return; }
+        const url = URL.createObjectURL(lastBlob);
         const a = document.createElement('a');
         const ts = new Date().toISOString().slice(0, 10).replace(/-/g, '');
         a.download = '나를읽다_' + ts + '.png';
-        a.href = dataUrl;
+        a.href = url;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
         showToast('이미지를 저장했어요');
       }
 
-      function copy() {
+      async function copyImage() {
+        if (!lastBlob) { showToast('이미지가 준비되지 않았어요'); return; }
         try {
-          els.saveImageCanvas.toBlob(async (blob) => {
-            if (!blob) { showToast('복사 실패'); return; }
-            try {
-              await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-              showToast('이미지가 복사됐어요');
-            } catch (err) {
-              console.error('clipboard write failed:', err);
-              showToast('복사 실패 — 다운로드를 사용해주세요');
-            }
-          }, 'image/png');
-        } catch (e) {
-          console.error('copy failed:', e);
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': lastBlob })]);
+          showToast('이미지가 복사됐어요');
+        } catch (err) {
+          console.error('clipboard write failed:', err);
           showToast('복사 실패 — 다운로드를 사용해주세요');
         }
       }
 
       function init() {
-        if (!els.saveImageBtn) return;
-        els.saveImageBtn.addEventListener('click', open);
-        els.saveImageClose.addEventListener('click', close);
-        els.saveImageModal.addEventListener('click', (e) => {
-          if (e.target === els.saveImageModal) close();
+        if (!els2.btn) return;
+        els2.btn.addEventListener('click', generate);
+        els2.close.addEventListener('click', close);
+        els2.modal.addEventListener('click', (e) => {
+          if (e.target === els2.modal) close();
         });
-        els.saveImageDownload.addEventListener('click', download);
-        els.saveImageCopy.addEventListener('click', copy);
+        els2.downloadBtn.addEventListener('click', download);
+        els2.copyBtn.addEventListener('click', copyImage);
       }
 
       return { init };
