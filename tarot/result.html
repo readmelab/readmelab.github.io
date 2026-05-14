@@ -666,6 +666,18 @@
         els.sectionsWrap.appendChild(block);
       });
       setupSectionObserver();
+      // iOS Safari: opacity:0 안의 video는 autoplay 무시되므로 강제 play() 호출
+      requestAnimationFrame(() => {
+        const firstBlock = els.sectionsWrap.querySelector('.section-block');
+        if (firstBlock) firstBlock.classList.add('visible');
+        els.sectionsWrap.querySelectorAll('video').forEach(v => {
+          v.muted = true;
+          v.playsInline = true;
+          const tryPlay = () => v.play().catch(() => {});
+          tryPlay();
+          v.addEventListener('loadeddata', tryPlay, { once: true });
+        });
+      });
       renderFollowUps(data.follow_ups || []);
       updateFollowQuota(data);
       window.scrollTo({ top: 0, behavior: 'smooth' });
