@@ -1,0 +1,204 @@
+1:"$Sreact.fragment"
+2:I[39756,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
+3:I[37457,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
+4:I[93300,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/16yue6gjb9xia.js"],"default"]
+5:I[84834,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/16yue6gjb9xia.js"],"default"]
+21:I[68027,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"default",1]
+:HL["/unsedang/_next/static/chunks/1732wkcaxf2~k.css","style"]
+:HL["https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700&family=Noto+Serif+TC:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Pretendard:wght@300;400;500;600&display=swap","style"]
+0:{"P":null,"c":["","unsedang","refund",""],"q":"","i":false,"f":[[["",{"children":["unsedang",{"children":["refund",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/unsedang/_next/static/chunks/1732wkcaxf2~k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/unsedang/_next/static/chunks/01xlw8hd842-c.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"ko","children":[["$","head",null,{"children":[["$","link",null,{"rel":"preconnect","href":"https://fonts.googleapis.com"}],["$","link",null,{"rel":"preconnect","href":"https://fonts.gstatic.com","crossOrigin":"anonymous"}],["$","link",null,{"href":"https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700&family=Noto+Serif+TC:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Pretendard:wght@300;400;500;600&display=swap","rel":"stylesheet"}]]}],["$","body",null,{"children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[[["$","$L4",null,{"density":14000,"goldStars":3}],["$","$L5",null,{"variant":"main"}],["$","main",null,{"className":"legal","children":[["$","div",null,{"className":"legal-header","children":[["$","div",null,{"className":"eyebrow","children":[["$","span",null,{"className":"line"}],["$","span",null,{"className":"text","children":"YM MEDIA · 이용 안내"}],["$","span",null,{"className":"line"}]]}],["$","h1",null,{"className":"legal-title","children":"환불정책"}],["$","p",null,{"className":"legal-subtitle","children":"나를읽다연구소는 「전자상거래 등에서의 소비자보호에 관한 법률」에 따라 다음과 같이 환불 정책을 운영하고 있습니다."}],["$","p",null,{"className":"legal-date","children":["시행일자 · ","2026년 5월 19일"]}]]}],["$","article",null,{"className":"legal-body","children":[["$","h2",null,{"children":"제1조 (환불 정책의 기본 원칙)"}],["$","p",null,{"children":"회사가 제공하는 사주 풀이 콘텐츠는 디지털 콘텐츠로서, 「전자상거래법 제17조」 및 「콘텐츠산업진흥법」에 따라 다음과 같이 환불 정책이 적용됩니다."}],["$","div",null,{"className":"notice-box gold","children":["$","p",null,{"style":{"margin":0,"fontSize":14,"lineHeight":1.9},"children":[["$","strong",null,{"children":"원칙"}]," — 결제 후 풀이 결과가 발송되기 전까지는 100% 환불 가능하며, 발송 후에는 디지털 콘텐츠 특성상 환불이 제한됩니다. 단, 시스템 오류 등 회사 귀책 사유의 경우 전액 환불 또는 재발송이 가능합니다."]}]}],["$","h2",null,{"children":"제2조 (환불 가능 사유)"}],["$","p",null,{"children":"다음의 경우 전액 환불이 가능합니다."}],["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"구분"}],["$","th",null,{"children":"사유"}],["$","th",null,{"children":"처리 방법"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"결제 직후"}]}],["$","td",null,{"children":"풀이 결과 발송 전 환불 요청"}],["$","td",null,{"children":"100% 환불 (영업일 1~3일 내)"}]]}],["$","tr",null,{"children":["$L6","$L7","$L8"]}],"$L9","$La"]}]]}],"$Lb","$Lc","$Ld","$Le","$Lf","$L10","$L11","$L12","$L13","$L14","$L15","$L16","$L17","$L18","$L19","$L1a"]}]]}],"$L1b","$L1c"],["$L1d"],"$L1e"]}],{},null,false,null]},null,false,"$@1f"]},null,false,"$@1f"]},null,false,null],"$L20",false]],"m":"$undefined","G":["$21",["$L22"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"_LgGQAOWmbIphAmd9IiG8"}
+23:I[22016,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/16yue6gjb9xia.js"],""]
+26:I[97367,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+27:"$Sreact.suspense"
+2a:I[97367,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"ViewportBoundary"]
+2c:I[97367,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"MetadataBoundary"]
+6:["$","td",null,{"children":["$","strong",null,{"children":"회사 귀책"}]}]
+7:["$","td",null,{"children":"시스템 오류로 풀이 결과 미수신"}]
+8:["$","td",null,{"children":"100% 환불 또는 재발송 선택"}]
+9:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"콘텐츠 하자"}]}],["$","td",null,{"children":"약속한 내용과 현저히 다른 풀이 제공"}],["$","td",null,{"children":"전액 환불 또는 재풀이 제공"}]]}]
+a:["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"중복 결제"}]}],["$","td",null,{"children":"동일 상품의 중복 결제"}],["$","td",null,{"children":"중복분 즉시 환불"}]]}]
+b:["$","h2",null,{"children":"제3조 (환불 불가 사유)"}]
+c:["$","p",null,{"children":"다음의 경우 환불이 제한됩니다."}]
+d:["$","ul",null,{"children":[["$","li",null,{"children":"풀이 결과가 정상적으로 발송 완료된 이후의 단순 변심"}],["$","li",null,{"children":"이용자가 입력한 정보(생년월일, 시간 등)의 오류로 발생한 풀이 결과의 차이"}],["$","li",null,{"children":"풀이 결과의 내용이 이용자의 기대와 다르다는 주관적 이유"}],["$","li",null,{"children":"풀이 결과를 이용자의 부주의로 분실하거나 삭제한 경우 (단, 30일 이내 재발송 요청 가능)"}],["$","li",null,{"children":"풀이 결과를 제3자에게 공유하거나 무단 배포한 경우"}]]}]
+e:["$","h2",null,{"children":"제4조 (환불 신청 방법)"}]
+f:["$","ol",null,{"children":[["$","li",null,{"children":[["$","strong",null,{"children":"이메일로 신청"}]," — ",["$","a",null,{"href":"mailto:abkomp400@gmail.com","style":{"color":"var(--gold-light)"},"children":"abkomp400@gmail.com"}],"로 다음 정보와 함께 신청해 주세요.",["$","ul",null,{"children":[["$","li",null,{"children":"주문번호 (결제 완료 시 발송된 알림톡에 기재)"}],["$","li",null,{"children":"결제자 성명 및 연락처"}],["$","li",null,{"children":"환불 요청 사유"}],["$","li",null,{"children":"환불받을 계좌 정보 (계좌이체 결제의 경우)"}]]}]]}],["$","li",null,{"children":[["$","strong",null,{"children":"전화 문의"}]," — ","010-9847-1152"," (평일 10:00 ~ 18:00)"]}],["$","li",null,{"children":"회사는 환불 신청 접수 후 영업일 기준 1~3일 이내에 검토 결과를 안내드립니다."}]]}]
+10:["$","h2",null,{"children":"제5조 (환불 처리 기간 및 방법)"}]
+11:["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"결제 수단"}],["$","th",null,{"children":"환불 방법"}],["$","th",null,{"children":"처리 기간"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"신용카드 / 체크카드"}],["$","td",null,{"children":"승인 취소"}],["$","td",null,{"children":"영업일 3~5일 (카드사 사정에 따라 변동)"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"계좌이체"}],["$","td",null,{"children":"지정 계좌로 입금"}],["$","td",null,{"children":"영업일 1~3일"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"간편결제 (카카오페이·네이버페이 등)"}],["$","td",null,{"children":"해당 결제수단으로 환불"}],["$","td",null,{"children":"영업일 1~3일"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"휴대폰 결제"}],["$","td",null,{"children":"당월 결제분: 결제 취소 / 익월 결제분: 계좌 환불"}],["$","td",null,{"children":"영업일 3~5일"}]]}]]}]]}]
+12:["$","h2",null,{"children":"제6조 (재발송 정책)"}]
+13:["$","ol",null,{"children":[["$","li",null,{"children":["풀이 결과 발송 후 ",["$","strong",null,{"children":"30일 이내"}],"에는 무료로 재발송이 가능합니다."]}],["$","li",null,{"children":"30일 경과 후에는 데이터 보호 정책에 따라 풀이 결과를 파기하므로 재발송이 불가합니다."}],["$","li",null,{"children":"재발송 요청은 이메일 또는 전화로 가능하며, 본인 확인 후 처리됩니다."}]]}]
+14:["$","h2",null,{"children":"제7조 (분쟁 해결)"}]
+15:["$","p",null,{"children":"환불과 관련하여 회사와 이용자 간 분쟁이 발생한 경우 다음 절차에 따라 해결합니다."}]
+16:["$","ol",null,{"children":[["$","li",null,{"children":"고객센터(이메일·전화)를 통한 1차 협의"}],["$","li",null,{"children":"협의 불성립 시 한국소비자원 또는 전자거래분쟁조정위원회에 조정 신청"}],["$","li",null,{"children":"조정 불성립 시 회사 본사 소재지 관할 법원에 소 제기"}]]}]
+17:["$","div",null,{"className":"notice-box","children":[["$","p",null,{"style":{"margin":"0 0 8px","fontSize":15},"children":["$","strong",null,{"children":"관련 문의"}]}],["$","p",null,{"style":{"margin":"0","fontSize":14,"lineHeight":1.9},"children":["한국소비자원 — 1372 (www.kca.go.kr)",["$","br",null,{}],"전자거래분쟁조정위원회 — 1661-5714 (www.ecmc.or.kr)"]}]]}]
+18:["$","h2",null,{"children":"제8조 (정책 변경)"}]
+19:["$","p",null,{"children":"본 환불 정책은 관계 법령 또는 회사 정책의 변경 시 수정될 수 있으며, 변경 시 사전에 홈페이지에 공지합니다."}]
+1a:["$","div",null,{"className":"notice-box gold","style":{"marginTop":48},"children":["$","p",null,{"style":{"margin":0,"fontSize":13,"lineHeight":1.9,"textAlign":"center"},"children":["$","strong",null,{"children":"본 환불정책은 2026년 5월 19일부터 시행됩니다."}]}]}]
+24:Tb96,
+        .footer { position: relative; z-index: 10; margin-top: 120px; padding: 80px 64px 0; background: linear-gradient(180deg, transparent 0%, rgba(20, 16, 31, 0.6) 100%); border-top: 1px solid var(--border); }
+        .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1.5fr 1fr; gap: 60px; padding-bottom: 60px; }
+        .footer-brand .footer-logo { font-family: var(--serif-en); font-weight: 500; font-size: 28px; letter-spacing: 0.18em; color: var(--white-baekja); margin-bottom: 8px; }
+        .footer-brand .footer-logo span { font-family: var(--serif-kr); font-weight: 300; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); margin-left: 10px; vertical-align: 4px; }
+        .footer-tagline { font-family: var(--serif-kr); font-weight: 300; font-size: 15px; color: var(--text-secondary); line-height: 1.8; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .footer-eng { font-family: var(--serif-en); font-style: italic; font-size: 13px; color: var(--text-tertiary); letter-spacing: 0.05em; }
+        .footer-col h4 { font-family: var(--serif-kr); font-weight: 500; font-size: 14px; letter-spacing: 0.2em; color: var(--gold-light); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .footer-col dl { display: flex; flex-direction: column; gap: 12px; }
+        .footer-col dl > div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; font-size: 13px; line-height: 1.7; }
+        .footer-col dt { color: var(--text-tertiary); font-weight: 400; letter-spacing: 0.05em; }
+        .footer-col dd { color: var(--text-secondary); letter-spacing: 0.02em; }
+        .footer-col dd a { color: var(--gold-light); text-decoration: none; }
+        .footer-col dd a:hover { text-decoration: underline; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .footer-col ul li a { color: var(--text-secondary); text-decoration: none; font-size: 14px; letter-spacing: 0.05em; transition: color 0.3s ease; font-family: var(--serif-kr); font-weight: 300; }
+        .footer-col ul li a:hover { color: var(--gold-light); }
+
+        .footer-bottom { border-top: 1px solid var(--border); padding: 24px 0 40px; }
+        .footer-bottom-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-tertiary); letter-spacing: 0.05em; }
+        .footer-notice { font-family: var(--serif-kr); font-weight: 300; max-width: 480px; text-align: right; line-height: 1.6; }
+
+        @media (max-width: 968px) {
+          .footer { padding: 60px 24px 0; }
+          .footer-inner { grid-template-columns: 1fr; gap: 40px; }
+          .footer-bottom-inner { flex-direction: column; gap: 12px; text-align: center; }
+          .footer-notice { text-align: center; }
+          .footer-col dl > div { grid-template-columns: 100px 1fr; }
+        }
+      1b:["$","footer",null,{"className":"footer","children":[["$","div",null,{"className":"footer-inner","children":[["$","div",null,{"className":"footer-brand","children":[["$","div",null,{"className":"footer-logo","children":["YM",["$","span",null,{"children":"미디어"}]]}],["$","p",null,{"className":"footer-tagline","children":"콘텐츠로 사람의 운명을 읽습니다"}],["$","p",null,{"className":"footer-eng","children":"YM MEDIA — Reading destiny through content"}]]}],["$","div",null,{"className":"footer-col","children":[["$","h4",null,{"children":"사업자 정보"}],["$","dl",null,{"children":[["$","div",null,{"children":[["$","dt",null,{"children":"상호"}],["$","dd",null,{"children":"나를읽다연구소"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"대표자"}],["$","dd",null,{"children":"오동훈"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"사업자등록번호"}],["$","dd",null,{"children":"347-12-03156"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"통신판매업 신고"}],["$","dd",null,{"children":"제2026-부산서구-0040호"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"사업장 주소"}],["$","dd",null,{"children":"부산광역시 서구 대영로38번길 11, 103동 1601호"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"고객센터"}],["$","dd",null,{"children":"010-9847-1152"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"이메일"}],["$","dd",null,{"children":["$","a",null,{"href":"mailto:abkomp400@gmail.com","children":"abkomp400@gmail.com"}]}]]}]]}]]}],["$","div",null,{"className":"footer-col","children":[["$","h4",null,{"children":"이용 안내"}],["$","ul",null,{"children":[["$","li",null,{"children":["$","$L23",null,{"href":"/privacy","children":"개인정보처리방침"}]}],["$","li",null,{"children":["$","$L23",null,{"href":"/terms","children":"이용약관"}]}],["$","li",null,{"children":["$","$L23",null,{"href":"/refund","children":"환불정책"}]}],["$","li",null,{"children":["$","$L23",null,{"href":"/faq","children":"자주 묻는 질문"}]}],["$","li",null,{"children":["$","$L23",null,{"href":"/contact","children":"고객 문의"}]}]]}],["$","h4",null,{"style":{"marginTop":"32px"},"children":"운영 브랜드"}],["$","ul",null,{"children":["$","li",null,{"children":["$","$L23",null,{"href":"/unsedang","children":"운세당 (運勢堂)"}]}]}]]}]]}],["$","div",null,{"className":"footer-bottom","children":["$","div",null,{"className":"footer-bottom-inner","children":[["$","p",null,{"children":["© 2026 ","나를읽다연구소",". All rights reserved."]}],["$","p",null,{"className":"footer-notice","children":"본 사이트의 모든 콘텐츠는 저작권법의 보호를 받으며, 무단 복제 및 배포를 금합니다."}]]}]}],["$","style",null,{"children":"$24"}]]}]
+25:Tfbc,
+        .legal {
+          position: relative;
+          z-index: 10;
+          max-width: 880px;
+          margin: 0 auto;
+          padding: 180px 32px 80px;
+        }
+        .legal-header {
+          text-align: center;
+          margin-bottom: 80px;
+          padding-bottom: 48px;
+          border-bottom: 1px solid var(--border);
+        }
+        .eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 18px;
+          margin-bottom: 24px;
+        }
+        .eyebrow .line { width: 36px; height: 1px; background: var(--gold); }
+        .eyebrow .text {
+          font-family: var(--serif-en);
+          font-style: italic;
+          font-size: 13px;
+          letter-spacing: 0.3em;
+          color: var(--gold);
+        }
+        .legal-title {
+          font-family: var(--serif-kr);
+          font-weight: 300;
+          font-size: 44px;
+          letter-spacing: 0.05em;
+          color: var(--white-baekja);
+          margin-bottom: 16px;
+          line-height: 1.4;
+        }
+        .legal-subtitle {
+          font-family: var(--serif-kr);
+          font-weight: 300;
+          font-size: 16px;
+          color: var(--text-secondary);
+          line-height: 1.8;
+          letter-spacing: 0.05em;
+          margin-bottom: 24px;
+        }
+        .legal-date {
+          font-family: var(--serif-tc);
+          font-size: 13px;
+          color: var(--gold-deep);
+          letter-spacing: 0.2em;
+        }
+        .legal-body {
+          font-family: var(--sans);
+          font-weight: 300;
+          font-size: 15px;
+          color: var(--text-secondary);
+          line-height: 2.1;
+          letter-spacing: 0.02em;
+        }
+        .legal-body :global(h2) {
+          font-family: var(--serif-kr);
+          font-weight: 500;
+          font-size: 22px;
+          color: var(--gold-light);
+          margin: 56px 0 20px;
+          letter-spacing: 0.06em;
+          padding-bottom: 12px;
+          border-bottom: 1px solid var(--border);
+        }
+        .legal-body :global(h2:first-child) { margin-top: 0; }
+        .legal-body :global(h3) {
+          font-family: var(--serif-kr);
+          font-weight: 500;
+          font-size: 17px;
+          color: var(--white-baekja);
+          margin: 36px 0 14px;
+          letter-spacing: 0.04em;
+        }
+        .legal-body :global(p) { margin-bottom: 16px; }
+        .legal-body :global(ul), .legal-body :global(ol) {
+          margin: 12px 0 20px 4px;
+          padding-left: 24px;
+        }
+        .legal-body :global(li) {
+          margin-bottom: 8px;
+          line-height: 1.9;
+        }
+        .legal-body :global(strong) {
+          color: var(--gold-light);
+          font-weight: 500;
+        }
+        .legal-body :global(table) {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+          font-size: 14px;
+        }
+        .legal-body :global(th), .legal-body :global(td) {
+          padding: 14px 16px;
+          border: 1px solid var(--border);
+          text-align: left;
+        }
+        .legal-body :global(th) {
+          background: rgba(201, 168, 100, 0.05);
+          color: var(--gold-light);
+          font-weight: 500;
+          font-family: var(--serif-kr);
+          letter-spacing: 0.05em;
+        }
+        .legal-body :global(.notice-box) {
+          padding: 24px 28px;
+          margin: 24px 0;
+          background: linear-gradient(180deg, rgba(168, 50, 74, 0.08) 0%, rgba(168, 50, 74, 0.02) 100%);
+          border-left: 3px solid var(--vermilion);
+          border-radius: 0;
+        }
+        .legal-body :global(.notice-box.gold) {
+          background: linear-gradient(180deg, rgba(201, 168, 100, 0.06) 0%, rgba(201, 168, 100, 0.02) 100%);
+          border-left-color: var(--gold);
+        }
+
+        @media (max-width: 768px) {
+          .legal { padding: 120px 24px 60px; }
+          .legal-title { font-size: 30px; }
+          .legal-body :global(h2) { font-size: 19px; }
+          .legal-body :global(h3) { font-size: 16px; }
+        }
+      1c:["$","style",null,{"children":"$25"}]
+1d:["$","script","script-0",{"src":"/unsedang/_next/static/chunks/16yue6gjb9xia.js","async":true,"nonce":"$undefined"}]
+1e:["$","$L26",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@28"}]}]
+29:[]
+1f:"$W29"
+20:["$","$1","h",{"children":[null,["$","$L2a",null,{"children":"$L2b"}],["$","div",null,{"hidden":true,"children":["$","$L2c",null,{"children":["$","$27",null,{"name":"Next.Metadata","children":"$L2d"}]}]}],null]}]
+22:["$","link","0",{"rel":"stylesheet","href":"/unsedang/_next/static/chunks/1732wkcaxf2~k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+2b:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+2e:I[27201,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"IconMark"]
+28:null
+2d:[["$","title","0",{"children":"환불정책 | YM미디어"}],["$","meta","1",{"name":"description","content":"YM미디어 환불 정책 안내"}],["$","meta","2",{"name":"author","content":"YM미디어"}],["$","meta","3",{"name":"keywords","content":"YM미디어,와이엠미디어,운세당,사주,재물 운세"}],["$","meta","4",{"property":"og:title","content":"YM미디어"}],["$","meta","5",{"property":"og:description","content":"콘텐츠로 사람의 운명을 읽습니다"}],["$","meta","6",{"property":"og:url","content":"https://ymmedia.co.kr/"}],["$","meta","7",{"property":"og:site_name","content":"YM미디어"}],["$","meta","8",{"property":"og:locale","content":"ko_KR"}],["$","meta","9",{"property":"og:type","content":"website"}],["$","meta","10",{"name":"twitter:card","content":"summary"}],["$","meta","11",{"name":"twitter:title","content":"YM미디어"}],["$","meta","12",{"name":"twitter:description","content":"콘텐츠로 사람의 운명을 읽습니다"}],["$","link","13",{"rel":"icon","href":"/unsedang/favicon.ico?favicon.0x3dzn~oxb6tn.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L2e","14",{}]]
