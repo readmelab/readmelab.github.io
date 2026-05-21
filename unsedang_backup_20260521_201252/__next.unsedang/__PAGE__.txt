@@ -1,0 +1,244 @@
+1:"$Sreact.fragment"
+2:I[93300,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/176_r~wny_bbd.js"],"default"]
+3:I[84834,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/176_r~wny_bbd.js"],"default"]
+4:I[65771,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/176_r~wny_bbd.js"],"default"]
+10:I[22016,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js","/unsedang/_next/static/chunks/176_r~wny_bbd.js"],""]
+13:I[97367,["/unsedang/_next/static/chunks/01xlw8hd842-c.js","/unsedang/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+14:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[[["$","$L2",null,{"density":8000,"goldStars":10}],["$","$L3",null,{"variant":"unsedang"}],["$","$L4",null,{}],["$","section",null,{"id":"about","className":"about-sec","children":["$","div",null,{"className":"inner","children":[["$","div",null,{"className":"eyebrow","children":[["$","span",null,{"className":"line"}],["$","span",null,{"className":"text","children":"運勢堂 · 운세당이란"}],["$","span",null,{"className":"line"}]]}],["$","h2",null,{"className":"sec-title","children":["천 년의 명리학을",["$","br",null,{}],["$","span",null,{"className":"accent","children":"오늘의 당신에게"}]]}],["$","p",null,{"className":"sec-desc","children":["운세당은 한국 전통 사주 명리학에 기반하여, 당신이 태어난 연·월·일·시의 여덟 글자를 풀이합니다.",["$","br",null,{}],"추측이 아닌 만세력에 기반한 정확한 풀이.",["$","br",null,{}],"가벼운 자극이 아닌, 품격 있는 신탁(神託)."]}]]}]}],["$","section",null,{"id":"axes","className":"axes","children":["$","div",null,{"className":"inner","children":[["$","div",null,{"className":"eyebrow","children":[["$","span",null,{"className":"line"}],["$","span",null,{"className":"text","children":"財物 · 8 갈래"}],["$","span",null,{"className":"line"}]]}],["$","h2",null,{"className":"sec-title","children":["재물의 ",["$","span",null,{"className":"accent","children":"여덟 갈래"}],"를 봅니다"]}],["$","p",null,{"className":"sec-desc-sm","children":["한 사람의 재물 운명은 단순하지 않습니다. 그릇·누수·벌이·타이밍·체질·인연·노후·방어,",["$","br",null,{}],"이 여덟 가지 갈래를 두루 살펴야 비로소 온전한 길이 보입니다."]}],["$","div",null,{"className":"axes-grid","children":[["$","div","J1",{"className":"axis-card live","children":[["$","span",null,{"className":"axis-num","children":"壹"}],["$","h3",null,{"className":"axis-label","children":"돈 그릇"}],["$","p",null,{"className":"axis-desc","children":"얼마나 큰 그릇으로 태어났는가"}],["$","span",null,{"className":"axis-code","children":"J1"}],false]}],["$","div","J2",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"貳"}],["$","h3",null,{"className":"axis-label","children":"돈 누수"}],["$","p",null,{"className":"axis-desc","children":"어디로 돈이 새는가"}],["$","span",null,{"className":"axis-code","children":"J2"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}],["$","div","J3",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"參"}],["$","h3",null,{"className":"axis-label","children":"돈 벌이"}],["$","p",null,{"className":"axis-desc","children":"어떻게 벌어야 가장 잘 버는가"}],["$","span",null,{"className":"axis-code","children":"J3"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}],["$","div","J4",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"肆"}],["$","h3",null,{"className":"axis-label","children":"돈 타이밍"}],["$","p",null,{"className":"axis-desc","children":"언제 큰 재물이 들어오는가"}],["$","span",null,{"className":"axis-code","children":"J4"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}],["$","div","J5",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"伍"}],["$","h3",null,{"className":"axis-label","children":"돈 체질"}],["$","p",null,{"className":"axis-desc","children":"어떤 투자가 잘 맞는가"}],["$","span",null,{"className":"axis-code","children":"J5"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}],["$","div","J6",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"陸"}],["$","h3",null,{"className":"axis-label","children":"돈 인연"}],["$","p",null,{"className":"axis-desc","children":"누구와 함께해야 부자 되는가"}],["$","span",null,{"className":"axis-code","children":"J6"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}],["$","div","J7",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"柒"}],["$","h3",null,{"className":"axis-label","children":"돈 노후"}],["$","p",null,{"className":"axis-desc","children":"말년 재물 운"}],["$","span",null,{"className":"axis-code","children":"J7"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}],["$","div","J8",{"className":"axis-card coming","children":[["$","span",null,{"className":"axis-num","children":"捌"}],["$","h3",null,{"className":"axis-label","children":"돈 방어"}],["$","p",null,{"className":"axis-desc","children":"재물 위기를 어떻게 피할 것인가"}],["$","span",null,{"className":"axis-code","children":"J8"}],["$","span",null,{"className":"axis-soon","children":"곧 공개"}]]}]]}]]}]}],["$","section",null,{"className":"final-cta","children":["$","div",null,{"className":"inner","children":[["$","div",null,{"className":"eyebrow","children":[["$","span",null,{"className":"line"}],["$","span",null,{"className":"text","children":"財物 · 그릇 풀이 · 시작"}],["$","span",null,{"className":"line"}]]}],["$","h2",null,{"className":"sec-title","children":["먼저 당신의 ",["$","span",null,{"className":"accent","children":"돈 그릇"}],"을",["$","br",null,{}],"펼쳐 보겠습니다"]}],["$","p",null,{"className":"sec-desc","children":["생년월일과 출생 시간을 알려주시면,",["$","br",null,{}],"운세당이 당신의 돈 그릇 풀이를 카카오톡으로 보내드립니다."]}],["$","div",null,{"className":"price-box","children":[["$","div",null,{"className":"price-row","children":["$L5","$L6"]}],"$L7","$L8","$L9"]}],"$La","$Lb"]}]}],"$Lc","$Ld"],["$Le"],"$Lf"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"Zx4qXcs8FMlcP_ZKQ4rNR"}
+5:["$","span",null,{"className":"price-label","children":"돈 그릇 풀이"}]
+6:["$","span",null,{"className":"price-num","children":"₩9,900"}]
+7:["$","div",null,{"className":"price-row sm","children":[["$","span",null,{"children":"분량"}],["$","span",null,{"children":"약 10분 분량"}]]}]
+8:["$","div",null,{"className":"price-row sm","children":[["$","span",null,{"children":"전달 방법"}],["$","span",null,{"children":"카카오톡 알림톡"}]]}]
+9:["$","div",null,{"className":"price-row sm","children":[["$","span",null,{"children":"결제 수단"}],["$","span",null,{"children":"신용카드 · 계좌이체 · 간편결제"}]]}]
+a:["$","$L10",null,{"href":"/order","className":"btn-primary-big","children":"돈 그릇 풀이 시작하기 ↗"}]
+b:["$","p",null,{"className":"legal-link","children":["결제 시 ",["$","$L10",null,{"href":"/terms","children":"이용약관"}]," · ",["$","$L10",null,{"href":"/refund","children":"환불정책"}],"에 동의한 것으로 간주됩니다."]}]
+11:Tdc6,
+        .footer { position: relative; z-index: 10; margin-top: 120px; padding: 80px 64px 0; background: linear-gradient(180deg, transparent 0%, rgba(20, 16, 31, 0.6) 100%); border-top: 1px solid var(--border); }
+        .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1.5fr 1fr; gap: 60px; padding-bottom: 60px; }
+
+        .footer-brand .footer-logo { font-family: var(--serif-en); font-weight: 500; font-size: 28px; letter-spacing: 0.18em; color: var(--white-baekja); margin-bottom: 8px; }
+        .footer-brand .footer-logo span { font-family: var(--serif-kr); font-weight: 300; font-size: 14px; letter-spacing: 0.2em; color: var(--gold); margin-left: 10px; vertical-align: 4px; }
+
+        .footer-seal { width: 56px; height: auto; margin-bottom: 14px; filter: drop-shadow(0 0 16px rgba(168, 50, 74, 0.3)); }
+        .footer-seal svg { width: 100%; height: auto; display: block; }
+        .footer-brand-name { font-family: var(--serif-kr); font-weight: 500; font-size: 24px; letter-spacing: 0.25em; color: var(--gold-light); margin-bottom: 10px; }
+        .footer-brand-name .hanja { font-family: var(--serif-tc); font-weight: 300; font-size: 14px; letter-spacing: 0.1em; color: var(--gold-deep); margin-left: 10px; vertical-align: 3px; }
+
+        .footer-tagline { font-family: var(--serif-kr); font-weight: 300; font-size: 15px; color: var(--text-secondary); line-height: 1.8; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .footer-eng { font-family: var(--serif-en); font-style: italic; font-size: 13px; color: var(--text-tertiary); letter-spacing: 0.05em; }
+        .footer-col h4 { font-family: var(--serif-kr); font-weight: 500; font-size: 14px; letter-spacing: 0.2em; color: var(--gold-light); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .footer-col dl { display: flex; flex-direction: column; gap: 12px; }
+        .footer-col dl > div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; font-size: 13px; line-height: 1.7; }
+        .footer-col dt { color: var(--text-tertiary); font-weight: 400; letter-spacing: 0.05em; }
+        .footer-col dd { color: var(--text-secondary); letter-spacing: 0.02em; }
+        .footer-col dd a { color: var(--gold-light); text-decoration: none; }
+        .footer-col dd a:hover { text-decoration: underline; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .footer-col ul li a { color: var(--text-secondary); text-decoration: none; font-size: 14px; letter-spacing: 0.05em; transition: color 0.3s ease; font-family: var(--serif-kr); font-weight: 300; }
+        .footer-col ul li a:hover { color: var(--gold-light); }
+
+        .footer-bottom { border-top: 1px solid var(--border); padding: 24px 0 40px; }
+        .footer-bottom-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-tertiary); letter-spacing: 0.05em; }
+        .footer-notice { font-family: var(--serif-kr); font-weight: 300; max-width: 480px; text-align: right; line-height: 1.6; }
+
+        @media (max-width: 968px) {
+          .footer { padding: 60px 24px 0; }
+          .footer-inner { grid-template-columns: 1fr; gap: 40px; }
+          .footer-bottom-inner { flex-direction: column; gap: 12px; text-align: center; }
+          .footer-notice { text-align: center; }
+          .footer-col dl > div { grid-template-columns: 100px 1fr; }
+        }
+      c:["$","footer",null,{"className":"footer","children":[["$","div",null,{"className":"footer-inner","children":[["$","div",null,{"className":"footer-brand","children":[["$","div",null,{"className":"footer-seal","children":["$","svg",null,{"viewBox":"0 0 60 100","xmlns":"http://www.w3.org/2000/svg","children":[["$","rect",null,{"x":"3","y":"3","width":"54","height":"94","rx":"6","fill":"#A8324A","stroke":"#8B2238","strokeWidth":"1.5"}],["$","rect",null,{"x":"7","y":"7","width":"46","height":"86","rx":"4","fill":"none","stroke":"#F5F0E8","strokeWidth":"0.8"}],["$","text",null,{"x":"30","y":"42","textAnchor":"middle","fill":"#F5F0E8","fontFamily":"Noto Serif TC","fontSize":"22","fontWeight":"500","children":"運"}],["$","text",null,{"x":"30","y":"78","textAnchor":"middle","fill":"#F5F0E8","fontFamily":"Noto Serif TC","fontSize":"22","fontWeight":"500","children":"勢"}]]}]}],["$","div",null,{"className":"footer-brand-name","children":["운세당",["$","span",null,{"className":"hanja","children":"運勢堂"}]]}],["$","p",null,{"className":"footer-tagline","children":"천 년의 명리학을 오늘의 당신에게"}]]}],["$","div",null,{"className":"footer-col","children":[["$","h4",null,{"children":"사업자 정보"}],["$","dl",null,{"children":[["$","div",null,{"children":[["$","dt",null,{"children":"상호"}],["$","dd",null,{"children":"나를읽다연구소"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"대표자"}],["$","dd",null,{"children":"오동훈"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"사업자등록번호"}],["$","dd",null,{"children":"347-12-03156"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"통신판매업 신고"}],["$","dd",null,{"children":"제2026-부산서구-0040호"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"사업장 주소"}],["$","dd",null,{"children":"부산광역시 서구 대영로38번길 11, 103동 1601호"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"고객센터"}],["$","dd",null,{"children":"010-9847-1152"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"이메일"}],["$","dd",null,{"children":["$","a",null,{"href":"mailto:abkomp400@gmail.com","children":"abkomp400@gmail.com"}]}]]}]]}]]}],["$","div",null,{"className":"footer-col","children":[["$","h4",null,{"children":"이용 안내"}],["$","ul",null,{"children":[["$","li",null,{"children":["$","$L10",null,{"href":"/privacy","children":"개인정보처리방침"}]}],["$","li",null,{"children":["$","$L10",null,{"href":"/terms","children":"이용약관"}]}],["$","li",null,{"children":["$","$L10",null,{"href":"/refund","children":"환불정책"}]}],["$","li",null,{"children":["$","$L10",null,{"href":"/faq","children":"자주 묻는 질문"}]}],["$","li",null,{"children":["$","$L10",null,{"href":"/contact","children":"고객 문의"}]}]]}]]}]]}],["$","div",null,{"className":"footer-bottom","children":["$","div",null,{"className":"footer-bottom-inner","children":[["$","p",null,{"children":["© 2026 ","나를읽다연구소",". All rights reserved."]}],["$","p",null,{"className":"footer-notice","children":"본 사이트의 모든 콘텐츠는 저작권법의 보호를 받으며, 무단 복제 및 배포를 금합니다."}]]}]}],["$","style",null,{"children":"$11"}]]}]
+12:T1b01,
+        .about-sec, .axes, .final-cta {
+          position: relative; z-index: 10;
+          padding: 120px 24px;
+          text-align: center;
+        }
+        .inner { max-width: 1080px; margin: 0 auto; }
+        .eyebrow {
+          display: inline-flex; align-items: center; gap: 18px;
+          margin-bottom: 28px;
+        }
+        .eyebrow .line { width: 36px; height: 1px; background: var(--gold); }
+        .eyebrow .text {
+          font-family: var(--serif-tc); font-weight: 300;
+          font-size: 13px; letter-spacing: 0.4em; color: var(--gold);
+        }
+        .sec-title {
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 46px; line-height: 1.5;
+          letter-spacing: 0.04em; margin-bottom: 32px;
+        }
+        .sec-title .accent {
+          font-weight: 500;
+          background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-deep) 100%);
+          -webkit-background-clip: text; background-clip: text;
+          color: transparent;
+        }
+        .sec-desc {
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 17px; color: var(--text-secondary);
+          line-height: 2.1; letter-spacing: 0.06em;
+          max-width: 720px; margin: 0 auto;
+        }
+        .sec-desc-sm {
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 15px; color: var(--text-secondary);
+          line-height: 2; letter-spacing: 0.05em;
+          max-width: 720px; margin: 0 auto 64px;
+        }
+
+        .axes-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          margin-top: 64px;
+        }
+        .axis-card {
+          position: relative;
+          padding: 36px 24px;
+          background: linear-gradient(180deg, rgba(26,22,32,0.7) 0%, rgba(20,16,31,0.3) 100%);
+          border: 1px solid var(--border);
+          text-align: center;
+          transition: all 0.5s ease;
+          overflow: hidden;
+        }
+        .axis-card::before {
+          content: '';
+          position: absolute; inset: 0;
+          background: radial-gradient(circle at 50% 0%, rgba(201, 168, 100, 0.1), transparent 70%);
+          opacity: 0;
+          transition: opacity 0.5s ease;
+        }
+        .axis-card:hover {
+          border-color: var(--border-strong);
+          transform: translateY(-6px);
+          box-shadow: 0 24px 60px rgba(168, 50, 74, 0.12);
+        }
+        .axis-card:hover::before { opacity: 1; }
+        .axis-card.live {
+          border-color: var(--gold);
+          box-shadow: 0 0 0 1px rgba(201, 168, 100, 0.3);
+        }
+        .axis-card.coming { opacity: 0.55; }
+        .axis-num {
+          display: block;
+          font-family: var(--serif-tc); font-weight: 400;
+          font-size: 32px; color: var(--vermilion-light);
+          margin-bottom: 16px;
+        }
+        .axis-label {
+          font-family: var(--serif-kr); font-weight: 500;
+          font-size: 22px; letter-spacing: 0.1em;
+          color: var(--gold-light); margin-bottom: 12px;
+        }
+        .axis-desc {
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 13px; color: var(--text-secondary);
+          line-height: 1.8; letter-spacing: 0.03em;
+          margin-bottom: 16px;
+          min-height: 46px;
+        }
+        .axis-code {
+          font-family: var(--serif-en); font-style: italic;
+          font-size: 11px; color: var(--gold-deep);
+          letter-spacing: 0.2em;
+        }
+        .axis-soon {
+          display: inline-block;
+          margin-top: 12px;
+          padding: 4px 10px;
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 11px; letter-spacing: 0.15em;
+          color: var(--text-tertiary);
+          border: 1px solid var(--border);
+        }
+
+        .final-cta {
+          background: linear-gradient(180deg, transparent 0%, rgba(31, 58, 95, 0.12) 50%, transparent 100%);
+          padding: 160px 24px;
+        }
+        .price-box {
+          max-width: 480px;
+          margin: 64px auto 48px;
+          padding: 40px 48px;
+          background: linear-gradient(180deg, rgba(26, 22, 32, 0.8) 0%, rgba(20, 16, 31, 0.5) 100%);
+          border: 1px solid var(--border-strong);
+        }
+        .price-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          padding: 16px 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .price-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .price-row:first-child {
+          padding-top: 0;
+          padding-bottom: 24px;
+          margin-bottom: 16px;
+          border-bottom: 1px solid var(--border-strong);
+        }
+        .price-label {
+          font-family: var(--serif-kr); font-size: 18px;
+          color: var(--gold-light); letter-spacing: 0.1em;
+        }
+        .price-num {
+          font-family: var(--serif-en); font-weight: 500;
+          font-size: 32px;
+          background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+          -webkit-background-clip: text; background-clip: text;
+          color: transparent;
+          letter-spacing: 0.02em;
+        }
+        .price-row.sm {
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 13px; color: var(--text-secondary);
+          letter-spacing: 0.05em;
+        }
+        .price-row.sm span:last-child { color: var(--white-baekja); }
+        .btn-primary-big {
+          display: inline-block;
+          padding: 22px 56px;
+          background: var(--vermilion);
+          color: var(--white-baekja);
+          border: 1px solid var(--vermilion);
+          font-family: var(--serif-kr); font-weight: 400;
+          font-size: 17px; letter-spacing: 0.2em;
+          text-decoration: none;
+          transition: all 0.5s ease;
+        }
+        .btn-primary-big:hover {
+          background: var(--gold); border-color: var(--gold);
+          color: var(--bg-deep);
+          transform: translateY(-3px);
+          box-shadow: 0 20px 50px rgba(201, 168, 100, 0.3);
+        }
+        .legal-link {
+          margin-top: 24px;
+          font-family: var(--serif-kr); font-weight: 300;
+          font-size: 12px; color: var(--text-tertiary);
+          letter-spacing: 0.05em;
+        }
+        .legal-link :global(a) {
+          color: var(--gold-deep);
+          text-decoration: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .legal-link :global(a:hover) { color: var(--gold-light); border-color: var(--gold); }
+
+        @media (max-width: 968px) {
+          .axes-grid { grid-template-columns: repeat(2, 1fr); }
+          .sec-title { font-size: 32px; }
+        }
+        @media (max-width: 540px) {
+          .axes-grid { grid-template-columns: 1fr; }
+          .price-box { padding: 28px 24px; }
+          .price-num { font-size: 26px; }
+        }
+      d:["$","style",null,{"children":"$12"}]
+e:["$","script","script-0",{"src":"/unsedang/_next/static/chunks/176_r~wny_bbd.js","async":true}]
+f:["$","$L13",null,{"children":["$","$14",null,{"name":"Next.MetadataOutlet","children":"$@15"}]}]
+15:null
