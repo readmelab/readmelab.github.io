@@ -113,6 +113,8 @@
     .stagger > *:nth-child(5) { animation-delay: .29s; }
 
     .hero { padding: 44px 4px 18px; text-align: center; }
+    .past-link { display:block; margin: 14px auto 0; padding: 10px 18px; border:1px solid var(--border-subtle); border-radius:999px; background:transparent; color:var(--text-tertiary); font-family:var(--font-sans); font-size:13px; letter-spacing:-.02em; cursor:pointer; transition:color .3s ease, border-color .3s ease; }
+    .past-link:hover { color: var(--gold-primary); border-color: var(--border-strong); }
     .star-mark { color: var(--gold-primary); font-size: 20px; margin-bottom: 20px; text-shadow: 0 0 22px var(--gold-glow); }
     h1, h2, h3 { margin: 0; font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.04em; }
     .hero h1 { font-size: 34px; line-height: 1.32; }
@@ -595,6 +597,7 @@
         <h1>카드가 당신에게<br />건네고 싶은 말이 있어요</h1>
         <p>마음에 걸린 질문을 하나 적어주세요.<br />카드는 답을 단정하지 않고, 지금의 흐름을 조용히 비춰줄 거예요.</p>
         <button class="btn btn-primary" id="startBtn" type="button">고민을 적어주세요 ↓</button>
+        <button class="past-link" id="pastResultBtn" type="button" hidden>지난 결과 다시 보기</button>
       </div>
     </section>
 
@@ -1326,6 +1329,19 @@
       return String(str || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
     }
     function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    (function () {
+      try {
+        const list = JSON.parse(localStorage.getItem('tarot_my_results') || '[]');
+        if (!list.length || !list[0] || !list[0].token) return;
+        const btn = document.getElementById('pastResultBtn');
+        if (!btn) return;
+        btn.hidden = false;
+        btn.addEventListener('click', function () {
+          location.href = './result.html?token=' + encodeURIComponent(list[0].token);
+        });
+      } catch (e) {}
+    })();
 
     els.startBtn.addEventListener('click', () => showScreen('questionScreen'));
     els.questionInput.addEventListener('input', validQuestion);

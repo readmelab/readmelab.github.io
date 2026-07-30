@@ -1144,6 +1144,16 @@
 
     function renderFull(data) {
       state.data = data;
+      try {
+        const saved = JSON.parse(localStorage.getItem('tarot_my_results') || '[]');
+        const item = {
+          token: state.token,
+          question: (data.user_question || '').slice(0, 40),
+          saved_at: Date.now()
+        };
+        const next = [item].concat(saved.filter(function (x) { return x && x.token !== state.token; }));
+        localStorage.setItem('tarot_my_results', JSON.stringify(next.slice(0, 10)));
+      } catch (e) {}
       showScreen('result');
       els.questionText.textContent = data.user_question || '';
       const category = CATEGORY_KO[data.category] || '흐름';
