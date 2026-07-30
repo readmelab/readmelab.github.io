@@ -596,7 +596,7 @@
         <div class="star-mark">✦</div>
         <h1>카드가 당신에게<br />건네고 싶은 말이 있어요</h1>
         <p>마음에 걸린 질문을 하나 적어주세요.<br />카드는 답을 단정하지 않고, 지금의 흐름을 조용히 비춰줄 거예요.</p>
-        <button class="btn btn-primary" id="startBtn" type="button">고민을 적어주세요 ↓</button>
+        <button class="btn btn-primary" id="startBtn" type="button">카드에게 물어보기</button>
         <button class="past-link" id="pastResultBtn" type="button" hidden>지난 결과 다시 보기</button>
       </div>
     </section>
@@ -607,8 +607,8 @@
         <p class="section-desc">지금 가장 마음에 남아 있는 문장을 솔직하게 적어주세요.</p>
         <div class="field-label"><span>질문</span><span id="questionCounter" class="counter">0 / 200</span></div>
         <textarea id="questionInput" maxlength="200" placeholder="마음에 걸리는 것을 솔직하게 적어주세요.&#10;예: 요즘 관계가 예전 같지 않아 마음이 복잡해요."></textarea>
-        <button id="examplesToggle" class="examples-toggle" type="button">예시 보기 ▾</button>
-        <div id="examples" class="examples">
+        <button id="examplesToggle" class="examples-toggle" type="button">예시 접기 ▴</button>
+        <div id="examples" class="examples open">
           <button class="example-chip" type="button">남자친구의 마음이 식은 것 같아요. 어떻게 해야 할까요?</button>
           <button class="example-chip" type="button">이 직장을 계속 다니는 게 맞는 선택일까요?</button>
           <button class="example-chip" type="button">친구와의 관계가 예전 같지 않아요. 회복할 수 있을까요?</button>
@@ -670,10 +670,10 @@
         </div>
         <div id="positionCards" class="position-cards"></div>
         <div class="locked-box">
-          <div class="lock-icon">🔒</div>
-          <div class="locked-title">카드 세 장의 전체 흐름이<br />아직 펼쳐지지 않았어요</div>
+          <div class="lock-icon">✦</div>
+          <div class="locked-title">나머지 두 장이<br />당신을 기다리고 있어요</div>
           <p class="locked-copy">방금 본 메시지는 첫 번째 카드의 짧은 인사예요.</p>
-          <div class="value-divider">결제하면 함께 만날 수 있어요</div>
+          <div class="value-divider">✦</div>
           <div class="value-list">
             <div class="value-item">
               <span class="value-mark">✦</span>
@@ -691,8 +691,8 @@
             </div>
           </div>
         </div>
-        <button id="payBtn" class="btn btn-primary" type="button">흐름을 끝까지 들여다보기 → 4,900원</button>
-        <div class="price-note">안전한 토스 결제 · 부분 환불 가능</div>
+        <button id="payBtn" class="btn btn-primary" type="button">끝까지 들여다보기</button>
+        <div class="price-note">4,900원 · 안전한 토스 결제 · 환불 가능</div>
       </div>
     </section>
   </main>
@@ -1278,7 +1278,7 @@
         } else {
           const locked = document.createElement('div');
           locked.className = 'pc-locked';
-          locked.innerHTML = '<span class="lock-emoji">🔒</span><span>결제하면 풀이가 펼쳐져요</span>';
+          locked.innerHTML = '<span class="lock-emoji">✦</span><span>아직 펼쳐지지 않은 카드</span>';
           box.appendChild(locked);
         }
 
