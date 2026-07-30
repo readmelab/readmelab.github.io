@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
   <script src="https://js.tosspayments.com/v1/payment"></script>
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js" integrity="sha384-OL+ylM/iuPLtW5U3XcvLSGhE8JzReKDank5InqlHGWPhb4140/yrBw0bg0y7+C9J" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
@@ -920,6 +921,7 @@
       window.ADMIN_KEY = localStorage.getItem('admin_key') || '';
     })();
 
+    try { if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init('e10b076b8b32f081e2563cc1b3f6c815'); } catch (e) {}
     const BASE_URL = 'https://tarot-server-1075269376260.asia-northeast3.run.app';
     const CATEGORY_KO = { love: '마음', career: '일', money: '돈', decision: '결정', relationship: '관계', self: '나', health: '건강', general: '흐름' };
     const MOOD_KO = { positive: '따뜻하게', neutral: '있는 그대로', negative: '가감없이' };
@@ -1641,6 +1643,31 @@
       }
     }
 
+    function shareToKakao() {
+      try {
+        if (!window.Kakao || !window.Kakao.isInitialized()) { showToast('공유 기능을 불러오지 못했어요'); return; }
+        var d = state.data || {};
+        var cards = d.paid_cards || [];
+        var first = cards[0];
+        var img = first ? (first.image_url || 'https://audio.readmelab.co.kr/tarot/basic/' + first.id + '.webp') : 'https://audio.readmelab.co.kr/tarot/basic/back.webp';
+        var q = (d.user_question || '카드가 건네는 이야기').slice(0, 50);
+        var names = cards.slice(0, 3).map(function (c) { return c && c.name_ko; }).filter(Boolean).join(' · ');
+        window.Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: '나를읽다 타로',
+            description: q + (names ? '\n' + names : ''),
+            imageUrl: img,
+            link: { mobileWebUrl: location.href, webUrl: location.href }
+          },
+          buttons: [{ title: '결과 보기', link: { mobileWebUrl: location.href, webUrl: location.href } }]
+        });
+      } catch (e) {
+        console.error('[kakao share]', e);
+        showToast('공유에 실패했어요');
+      }
+    }
+
     function bindEvents() {
       els.modalClose.addEventListener('click', () => els.cardModal.classList.remove('visible'));
       els.cardModal.addEventListener('click', e => { if (e.target === els.cardModal) els.cardModal.classList.remove('visible'); });
@@ -1655,7 +1682,7 @@
         try { await navigator.clipboard.writeText(location.href); showToast('복사됐어요'); }
         catch { showToast('주소를 복사하지 못했어요'); }
       });
-      els.kakaoBtn.addEventListener('click', () => alert('준비 중이에요.'));
+      els.kakaoBtn.addEventListener('click', shareToKakao);
       els.newReadingBtn.addEventListener('click', () => location.href = './free.html');
       document.getElementById('soundToggle').addEventListener('click', () => {
         const enabled = window.tarotSound.toggle();
