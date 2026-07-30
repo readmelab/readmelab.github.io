@@ -517,6 +517,10 @@
       background: rgba(26,20,40,.8); color: var(--text-primary);
       font-size: 20px; cursor: pointer;
     }
+    .legal-foot { margin: 34px 0 6px; text-align:center; color: var(--text-muted); font-size: 11px; line-height: 1.9; letter-spacing: -.01em; }
+    .legal-foot a { color: var(--text-tertiary); text-decoration: none; }
+    .legal-foot a:hover { color: var(--gold-primary); }
+    .legal-foot .sep { opacity: .4; margin: 0 5px; }
     .toast { position:fixed; left:50%; bottom:calc(24px + var(--safe-bottom)); transform:translateX(-50%) translateY(20px); opacity:0; z-index:80; padding:12px 16px; border-radius:999px; background:rgba(34,26,53,.96); border:1px solid var(--border-subtle); color:var(--text-primary); font-size:13px; transition:.35s ease; box-shadow:var(--shadow-card); pointer-events:none; }
     .toast.visible { opacity:1; transform:translateX(-50%) translateY(0); }
     .debug { margin-top:16px; color:var(--text-muted); font-size:11px; line-height:1.5; word-break:break-all; }
@@ -578,6 +582,10 @@
           </div>
           <button class="btn btn-save-image" id="saveImageBtn">✦ 결과를 이미지로 저장</button>
           <button class="btn btn-primary new-btn" id="newReadingBtn">새로운 카드 만나기</button>
+          <div class="legal-foot">
+            <a href="./refund.html">취소 · 환불 정책</a><span class="sep">·</span><a href="./privacy.html">개인정보처리방침</a><span class="sep">·</span><a href="mailto:help@readmelab.co.kr">문의</a>
+            <br>나를읽다연구소 · 사업자등록번호 347-12-03156
+          </div>
         </section>
       </section>
 
