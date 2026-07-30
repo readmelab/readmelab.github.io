@@ -1048,7 +1048,7 @@
         state.dealId = result.data.deal_id;
         state.category = result.data.category;
         state.cards = result.data.cards || [];
-        await preloadImages(state.cards);
+        preloadImages(state.cards);
         renderDeck();
         renderSlots();
         showScreen('dealScreen');
