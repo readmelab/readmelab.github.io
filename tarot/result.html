@@ -960,7 +960,9 @@
       pollTimer: null,
       confirmStarted: false,
       isSubmittingFollow: false,
-      isAddonProcessing: false
+      isAddonProcessing: false,
+      isAddonReturn: false,
+      quotaExhausted: false
     };
 
     function showScreen(name) {
@@ -1038,11 +1040,12 @@
 
     function updateFollowQuota(data = state.data) {
       const max = Number(data?.follow_ups_max || (data?.product_type === 'premium' ? 3 : 2));
-      const freeRemaining = Number(data?.follow_ups_remaining ?? 0);
-      const paidGranted = Number(data?.paid_follow_up_count ?? 0);
       const followUps = Array.isArray(data?.follow_ups) ? data.follow_ups : [];
+      const paidGranted = Number(data?.paid_follow_up_count ?? 0);
       const paidUsed = followUps.filter(f => f && f.is_paid_addon).length;
-      const paidRemaining = Math.max(0, paidGranted - paidUsed);
+      const freeUsed = followUps.filter(f => f && !f.is_paid_addon).length;
+      const freeRemaining = state.quotaExhausted ? 0 : Math.max(0, max - freeUsed);
+      const paidRemaining = state.quotaExhausted ? 0 : Math.max(0, paidGranted - paidUsed);
       const totalRemaining = freeRemaining + paidRemaining;
       if (paidRemaining > 0) {
         els.followCount.textContent = `남은 횟수: 무료 ${freeRemaining}/${max} + 추가 ${paidRemaining}회`;
@@ -1230,8 +1233,16 @@
         window.addEventListener(evt, unlockVideos, { once: true, passive: true });
       });
       renderFollowUps(data.follow_ups || []);
+      state.quotaExhausted = false;
       updateFollowQuota(data);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (state.isAddonReturn) {
+        state.isAddonReturn = false;
+        setTimeout(function () {
+          els.followInputWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 350);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
     // ====================================================================
@@ -1471,7 +1482,8 @@
       state.confirmStarted = true;
       const isAddon = url.searchParams.get('addon') === '1' || Number(amount) === 1900;
       const path = isAddon ? '/api/tarot/free/addon/payment/confirm' : '/api/tarot/free/payment/confirm';
-      apiCall(path, {
+      state.isAddonReturn = isAddon;
+      const req = apiCall(path, {
         method: 'POST',
         body: JSON.stringify({ paymentKey, orderId, amount: Number(amount) })
       }).then(({ status, data }) => {
@@ -1480,6 +1492,7 @@
         ['paymentKey', 'orderId', 'amount', 'addon'].forEach(k => clean.searchParams.delete(k));
         history.replaceState(null, '', clean.toString());
       }).catch(err => console.error('[payment confirm error]', err));
+      if (isAddon) await req;
     }
 
     async function pollResult() {
@@ -1553,12 +1566,19 @@
           addBubble('ai', data.follow_up_answer || '', data.used_card_name);
           window.tarotSound.playFollowupChime();
           window.tarotSound.vibrate(15);
-          const remaining = Number(data.remaining_count ?? data.free_remaining ?? 0) + Number(data.paid_remaining ?? 0);
-          state.data.follow_ups_remaining = remaining;
+          if (!Array.isArray(state.data.follow_ups)) state.data.follow_ups = [];
+          state.data.follow_ups.push({
+            question: q,
+            answer: data.follow_up_answer || '',
+            used_card_id: data.used_card_id,
+            used_card_name: data.used_card_name,
+            is_paid_addon: !!data.was_paid
+          });
+          if (Number(data.max_count) > 0) state.data.follow_ups_max = Number(data.max_count);
           updateFollowQuota(state.data);
           els.chatList.lastElementChild?.scrollIntoView({ behavior:'smooth', block:'nearest' });
         } else if (data?.error === 'quota_exceeded' || data?.upgrade_required) {
-          state.data.follow_ups_remaining = 0;
+          state.quotaExhausted = true;
           updateFollowQuota(state.data);
           showToast(data.user_message || '추가 질문권이 필요해요');
         } else {
